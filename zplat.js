@@ -87,6 +87,8 @@ function go() {
 
   var d = c.getContext('2d');
 
+  init_keys();
+
   view.c = c;
   view.d = d;
   imgProm('sprite.png').then(function(s) {
@@ -109,4 +111,50 @@ function draw_sprite(d, sprite_id, wpos) {
   d.drawImage(view.sprite,
 	      sprite_loc.x * TILE_SIZE, sprite_loc.y * TILE_SIZE, TILE_SIZE, TILE_SIZE,
 	      o_x + wpos.x * TILE_SIZE * SCALE, o_y + wpos.y * TILE_SIZE * SCALE, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
+}
+
+function init_keys() {
+  $(document).keydown(function(e){
+    try {
+      if (e.keyCode == 37) { handle_key('left'); }
+      if (e.keyCode == 38) { handle_key('up'); }
+      if (e.keyCode == 39) { handle_key('right'); }
+      if (e.keyCode == 40) { handle_key('down'); }
+      if (e.keyCode == 'A'.charCodeAt(0)) { handle_key('left'); }
+      if (e.keyCode == 'W'.charCodeAt(0)) { handle_key('up'); }
+      if (e.keyCode == 'D'.charCodeAt(0)) { handle_key('right'); }
+      if (e.keyCode == 'S'.charCodeAt(0)) { handle_key('down'); }
+    }
+    catch(e) {
+      if (e == "handled") {
+	return false;
+      }
+    }
+  });
+}
+
+function _handle_key(ks) {
+  switch(ks) {
+  case 'up':
+    model.player.pos.y -= 1;
+    model.draw();
+    break;
+  case 'down':
+    model.player.pos.y += 1;
+    model.draw();
+    break;
+  case 'left':
+    model.player.pos.x -= 1;
+    model.draw();
+    break;
+  case 'right':
+    model.player.pos.x += 1;
+    model.draw();
+    break;
+  }
+}
+
+function handle_key(ks) {
+  _handle_key(ks);
+  throw "handled";
 }
