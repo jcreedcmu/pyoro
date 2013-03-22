@@ -10,3 +10,11 @@ function bindVia(obj, proto) {
 function int(x) {
   return Math.floor(x);
 }
+
+function imgProm(src) {
+  var def = Q.defer();
+  var sprite = new Image();
+  sprite.src = "sprite.png";
+  sprite.onload = function() { def.resolve(sprite); }
+  return def.promise;
+}

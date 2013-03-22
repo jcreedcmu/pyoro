@@ -9,10 +9,19 @@ Model.prototype.getTile = function (x,y) {
   else return 'white';
 }
 
-function imgProm(src) {
-  var def = Q.defer();
-  var sprite = new Image();
-  sprite.src = "sprite.png";
-  sprite.onload = function() { def.resolve(sprite); }
-  return def.promise;
+Model.prototype.execute_move = function (move) {
+  switch (move){
+  case 'up':
+    this.player.pos.y -= 1;
+    break;
+  case 'down':
+    this.player.pos.y += 1;
+    break;
+  case 'left':
+    this.player.pos.x -= 1;
+    break;
+  case 'right':
+    this.player.pos.x += 1;
+    break;
+  }
 }

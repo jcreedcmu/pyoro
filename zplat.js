@@ -39,6 +39,7 @@ function init_keys() {
     }
     catch(e) {
       if (e == "handled") {
+	view.draw();
 	return false;
       }
       else {
@@ -51,20 +52,10 @@ function init_keys() {
 function _handle_key(ks) {
   switch(ks) {
   case 'up':
-    view.model.player.pos.y -= 1;
-    view.draw();
-    break;
   case 'down':
-    view.model.player.pos.y += 1;
-    view.draw();
-    break;
   case 'left':
-    view.model.player.pos.x -= 1;
-    view.draw();
-    break;
   case 'right':
-    view.model.player.pos.x += 1;
-    view.draw();
+    view.model.execute_move(ks);
     break;
   }
 }
