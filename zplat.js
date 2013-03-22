@@ -4,8 +4,8 @@ var view;
 
 function go() {
   var model = new Model({
-    player: {pos: {x: 0, y: -1}},
-    viewPort: {x: -5, y: -5},
+    player: new Player({pos: {x: -1, y: 0}}),
+    viewPort: {x: -13, y: -9},
   });
 
   var c = $("<canvas>")[0];

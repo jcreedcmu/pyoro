@@ -27,8 +27,9 @@ Chunk.prototype.getTile = function (p) {
 }
 
 Chunk.prototype.evict = function () {
-  console.log('evicting chunk ' + JSON.stringify(this.pos));
   // nothing yet, maybe save to disk when we allow modifications
+
+  //  console.log('evicting chunk ' + JSON.stringify(this.pos));
 }
 
 function ChunkCache() {
@@ -109,6 +110,11 @@ Model.prototype.execute_move = function (move) {
     // gravity ?
   }
 
+  if (openTile(this.getTile(vplus(this.player.pos, {x:0,y:1}))))
+    this.player.animState = 'player_fall';
+  else
+    this.player.animState = 'player';
+
   if (this.player.pos.x - this.viewPort.x >= NUM_TILES_X - 1) { this.viewPort.x += 1 }
   if (this.player.pos.x - this.viewPort.x < 1) { this.viewPort.x -= 1 }
   if (this.player.pos.y - this.viewPort.y >= NUM_TILES_Y - 1) { this.viewPort.y += 1 }
@@ -121,6 +127,15 @@ Model.prototype.execute_move = function (move) {
 }
 
 Model.prototype.resetViewPort = function () {
-this.viewPort.x = int(this.player.pos.x - NUM_TILES_X / 2);
-    this.viewPort.y = int(this.player.pos.y - NUM_TILES_Y / 2);
+  this.viewPort.x = int(this.player.pos.x - NUM_TILES_X / 2);
+  this.viewPort.y = int(this.player.pos.y - NUM_TILES_Y / 2);
+}
+
+function Player(props) {
+  _.extend(this, props);
+  this.animState = 'player';
+}
+
+Player.prototype.getAnimState = function () {
+  return this.animState;
 }

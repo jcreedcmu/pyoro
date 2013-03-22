@@ -4,10 +4,11 @@ var TILE_SIZE = 16;
 var SCALE = 2;
 
 var sprites = {
-  box:    {x:1, y:4},
-  box2:   {x:2, y:6},
-  empty:  {x:0, y:0},
-  player: {x:1, y:2},
+  box:         {x:1, y:4},
+  box2:        {x:2, y:6},
+  empty:       {x:0, y:0},
+  player:      {x:1, y:2},
+  player_fall: {x:1, y:0},
 };
 
 function View(props) {
@@ -33,7 +34,7 @@ View.prototype.draw = function () {
     }
   }
 
-  this.draw_sprite('player', vminus(model.player.pos, model.viewPort));
+  this.draw_sprite(model.player.getAnimState(), vminus(model.player.pos, model.viewPort));
 
   // cache visualization
   if (0) {
