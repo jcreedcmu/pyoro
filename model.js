@@ -10,11 +10,12 @@ function getTile (p) {
 }
 
 function Chunk(p) {
+  console.log('creating chunk ' + JSON.stringify(p));
   this.pos = p;
   this.tiles = { };
   for (var y = 0; y < CHUNK_SIZE; y++) {
     for (var x = 0; x < CHUNK_SIZE; x++) {
-      var m = vplus(vscale(p, CHUNK_SIZE), {x:x,y:y});
+      var m = vplus(p, {x:x,y:y});
       this.tiles[m.x + ',' + m.y] = getTile(m);
     }
   }
@@ -22,6 +23,11 @@ function Chunk(p) {
 
 Chunk.prototype.getTile = function (p) {
   return this.tiles[p.x + ',' + p.y];
+}
+
+Chunk.prototype.evict = function () {
+  console.log('evicting chunk ' + JSON.stringify(this.pos));
+  // nothing yet, maybe save to disk when we allow modifications
 }
 
 function ChunkCache() {
@@ -37,16 +43,32 @@ ChunkCache.prototype.add = function (c) {
   return c;
 }
 
+ChunkCache.prototype.filter = function (viewPort) {
+  var oldc = this.chunks;
+  var newc = { };
+  _.each(oldc, function(chunk, k) {
+    if (rect_intersect({p: chunk.pos, w:CHUNK_SIZE, h: CHUNK_SIZE}, viewPort)) {
+      newc[k] = chunk;
+    }
+    else {
+      chunk.evict();
+    }
+  });
+  this.chunks = newc;
+}
+
 function Model(props) {
   this.cache = new ChunkCache();
+  this.cache_misses = 0;
   _.extend(this, props);
   bindVia(this, Model.prototype);
 }
 
 Model.prototype.getTile = function (p) {
-  var chunk_pos    = {x: div(p.x, CHUNK_SIZE), y: div(p.y, CHUNK_SIZE)};
+  var chunk_pos = vscale({x: div(p.x, CHUNK_SIZE), y: div(p.y, CHUNK_SIZE)}, CHUNK_SIZE);
   var c = this.cache.get(chunk_pos);
   if (!c) {
+    this.cache_misses++;
     c = this.cache.add(new Chunk(chunk_pos));
   }
   return c.getTile(p);
@@ -91,6 +113,11 @@ Model.prototype.execute_move = function (move) {
   if (this.player.pos.y - this.viewPort.y >= NUM_TILES_Y - 1) { this.viewPort.y += 1 }
   if (this.player.pos.y - this.viewPort.y < 1) { this.viewPort.y -= 1 }
 
+  if (this.cache_misses) {
+    this.cache_misses = 0;
+    console.log('wut');
+    this.cache.filter({p: this.viewPort, w: NUM_TILES_X, h: NUM_TILES_Y});
+  }
 }
 
 Model.prototype.resetViewPort = function () {

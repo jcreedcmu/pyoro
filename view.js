@@ -19,6 +19,7 @@ View.prototype.draw = function () {
   var c = this.c;
   var d = this.d;
   var model = this.model;
+  var that = this;
 
   d.fillStyle = "#def";
   d.fillRect(0,0,this.ww,this.hh);
@@ -34,6 +35,15 @@ View.prototype.draw = function () {
 
   this.draw_sprite('player', vminus(model.player.pos, model.viewPort));
 
+  // cache visualization
+  _.each(model.cache.chunks, function(chunk, k) {
+    var chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
+    var op = vscale(vminus(chunk.pos, model.viewPort), TILE_SIZE * SCALE);
+    d.strokeStyle = "red";
+    d.lineWidth = "1px";
+
+    d.strokeRect(that.o_x + op.x - 0.5, that.o_y + op.y - 0.5, chunk_pixels, chunk_pixels);
+  });
 
 }
 

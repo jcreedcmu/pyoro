@@ -40,3 +40,15 @@ function vminus(v1, v2) {
 function vscale(v, s) {
   return {x: v.x * s, y: v.y * s};
 }
+
+function interval_intersect(a, b) {
+  return b[0] < a[1] && a[0] < b[1];
+}
+
+function rect_intersect(r1, r2) {
+  console.log('rect_intersect ', JSON.stringify([r1, r2], null, 4));
+  var rv = (interval_intersect([r1.p.x, r1.p.x + r1.w], [r2.p.x, r2.p.x + r2.w])
+	  && interval_intersect([r1.p.y, r1.p.y + r1.h], [r2.p.y, r2.p.y + r2.h]));
+  console.log(rv);
+  return rv;
+}
