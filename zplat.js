@@ -15,13 +15,13 @@ function go() {
 
   view = new View({model: model, c: c, d: d});
 
-  $(window).resize(view.draw);
+  $(window).resize(view.resize);
 
   init_keys();
 
   imgProm('sprite.png').then(function(s) {
     view.spriteImg = s;
-  }).then(view.draw)
+  }).then(view.resize)
     .done();
 }
 

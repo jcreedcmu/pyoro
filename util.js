@@ -18,3 +18,11 @@ function imgProm(src) {
   sprite.onload = function() { def.resolve(sprite); }
   return def.promise;
 }
+
+function vplus(v1, v2) {
+  return {x: v1.x + v2.x, y: v1.y + v2.y};
+}
+
+function vminus(v1, v2) {
+  return {x: v1.x - v2.x, y: v1.y - v2.y};
+}
