@@ -111,7 +111,7 @@ Model.prototype.execute_move = function (move) {
   }
 
   if (openTile(this.getTile(vplus(this.player.pos, {x:0,y:1}))))
-    this.player.animState = 'player_fall';
+    this.player.animState = 'player_rise';
   else
     this.player.animState = 'player';
 

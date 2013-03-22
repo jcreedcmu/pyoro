@@ -9,6 +9,7 @@ var sprites = {
   empty:       {x:0, y:0},
   player:      {x:1, y:2},
   player_fall: {x:1, y:0},
+  player_rise: {x:1, y:1},
 };
 
 function View(props) {
