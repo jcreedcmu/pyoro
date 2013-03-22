@@ -5,7 +5,8 @@ var SCALE = 3;
 
 var sprites = {
   box:    {x:1, y:4},
-  white:  {x:0, y:0},
+  box2:   {x:2, y:6},
+  empty:  {x:0, y:0},
   player: {x:1, y:2},
 };
 

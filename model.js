@@ -3,13 +3,22 @@ function Model(props) {
   bindVia(this, Model.prototype);
 }
 
-Model.prototype.getTile = function (p) {
-  if (p.y == 0 && p.x != 0)
-    return 'box';
-  else return 'white';
+function mod(x, y) {
+  var z = x % y;
+  if (z < 0) z += y;
+  return z;
 }
 
-var openTiles = _.object("white".split(" "), []);
+Model.prototype.getTile = function (p) {
+  SIZE = 14;
+  if ((mod(p.y, 2 * SIZE) == 1 || mod(p.x, 2 * SIZE) == 1) &&
+      !(mod(p.y, 2 * SIZE) == 1 + SIZE || mod(p.x, 2 * SIZE) == 1 + SIZE)) {
+    return mod(p.x + p.y, 3) ? 'box' : 'box2';
+  }
+  else return 'empty';
+}
+
+var openTiles = _.object("empty".split(" "), []);
 
 function openTile(x) {
   return (_.has(openTiles, x));
