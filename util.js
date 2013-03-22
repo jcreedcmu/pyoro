@@ -11,6 +11,16 @@ function int(x) {
   return Math.floor(x);
 }
 
+function mod(x, y) {
+  var z = x % y;
+  if (z < 0) z += y;
+  return z;
+}
+
+function div(x, y) {
+  return int(x / y);
+}
+
 function imgProm(src) {
   var def = Q.defer();
   var sprite = new Image();
@@ -25,4 +35,8 @@ function vplus(v1, v2) {
 
 function vminus(v1, v2) {
   return {x: v1.x - v2.x, y: v1.y - v2.y};
+}
+
+function vscale(v, s) {
+  return {x: v.x * s, y: v.y * s};
 }
