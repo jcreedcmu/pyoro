@@ -36,6 +36,7 @@ function init_keys() {
       if (e.keyCode == 'W'.charCodeAt(0)) { handle_key('up'); }
       if (e.keyCode == 'D'.charCodeAt(0)) { handle_key('right'); }
       if (e.keyCode == 'S'.charCodeAt(0)) { handle_key('down'); }
+      if (e.keyCode == 'L'.charCodeAt(0)) { handle_key('reset'); }
     }
     catch(e) {
       if (e == "handled") {
@@ -50,14 +51,7 @@ function init_keys() {
 }
 
 function _handle_key(ks) {
-  switch(ks) {
-  case 'up':
-  case 'down':
-  case 'left':
-  case 'right':
-    view.model.execute_move(ks);
-    break;
-  }
+  view.model.execute_move(ks);
 }
 
 function handle_key(ks) {

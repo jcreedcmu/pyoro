@@ -10,7 +10,7 @@ function mod(x, y) {
 }
 
 Model.prototype.getTile = function (p) {
-  SIZE = 14;
+  SIZE = 4;
   if ((mod(p.y, 2 * SIZE) == 1 || mod(p.x, 2 * SIZE) == 1) &&
       !(mod(p.y, 2 * SIZE) == 1 + SIZE || mod(p.x, 2 * SIZE) == 1 + SIZE)) {
     return mod(p.x + p.y, 3) ? 'box' : 'box2';
@@ -38,6 +38,9 @@ Model.prototype.execute_move = function (move) {
   case 'right':
     playerIntent.x += 1;
     break;
+  case 'reset':
+    this.resetViewPort();
+    break;
   }
 
   var newpos = vplus(playerIntent, this.player.pos);
@@ -53,4 +56,9 @@ Model.prototype.execute_move = function (move) {
   if (this.player.pos.y - this.viewPort.y >= NUM_TILES_Y - 1) { this.viewPort.y += 1 }
   if (this.player.pos.y - this.viewPort.y < 1) { this.viewPort.y -= 1 }
 
+}
+
+Model.prototype.resetViewPort = function () {
+this.viewPort.x = int(this.player.pos.x - NUM_TILES_X / 2);
+    this.viewPort.y = int(this.player.pos.y - NUM_TILES_Y / 2);
 }
