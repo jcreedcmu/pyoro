@@ -1,7 +1,7 @@
-var NUM_TILES_X = 16;
-var NUM_TILES_Y = 12;
+var NUM_TILES_X = 24;
+var NUM_TILES_Y = 18;
 var TILE_SIZE = 16;
-var SCALE = 3;
+var SCALE = 2;
 
 var sprites = {
   box:    {x:1, y:4},
@@ -36,15 +36,16 @@ View.prototype.draw = function () {
   this.draw_sprite('player', vminus(model.player.pos, model.viewPort));
 
   // cache visualization
-  _.each(model.cache.chunks, function(chunk, k) {
-    var chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
-    var op = vscale(vminus(chunk.pos, model.viewPort), TILE_SIZE * SCALE);
-    d.strokeStyle = "red";
-    d.lineWidth = "1px";
+  if (0) {
+    _.each(model.cache.chunks, function(chunk, k) {
+      var chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
+      var op = vscale(vminus(chunk.pos, model.viewPort), TILE_SIZE * SCALE);
+      d.strokeStyle = "red";
+      d.lineWidth = "1px";
 
-    d.strokeRect(that.o_x + op.x - 0.5, that.o_y + op.y - 0.5, chunk_pixels, chunk_pixels);
-  });
-
+      d.strokeRect(that.o_x + op.x - 0.5, that.o_y + op.y - 0.5, chunk_pixels, chunk_pixels);
+    });
+  }
 }
 
 // wpos: position in window, (0,0) is top left of viewport

@@ -46,9 +46,22 @@ function interval_intersect(a, b) {
 }
 
 function rect_intersect(r1, r2) {
-  console.log('rect_intersect ', JSON.stringify([r1, r2], null, 4));
   var rv = (interval_intersect([r1.p.x, r1.p.x + r1.w], [r2.p.x, r2.p.x + r2.w])
 	  && interval_intersect([r1.p.y, r1.p.y + r1.h], [r2.p.y, r2.p.y + r2.h]));
-  console.log(rv);
   return rv;
+}
+
+function srand(n) {
+  var x = n;
+  var z = function() {
+    x = (2147483629 * x + 2147483587) % 2147483647;
+    return (x & 0xffff) / (1 << 16);
+  }
+  return z;
+}
+
+function hash(p) {
+  var z = srand(1000 * p.x + 3758 * p.y);
+  _.times(10, z);
+  return z();
 }

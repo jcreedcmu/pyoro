@@ -2,15 +2,16 @@ var CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
 
 function getTile (p) {
   SIZE = 4;
+  if (hash(p) < 0.1) return 'box';
+
   if ((mod(p.y, 2 * SIZE) == 1 || mod(p.x, 2 * SIZE) == 1) &&
       !(mod(p.y, 2 * SIZE) == 1 + SIZE || mod(p.x, 2 * SIZE) == 1 + SIZE)) {
-    return mod(p.x + p.y, 3) ? 'box' : 'box2';
+    return mod(p.x + p.y, 3) ? 'empty' : 'box2';
   }
   else return 'empty';
 }
 
 function Chunk(p) {
-  console.log('creating chunk ' + JSON.stringify(p));
   this.pos = p;
   this.tiles = { };
   for (var y = 0; y < CHUNK_SIZE; y++) {
@@ -115,7 +116,6 @@ Model.prototype.execute_move = function (move) {
 
   if (this.cache_misses) {
     this.cache_misses = 0;
-    console.log('wut');
     this.cache.filter({p: this.viewPort, w: NUM_TILES_X, h: NUM_TILES_Y});
   }
 }
