@@ -35,7 +35,9 @@ View.prototype.draw = function () {
     }
   }
 
-  this.draw_sprite(model.player.getAnimState(), vminus(model.player.pos, model.viewPort));
+  this.draw_sprite(model.player.getAnimState(),
+		   vminus(model.player.pos, model.viewPort),
+		   model.player.getFlipState());
 
   // cache visualization
   if (0) {
@@ -51,7 +53,7 @@ View.prototype.draw = function () {
 }
 
 // wpos: position in window, (0,0) is top left of viewport
-View.prototype.draw_sprite = function (sprite_id, wpos) {
+View.prototype.draw_sprite = function (sprite_id, wpos, flip) {
 
   if (wpos.x < 0 || wpos.y < 0 || wpos.x >= NUM_TILES_X || wpos.y >= NUM_TILES_Y)
     return;
@@ -59,11 +61,19 @@ View.prototype.draw_sprite = function (sprite_id, wpos) {
   var sprite_loc = sprites[sprite_id];
 
   var d = this.d;
+  d.save();
+  d.translate(this.o_x + wpos.x * TILE_SIZE * SCALE,
+	      this.o_y + wpos.y * TILE_SIZE * SCALE);
+  if (flip) {
+    d.translate(TILE_SIZE * SCALE, 0);
+    d.scale(-1, 1);
+  }
   d.webkitImageSmoothingEnabled = false;
   d.drawImage(this.spriteImg,
 	      sprite_loc.x * TILE_SIZE, sprite_loc.y * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-	      this.o_x + wpos.x * TILE_SIZE * SCALE,
-	      this.o_y + wpos.y * TILE_SIZE * SCALE, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
+	      0,
+	      0, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
+  d.restore();
 }
 
 View.prototype.resize = function() {

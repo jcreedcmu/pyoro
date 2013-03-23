@@ -93,9 +93,11 @@ Model.prototype.execute_move = function (move) {
     break;
   case 'left':
     playerIntent.x -= 1;
+    this.player.flipState = true;
     break;
   case 'right':
     playerIntent.x += 1;
+    this.player.flipState = false;
     break;
   case 'reset':
     this.resetViewPort();
@@ -132,10 +134,17 @@ Model.prototype.resetViewPort = function () {
 }
 
 function Player(props) {
-  _.extend(this, props);
   this.animState = 'player';
+  this.flipState = 'false';
+  this.pos = {x:0, y:0};
+  _.extend(this, props);
+
 }
 
 Player.prototype.getAnimState = function () {
   return this.animState;
+}
+
+Player.prototype.getFlipState = function () {
+  return this.flipState;
 }
