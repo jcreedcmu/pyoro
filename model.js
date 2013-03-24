@@ -1,6 +1,6 @@
 var CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
 
-function getTile (p) {
+function rawGetTile (p) {
   SIZE = 4;
   if (hash(p) < 0.1) return 'box';
 
@@ -11,13 +11,15 @@ function getTile (p) {
   else return 'empty';
 }
 
-function Chunk(p) {
+function Chunk(p, props) {
   this.pos = p;
   this.tiles = { };
+  this.rawGetTile = rawGetTile;
+  _.extend(this, props);
   for (var y = 0; y < CHUNK_SIZE; y++) {
     for (var x = 0; x < CHUNK_SIZE; x++) {
       var m = vplus(p, {x:x,y:y});
-      this.tiles[m.x + ',' + m.y] = getTile(m);
+      this.tiles[m.x + ',' + m.y] = this.rawGetTile(m);
     }
   }
 }
@@ -71,7 +73,7 @@ Model.prototype.getTile = function (p) {
   var c = this.cache.get(chunk_pos);
   if (!c) {
     this.cache_misses++;
-    c = this.cache.add(new Chunk(chunk_pos));
+    c = this.cache.add(new Chunk(chunk_pos, this.chunk_props));
   }
   return c.getTile(p);
 }
@@ -137,6 +139,7 @@ function Player(props) {
   this.animState = 'player';
   this.flipState = 'false';
   this.pos = {x:0, y:0};
+  console.log('here');
   this.impetus = 4;
   _.extend(this, props);
 
