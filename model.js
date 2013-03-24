@@ -137,7 +137,7 @@ Model.prototype.resetViewPort = function () {
 
 function Player(props) {
   this.animState = 'player';
-  this.flipState = 'false';
+  this.flipState = false;
   this.pos = {x:0, y:0};
   console.log('here');
   this.impetus = 4;
