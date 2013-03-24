@@ -1,4 +1,5 @@
 var CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
+var FULL_IMPETUS = 4;
 
 function rawGetTile (p) {
   SIZE = 4;
@@ -86,6 +87,8 @@ function openTile(x) {
 }
 
 Model.prototype.execute_move = function (move) {
+  var player = this.player;
+
   var playerIntent = {x:0, y:0};
   switch (move){
   case 'up':
@@ -96,34 +99,41 @@ Model.prototype.execute_move = function (move) {
     break;
   case 'left':
     playerIntent.x -= 1;
-    this.player.flipState = true;
+    player.flipState = true;
     break;
   case 'right':
     playerIntent.x += 1;
-    this.player.flipState = false;
+    player.flipState = false;
     break;
   case 'reset':
     this.resetViewPort();
     break;
   }
 
-  var newpos = vplus(playerIntent, this.player.pos);
+  var newpos = vplus(playerIntent, player.pos);
   if (openTile(this.getTile(newpos))) {
-    this.player.pos = newpos;
+    player.pos = newpos;
   }
   else {
     // gravity ?
   }
 
-  if (openTile(this.getTile(vplus(this.player.pos, {x:0,y:1}))))
-    this.player.animState = 'player_rise';
-  else
-    this.player.animState = 'player';
+  var supported = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
 
-  if (this.player.pos.x - this.viewPort.x >= NUM_TILES_X - 1) { this.viewPort.x += 1 }
-  if (this.player.pos.x - this.viewPort.x < 1) { this.viewPort.x -= 1 }
-  if (this.player.pos.y - this.viewPort.y >= NUM_TILES_Y - 1) { this.viewPort.y += 1 }
-  if (this.player.pos.y - this.viewPort.y < 1) { this.viewPort.y -= 1 }
+  if (playerIntent.y != -1 && !supported)
+    player.impetus = 0;
+
+  if (supported) {
+    player.animState = 'player';
+    player.impetus = FULL_IMPETUS
+  }
+  else
+    player.animState = player.impetus ? 'player_rise' : 'player_fall';
+
+  if (player.pos.x - this.viewPort.x >= NUM_TILES_X - 1) { this.viewPort.x += 1 }
+  if (player.pos.x - this.viewPort.x < 1) { this.viewPort.x -= 1 }
+  if (player.pos.y - this.viewPort.y >= NUM_TILES_Y - 1) { this.viewPort.y += 1 }
+  if (player.pos.y - this.viewPort.y < 1) { this.viewPort.y -= 1 }
 
   if (this.cache_misses) {
     this.cache_misses = 0;
@@ -140,7 +150,7 @@ function Player(props) {
   this.animState = 'player';
   this.flipState = false;
   this.pos = {x:0, y:0};
-  this.impetus = 4;
+  this.impetus = FULL_IMPETUS;
   _.extend(this, props);
 
 }

@@ -40,7 +40,39 @@ describe('Model', function(){
     assert.equal(m.player.animState, "player_rise");
     assert.equal(m.player.flipState, false);
     assert.deepEqual(m.player.pos, {x: 0, y: -1});
-    assert.equal(m.player.impetus, 4);
+    assert.equal(m.player.impetus, FULL_IMPETUS); // XXX FULL_IMPETUS-1
+  });
+
+  it('should prevent jumping straight up into boxes', function(){
+    var map = basicMap();
+    map['0,-1'] = 'box';
+    var m = basicModel(map);
+    m.execute_move('up');
+
+    assert.equal(m.player.animState, "player");
+    assert.equal(m.player.flipState, false);
+    assert.deepEqual(m.player.pos, {x: 0, y: 0});
+    assert.equal(m.player.impetus, FULL_IMPETUS);
+  });
+
+  it('should allow running over small gaps', function(){
+    var map = basicMap();
+    map['-2,1'] = 'box';
+    var m = basicModel(map);
+    m.execute_move('left');
+
+    assert.equal(m.player.animState, "player_fall");
+    assert.equal(m.player.flipState, true);
+    assert.deepEqual(m.player.pos, {x: -1, y: 0});
+    assert.equal(m.player.impetus, 0);
+
+    m.execute_move('left');
+
+    assert.equal(m.player.animState, "player");
+    assert.equal(m.player.flipState, true);
+    assert.deepEqual(m.player.pos, {x: -2, y: 0});
+    assert.equal(m.player.impetus, FULL_IMPETUS);
+
   });
 
 });
