@@ -11,15 +11,32 @@ pseudoRequire('view_constants.js');
 pseudoRequire('util.js');
 pseudoRequire('model.js');
 
+function testGetTile(map) {
+  return function(p) {
+    var k = p.x + ',' + p.y;
+   if (_.has(map, k))
+     return map[k];
+    else
+      return 'empty';
+  }
+}
+
+function basicMap() {
+  return {'0,1': 'box'};
+}
+
+function basicModel(map) {
+  return new Model({player: new Player(), viewPort: {x: -5, y:-5},
+		    chunk_props: {rawGetTile: testGetTile(map)}})
+}
+
 describe('Model', function(){
   it('should allow jumping up', function(){
 
-    var m = new Model({player: new Player(), viewPort: {x: -5, y:-5}});
+    var map = basicMap();
+    var m = basicModel(map);
     m.execute_move('up');
 
-    var x = new Player({animState: "player_rise", flip_state: false, pos: {x: 0, y: -1}, impetus: 4});
-    console.log(JSON.stringify(m.player, null, 4));
-    console.log(JSON.stringify(x, null, 4));
     assert.equal(m.player.animState, "player_rise");
     assert.equal(m.player.flipState, false);
     assert.deepEqual(m.player.pos, {x: 0, y: -1});

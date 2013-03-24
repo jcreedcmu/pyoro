@@ -64,6 +64,7 @@ ChunkCache.prototype.filter = function (viewPort) {
 function Model(props) {
   this.cache = new ChunkCache();
   this.cache_misses = 0;
+  this.chunk_props = {}; // can inject rawGetTile in here
   _.extend(this, props);
   bindVia(this, Model.prototype);
 }
@@ -139,7 +140,6 @@ function Player(props) {
   this.animState = 'player';
   this.flipState = false;
   this.pos = {x:0, y:0};
-  console.log('here');
   this.impetus = 4;
   _.extend(this, props);
 
