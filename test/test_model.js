@@ -75,4 +75,31 @@ describe('Model', function(){
 
   });
 
+  it('should disallow narrow diagonal moves', function(){
+    var map = basicMap();
+    map['-1,-2'] = 'box';
+    map['0,-3'] = 'box';
+    var m = basicModel(map);
+    m.execute_move('up');
+
+    assert.equal(m.player.animState, "player_rise");
+    assert.equal(m.player.flipState, false);
+    assert.deepEqual(m.player.pos, {x: 0, y: -1});
+    assert.equal(m.player.impetus, FULL_IMPETUS - 1);
+
+    m.execute_move('up');
+
+    assert.equal(m.player.animState, "player_rise");
+    assert.equal(m.player.flipState, false);
+    assert.deepEqual(m.player.pos, {x: 0, y: -2});
+    assert.equal(m.player.impetus, FULL_IMPETUS - 2);
+
+    m.execute_move('up-left');
+
+    assert.equal(m.player.animState, "player_fall");
+    assert.equal(m.player.flipState, true);
+    assert.deepEqual(m.player.pos, {x: 0, y: -1});
+    assert.equal(m.player.impetus, 0);
+
+  });
 });

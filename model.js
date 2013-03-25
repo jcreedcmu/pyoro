@@ -122,6 +122,10 @@ Model.prototype.execute_move = function (move) {
     break;
   }
 
+  var blockedHorizontalIntent = !openTile(this.getTile({x:player.pos.x + playerIntent.x, y: player.pos.y}));
+  if (blockedHorizontalIntent)
+    playerIntent.x = 0;
+
   var supportedIntent = !openTile(this.getTile(vplus(player.pos, vplus(playerIntent, {x:0,y:1}))));
 
   if (playerIntent.y != -1 && !supportedIntent)
@@ -136,7 +140,10 @@ Model.prototype.execute_move = function (move) {
     player.pos = newpos;
   }
   else {
-    // gravity ?
+    if (!supportedBefore) {
+      player.impetus = 0;
+      player.pos = vplus(player.pos, {x:0, y:1});
+    }
   }
 
   var supportedAfter = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
