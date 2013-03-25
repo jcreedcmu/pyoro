@@ -28,10 +28,14 @@ function go() {
 function init_keys() {
   $(document).keydown(function(e){
     try {
+      if (e.keyCode == 36) { handle_key('up-left'); }
+      if (e.keyCode == 33) { handle_key('up-right'); }
       if (e.keyCode == 37) { handle_key('left'); }
       if (e.keyCode == 38) { handle_key('up'); }
       if (e.keyCode == 39) { handle_key('right'); }
       if (e.keyCode == 40) { handle_key('down'); }
+      if (e.keyCode == 'Q'.charCodeAt(0)) { handle_key('up-left'); }
+      if (e.keyCode == 'E'.charCodeAt(0)) { handle_key('up-right'); }
       if (e.keyCode == 'A'.charCodeAt(0)) { handle_key('left'); }
       if (e.keyCode == 'W'.charCodeAt(0)) { handle_key('up'); }
       if (e.keyCode == 'D'.charCodeAt(0)) { handle_key('right'); }

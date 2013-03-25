@@ -107,6 +107,16 @@ Model.prototype.execute_move = function (move) {
     playerIntent.x += 1;
     player.flipState = false;
     break;
+  case 'up-left':
+    playerIntent.x -= 1;
+    playerIntent.y -= 1;
+    player.flipState = true;
+    break;
+  case 'up-right':
+    playerIntent.x += 1;
+    playerIntent.y -= 1;
+    player.flipState = false;
+    break;
   case 'reset':
     this.resetViewPort();
     break;
