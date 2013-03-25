@@ -89,6 +89,8 @@ function openTile(x) {
 Model.prototype.execute_move = function (move) {
   var player = this.player;
 
+  var supportedBefore = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
+
   var playerIntent = {x:0, y:0};
   switch (move){
   case 'up':
@@ -110,6 +112,15 @@ Model.prototype.execute_move = function (move) {
     break;
   }
 
+  var supportedIntent = !openTile(this.getTile(vplus(player.pos, vplus(playerIntent, {x:0,y:1}))));
+
+  if (playerIntent.y != -1 && !supportedIntent)
+    player.impetus = 0;
+
+  if (!supportedBefore && !supportedIntent && player.impetus == 0) {
+    playerIntent.y = 1;
+  }
+
   var newpos = vplus(playerIntent, player.pos);
   if (openTile(this.getTile(newpos))) {
     player.pos = newpos;
@@ -118,18 +129,18 @@ Model.prototype.execute_move = function (move) {
     // gravity ?
   }
 
-  var supported = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
+  var supportedAfter = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
 
-  if (playerIntent.y != -1 && !supported)
-    player.impetus = 0;
 
-  if (supported) {
+
+  if (supportedAfter) {
     player.animState = 'player';
     player.impetus = FULL_IMPETUS
   }
-  else
+  else {
+    if (player.impetus) { player.impetus--; }
     player.animState = player.impetus ? 'player_rise' : 'player_fall';
-
+  }
   if (player.pos.x - this.viewPort.x >= NUM_TILES_X - 1) { this.viewPort.x += 1 }
   if (player.pos.x - this.viewPort.x < 1) { this.viewPort.x -= 1 }
   if (player.pos.y - this.viewPort.y >= NUM_TILES_Y - 1) { this.viewPort.y += 1 }

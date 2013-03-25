@@ -40,7 +40,7 @@ describe('Model', function(){
     assert.equal(m.player.animState, "player_rise");
     assert.equal(m.player.flipState, false);
     assert.deepEqual(m.player.pos, {x: 0, y: -1});
-    assert.equal(m.player.impetus, FULL_IMPETUS); // XXX FULL_IMPETUS-1
+    assert.equal(m.player.impetus, FULL_IMPETUS - 1);
   });
 
   it('should prevent jumping straight up into boxes', function(){
