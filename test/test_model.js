@@ -102,4 +102,17 @@ describe('Model', function(){
     assert.equal(m.player.impetus, 0);
 
   });
+
+it('should disallow horizontally constrained diagonal moves', function(){
+    var map = basicMap();
+    map['0,-1'] = 'box';
+    var m = basicModel(map);
+    m.execute_move('up-left');
+
+    assert.equal(m.player.animState, "player_fall");
+    assert.equal(m.player.flipState, true);
+    assert.deepEqual(m.player.pos, {x: -1, y: 0});
+    assert.equal(m.player.impetus, 0);
+
+  });
 });
