@@ -86,69 +86,93 @@ function openTile(x) {
   return (_.has(openTiles, x));
 }
 
+Model.prototype.ropen = function (x, y) {
+  return openTile(this.getTile({x: this.player.pos.x + x, y: this.player.pos.y + y}));
+}
+
+Model.prototype.execute_up = function () {
+  var player = this.player;
+  if (player.impetus) {
+    return this.ropen(0,-1) ? {dpos:{x:0,y:-1}} : this.execute_down();
+  }
+  else {
+    return {dpos:{x:0,y:1}};
+  }
+}
+
+Model.prototype.execute_down = function () {
+  return this.ropen(0,1) ? {dpos:{x:0,y:1},impetus:0} : {dpos:{x:0,y:0},impetus:FULL_IMPETUS}
+}
+
+Model.prototype.execute_right = function (flip) {
+  this.player.flipState = flip;
+
+  var dx = flip ? -1 : 1;
+  var forward_open = this.ropen(dx, 0);
+  if (this.player.impetus && !this.ropen(0, 1)) {
+    return forward_open ? {dpos:{x:dx,y:0}, impetus:0} : {dpos:{x:0,y:0},impetus:FULL_IMPETUS};
+  }
+  else {
+    if (forward_open) {
+      return this.ropen(dx, 1) ? {dpos:{x:dx,y:1}, impetus:0} : {dpos:{x:dx,y:0}, impetus:0};
+    }
+    else
+      return {dpos:{x:0,y:1}, impetus:0}
+  }
+}
+
+Model.prototype.execute_up_right = function (flip) {
+  this.player.flipState = flip;
+
+  var dx = flip ? -1 : 1;
+  var forward_open = this.ropen(dx, 0);
+  if (!this.player.impetus || !this.ropen(0, -1))
+    return this.execute_right(flip);
+  if (!this.ropen(dx, 0))
+    return {dpos:{x:0,y:-1}};
+  return this.ropen(dx, -1) ? {dpos:{x:dx,y:-1}} : this.execute_down();
+}
+
 Model.prototype.execute_move = function (move) {
   var player = this.player;
 
-  var supportedBefore = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
+  var result = {};
 
-  var playerIntent = {x:0, y:0};
+  var supportedBefore = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
+  if (supportedBefore) {
+    player.impetus = FULL_IMPETUS;
+  }
+
   switch (move){
   case 'up':
-    playerIntent.y -= 1;
+    result = this.execute_up();
     break;
   case 'down':
-    playerIntent.y += 1;
+    result = this.execute_down();
     break;
   case 'left':
-    playerIntent.x -= 1;
-    player.flipState = true;
+    result = this.execute_right(true);
     break;
   case 'right':
-    playerIntent.x += 1;
-    player.flipState = false;
+    result = this.execute_right(false);
     break;
   case 'up-left':
-    playerIntent.x -= 1;
-    playerIntent.y -= 1;
-    player.flipState = true;
+    result = this.execute_up_right(true);
     break;
   case 'up-right':
-    playerIntent.x += 1;
-    playerIntent.y -= 1;
-    player.flipState = false;
+    result = this.execute_up_right(false);
     break;
   case 'reset':
     this.resetViewPort();
+    result = player;
     break;
   }
 
-  var blockedHorizontalIntent = !openTile(this.getTile({x:player.pos.x + playerIntent.x, y: player.pos.y}));
-  if (blockedHorizontalIntent)
-    playerIntent.x = 0;
-
-  var supportedIntent = !openTile(this.getTile(vplus(player.pos, vplus(playerIntent, {x:0,y:1}))));
-
-  if (playerIntent.y != -1 && !supportedIntent)
-    player.impetus = 0;
-
-  if (!supportedBefore && !supportedIntent && player.impetus == 0) {
-    playerIntent.y = 1;
-  }
-
-  var newpos = vplus(playerIntent, player.pos);
-  if (openTile(this.getTile(newpos))) {
-    player.pos = newpos;
-  }
-  else {
-    if (!supportedBefore) {
-      player.impetus = 0;
-      player.pos = vplus(player.pos, {x:0, y:1});
-    }
-  }
+  player.pos.x += result.dpos.x;
+  player.pos.y += result.dpos.y;
+  player.impetus = _.has(result, 'impetus') ? result.impetus : player.impetus;
 
   var supportedAfter = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
-
-
 
   if (supportedAfter) {
     player.animState = 'player';
