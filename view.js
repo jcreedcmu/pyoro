@@ -1,14 +1,4 @@
-var DEBUG = 1;
-
-var sprites = {
-  box:         {x:1, y:4},
-  box2:        {x:2, y:6},
-  box3:        {x:3, y:3},
-  empty:       {x:0, y:0},
-  player:      {x:1, y:2},
-  player_fall: {x:1, y:0},
-  player_rise: {x:1, y:1},
-};
+var DEBUG = 0;
 
 function View(props) {
   _.extend(this, props);

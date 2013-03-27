@@ -6,7 +6,7 @@ function rawGetTile (p) {
   var h = hash(p, 2);
   var mtn = h[0] - (p.x * 0.015 + p.y * -0.003);
   if (h[0] - p.y * 0.1 < 0.3 || mtn < 0.3) {
-    return  mtn < 0.25 ? 'box' : (mtn < 0.275 ? 'box3' : 'box2');
+    return  mtn < 0.25 ? 'box' : (mtn < 0.275 ? 'box3' : 'fragile_box');
   }
   else return 'empty';
 }
@@ -26,6 +26,10 @@ function Chunk(p, props) {
 
 Chunk.prototype.getTile = function (p) {
   return this.tiles[p.x + ',' + p.y];
+}
+
+Chunk.prototype.putTile = function (p, t) {
+  this.tiles[p.x + ',' + p.y] = t;
 }
 
 Chunk.prototype.evict = function () {
@@ -80,6 +84,16 @@ Model.prototype.getTile = function (p) {
   return c.getTile(p);
 }
 
+Model.prototype.putTile = function (p, t) {
+  var chunk_pos = vscale({x: div(p.x, CHUNK_SIZE), y: div(p.y, CHUNK_SIZE)}, CHUNK_SIZE);
+  var c = this.cache.get(chunk_pos);
+  if (!c) {
+    this.cache_misses++;
+    c = this.cache.add(new Chunk(chunk_pos, this.chunk_props));
+  }
+  return c.putTile(p, t);
+}
+
 var openTiles = _.object("empty".split(" "), []);
 
 function openTile(x) {
@@ -130,19 +144,25 @@ Model.prototype.execute_up_right = function (flip) {
 }
 
 Model.prototype.animate_move = function (move) {
+  var anims = [];
+  var flip = false;
+
   var s = this.state;
   var player = s.player;
 
   var result = {};
   var moved = true;
 
-  var supportedBefore = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
+  var tileBefore = this.getTile(vplus(player.pos, {x:0,y:1}));
+
+  if (tileBefore == 'fragile_box')
+    anims.push(new TileModAnimation(vplus(player.pos, {x:0,y:1}), 'empty'));
+
+  var supportedBefore = !openTile(tileBefore);
   if (supportedBefore) {
     player.impetus = FULL_IMPETUS;
   }
 
-  var anims = [];
-  var flip = false;
 
   switch (move){
   case 'up':
@@ -212,10 +232,12 @@ Model.prototype.animate_move = function (move) {
 Model.prototype.animator_for_move = function (move) {
   var orig_state = this.state;
   var anims = this.animate_move(move);
+  var that = this;
 
   return function(t) {
     var state = _.extend({}, orig_state);
     _.each(anims, function(anim) { anim.apply(state, t); });
+    _.each(anims, function(anim) { anim.tileHook(that, t); });
     return state;
   };
 }
@@ -223,7 +245,11 @@ Model.prototype.animator_for_move = function (move) {
 Model.prototype.execute_move = function (move) {
   var anims = this.animate_move(move);
   var state = _.extend({}, this.state);
+  var that = this;
+
   _.each(anims, function(anim) { anim.apply(state, 1); });
+  _.each(anims, function(anim) { anim.tileHook(that, 1); });
+
   this.state = state;
 }
 
@@ -243,12 +269,18 @@ Model.prototype.get_viewPort = function () {
   return this.state.viewPort;
 }
 
+function Animation() { }
+Animation.prototype.apply = function (state, t) { }
+Animation.prototype.tileHook = function (map, t) {  }
+
 function PlayerAnimation(props) {
   this.pos = {x:0,y:0};
   this.animState = 'player';
   this.impetus = FULL_IMPETUS;
   _.extend(this, props);
 }
+
+PlayerAnimation.prototype = new Animation();
 
 PlayerAnimation.prototype.apply = function (state, t) {
   state.player =
@@ -263,8 +295,21 @@ function ViewPortAnimation(dpos, props) {
   _.extend(this, props);
 }
 
+ViewPortAnimation.prototype = new Animation();
+
 ViewPortAnimation.prototype.apply = function (state, t) {
   state.viewPort = vplus(state.viewPort, vscale(this.dpos, t));
+}
+
+function TileModAnimation(pos, tile) {
+  this.pos = pos;
+  this.tile = tile;
+}
+
+TileModAnimation.prototype = new Animation();
+
+TileModAnimation.prototype.tileHook = function (map, t) {
+  map.putTile(this.pos, this.tile);
 }
 
 function Player(props) {
