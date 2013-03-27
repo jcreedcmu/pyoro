@@ -23,22 +23,24 @@ View.prototype.draw = function () {
   d.fillStyle = "rgba(255,255,255,0.5)";
   d.fillRect(this.o_x,this.o_y,NUM_TILES_X * TILE_SIZE * SCALE,NUM_TILES_Y * TILE_SIZE * SCALE);
 
+  var vp = vint(model.get_viewPort());
+
   for (var y = 0; y < NUM_TILES_Y; y++) {
     for (var x = 0; x < NUM_TILES_X; x++) {
       var p = {x:x,y:y};
-      this.draw_sprite(model.getTile(vplus(p, model.get_viewPort())), p);
+      this.draw_sprite(model.getTile(vplus(p, vp)), p);
     }
   }
 
   this.draw_sprite(model.get_player().getAnimState(),
-		   vminus(model.get_player().pos, model.get_viewPort()),
+		   vminus(model.get_player().pos, vp),
 		   model.get_player().getFlipState());
 
   // cache visualization
   if (0) {
     _.each(model.cache.chunks, function(chunk, k) {
       var chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
-      var op = vscale(vminus(chunk.pos, model.get_viewPort()), TILE_SIZE * SCALE);
+      var op = vscale(vminus(chunk.pos, vp), TILE_SIZE * SCALE);
       d.strokeStyle = "red";
       d.lineWidth = "1px";
 

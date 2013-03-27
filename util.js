@@ -41,6 +41,14 @@ function vscale(v, s) {
   return {x: v.x * s, y: v.y * s};
 }
 
+function vint(v) {
+  return {x: int(v.x), y: int(v.y)};
+}
+
+function vfpart(v) {
+  return {x: v.x - int(v.x), y: v.y - int(v.y)};
+}
+
 function interval_intersect(a, b) {
   return b[0] < a[1] && a[0] < b[1];
 }
