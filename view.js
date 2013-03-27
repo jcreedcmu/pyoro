@@ -1,3 +1,5 @@
+var DEBUG = 1;
+
 var sprites = {
   box:         {x:1, y:4},
   box2:        {x:2, y:6},
@@ -25,10 +27,12 @@ View.prototype.draw = function () {
   d.fillStyle = "rgba(255,255,255,0.5)";
   d.fillRect(this.o_x,this.o_y,NUM_TILES_X * TILE_SIZE * SCALE,NUM_TILES_Y * TILE_SIZE * SCALE);
 
-  d.save();
-  d.beginPath();
-  d.rect(this.o_x,this.o_y,NUM_TILES_X * TILE_SIZE * SCALE,NUM_TILES_Y * TILE_SIZE * SCALE);
-  d.clip();
+  if (!DEBUG) {
+    d.save();
+    d.beginPath();
+    d.rect(this.o_x,this.o_y,NUM_TILES_X * TILE_SIZE * SCALE,NUM_TILES_Y * TILE_SIZE * SCALE);
+    d.clip();
+  }
 
   var vp = model.get_viewPort();
 
@@ -44,7 +48,7 @@ View.prototype.draw = function () {
 		   model.get_player().getFlipState());
 
   // cache visualization
-  if (0) {
+  if (DEBUG) {
     _.each(model.cache.chunks, function(chunk, k) {
       var chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
       var op = vscale(vminus(chunk.pos, vp), TILE_SIZE * SCALE);
@@ -55,7 +59,8 @@ View.prototype.draw = function () {
     });
   }
 
-  d.restore();
+  if (!DEBUG)
+    d.restore();
 }
 
 // wpos: position in window, (0,0) is top left of viewport
