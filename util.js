@@ -68,10 +68,13 @@ function srand(n) {
   return z;
 }
 
-function hash(p) {
+function hash(p, n) {
   var z = srand(1000 * p.x + 3758 * p.y);
   _.times(10, z);
-  return z();
+  if (n == null)
+    return z();
+  else
+    return _.times(n, z);
 }
 
 function js(x) { return JSON.stringify(x) }

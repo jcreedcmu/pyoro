@@ -1,6 +1,7 @@
 var sprites = {
   box:         {x:1, y:4},
   box2:        {x:2, y:6},
+  box3:        {x:3, y:3},
   empty:       {x:0, y:0},
   player:      {x:1, y:2},
   player_fall: {x:1, y:0},
@@ -18,17 +19,23 @@ View.prototype.draw = function () {
   var model = this.model;
   var that = this;
 
+  // background
   d.fillStyle = "#def";
   d.fillRect(0,0,this.ww,this.hh);
   d.fillStyle = "rgba(255,255,255,0.5)";
   d.fillRect(this.o_x,this.o_y,NUM_TILES_X * TILE_SIZE * SCALE,NUM_TILES_Y * TILE_SIZE * SCALE);
 
-  var vp = vint(model.get_viewPort());
+  d.save();
+  d.beginPath();
+  d.rect(this.o_x,this.o_y,NUM_TILES_X * TILE_SIZE * SCALE,NUM_TILES_Y * TILE_SIZE * SCALE);
+  d.clip();
 
-  for (var y = 0; y < NUM_TILES_Y; y++) {
-    for (var x = 0; x < NUM_TILES_X; x++) {
+  var vp = model.get_viewPort();
+
+  for (var y = 0; y < NUM_TILES_Y + 1; y++) {
+    for (var x = 0; x < NUM_TILES_X + 1; x++) {
       var p = {x:x,y:y};
-      this.draw_sprite(model.getTile(vplus(p, vp)), p);
+      this.draw_sprite(model.getTile(vplus(p, vint(vp))), vminus(p, vfpart(vp)));
     }
   }
 
@@ -47,12 +54,14 @@ View.prototype.draw = function () {
       d.strokeRect(that.o_x + op.x - 0.5, that.o_y + op.y - 0.5, chunk_pixels, chunk_pixels);
     });
   }
+
+  d.restore();
 }
 
 // wpos: position in window, (0,0) is top left of viewport
 View.prototype.draw_sprite = function (sprite_id, wpos, flip) {
 
-  if (wpos.x < 0 || wpos.y < 0 || wpos.x >= NUM_TILES_X || wpos.y >= NUM_TILES_Y)
+  if (wpos.x < -1 || wpos.y < -1 || wpos.x >= NUM_TILES_X+1 || wpos.y >= NUM_TILES_Y+1)
     return;
 
   var sprite_loc = sprites[sprite_id];
