@@ -154,15 +154,7 @@ Model.prototype.animate_move = function (move) {
   var moved = true;
 
   var tileBefore = this.getTile(vplus(player.pos, {x:0,y:1}));
-
-  if (tileBefore == 'fragile_box')
-    anims.push(new TileModAnimation(vplus(player.pos, {x:0,y:1}), 'empty'));
-
   var supportedBefore = !openTile(tileBefore);
-  if (supportedBefore) {
-    player.impetus = FULL_IMPETUS;
-  }
-
 
   switch (move){
   case 'up':
@@ -192,6 +184,13 @@ Model.prototype.animate_move = function (move) {
   }
 
   if (moved) {
+    if (tileBefore == 'fragile_box')
+      anims.push(new TileModAnimation(vplus(player.pos, {x:0,y:1}), 'empty'));
+
+    if (supportedBefore) {
+      player.impetus = FULL_IMPETUS;
+    }
+
     var anim = {
       pos: vplus(player.pos, result.dpos),
       impetus: _.has(result, 'impetus') ? result.impetus : player.impetus,
