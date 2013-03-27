@@ -45,9 +45,6 @@ keys['L'.charCodeAt(0)] = 'reset';
 
 function init_keys() {
   $(document).keydown(function(e){
-    console.log(e.keyCode);
-    console.log(e.originalEvent.charCode);
-    console.log(e.originalEvent.keyCode);
     try {
       if (_.has(keys, e.keyCode)) {
 	handle_key(keys[e.keyCode]);

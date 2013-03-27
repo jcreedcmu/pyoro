@@ -128,7 +128,7 @@ Model.prototype.execute_up_right = function (flip) {
   return this.ropen(dx, -1) ? {dpos:{x:dx,y:-1}} : this.execute_down();
 }
 
-Model.prototype.execute_move = function (move) {
+Model.prototype.animate_move = function (move) {
   var player = this.player;
 
   var result = {};
@@ -164,31 +164,70 @@ Model.prototype.execute_move = function (move) {
     break;
   }
 
+  var anims = [];
   if (moved) {
-    player.pos.x += result.dpos.x;
-    player.pos.y += result.dpos.y;
-    player.impetus = _.has(result, 'impetus') ? result.impetus : player.impetus;
+    var anim = {
+      pos: vplus(player.pos, result.dpos),
+      impetus: _.has(result, 'impetus') ? result.impetus : player.impetus
+    }
 
-    var supportedAfter = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
+    var supportedAfter = !openTile(this.getTile(vplus(anim.pos, {x:0,y:1})));
 
     if (supportedAfter) {
-      player.animState = 'player';
-      player.impetus = FULL_IMPETUS
+      anim.animState = 'player';
+      anim.impetus = FULL_IMPETUS
     }
     else {
-      if (player.impetus) { player.impetus--; }
-      player.animState = player.impetus ? 'player_rise' : 'player_fall';
+      if (anim.impetus) { anim.impetus--; }
+      anim.animState = anim.impetus ? 'player_rise' : 'player_fall';
     }
-    if (player.pos.x - this.viewPort.x >= NUM_TILES_X - 1) { this.viewPort.x += 1 }
-    if (player.pos.x - this.viewPort.x < 1) { this.viewPort.x -= 1 }
-    if (player.pos.y - this.viewPort.y >= NUM_TILES_Y - 1) { this.viewPort.y += 1 }
-    if (player.pos.y - this.viewPort.y < 1) { this.viewPort.y -= 1 }
+
+    anims.push(new PlayerAnimation(anim));
+
+    if (anim.pos.x - this.viewPort.x >= NUM_TILES_X - 1)
+      anims.push(new ViewPortAnimation({x:1,y:0}));
+    if (anim.pos.x - this.viewPort.x < 1)
+      anims.push(new ViewPortAnimation({x:-1,y:0}));
+    if (anim.pos.y - this.viewPort.y >= NUM_TILES_Y - 1)
+      anims.push(new ViewPortAnimation({x:0,y:1}));
+    if (anim.pos.y - this.viewPort.y < 1)
+      anims.push(new ViewPortAnimation({x:0,y:-1}));
   }
 
   if (this.cache_misses) {
     this.cache_misses = 0;
     this.cache.filter({p: this.viewPort, w: NUM_TILES_X, h: NUM_TILES_Y});
   }
+
+  return anims;
+}
+
+Model.prototype.execute_move = function (move) {
+  var anims = this.animate_move(move);
+  var that = this;
+  _.each(anims, function(anim) { anim.apply(that, 1); })
+}
+
+function PlayerAnimation(props) {
+  this.pos = {x:0,y:0};
+  this.animState = 'player';
+  this.impetus = FULL_IMPETUS;
+  _.extend(this, props);
+}
+
+PlayerAnimation.prototype.apply = function (model, t) {
+  model.player.pos = this.pos;
+  model.player.animState = this.animState;
+  model.player.impetus = this.impetus;
+}
+
+function ViewPortAnimation(dpos, props) {
+  this.dpos = dpos;
+  _.extend(this, props);
+}
+
+ViewPortAnimation.prototype.apply = function (model, t) {
+  model.viewPort = vplus(model.viewPort, this.dpos);
 }
 
 Model.prototype.resetViewPort = function () {
@@ -202,7 +241,6 @@ function Player(props) {
   this.pos = {x:0, y:0};
   this.impetus = FULL_IMPETUS;
   _.extend(this, props);
-
 }
 
 Player.prototype.getAnimState = function () {
