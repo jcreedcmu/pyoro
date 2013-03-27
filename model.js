@@ -3,7 +3,7 @@ var FULL_IMPETUS = 4;
 
 function rawGetTile (p) {
   SIZE = 4;
-  if (hash(p) - p.y * 0.02 < 0.3 || hash(p) - p.x * 0.02 < 0.3) return 'box';
+  if (hash(p) - p.y * 0.1 < 0.3 || hash(p) - (p.x * 0.015 + p.y * -0.003) < 0.3) return 'box';
   else return 'empty';
 }
 
