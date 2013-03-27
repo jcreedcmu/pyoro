@@ -62,14 +62,19 @@ function init_keys() {
   });
 }
 
+var lock = false;
 function _handle_key(ks) {
-  var animator = view.model.animator_for_move(ks);
-  view.model.state = animator(0.5);
-  view.draw();
-  setTimeout(function(){
-    view.model.state = animator(1);
+  if (!lock) {
+    var animator = view.model.animator_for_move(ks);
+    view.model.state = animator(0.5);
+    lock = true;
     view.draw();
-  }, 25);
+    setTimeout(function(){
+      view.model.state = animator(1);
+      lock = false;
+      view.draw();
+    }, 30);
+  }
 }
 
 function handle_key(ks) {
