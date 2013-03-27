@@ -25,22 +25,33 @@ function go() {
     .done();
 }
 
+var keys = {
+  36: 'up-left',
+  33: 'up-right',
+  37: 'left',
+  38: 'up',
+  39: 'right',
+  40: 'down',
+  0: 'down',
+}
+
+keys['Q'.charCodeAt(0)] = 'up-left';
+keys['E'.charCodeAt(0)] = 'up-right';
+keys['A'.charCodeAt(0)] = 'left';
+keys['W'.charCodeAt(0)] = 'up';
+keys['D'.charCodeAt(0)] = 'right';
+keys['S'.charCodeAt(0)] = 'down';
+keys['L'.charCodeAt(0)] = 'reset';
+
 function init_keys() {
   $(document).keydown(function(e){
+    console.log(e.keyCode);
+    console.log(e.originalEvent.charCode);
+    console.log(e.originalEvent.keyCode);
     try {
-      if (e.keyCode == 36) { handle_key('up-left'); }
-      if (e.keyCode == 33) { handle_key('up-right'); }
-      if (e.keyCode == 37) { handle_key('left'); }
-      if (e.keyCode == 38) { handle_key('up'); }
-      if (e.keyCode == 39) { handle_key('right'); }
-      if (e.keyCode == 40) { handle_key('down'); }
-      if (e.keyCode == 'Q'.charCodeAt(0)) { handle_key('up-left'); }
-      if (e.keyCode == 'E'.charCodeAt(0)) { handle_key('up-right'); }
-      if (e.keyCode == 'A'.charCodeAt(0)) { handle_key('left'); }
-      if (e.keyCode == 'W'.charCodeAt(0)) { handle_key('up'); }
-      if (e.keyCode == 'D'.charCodeAt(0)) { handle_key('right'); }
-      if (e.keyCode == 'S'.charCodeAt(0)) { handle_key('down'); }
-      if (e.keyCode == 'L'.charCodeAt(0)) { handle_key('reset'); }
+      if (_.has(keys, e.keyCode)) {
+	handle_key(keys[e.keyCode]);
+      }
     }
     catch(e) {
       if (e == "handled") {
