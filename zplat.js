@@ -44,26 +44,15 @@ keys['S'.charCodeAt(0)] = 'down';
 keys['L'.charCodeAt(0)] = 'reset';
 
 function init_keys() {
-  $(document).keydown(function(e){
-    try {
-      if (_.has(keys, e.keyCode)) {
-	handle_key(keys[e.keyCode]);
-      }
-    }
-    catch(e) {
-      if (e == "handled") {
-//	view.draw();
-	return false;
-      }
-      else {
-	throw e;
-      }
+  $(document).keydown(function(e) {
+    if (_.has(keys, e.keyCode)) {
+      handle_key(keys[e.keyCode]);
     }
   });
 }
 
 var lock = false;
-function _handle_key(ks) {
+function handle_key(ks) {
   if (!lock) {
     var animator = view.model.animator_for_move(ks);
     view.model.state = animator(0.5);
@@ -75,9 +64,4 @@ function _handle_key(ks) {
       view.draw();
     }, 30);
   }
-}
-
-function handle_key(ks) {
-  _handle_key(ks);
-  throw "handled";
 }
