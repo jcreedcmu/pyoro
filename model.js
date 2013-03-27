@@ -57,11 +57,12 @@ ChunkCache.prototype.filter = function (viewPort) {
   this.chunks = newc;
 }
 
-function Model(props) {
+function Model(state, props) {
   this.cache = new ChunkCache();
   this.cache_misses = 0;
-  this.chunk_props = {}; // can inject rawGetTile in here
-  _.extend(this, props);
+  this.chunk_props = {};
+  this.state = state;
+  _.extend(this, props); // can inject {chunk_props: {rawGetTile: ...}} in props
   bindVia(this, Model.prototype);
 }
 
@@ -82,11 +83,11 @@ function openTile(x) {
 }
 
 Model.prototype.ropen = function (x, y) {
-  return openTile(this.getTile({x: this.player.pos.x + x, y: this.player.pos.y + y}));
+  return openTile(this.getTile(vplus(this.state.player.pos, {x:x,y:y})));
 }
 
 Model.prototype.execute_up = function () {
-  var player = this.player;
+  var player = this.state.player;
   if (player.impetus) {
     return this.ropen(0,-1) ? {dpos:{x:0,y:-1}} : this.execute_down();
   }
@@ -100,11 +101,9 @@ Model.prototype.execute_down = function () {
 }
 
 Model.prototype.execute_right = function (flip) {
-  this.player.flipState = flip;
-
   var dx = flip ? -1 : 1;
   var forward_open = this.ropen(dx, 0);
-  if (this.player.impetus && !this.ropen(0, 1)) {
+  if (this.state.player.impetus && !this.ropen(0, 1)) {
     return forward_open ? {dpos:{x:dx,y:0}, impetus:0} : {dpos:{x:0,y:0},impetus:FULL_IMPETUS};
   }
   else {
@@ -117,11 +116,9 @@ Model.prototype.execute_right = function (flip) {
 }
 
 Model.prototype.execute_up_right = function (flip) {
-  this.player.flipState = flip;
-
   var dx = flip ? -1 : 1;
   var forward_open = this.ropen(dx, 0);
-  if (!this.player.impetus || !this.ropen(0, -1))
+  if (!this.state.player.impetus || !this.ropen(0, -1))
     return this.execute_right(flip);
   if (!this.ropen(dx, 0))
     return {dpos:{x:0,y:-1}};
@@ -129,7 +126,8 @@ Model.prototype.execute_up_right = function (flip) {
 }
 
 Model.prototype.animate_move = function (move) {
-  var player = this.player;
+  var s = this.state;
+  var player = s.player;
 
   var result = {};
   var moved = true;
@@ -140,6 +138,7 @@ Model.prototype.animate_move = function (move) {
   }
 
   var anims = [];
+  var flip = false;
 
   switch (move){
   case 'up':
@@ -150,18 +149,19 @@ Model.prototype.animate_move = function (move) {
     break;
   case 'left':
     result = this.execute_right(true);
+    flip = true;
     break;
   case 'right':
     result = this.execute_right(false);
     break;
   case 'up-left':
     result = this.execute_up_right(true);
+    flip = true;
     break;
   case 'up-right':
     result = this.execute_up_right(false);
     break;
   case 'reset':
-    console.log(this.resetViewPortAnimation());
     anims.push(this.resetViewPortAnimation());
     moved = false;
     break;
@@ -170,13 +170,14 @@ Model.prototype.animate_move = function (move) {
   if (moved) {
     var anim = {
       pos: vplus(player.pos, result.dpos),
-      impetus: _.has(result, 'impetus') ? result.impetus : player.impetus
-    }
+      impetus: _.has(result, 'impetus') ? result.impetus : player.impetus,
+      flipState: flip,
+      animState: 'player',
+    };
 
     var supportedAfter = !openTile(this.getTile(vplus(anim.pos, {x:0,y:1})));
 
     if (supportedAfter) {
-      anim.animState = 'player';
       anim.impetus = FULL_IMPETUS
     }
     else {
@@ -186,19 +187,19 @@ Model.prototype.animate_move = function (move) {
 
     anims.push(new PlayerAnimation(anim));
 
-    if (anim.pos.x - this.viewPort.x >= NUM_TILES_X - 1)
+    if (anim.pos.x - s.viewPort.x >= NUM_TILES_X - 1)
       anims.push(new ViewPortAnimation({x:1,y:0}));
-    if (anim.pos.x - this.viewPort.x < 1)
+    if (anim.pos.x - s.viewPort.x < 1)
       anims.push(new ViewPortAnimation({x:-1,y:0}));
-    if (anim.pos.y - this.viewPort.y >= NUM_TILES_Y - 1)
+    if (anim.pos.y - s.viewPort.y >= NUM_TILES_Y - 1)
       anims.push(new ViewPortAnimation({x:0,y:1}));
-    if (anim.pos.y - this.viewPort.y < 1)
+    if (anim.pos.y - s.viewPort.y < 1)
       anims.push(new ViewPortAnimation({x:0,y:-1}));
   }
 
   if (this.cache_misses) {
     this.cache_misses = 0;
-    this.cache.filter({p: this.viewPort, w: NUM_TILES_X, h: NUM_TILES_Y});
+    this.cache.filter({p: s.viewPort, w: NUM_TILES_X, h: NUM_TILES_Y});
   }
 
   return anims;
@@ -206,8 +207,25 @@ Model.prototype.animate_move = function (move) {
 
 Model.prototype.execute_move = function (move) {
   var anims = this.animate_move(move);
-  var that = this;
-  _.each(anims, function(anim) { anim.apply(that, 1); })
+  var state = _.extend({}, this.state);
+  _.each(anims, function(anim) { anim.apply(state, 1); });
+  this.state = state;
+}
+
+Model.prototype.resetViewPortAnimation = function () {
+  var s = this.state;
+  return new ViewPortAnimation({
+    x: int(s.player.pos.x - NUM_TILES_X / 2) - s.viewPort.x,
+    y: int(s.player.pos.y - NUM_TILES_Y / 2) - s.viewPort.y});
+
+}
+
+Model.prototype.get_player = function () {
+  return this.state.player;
+}
+
+Model.prototype.get_viewPort = function () {
+  return this.state.viewPort;
 }
 
 function PlayerAnimation(props) {
@@ -217,10 +235,12 @@ function PlayerAnimation(props) {
   _.extend(this, props);
 }
 
-PlayerAnimation.prototype.apply = function (model, t) {
-  model.player.pos = this.pos;
-  model.player.animState = this.animState;
-  model.player.impetus = this.impetus;
+PlayerAnimation.prototype.apply = function (state, t) {
+  state.player =
+    new Player({pos: this.pos,
+		animState: this.animState,
+		flipState: this.flipState,
+		impetus: this.impetus});
 }
 
 function ViewPortAnimation(dpos, props) {
@@ -228,15 +248,8 @@ function ViewPortAnimation(dpos, props) {
   _.extend(this, props);
 }
 
-ViewPortAnimation.prototype.apply = function (model, t) {
-  model.viewPort = vplus(model.viewPort, this.dpos);
-}
-
-Model.prototype.resetViewPortAnimation = function () {
-  return new ViewPortAnimation({
-    x: int(this.player.pos.x - NUM_TILES_X / 2) - this.viewPort.x,
-    y: int(this.player.pos.y - NUM_TILES_Y / 2) - this.viewPort.y});
-
+ViewPortAnimation.prototype.apply = function (state, t) {
+  state.viewPort = vplus(state.viewPort, this.dpos);
 }
 
 function Player(props) {

@@ -65,3 +65,5 @@ function hash(p) {
   _.times(10, z);
   return z();
 }
+
+function js(x) { return JSON.stringify(x) }

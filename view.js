@@ -26,19 +26,19 @@ View.prototype.draw = function () {
   for (var y = 0; y < NUM_TILES_Y; y++) {
     for (var x = 0; x < NUM_TILES_X; x++) {
       var p = {x:x,y:y};
-      this.draw_sprite(model.getTile(vplus(p, model.viewPort)), p);
+      this.draw_sprite(model.getTile(vplus(p, model.get_viewPort())), p);
     }
   }
 
-  this.draw_sprite(model.player.getAnimState(),
-		   vminus(model.player.pos, model.viewPort),
-		   model.player.getFlipState());
+  this.draw_sprite(model.get_player().getAnimState(),
+		   vminus(model.get_player().pos, model.get_viewPort()),
+		   model.get_player().getFlipState());
 
   // cache visualization
   if (0) {
     _.each(model.cache.chunks, function(chunk, k) {
       var chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
-      var op = vscale(vminus(chunk.pos, model.viewPort), TILE_SIZE * SCALE);
+      var op = vscale(vminus(chunk.pos, model.get_viewPort()), TILE_SIZE * SCALE);
       d.strokeStyle = "red";
       d.lineWidth = "1px";
 
