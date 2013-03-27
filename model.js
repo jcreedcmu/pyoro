@@ -132,6 +132,7 @@ Model.prototype.execute_move = function (move) {
   var player = this.player;
 
   var result = {};
+  var moved = true;
 
   var supportedBefore = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
   if (supportedBefore) {
@@ -159,28 +160,30 @@ Model.prototype.execute_move = function (move) {
     break;
   case 'reset':
     this.resetViewPort();
-    result = player;
+    moved = false;
     break;
   }
 
-  player.pos.x += result.dpos.x;
-  player.pos.y += result.dpos.y;
-  player.impetus = _.has(result, 'impetus') ? result.impetus : player.impetus;
+  if (moved) {
+    player.pos.x += result.dpos.x;
+    player.pos.y += result.dpos.y;
+    player.impetus = _.has(result, 'impetus') ? result.impetus : player.impetus;
 
-  var supportedAfter = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
+    var supportedAfter = !openTile(this.getTile(vplus(player.pos, {x:0,y:1})));
 
-  if (supportedAfter) {
-    player.animState = 'player';
-    player.impetus = FULL_IMPETUS
+    if (supportedAfter) {
+      player.animState = 'player';
+      player.impetus = FULL_IMPETUS
+    }
+    else {
+      if (player.impetus) { player.impetus--; }
+      player.animState = player.impetus ? 'player_rise' : 'player_fall';
+    }
+    if (player.pos.x - this.viewPort.x >= NUM_TILES_X - 1) { this.viewPort.x += 1 }
+    if (player.pos.x - this.viewPort.x < 1) { this.viewPort.x -= 1 }
+    if (player.pos.y - this.viewPort.y >= NUM_TILES_Y - 1) { this.viewPort.y += 1 }
+    if (player.pos.y - this.viewPort.y < 1) { this.viewPort.y -= 1 }
   }
-  else {
-    if (player.impetus) { player.impetus--; }
-    player.animState = player.impetus ? 'player_rise' : 'player_fall';
-  }
-  if (player.pos.x - this.viewPort.x >= NUM_TILES_X - 1) { this.viewPort.x += 1 }
-  if (player.pos.x - this.viewPort.x < 1) { this.viewPort.x -= 1 }
-  if (player.pos.y - this.viewPort.y >= NUM_TILES_Y - 1) { this.viewPort.y += 1 }
-  if (player.pos.y - this.viewPort.y < 1) { this.viewPort.y -= 1 }
 
   if (this.cache_misses) {
     this.cache_misses = 0;
