@@ -205,6 +205,17 @@ Model.prototype.animate_move = function (move) {
   return anims;
 }
 
+Model.prototype.animator_for_move = function (move) {
+  var orig_state = this.state;
+  var anims = this.animate_move(move);
+
+  return function(t) {
+    var state = _.extend({}, orig_state);
+    _.each(anims, function(anim) { anim.apply(state, t); });
+    return state;
+  };
+}
+
 Model.prototype.execute_move = function (move) {
   var anims = this.animate_move(move);
   var state = _.extend({}, this.state);
@@ -237,7 +248,7 @@ function PlayerAnimation(props) {
 
 PlayerAnimation.prototype.apply = function (state, t) {
   state.player =
-    new Player({pos: this.pos,
+    new Player({pos: vplus(vscale(state.player.pos, 1-t), vscale(this.pos, t)),
 		animState: this.animState,
 		flipState: this.flipState,
 		impetus: this.impetus});
@@ -249,7 +260,7 @@ function ViewPortAnimation(dpos, props) {
 }
 
 ViewPortAnimation.prototype.apply = function (state, t) {
-  state.viewPort = vplus(state.viewPort, this.dpos);
+  state.viewPort = vplus(state.viewPort, vscale(this.dpos, t));
 }
 
 function Player(props) {

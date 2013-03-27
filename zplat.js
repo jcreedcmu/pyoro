@@ -52,7 +52,7 @@ function init_keys() {
     }
     catch(e) {
       if (e == "handled") {
-	view.draw();
+//	view.draw();
 	return false;
       }
       else {
@@ -63,7 +63,13 @@ function init_keys() {
 }
 
 function _handle_key(ks) {
-  view.model.execute_move(ks);
+  var animator = view.model.animator_for_move(ks);
+  view.model.state = animator(0.5);
+  view.draw();
+  setTimeout(function(){
+    view.model.state = animator(1);
+    view.draw();
+  }, 25);
 }
 
 function handle_key(ks) {
