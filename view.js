@@ -26,10 +26,15 @@ View.prototype.draw = function () {
 
   var vp = model.get_viewPort();
 
+  var drawable = model;
+  if (model.state.layer != null) {
+    drawable = new CompositeLayer(model.state.layer, model);
+  }
+
   for (var y = 0; y < NUM_TILES_Y + 1; y++) {
     for (var x = 0; x < NUM_TILES_X + 1; x++) {
       var p = {x:x,y:y};
-      this.draw_sprite(model.getTile(vplus(p, vint(vp))), vminus(p, vfpart(vp)));
+      this.draw_sprite(drawable.getTile(vplus(p, vint(vp))), vminus(p, vfpart(vp)));
     }
   }
 

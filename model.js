@@ -11,9 +11,39 @@ function rawGetTile (p) {
   else return 'empty';
 }
 
+function Layer() {
+  this.tiles = { };
+}
+
+Layer.prototype.getTile = function (p) {
+  return this.tiles[p.x + ',' + p.y];
+}
+
+Layer.prototype.putTile = function (p, t) {
+  this.tiles[p.x + ',' + p.y] = t;
+}
+
+Layer.prototype.extend = function (l) {
+  _.extend(this.tiles, l.tiles);
+}
+
+function CompositeLayer(l1, l2) {
+  this.l1 = l1;
+  this.l2 = l2;
+}
+
+CompositeLayer.prototype = new Layer();
+
+CompositeLayer.prototype.putTile = function (p, t) {
+  throw "CompositeLayer is readonly";
+}
+
+CompositeLayer.prototype.getTile = function (p) {
+  return this.l1.getTile(p) || this.l2.getTile(p);
+}
+
 function Chunk(p, props) {
   this.pos = p;
-  this.tiles = { };
   this.rawGetTile = rawGetTile;
   _.extend(this, props);
   for (var y = 0; y < CHUNK_SIZE; y++) {
@@ -24,13 +54,7 @@ function Chunk(p, props) {
   }
 }
 
-Chunk.prototype.getTile = function (p) {
-  return this.tiles[p.x + ',' + p.y];
-}
-
-Chunk.prototype.putTile = function (p, t) {
-  this.tiles[p.x + ',' + p.y] = t;
-}
+Chunk.prototype = new Layer();
 
 Chunk.prototype.evict = function () {
   // nothing yet, maybe save to disk when we allow modifications
@@ -72,6 +96,14 @@ function Model(state, props) {
   this.state = state;
   _.extend(this, props); // can inject {chunk_props: {rawGetTile: ...}} in props
   bindVia(this, Model.prototype);
+}
+
+Model.prototype.extend = function (l) {
+  var that = this;
+  _.map(l.tiles, function (v, k) {
+    var coords = k.split(','); // arrrrg
+    that.putTile({x:coords[0],y:coords[1]}, v);
+  });
 }
 
 Model.prototype.getTile = function (p) {
@@ -185,7 +217,7 @@ Model.prototype.animate_move = function (move) {
 
   if (moved) {
     if (tileBefore == 'fragile_box')
-      anims.push(new TileModAnimation(vplus(player.pos, {x:0,y:1}), 'empty'));
+      anims.push(new MeltAnimation(vplus(player.pos, {x:0,y:1})));
 
     if (supportedBefore) {
       player.impetus = FULL_IMPETUS;
@@ -236,20 +268,15 @@ Model.prototype.animator_for_move = function (move) {
   return function(t) {
     var state = _.extend({}, orig_state);
     _.each(anims, function(anim) { anim.apply(state, t); });
-    _.each(anims, function(anim) { anim.tileHook(that, t); });
+    var layer = new Layer();
+    _.each(anims, function(anim) { layer.extend(anim.tileHook(that, t)); });
+    state.layer = layer;
     return state;
   };
 }
 
 Model.prototype.execute_move = function (move) {
-  var anims = this.animate_move(move);
-  var state = _.extend({}, this.state);
-  var that = this;
-
-  _.each(anims, function(anim) { anim.apply(state, 1); });
-  _.each(anims, function(anim) { anim.tileHook(that, 1); });
-
-  this.state = state;
+  this.state = this.animator_for_move(move)(1);
 }
 
 Model.prototype.resetViewPortAnimation = function () {
@@ -270,7 +297,7 @@ Model.prototype.get_viewPort = function () {
 
 function Animation() { }
 Animation.prototype.apply = function (state, t) { }
-Animation.prototype.tileHook = function (map, t) {  }
+Animation.prototype.tileHook = function (map, t) { return new Layer(); }
 
 function PlayerAnimation(props) {
   this.pos = {x:0,y:0};
@@ -300,15 +327,13 @@ ViewPortAnimation.prototype.apply = function (state, t) {
   state.viewPort = vplus(state.viewPort, vscale(this.dpos, t));
 }
 
-function TileModAnimation(pos, tile) {
-  this.pos = pos;
-  this.tile = tile;
-}
+function MeltAnimation(pos, tile) { this.pos = pos; }
+MeltAnimation.prototype = new Animation();
 
-TileModAnimation.prototype = new Animation();
-
-TileModAnimation.prototype.tileHook = function (map, t) {
-  map.putTile(this.pos, this.tile);
+MeltAnimation.prototype.tileHook = function (map, t) {
+  var rv = new Layer();
+  rv.putTile(this.pos, t > 0.5 ? 'empty' : 'broken_box');
+  return rv;
 }
 
 function Player(props) {

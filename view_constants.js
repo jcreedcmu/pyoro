@@ -6,6 +6,7 @@ var SCALE = 2;
 var sprites = {
   box:          {x:1, y:4},
   fragile_box:  {x:2, y:6},
+  broken_box:   {x:4, y:3},
   box3:         {x:3, y:3},
   empty:        {x:0, y:0},
   player:       {x:1, y:2},

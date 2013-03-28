@@ -60,6 +60,7 @@ function handle_key(ks) {
     view.draw();
     setTimeout(function(){
       view.model.state = animator(1);
+      view.model.extend(view.model.state.layer);
       lock = false;
       view.draw();
     }, 30);
