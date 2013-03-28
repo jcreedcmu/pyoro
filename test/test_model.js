@@ -142,7 +142,7 @@ describe('Model', function(){
 
     _.times(FULL_IMPETUS+1, function () { m.execute_move('up') });
 
-    assert.equal(m.getTile({x:0, y:-FULL_IMPETUS}), 'empty');
+    assert.equal(m.getTile({x:0, y:-FULL_IMPETUS-1}), 'fragile_box');
   });
 
 });
