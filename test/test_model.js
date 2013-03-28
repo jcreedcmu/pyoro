@@ -135,14 +135,14 @@ describe('Model', function(){
     assert.equal(m.getTile({x:0, y:-FULL_IMPETUS}), 'empty');
   });
 
-  // it('should not breaking ice bricks if there is not enough impetus', function(){
-  //   var map = basicMap();
-  //   map['0,' + (-FULL_IMPETUS-1)] = 'fragile_box';
-  //   var m = basicModel(map);
+  it('should not breaking ice bricks if there is not enough impetus', function(){
+    var map = basicMap();
+    map['0,' + (-FULL_IMPETUS-1)] = 'fragile_box';
+    var m = basicModel(map);
 
-  //   _.times(FULL_IMPETUS+1, function () { m.execute_move('up') });
+    _.times(FULL_IMPETUS+1, function () { m.execute_move('up') });
 
-  //   assert.equal(m.getTile({x:0, y:-FULL_IMPETUS}), 'empty');
-  // });
+    assert.equal(m.getTile({x:0, y:-FULL_IMPETUS}), 'empty');
+  });
 
 });
