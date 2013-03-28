@@ -14,8 +14,8 @@ pseudoRequire('model.js');
 function testGetTile(map) {
   return function(p) {
     var k = p.x + ',' + p.y;
-   if (_.has(map, k))
-     return map[k];
+    if (_.has(map, k))
+      return map[k];
     else
       return 'empty';
   }
@@ -111,7 +111,7 @@ describe('Model', function(){
 
   });
 
-it('should disallow horizontally constrained diagonal moves', function(){
+  it('should disallow horizontally constrained diagonal moves', function(){
     var map = basicMap();
     map['0,-1'] = 'box';
     var m = basicModel(map);
@@ -124,4 +124,25 @@ it('should disallow horizontally constrained diagonal moves', function(){
     assert.equal(player.impetus, 0);
 
   });
+
+  it('should allow jumping and breaking ice bricks if there is enough impetus', function(){
+    var map = basicMap();
+    map['0,' + (-FULL_IMPETUS)] = 'fragile_box';
+    var m = basicModel(map);
+
+    _.times(FULL_IMPETUS, function () { m.execute_move('up') });
+
+    assert.equal(m.getTile({x:0, y:-FULL_IMPETUS}), 'empty');
+  });
+
+  // it('should not breaking ice bricks if there is not enough impetus', function(){
+  //   var map = basicMap();
+  //   map['0,' + (-FULL_IMPETUS-1)] = 'fragile_box';
+  //   var m = basicModel(map);
+
+  //   _.times(FULL_IMPETUS+1, function () { m.execute_move('up') });
+
+  //   assert.equal(m.getTile({x:0, y:-FULL_IMPETUS}), 'empty');
+  // });
+
 });

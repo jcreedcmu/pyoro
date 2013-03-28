@@ -139,7 +139,14 @@ Model.prototype.ropen = function (x, y) {
 Model.prototype.execute_up = function () {
   var player = this.state.player;
   if (player.impetus) {
-    return this.ropen(0,-1) ? {dpos:{x:0,y:-1}} : this.execute_down();
+    if (this.ropen(0,-1)) {
+      return {dpos:{x:0,y:-1}}
+    }
+    else {
+      var rv = this.execute_down();
+      rv.forced = {x:0,y:-1};
+      return rv;
+    }
   }
   else {
     return {dpos:{x:0,y:1}};
@@ -154,28 +161,48 @@ Model.prototype.execute_right = function (flip) {
   var dx = flip ? -1 : 1;
   var forward_open = this.ropen(dx, 0);
   if (this.state.player.impetus && !this.ropen(0, 1)) {
-    return forward_open ? {dpos:{x:dx,y:0}, impetus:0} : {dpos:{x:0,y:0},impetus:FULL_IMPETUS};
+    return forward_open ? {dpos:{x:dx,y:0}, impetus:0} : {dpos:{x:0,y:0}, forced:{x:dx,y:0},
+							  impetus:FULL_IMPETUS};
   }
   else {
     if (forward_open) {
       return this.ropen(dx, 1) ? {dpos:{x:dx,y:1}, impetus:0} : {dpos:{x:dx,y:0}, impetus:0};
     }
     else
-      return {dpos:{x:0,y:1}, impetus:0}
+      return {dpos:{x:0,y:1}, forced:{x:dx,y:0}, impetus:0}
   }
 }
 
 Model.prototype.execute_up_right = function (flip) {
   var dx = flip ? -1 : 1;
   var forward_open = this.ropen(dx, 0);
-  if (!this.state.player.impetus || !this.ropen(0, -1))
+  if (!this.state.player.impetus)
     return this.execute_right(flip);
+  if (!this.ropen(0, -1)) {
+    var rv = this.execute_right(flip);
+    rv.forced = {x:0,y:-1};
+    return rv;
+  }
   if (!this.ropen(dx, 0))
-    return {dpos:{x:0,y:-1}};
-  return this.ropen(dx, -1) ? {dpos:{x:dx,y:-1}} : this.execute_down();
+    return {dpos:{x:0,y:-1}, forced: {x:dx,y:0}};
+  if (this.ropen(dx, -1))
+    return {dpos:{x:dx,y:-1}}
+  else {
+    var rv = this.execute_down();
+    rv.forced = {x:dx,y:-1};
+    return rv;
+  }
+}
+
+Model.prototype.forceBlock = function (pos, tile, anims) {
+  if (tile == 'fragile_box')
+    anims.push(new MeltAnimation(pos));
 }
 
 Model.prototype.animate_move = function (move) {
+  var that = this;
+
+  var forcedBlocks = []
   var anims = [];
   var flip = false;
 
@@ -185,8 +212,10 @@ Model.prototype.animate_move = function (move) {
   var result = {};
   var moved = true;
 
-  var tileBefore = this.getTile(vplus(player.pos, {x:0,y:1}));
+  var belowBefore = vplus(player.pos, {x:0,y:1});
+  var tileBefore = this.getTile(belowBefore);
   var supportedBefore = !openTile(tileBefore);
+  if (supportedBefore) forcedBlocks.push({x:0,y:1});
 
   switch (move){
   case 'up':
@@ -216,8 +245,12 @@ Model.prototype.animate_move = function (move) {
   }
 
   if (moved) {
-    if (tileBefore == 'fragile_box')
-      anims.push(new MeltAnimation(vplus(player.pos, {x:0,y:1})));
+    if (result.forced != null) forcedBlocks.push(result.forced);
+
+    _.each(forcedBlocks, function(fb) {
+      var pos = vplus(player.pos, fb);
+      that.forceBlock(pos, that.getTile(pos), anims);
+    });
 
     if (supportedBefore) {
       player.impetus = FULL_IMPETUS;
@@ -277,6 +310,7 @@ Model.prototype.animator_for_move = function (move) {
 
 Model.prototype.execute_move = function (move) {
   this.state = this.animator_for_move(move)(1);
+  this.extend(this.state.layer);
 }
 
 Model.prototype.resetViewPortAnimation = function () {
