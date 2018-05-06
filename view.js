@@ -74,7 +74,7 @@ View.prototype.draw_sprite = function (sprite_id, wpos, flip) {
     d.translate(TILE_SIZE * SCALE, 0);
     d.scale(-1, 1);
   }
-  d.webkitImageSmoothingEnabled = false;
+  d.imageSmoothingEnabled = false;
   d.drawImage(this.spriteImg,
 	      sprite_loc.x * TILE_SIZE, sprite_loc.y * TILE_SIZE, TILE_SIZE, TILE_SIZE,
 	      0,
@@ -88,8 +88,8 @@ View.prototype.resize = function() {
 
   c.width = 0;
   c.height = 0;
-  this.ww = c.width = document.width;
-  this.hh = c.height = document.height;
+  this.ww = c.width = innerWidth;
+  this.hh = c.height = innerHeight;
 
   this.center_x = int(this.ww / 2);
   this.center_y = int(this.hh / 2);
