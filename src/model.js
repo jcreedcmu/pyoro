@@ -1,6 +1,6 @@
 import { NUM_TILES_X, NUM_TILES_Y } from './view_constants';
 import { bindVia, vscale, div, vplus, hash, vminus } from './util';
-import { ChunkCache, CHUNK_SIZE } from './ChunkCache.js';
+import { ChunkCache, CHUNK_SIZE } from './ChunkCache';
 
 var FULL_IMPETUS = 4;
 

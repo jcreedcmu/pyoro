@@ -4,6 +4,6 @@
     "target": "es5",
     "sourceMap": false,
     "strictNullChecks": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false
   }
 }
