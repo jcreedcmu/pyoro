@@ -1,7 +1,7 @@
 import { NUM_TILES_X, NUM_TILES_Y } from './view_constants';
-import { bindVia, vscale, div, vplus, hash, vminus, rect_intersect } from './util';
+import { bindVia, vscale, div, vplus, hash, vminus } from './util';
+import { ChunkCache, CHUNK_SIZE } from './ChunkCache.js';
 
-var CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
 var FULL_IMPETUS = 4;
 
 function rawGetTile (p) {
@@ -62,33 +62,6 @@ Chunk.prototype.evict = function () {
   // nothing yet, maybe save to disk when we allow modifications
 
   //  console.log('evicting chunk ' + JSON.stringify(this.pos));
-}
-
-function ChunkCache() {
-  this.chunks = { };
-}
-
-ChunkCache.prototype.get = function (p) {
-  return this.chunks[p.x + ',' + p.y];
-}
-
-ChunkCache.prototype.add = function (c) {
-  this.chunks[c.pos.x + ',' + c.pos.y] = c;
-  return c;
-}
-
-ChunkCache.prototype.filter = function (viewPort) {
-  var oldc = this.chunks;
-  var newc = { };
-  _.each(oldc, function(chunk, k) {
-    if (rect_intersect({p: chunk.pos, w:CHUNK_SIZE, h: CHUNK_SIZE}, viewPort)) {
-      newc[k] = chunk;
-    }
-    else {
-      chunk.evict();
-    }
-  });
-  this.chunks = newc;
 }
 
 export function Model(state, props) {
