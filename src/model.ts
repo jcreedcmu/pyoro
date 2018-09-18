@@ -37,7 +37,7 @@ export class Model {
     this.cache_misses = 0;
     this.chunk_props = {};
     this.state = state;
-    _.extend(this, props); // can inject {chunk_props: {rawGetTile: ...}} in props
+    _.extend(this, props); // can inject {chunk_props: {rawGetTile: ...}} in props, which is used in tests
     bindVia(this, Model.prototype);
   }
 
