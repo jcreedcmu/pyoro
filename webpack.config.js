@@ -5,7 +5,7 @@ module.exports = {
   mode: 'development',
   context: path.join(__dirname, 'src'),
   entry: [
-    './zplat.js',
+    './zplat',
   ],
   module: {
     rules: [

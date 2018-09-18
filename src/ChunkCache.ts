@@ -1,5 +1,5 @@
 import { rect_intersect } from './util';
-import { NUM_TILES_X, NUM_TILES_Y } from './view_constants';
+import { NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { Dict, Point } from './types';
 
 type PosPt = { pos: Point };

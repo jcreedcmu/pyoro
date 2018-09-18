@@ -1,5 +1,5 @@
 import * as _ from 'underscore';
-import { NUM_TILES_X, NUM_TILES_Y } from './view_constants';
+import { NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { bindVia, vscale, div, vplus, vminus, int } from './util';
 import { ChunkCache } from './ChunkCache';
 import { Chunk, Layer } from './Chunk';
@@ -32,7 +32,7 @@ export class Model {
   chunk_props;
   state: State;
 
-  constructor(state, props) {
+  constructor(state, props?) {
     this.cache = new ChunkCache(CHUNK_SIZE);
     this.cache_misses = 0;
     this.chunk_props = {};
