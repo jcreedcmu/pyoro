@@ -237,16 +237,16 @@ export class Model {
     return anims;
   }
 
-  animator_for_move(move) {
+  animator_for_move(move: string): (t: number) => State {
     var orig_state = this.state;
     var anims = this.animate_move(move);
     var that = this;
 
-    return function(t) {
+    return function(t: number): State {
       var state: State = _.extend({}, orig_state);
-      _.each(anims, function(anim) { anim.apply(state, t); });
+      anims.forEach(anim => { anim.apply(state, t); });
       var layer = new Layer();
-      _.each(anims, function(anim) { layer.extend(anim.tileHook(that, t)); });
+      anims.forEach(anim => { layer.extend(anim.tileHook(that, t)); });
       state.layer = layer;
       return state;
     };
