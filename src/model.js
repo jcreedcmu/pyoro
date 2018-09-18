@@ -1,9 +1,9 @@
 import { NUM_TILES_X, NUM_TILES_Y } from './view_constants';
 import { bindVia, vscale, div, vplus, hash, vminus } from './util';
 import { ChunkCache } from './ChunkCache';
-import { Chunk, Layer, CHUNK_SIZE } from './Chunk';
-
-const FULL_IMPETUS = 4;
+import { Chunk, Layer } from './Chunk';
+import { Animation, ViewPortAnimation, MeltAnimation, PlayerAnimation } from './Animation';
+import { CHUNK_SIZE, FULL_IMPETUS } from './constants';
 
 export function Model(state, props) {
   this.cache = new ChunkCache(CHUNK_SIZE);
@@ -243,61 +243,4 @@ Model.prototype.get_player = function () {
 
 Model.prototype.get_viewPort = function () {
   return this.state.viewPort;
-}
-
-function Animation() { }
-Animation.prototype.apply = function (state, t) { }
-Animation.prototype.tileHook = function (map, t) { return new Layer(); }
-
-export function PlayerAnimation(props) {
-  this.pos = {x:0,y:0};
-  this.animState = 'player';
-  this.impetus = FULL_IMPETUS;
-  _.extend(this, props);
-}
-
-PlayerAnimation.prototype = new Animation();
-
-PlayerAnimation.prototype.apply = function (state, t) {
-  state.player =
-    new Player({pos: vplus(vscale(state.player.pos, 1-t), vscale(this.pos, t)),
-		animState: this.animState,
-		flipState: this.flipState,
-		impetus: this.impetus});
-}
-
-function ViewPortAnimation(dpos, props) {
-  this.dpos = dpos;
-  _.extend(this, props);
-}
-
-ViewPortAnimation.prototype = new Animation();
-
-ViewPortAnimation.prototype.apply = function (state, t) {
-  state.viewPort = vplus(state.viewPort, vscale(this.dpos, t));
-}
-
-function MeltAnimation(pos, tile) { this.pos = pos; }
-MeltAnimation.prototype = new Animation();
-
-MeltAnimation.prototype.tileHook = function (map, t) {
-  var rv = new Layer();
-  rv.putTile(this.pos, t > 0.5 ? 'empty' : 'broken_box');
-  return rv;
-}
-
-export function Player(props) {
-  this.animState = 'player';
-  this.flipState = false;
-  this.pos = {x:0, y:0};
-  this.impetus = FULL_IMPETUS;
-  _.extend(this, props);
-}
-
-Player.prototype.getAnimState = function () {
-  return this.animState;
-}
-
-Player.prototype.getFlipState = function () {
-  return this.flipState;
 }

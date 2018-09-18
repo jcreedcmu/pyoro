@@ -1,10 +1,8 @@
 import * as _ from 'underscore';
 import { hash, vplus } from './util';
-import { Dict, Point } from './types';
+import { Dict, Point, Tile } from './types';
 
 export const CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
-
-type Tile = 'box' | 'box3' | 'fragile_box' | 'empty';
 
 function rawGetTile(p: Point): Tile {
   var h = hash(p, 2);
