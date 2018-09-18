@@ -100,3 +100,7 @@ export function hashn(p: Point, n: number): number[] {
 export function js(x: any): string {
   return JSON.stringify(x);
 }
+
+export function clone<T>(x: T): T {
+  return JSON.parse(JSON.stringify(x));
+}

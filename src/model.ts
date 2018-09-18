@@ -1,6 +1,6 @@
 import * as _ from 'underscore';
 import { NUM_TILES_X, NUM_TILES_Y } from './constants';
-import { bindVia, vscale, div, vplus, vminus, int } from './util';
+import { bindVia, vscale, div, vplus, vminus, int, clone } from './util';
 import { ChunkCache } from './ChunkCache';
 import { Chunk, Layer } from './Chunk';
 import {
@@ -180,7 +180,7 @@ export class Model {
     if (moved) {
       if (result.forced != null) forcedBlocks.push(result.forced);
 
-      _.each(forcedBlocks, function(fb) {
+      forcedBlocks.forEach(fb => {
         var pos = vplus(player.pos, fb);
         that.forceBlock(pos, that.getTile(pos), anims);
       });
@@ -235,7 +235,7 @@ export class Model {
     var anims = this.animate_move(move);
 
     return (t: number): State => {
-      var state: State = _.extend({}, orig_state);
+      var state: State = clone(orig_state);
       anims.forEach(anim => { anim.apply(state, t); });
       var layer = new Layer();
       anims.forEach(anim => { layer.extend(anim.tileHook(this, t)); });
