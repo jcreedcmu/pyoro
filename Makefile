@@ -1,7 +1,7 @@
 watch:
-	`npm bin`/webpack --watch
+	npx webpack --watch
 
 test:
-	./node_modules/.bin/mocha --reporter list
+	npx mocha --reporter list
 
 .PHONY: test
