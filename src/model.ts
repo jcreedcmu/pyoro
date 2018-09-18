@@ -1,4 +1,3 @@
-import * as _ from 'underscore';
 import { NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { bindVia, vscale, div, vplus, vminus, int, clone } from './util';
 import { ChunkCache } from './ChunkCache';
@@ -195,7 +194,7 @@ export class Model {
 
       var anim = {
         pos: vplus(player.pos, result.dpos),
-        impetus: _.has(result, 'impetus') ? result.impetus : player.impetus,
+        impetus: result.impetus != null ? result.impetus : player.impetus,
         flipState: flip,
         animState: 'player',
       };
