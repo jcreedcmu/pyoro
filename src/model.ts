@@ -5,20 +5,14 @@ import { ChunkCache } from './ChunkCache';
 import { Chunk, Layer } from './Chunk';
 import {
   Player, Animation, ViewPortAnimation,
-  MeltAnimation, PlayerAnimation
+  MeltAnimation, PlayerAnimation, State
 } from './Animation';
 import { CHUNK_SIZE, FULL_IMPETUS } from './constants';
-import { Point, Tile } from './types';
+import { Point, Tile, Move, Dict } from './types';
 
 function openTile(x: Tile): boolean {
   return x == "empty";
 }
-
-type State = {
-  player: Player,
-  viewPort: Point,
-  layer: Layer,
-};
 
 type PostExecution = {
   dpos?: Point,
@@ -29,27 +23,26 @@ type PostExecution = {
 export class Model {
   cache: ChunkCache<Chunk>;
   cache_misses: number;
-  chunk_props;
+  chunk_props: any;
   state: State;
 
-  constructor(state, props?) {
+  constructor(state: State) {
     this.cache = new ChunkCache(CHUNK_SIZE);
     this.cache_misses = 0;
     this.chunk_props = {};
     this.state = state;
-    _.extend(this, props); // can inject {chunk_props: {rawGetTile: ...}} in props, which is used in tests
     bindVia(this, Model.prototype);
   }
 
-  extend(l) {
+  extend(l: Layer) {
     var that = this;
     Object.entries(l.tiles).forEach(([k, v]) => {
-      var coords = k.split(','); // arrrrg
-      that.putTile({ x: coords[0], y: coords[1] }, v);
+      var coords = k.split(',').map(x => parseInt(x)) as [number, number]; // arrrrg
+      that.putTile({ x: coords[0], y: coords[1] }, v as Tile);
     });
   }
 
-  getTile(p) {
+  getTile(p: Point): Tile {
     var chunk_pos = vscale({ x: div(p.x, CHUNK_SIZE), y: div(p.y, CHUNK_SIZE) }, CHUNK_SIZE);
     var c = this.cache.get(chunk_pos);
     if (!c) {
@@ -59,7 +52,7 @@ export class Model {
     return c.getTile(p);
   }
 
-  putTile(p, t) {
+  putTile(p: Point, t: Tile): void {
     var chunk_pos = vscale({ x: div(p.x, CHUNK_SIZE), y: div(p.y, CHUNK_SIZE) }, CHUNK_SIZE);
     var c = this.cache.get(chunk_pos);
     if (!c) {
@@ -70,8 +63,8 @@ export class Model {
   }
 
 
-  ropen(x, y) {
-    return openTile(this.getTile(vplus(this.state.player.pos, { x: x, y: y })));
+  ropen(x: number, y: number) {
+    return openTile(this.getTile(vplus(this.state.player.pos, { x, y })));
   }
 
   execute_up(): PostExecution {
@@ -95,7 +88,7 @@ export class Model {
     return this.ropen(0, 1) ? { dpos: { x: 0, y: 1 }, impetus: 0 } : { dpos: { x: 0, y: 0 }, impetus: FULL_IMPETUS }
   }
 
-  execute_right(flip): PostExecution {
+  execute_right(flip: boolean): PostExecution {
     var dx = flip ? -1 : 1;
     var forward_open = this.ropen(dx, 0);
     if (this.state.player.impetus && !this.ropen(0, 1)) {
@@ -113,7 +106,7 @@ export class Model {
     }
   }
 
-  execute_up_right(flip): PostExecution {
+  execute_up_right(flip: boolean): PostExecution {
     const dx = flip ? -1 : 1;
     const forward_open = this.ropen(dx, 0);
     if (!this.state.player.impetus)
@@ -134,12 +127,12 @@ export class Model {
     }
   }
 
-  forceBlock(pos, tile, anims) {
+  forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
     if (tile == 'fragile_box')
       anims.push(new MeltAnimation(pos));
   }
 
-  animate_move(move) {
+  animate_move(move: Move): Animation[] {
     var that = this;
 
     var forcedBlocks: Point[] = []
@@ -237,22 +230,21 @@ export class Model {
     return anims;
   }
 
-  animator_for_move(move: string): (t: number) => State {
+  animator_for_move(move: Move): (t: number) => State {
     var orig_state = this.state;
     var anims = this.animate_move(move);
-    var that = this;
 
-    return function(t: number): State {
+    return (t: number): State => {
       var state: State = _.extend({}, orig_state);
       anims.forEach(anim => { anim.apply(state, t); });
       var layer = new Layer();
-      anims.forEach(anim => { layer.extend(anim.tileHook(that, t)); });
+      anims.forEach(anim => { layer.extend(anim.tileHook(this, t)); });
       state.layer = layer;
       return state;
     };
   }
 
-  execute_move(move) {
+  execute_move(move: Move) {
     this.state = this.animator_for_move(move)(1);
     this.extend(this.state.layer);
   }

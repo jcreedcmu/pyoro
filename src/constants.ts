@@ -16,3 +16,5 @@ export const sprites = {
   player_fall: { x: 1, y: 0 },
   player_rise: { x: 1, y: 1 },
 };
+
+export type Sprite = keyof (typeof sprites);

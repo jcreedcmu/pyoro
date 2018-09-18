@@ -1,9 +1,9 @@
 import * as _ from 'underscore';
 import { Point, Rect } from './types';
 
-export function bindVia(obj, proto) {
+export function bindVia(obj: any, proto: any) {
   var fs = _.functions(proto);
-  _.each(fs, function(f) {
+  _.each(fs, function(f: any) {
     obj[f] = function() {
       return proto[f].apply(obj, arguments);
     }

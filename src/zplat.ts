@@ -2,15 +2,18 @@ import View from './view';
 import { Player } from './Animation';
 import { Model } from './model';
 import { imgProm } from './util';
+import { Dict, Move } from './types';
+import { Layer } from './Chunk';
 
 window.onload = go;
 
-var view;
+let view: View;
 
 function go() {
   var model = new Model({
     player: new Player({ pos: { x: -1, y: 0 } }),
     viewPort: { x: -13, y: -9 },
+    layer: new Layer(),
   });
 
   var c = document.getElementById('c') as HTMLCanvasElement;
@@ -27,7 +30,7 @@ function go() {
   }).then(() => view.resize());
 }
 
-var keys = {
+const keys: Dict<Move> = {
   36: 'up-left',
   33: 'up-right',
   37: 'left',
@@ -53,8 +56,8 @@ function init_keys() {
   };
 }
 
-var lock = false;
-function handle_key(ks) {
+let lock = false;
+function handle_key(ks: Move): void {
   if (!lock) {
     var animator = view.model.animator_for_move(ks);
     view.model.state = animator(0.5);

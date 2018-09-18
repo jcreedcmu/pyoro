@@ -37,7 +37,7 @@ export class Chunk extends Layer {
   pos: Point;
   rawGetTile: (p: Point) => Tile;
 
-  constructor(p: Point, props) {
+  constructor(p: Point, props: any) {
     super();
     this.pos = p;
     this.rawGetTile = rawGetTile;

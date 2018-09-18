@@ -1,12 +1,18 @@
 import * as _ from 'underscore';
-import { Layer } from './Chunk';
-import { FULL_IMPETUS } from './constants';
+import { Layer, ReadLayer } from './Chunk';
+import { FULL_IMPETUS, Sprite } from './constants';
 import { vplus, vscale } from './util';
 import { Point } from './types';
 
+export type State = {
+  player: Player,
+  viewPort: Point,
+  layer: Layer,
+};
+
 export class Animation {
-  apply(state, t) { }
-  tileHook(map, t) { return new Layer(); }
+  apply(state: State, t: number) { }
+  tileHook(map: ReadLayer, t: number) { return new Layer(); }
 }
 
 export class PlayerAnimation extends Animation {
@@ -15,12 +21,12 @@ export class PlayerAnimation extends Animation {
   impetus = FULL_IMPETUS;
   flipState = false;
 
-  constructor(props) {
+  constructor(props: any) {
     super();
     _.extend(this, props);
   }
 
-  apply(state, t) {
+  apply(state: State, t: number) {
     state.player =
       new Player({
         pos: vplus(vscale(state.player.pos, 1 - t), vscale(this.pos, t)),
@@ -34,13 +40,13 @@ export class PlayerAnimation extends Animation {
 export class ViewPortAnimation extends Animation {
   dpos: Point;
 
-  constructor(dpos: Point, props?) {
+  constructor(dpos: Point, props?: any) {
     super();
     this.dpos = dpos;
     _.extend(this, props);
   }
 
-  apply(state, t) {
+  apply(state: State, t: number) {
     state.viewPort = vplus(state.viewPort, vscale(this.dpos, t));
   }
 }
@@ -53,7 +59,7 @@ export class MeltAnimation extends Animation {
     this.pos = pos;
   }
 
-  tileHook(map, t) {
+  tileHook(map: ReadLayer, t: number) {
     var rv = new Layer();
     rv.putTile(this.pos, t > 0.5 ? 'empty' : 'broken_box');
     return rv;
@@ -61,16 +67,16 @@ export class MeltAnimation extends Animation {
 }
 
 export class Player {
-  animState = 'player';
+  animState: Sprite = 'player';
   flipState = false;
   pos: Point = { x: 0, y: 0 };
   impetus = FULL_IMPETUS;
 
-  constructor(props) {
+  constructor(props: any) {
     _.extend(this, props);
   }
 
-  getAnimState(): string {
+  getAnimState(): Sprite {
     return this.animState;
   }
 

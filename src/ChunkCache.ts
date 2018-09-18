@@ -1,6 +1,6 @@
 import { rect_intersect } from './util';
 import { NUM_TILES_X, NUM_TILES_Y } from './constants';
-import { Dict, Point } from './types';
+import { Dict, Point, Rect } from './types';
 
 type PosPt = { pos: Point };
 
@@ -23,7 +23,7 @@ export class ChunkCache<T extends PosPt> {
 
   // returns evicted chunks, updates chunks field to contain
   // only visible chunks.
-  filter(viewPort): T[] {
+  filter(viewPort: Rect): T[] {
     const oldc = this.chunks;
     const evicted: T[] = [];
     let newc: Dict<T> = {};
