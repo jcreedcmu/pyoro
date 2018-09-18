@@ -4,6 +4,7 @@
     "target": "es5",
     "sourceMap": false,
     "strictNullChecks": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+	 "lib": [ "es2017", "dom" ]
   }
 }

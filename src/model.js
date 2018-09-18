@@ -58,12 +58,6 @@ function Chunk(p, props) {
 
 Chunk.prototype = new Layer();
 
-Chunk.prototype.evict = function () {
-  // nothing yet, maybe save to disk when we allow modifications
-
-  //  console.log('evicting chunk ' + JSON.stringify(this.pos));
-}
-
 export function Model(state, props) {
   this.cache = new ChunkCache();
   this.cache_misses = 0;
