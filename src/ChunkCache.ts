@@ -4,29 +4,29 @@ import { Dict, Point } from './types';
 
 type PosPt = { pos: Point };
 
-export class ChunkCache<Chunk extends PosPt> {
-  chunks: Dict<Chunk> = {};
+export class ChunkCache<T extends PosPt> {
+  chunks: Dict<T> = {};
   CHUNK_SIZE: number;
 
   constructor(CHUNK_SIZE: number) {
     this.CHUNK_SIZE = CHUNK_SIZE;
   }
 
-  get(p: Point): Chunk {
+  get(p: Point): T {
     return this.chunks[p.x + ',' + p.y];
   }
 
-  add(c: Chunk): Chunk {
+  add(c: T): T {
     this.chunks[c.pos.x + ',' + c.pos.y] = c;
     return c;
   }
 
   // returns evicted chunks, updates chunks field to contain
   // only visible chunks.
-  filter(viewPort): Chunk[] {
+  filter(viewPort): T[] {
     const oldc = this.chunks;
-    const evicted: Chunk[] = [];
-    let newc: Dict<Chunk> = {};
+    const evicted: T[] = [];
+    let newc: Dict<T> = {};
     Object.entries(oldc).forEach(([k, chunk]) => {
       if (rect_intersect({ p: chunk.pos, w: this.CHUNK_SIZE, h: this.CHUNK_SIZE }, viewPort)) {
         newc[k] = chunk;
