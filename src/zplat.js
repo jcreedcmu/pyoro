@@ -19,7 +19,7 @@ function go() {
 
   init_keys();
 
-  imgProm('sprite.png').then(function(s) {
+  imgProm('assets/sprite.png').then(function(s) {
     view.spriteImg = s;
   }).then(view.resize);
 }
