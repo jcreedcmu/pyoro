@@ -5,7 +5,6 @@ var CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
 var FULL_IMPETUS = 4;
 
 function rawGetTile (p) {
-//  SIZE = 4;
   var h = hash(p, 2);
   var mtn = h[0] - (p.x * 0.015 + p.y * -0.003);
   if (h[0] - p.y * 0.1 < 0.3 || mtn < 0.3) {
