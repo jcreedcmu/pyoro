@@ -1,6 +1,6 @@
 import * as _ from 'underscore';
 import { NUM_TILES_X, NUM_TILES_Y } from './view_constants';
-import { bindVia, vscale, div, vplus, hash, vminus, int } from './util';
+import { bindVia, vscale, div, vplus, vminus, int } from './util';
 import { ChunkCache } from './ChunkCache';
 import { Chunk, Layer } from './Chunk';
 import {
@@ -194,6 +194,10 @@ export class Model {
 
       if (supportedBefore) {
         player.impetus = FULL_IMPETUS;
+      }
+
+      if (result.dpos == null) {
+        throw "didn't expect to have a null dpos here";
       }
 
       var anim = {

@@ -5,9 +5,9 @@ import { Dict, Point, Tile } from './types';
 export const CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
 
 function rawGetTile(p: Point): Tile {
-  var h = hash(p, 2);
-  var mtn = h[0] - (p.x * 0.015 + p.y * -0.003);
-  if (h[0] - p.y * 0.1 < 0.3 || mtn < 0.3) {
+  var h = hash(p);
+  var mtn = h - (p.x * 0.015 + p.y * -0.003);
+  if (h - p.y * 0.1 < 0.3 || mtn < 0.3) {
     return mtn < 0.25 ? 'box' : (mtn < 0.275 ? 'box3' : 'fragile_box');
   }
   else return 'empty';

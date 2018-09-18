@@ -49,7 +49,7 @@ keys['L'.charCodeAt(0)] = 'reset';
 
 function init_keys() {
   $(document).keydown(function(e) {
-    if (_.has(keys, e.keyCode)) {
+    if (keys[e.keyCode]) {
       handle_key(keys[e.keyCode]);
     }
   });
