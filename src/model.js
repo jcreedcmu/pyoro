@@ -1,8 +1,11 @@
+import { NUM_TILES_X, NUM_TILES_Y } from './view_constants';
+import { bindVia, vscale, div, vplus, hash, vminus, rect_intersect } from './util';
+
 var CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
 var FULL_IMPETUS = 4;
 
 function rawGetTile (p) {
-  SIZE = 4;
+//  SIZE = 4;
   var h = hash(p, 2);
   var mtn = h[0] - (p.x * 0.015 + p.y * -0.003);
   if (h[0] - p.y * 0.1 < 0.3 || mtn < 0.3) {
@@ -27,7 +30,7 @@ Layer.prototype.extend = function (l) {
   _.extend(this.tiles, l.tiles);
 }
 
-function CompositeLayer(l1, l2) {
+export function CompositeLayer(l1, l2) {
   this.l1 = l1;
   this.l2 = l2;
 }
@@ -89,7 +92,7 @@ ChunkCache.prototype.filter = function (viewPort) {
   this.chunks = newc;
 }
 
-function Model(state, props) {
+export function Model(state, props) {
   this.cache = new ChunkCache();
   this.cache_misses = 0;
   this.chunk_props = {};
@@ -333,7 +336,7 @@ function Animation() { }
 Animation.prototype.apply = function (state, t) { }
 Animation.prototype.tileHook = function (map, t) { return new Layer(); }
 
-function PlayerAnimation(props) {
+export function PlayerAnimation(props) {
   this.pos = {x:0,y:0};
   this.animState = 'player';
   this.impetus = FULL_IMPETUS;
@@ -370,7 +373,7 @@ MeltAnimation.prototype.tileHook = function (map, t) {
   return rv;
 }
 
-function Player(props) {
+export function Player(props) {
   this.animState = 'player';
   this.flipState = false;
   this.pos = {x:0, y:0};

@@ -1,3 +1,7 @@
+import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './view_constants';
+import { CompositeLayer } from './model';
+import { bindVia, int, vplus, vint, vscale, vminus, vfpart } from './util';
+
 var DEBUG = 0;
 
 function View(props) {
@@ -99,3 +103,5 @@ View.prototype.resize = function() {
 
   this.draw();
 }
+
+export default View;

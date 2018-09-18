@@ -1,9 +1,9 @@
-var NUM_TILES_X = 24;
-var NUM_TILES_Y = 18;
-var TILE_SIZE = 16;
-var SCALE = 2;
+export const NUM_TILES_X = 24;
+export const NUM_TILES_Y = 18;
+export const TILE_SIZE = 16;
+export const SCALE = 2;
 
-var sprites = {
+export const sprites = {
   box:          {x:1, y:4},
   fragile_box:  {x:2, y:6},
   broken_box:   {x:4, y:3},

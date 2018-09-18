@@ -1,3 +1,7 @@
+import View from './view';
+import { Player, Model } from './model';
+import { imgProm } from './util';
+
 $(go);
 
 var view;
