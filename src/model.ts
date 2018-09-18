@@ -6,7 +6,7 @@ import {
   Player, Animation, ViewPortAnimation,
   MeltAnimation, PlayerAnimation, State
 } from './Animation';
-import { CHUNK_SIZE, FULL_IMPETUS } from './constants';
+import { CHUNK_SIZE, FULL_IMPETUS, Sprite } from './constants';
 import { Point, Tile, Move, Dict } from './types';
 
 function openTile(x: Tile): boolean {
@@ -192,14 +192,14 @@ export class Model {
         throw "didn't expect to have a null dpos here";
       }
 
-      var anim = {
+      const anim = {
         pos: vplus(player.pos, result.dpos),
         impetus: result.impetus != null ? result.impetus : player.impetus,
         flipState: flip,
-        animState: 'player',
+        animState: 'player' as Sprite,
       };
 
-      var supportedAfter = !openTile(this.getTile(vplus(anim.pos, { x: 0, y: 1 })));
+      const supportedAfter = !openTile(this.getTile(vplus(anim.pos, { x: 0, y: 1 })));
 
       if (supportedAfter) {
         anim.impetus = FULL_IMPETUS
@@ -209,7 +209,7 @@ export class Model {
         anim.animState = anim.impetus ? 'player_rise' : 'player_fall';
       }
 
-      anims.push(new PlayerAnimation(anim));
+      anims.push(new PlayerAnimation(anim.pos, anim.animState, anim.impetus, anim.flipState));
 
       if (anim.pos.x - s.viewPort.x >= NUM_TILES_X - 1)
         anims.push(new ViewPortAnimation({ x: 1, y: 0 }));

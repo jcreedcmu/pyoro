@@ -1,5 +1,5 @@
 import View from './view';
-import { Player } from './Animation';
+import { Player, newPlayer } from './Animation';
 import { Model } from './model';
 import { imgProm } from './util';
 import { Dict, Move } from './types';
@@ -11,7 +11,7 @@ let view: View;
 
 function go() {
   var model = new Model({
-    player: new Player({ pos: { x: -1, y: 0 } }),
+    player: newPlayer({ x: -1, y: 0 }),
     viewPort: { x: -13, y: -9 },
     layer: new Layer(),
   });

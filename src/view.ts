@@ -59,9 +59,9 @@ class View {
       }
     }
 
-    this.draw_sprite(model.get_player().getAnimState(),
+    this.draw_sprite(model.get_player().animState,
       vminus(model.get_player().pos, vp),
-      model.get_player().getFlipState());
+      model.get_player().flipState);
 
     // cache visualization
     if (DEBUG) {

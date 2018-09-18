@@ -1,4 +1,3 @@
-import * as _ from 'underscore';
 import { Layer, ReadLayer } from './Chunk';
 import { FULL_IMPETUS, Sprite } from './constants';
 import { vplus, vscale } from './util';
@@ -16,34 +15,40 @@ export class Animation {
 }
 
 export class PlayerAnimation extends Animation {
-  pos = { x: 0, y: 0 };
-  animState = 'player';
-  impetus = FULL_IMPETUS;
-  flipState = false;
+  pos: Point = { x: 0, y: 0 };
+  animState: Sprite = 'player';
+  impetus: number = FULL_IMPETUS;
+  flipState: boolean = false;
 
-  constructor(props: any) {
+  constructor(
+    pos: Point,
+    animState: Sprite,
+    impetus: number,
+    flipState: boolean
+  ) {
     super();
-    _.extend(this, props);
+    this.pos = pos;
+    this.animState = animState;
+    this.flipState = flipState;
+    this.impetus = impetus;
   }
 
   apply(state: State, t: number) {
-    state.player =
-      new Player({
-        pos: vplus(vscale(state.player.pos, 1 - t), vscale(this.pos, t)),
-        animState: this.animState,
-        flipState: this.flipState,
-        impetus: this.impetus
-      });
+    state.player = {
+      pos: vplus(vscale(state.player.pos, 1 - t), vscale(this.pos, t)),
+      animState: this.animState,
+      flipState: this.flipState,
+      impetus: this.impetus
+    };
   }
 }
 
 export class ViewPortAnimation extends Animation {
   dpos: Point;
 
-  constructor(dpos: Point, props?: any) {
+  constructor(dpos: Point) {
     super();
     this.dpos = dpos;
-    _.extend(this, props);
   }
 
   apply(state: State, t: number) {
@@ -66,21 +71,18 @@ export class MeltAnimation extends Animation {
   }
 }
 
-export class Player {
-  animState: Sprite = 'player';
-  flipState = false;
-  pos: Point = { x: 0, y: 0 };
-  impetus = FULL_IMPETUS;
+export type Player = {
+  animState: Sprite,
+  flipState: boolean,
+  pos: Point,
+  impetus: number,
+};
 
-  constructor(props: any) {
-    _.extend(this, props);
-  }
-
-  getAnimState(): Sprite {
-    return this.animState;
-  }
-
-  getFlipState(): boolean {
-    return this.flipState;
-  }
+export function newPlayer(pos: Point): Player {
+  return {
+    pos,
+    animState: 'player',
+    flipState: false,
+    impetus: FULL_IMPETUS,
+  };
 }
