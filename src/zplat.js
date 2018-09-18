@@ -21,8 +21,7 @@ function go() {
 
   imgProm('sprite.png').then(function(s) {
     view.spriteImg = s;
-  }).then(view.resize)
-    .done();
+  }).then(view.resize);
 }
 
 var keys = {

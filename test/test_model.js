@@ -1,15 +1,15 @@
 var assert = require('assert');
 var fs = require('fs');
 var vm = require('vm');
-_ = require('../underscore');
+_ = require('../src/underscore');
 
 function pseudoRequire(x) {
   vm.runInThisContext(fs.readFileSync(x, 'utf8'), x);
 }
 
-pseudoRequire('view_constants.js');
-pseudoRequire('util.js');
-pseudoRequire('model.js');
+pseudoRequire('src/view_constants.js');
+pseudoRequire('src/util.js');
+pseudoRequire('src/model.js');
 
 function testGetTile(map) {
   return function(p) {

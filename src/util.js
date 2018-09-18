@@ -22,11 +22,11 @@ function div(x, y) {
 }
 
 function imgProm(src) {
-  var def = Q.defer();
-  var sprite = new Image();
-  sprite.src = "sprite.png";
-  sprite.onload = function() { def.resolve(sprite); }
-  return def.promise;
+  return new Promise((res, rej) => {
+	 const sprite = new Image();
+	 sprite.src = src;
+	 sprite.onload = function() { res(sprite); }
+  });
 }
 
 function vplus(v1, v2) {
