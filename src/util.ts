@@ -44,19 +44,19 @@ export function vscale(b: Point, s: number): Point {
   return { x: s * b.x, y: s * b.y };
 }
 
-export function vint(v) {
+export function vint(v: Point): Point {
   return { x: int(v.x), y: int(v.y) };
 }
 
-export function vfpart(v) {
+export function vfpart(v: Point): Point {
   return { x: v.x - int(v.x), y: v.y - int(v.y) };
 }
 
-export function interval_intersect(a, b) {
+export function interval_intersect(a: [number, number], b: [number, number]): boolean {
   return b[0] < a[1] && a[0] < b[1];
 }
 
-export function rect_intersect(r1: Rect, r2: Rect) {
+export function rect_intersect(r1: Rect, r2: Rect): boolean {
   var rv = (interval_intersect([r1.p.x, r1.p.x + r1.w], [r2.p.x, r2.p.x + r2.w])
     && interval_intersect([r1.p.y, r1.p.y + r1.h], [r2.p.y, r2.p.y + r2.h]));
   return rv;
@@ -75,7 +75,7 @@ export function srand(n: number): () => number {
 
 export let _r: () => number;
 
-export function r() {
+export function r(): number {
   return _r();
 }
 
