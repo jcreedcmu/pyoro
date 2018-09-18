@@ -1,65 +1,12 @@
 import { NUM_TILES_X, NUM_TILES_Y } from './view_constants';
 import { bindVia, vscale, div, vplus, hash, vminus } from './util';
-import { ChunkCache, CHUNK_SIZE } from './ChunkCache';
+import { ChunkCache } from './ChunkCache';
+import { Chunk, Layer, CHUNK_SIZE } from './Chunk';
 
-var FULL_IMPETUS = 4;
-
-function rawGetTile (p) {
-  var h = hash(p, 2);
-  var mtn = h[0] - (p.x * 0.015 + p.y * -0.003);
-  if (h[0] - p.y * 0.1 < 0.3 || mtn < 0.3) {
-    return  mtn < 0.25 ? 'box' : (mtn < 0.275 ? 'box3' : 'fragile_box');
-  }
-  else return 'empty';
-}
-
-function Layer() {
-  this.tiles = { };
-}
-
-Layer.prototype.getTile = function (p) {
-  return this.tiles[p.x + ',' + p.y];
-}
-
-Layer.prototype.putTile = function (p, t) {
-  this.tiles[p.x + ',' + p.y] = t;
-}
-
-Layer.prototype.extend = function (l) {
-  _.extend(this.tiles, l.tiles);
-}
-
-export function CompositeLayer(l1, l2) {
-  this.l1 = l1;
-  this.l2 = l2;
-}
-
-CompositeLayer.prototype = new Layer();
-
-CompositeLayer.prototype.putTile = function (p, t) {
-  throw "CompositeLayer is readonly";
-}
-
-CompositeLayer.prototype.getTile = function (p) {
-  return this.l1.getTile(p) || this.l2.getTile(p);
-}
-
-function Chunk(p, props) {
-  this.pos = p;
-  this.rawGetTile = rawGetTile;
-  _.extend(this, props);
-  for (var y = 0; y < CHUNK_SIZE; y++) {
-    for (var x = 0; x < CHUNK_SIZE; x++) {
-      var m = vplus(p, {x:x,y:y});
-      this.tiles[m.x + ',' + m.y] = this.rawGetTile(m);
-    }
-  }
-}
-
-Chunk.prototype = new Layer();
+const FULL_IMPETUS = 4;
 
 export function Model(state, props) {
-  this.cache = new ChunkCache();
+  this.cache = new ChunkCache(CHUNK_SIZE);
   this.cache_misses = 0;
   this.chunk_props = {};
   this.state = state;

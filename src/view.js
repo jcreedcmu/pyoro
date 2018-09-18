@@ -1,5 +1,5 @@
 import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './view_constants';
-import { CompositeLayer } from './model';
+import { CompositeLayer } from './Chunk';
 import { bindVia, int, vplus, vint, vscale, vminus, vfpart } from './util';
 
 var DEBUG = 0;
