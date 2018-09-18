@@ -46,7 +46,7 @@ export class Model {
     var c = this.cache.get(chunk_pos);
     if (!c) {
       this.cache_misses++;
-      c = this.cache.add(new Chunk(chunk_pos, this.chunk_props));
+      c = this.cache.add(new Chunk(chunk_pos));
     }
     return c.getTile(p);
   }
@@ -56,7 +56,7 @@ export class Model {
     var c = this.cache.get(chunk_pos);
     if (!c) {
       this.cache_misses++;
-      c = this.cache.add(new Chunk(chunk_pos, this.chunk_props));
+      c = this.cache.add(new Chunk(chunk_pos));
     }
     return c.putTile(p, t);
   }

@@ -1,4 +1,3 @@
-import * as _ from 'underscore';
 import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants';
 import { CHUNK_SIZE, Sprite } from './constants';
 import { Model } from './model';
@@ -6,7 +5,7 @@ import { CompositeLayer, ReadLayer } from './Chunk';
 import { bindVia, int, vplus, vint, vscale, vminus, vfpart } from './util';
 import { Point } from './types';
 
-var DEBUG = 0;
+var DEBUG: boolean = false;
 
 class View {
   c: HTMLCanvasElement;
@@ -65,7 +64,7 @@ class View {
 
     // cache visualization
     if (DEBUG) {
-      _.each(model.cache.chunks, function(chunk, k) {
+      Object.values(model.cache.chunks).forEach(chunk => {
         var chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
         var op = vscale(vminus(chunk.pos, vp), TILE_SIZE * SCALE);
         d.strokeStyle = "red";

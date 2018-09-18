@@ -1,4 +1,3 @@
-import * as _ from 'underscore';
 import { hash, vplus } from './util';
 import { Dict, Point, Tile } from './types';
 
@@ -29,7 +28,7 @@ export class Layer implements ReadLayer {
   }
 
   extend(l: Layer): void {
-    _.extend(this.tiles, l.tiles);
+    this.tiles = { ...this.tiles, ...l.tiles };
   }
 }
 
@@ -37,11 +36,11 @@ export class Chunk extends Layer {
   pos: Point;
   rawGetTile: (p: Point) => Tile;
 
-  constructor(p: Point, props: any) {
+  constructor(p: Point) {
     super();
     this.pos = p;
     this.rawGetTile = rawGetTile;
-    _.extend(this, props);
+
     for (var y = 0; y < CHUNK_SIZE; y++) {
       for (var x = 0; x < CHUNK_SIZE; x++) {
         var m = vplus(p, { x: x, y: y });
