@@ -18,15 +18,15 @@ function go() {
 
   var d = c.getContext('2d');
 
-  view = new View({model: model, c: c, d: d});
+  view = new View(model, c, d);
 
-  $(window).resize(view.resize);
+  $(window).resize(() => view.resize());
 
   init_keys();
 
   imgProm('assets/sprite.png').then(function(s) {
     view.spriteImg = s;
-  }).then(view.resize);
+  }).then(() => view.resize());
 }
 
 var keys = {

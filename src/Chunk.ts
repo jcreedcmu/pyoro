@@ -13,7 +13,11 @@ function rawGetTile(p: Point): Tile {
   else return 'empty';
 }
 
-export class Layer {
+export interface ReadLayer {
+  getTile(p: Point): Tile;
+}
+
+export class Layer implements ReadLayer {
   tiles: Dict<Tile> = {};
 
   getTile(p: Point): Tile {
@@ -24,28 +28,8 @@ export class Layer {
     this.tiles[p.x + ',' + p.y] = t;
   }
 
-  extend(l) {
+  extend(l: Layer): void {
     _.extend(this.tiles, l.tiles);
-  }
-
-}
-
-export class CompositeLayer extends Layer {
-  l1: Layer;
-  l2: Layer;
-
-  constructor(l1: Layer, l2: Layer) {
-    super();
-    this.l1 = l1;
-    this.l2 = l2;
-  }
-
-  putTile(p: Point, t: Tile): void {
-    throw "CompositeLayer is readonly";
-  }
-
-  getTile(p: Point): Tile {
-    return this.l1.getTile(p) || this.l2.getTile(p);
   }
 }
 
@@ -64,5 +48,19 @@ export class Chunk extends Layer {
         this.tiles[m.x + ',' + m.y] = this.rawGetTile(m);
       }
     }
+  }
+}
+
+export class CompositeLayer implements ReadLayer {
+  l1: ReadLayer;
+  l2: ReadLayer;
+
+  constructor(l1: ReadLayer, l2: ReadLayer) {
+    this.l1 = l1;
+    this.l2 = l2;
+  }
+
+  getTile(p: Point): Tile {
+    return this.l1.getTile(p) || this.l2.getTile(p);
   }
 }
