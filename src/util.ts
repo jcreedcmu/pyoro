@@ -1,14 +1,4 @@
-import * as _ from 'underscore';
 import { Point, Rect } from './types';
-
-export function bindVia(obj: any, proto: any) {
-  var fs = _.functions(proto);
-  _.each(fs, function(f: any) {
-    obj[f] = function() {
-      return proto[f].apply(obj, arguments);
-    }
-  });
-}
 
 export function int(x: number): number {
   return Math.floor(x);
@@ -87,14 +77,9 @@ srand_default();
 
 export function hash(p: Point): number {
   const z: () => number = srand(1000 * p.x + 3758 * p.y);
-  _.times(10, z);
+  for (let i = 0; i < 10; i++)
+    z();
   return z();
-}
-
-export function hashn(p: Point, n: number): number[] {
-  const z: () => number = srand(1000 * p.x + 3758 * p.y);
-  _.times(10, z);
-  return _.times(n, z);
 }
 
 export function js(x: any): string {

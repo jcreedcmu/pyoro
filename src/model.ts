@@ -1,5 +1,5 @@
 import { NUM_TILES_X, NUM_TILES_Y } from './constants';
-import { bindVia, vscale, div, vplus, vminus, int, clone } from './util';
+import { vscale, div, vplus, vminus, int, clone } from './util';
 import { ChunkCache } from './ChunkCache';
 import { Chunk, Layer } from './Chunk';
 import {
@@ -30,7 +30,6 @@ export class Model {
     this.cache_misses = 0;
     this.chunk_props = {};
     this.state = state;
-    bindVia(this, Model.prototype);
   }
 
   extend(l: Layer) {

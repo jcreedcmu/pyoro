@@ -2,7 +2,7 @@ import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants
 import { CHUNK_SIZE, Sprite } from './constants';
 import { Model } from './model';
 import { CompositeLayer, ReadLayer } from './Chunk';
-import { bindVia, int, vplus, vint, vscale, vminus, vfpart } from './util';
+import { int, vplus, vint, vscale, vminus, vfpart } from './util';
 import { Point } from './types';
 
 var DEBUG: boolean = false;
