@@ -1,5 +1,6 @@
-import { hash, vplus } from './util';
-import { Dict, Point, Tile } from './types';
+import { rect_intersect, hash, vplus } from './util';
+import { Dict, Point, Tile, Rect } from './types';
+import { NUM_TILES_X, NUM_TILES_Y } from './constants';
 
 export const CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
 
@@ -61,5 +62,43 @@ export class CompositeLayer implements ReadLayer {
 
   getTile(p: Point): Tile {
     return this.l1.getTile(p) || this.l2.getTile(p);
+  }
+}
+
+type PosPt = { pos: Point };
+
+export class ChunkCache<T extends PosPt> {
+  chunks: Dict<T> = {};
+  CHUNK_SIZE: number;
+
+  constructor(CHUNK_SIZE: number) {
+    this.CHUNK_SIZE = CHUNK_SIZE;
+  }
+
+  get(p: Point): T {
+    return this.chunks[p.x + ',' + p.y];
+  }
+
+  add(c: T): T {
+    this.chunks[c.pos.x + ',' + c.pos.y] = c;
+    return c;
+  }
+
+  // returns evicted chunks, updates chunks field to contain
+  // only visible chunks.
+  filter(viewPort: Rect): T[] {
+    const oldc = this.chunks;
+    const evicted: T[] = [];
+    let newc: Dict<T> = {};
+    Object.entries(oldc).forEach(([k, chunk]) => {
+      if (rect_intersect({ p: chunk.pos, w: this.CHUNK_SIZE, h: this.CHUNK_SIZE }, viewPort)) {
+        newc[k] = chunk;
+      }
+      else {
+        evicted.push(chunk);
+      }
+    });
+    this.chunks = newc;
+    return evicted;
   }
 }

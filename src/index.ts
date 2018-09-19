@@ -1,9 +1,9 @@
 import View from './view';
-import { Player, newPlayer } from './Animation';
+import { Player, newPlayer } from './animation';
 import { Model } from './model';
 import { imgProm } from './util';
 import { Dict, Move } from './types';
-import { Layer } from './Chunk';
+import { Layer } from './chunk';
 
 window.onload = go;
 

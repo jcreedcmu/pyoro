@@ -1,11 +1,10 @@
 import { NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { vscale, div, vplus, vminus, int, clone } from './util';
-import { ChunkCache } from './ChunkCache';
-import { Chunk, Layer } from './Chunk';
+import { Chunk, ChunkCache, Layer } from './chunk';
 import {
   Player, Animation, ViewPortAnimation,
   MeltAnimation, PlayerAnimation, State
-} from './Animation';
+} from './animation';
 import { CHUNK_SIZE, FULL_IMPETUS, Sprite } from './constants';
 import { Point, Tile, Move, Dict } from './types';
 

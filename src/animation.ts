@@ -1,4 +1,4 @@
-import { Layer, ReadLayer } from './Chunk';
+import { Layer, ReadLayer } from './chunk';
 import { FULL_IMPETUS, Sprite } from './constants';
 import { vplus, vscale } from './util';
 import { Point } from './types';
