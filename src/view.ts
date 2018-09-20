@@ -6,7 +6,7 @@ import { int, vplus, vint, vscale, vminus, vfpart } from './util';
 import { Point } from './types';
 
 const DEBUG = {
-  cache: true,
+  cache: false,
 };
 
 class View {

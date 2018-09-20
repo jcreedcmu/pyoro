@@ -32,10 +32,9 @@ export class Model {
   }
 
   extend(l: Layer) {
-    var that = this;
     Object.entries(l.tiles).forEach(([k, v]) => {
       var coords = k.split(',').map(x => parseInt(x)) as [number, number]; // arrrrg
-      that.putTile({ x: coords[0], y: coords[1] }, v as Tile);
+      this.putTile({ x: coords[0], y: coords[1] }, v as Tile);
     });
   }
 
@@ -130,8 +129,6 @@ export class Model {
   }
 
   animate_move(move: Move): Animation[] {
-    var that = this;
-
     var forcedBlocks: Point[] = []
     var anims: Animation[] = [];
     var flip = false;
@@ -179,7 +176,7 @@ export class Model {
 
       forcedBlocks.forEach(fb => {
         var pos = vplus(player.pos, fb);
-        that.forceBlock(pos, that.getTile(pos), anims);
+        this.forceBlock(pos, this.getTile(pos), anims);
       });
 
       if (supportedBefore) {
