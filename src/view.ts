@@ -5,7 +5,9 @@ import { CompositeLayer, ReadLayer } from './chunk';
 import { int, vplus, vint, vscale, vminus, vfpart } from './util';
 import { Point } from './types';
 
-var DEBUG: boolean = false;
+const DEBUG = {
+  cache: true,
+};
 
 class View {
   c: HTMLCanvasElement;
@@ -26,10 +28,9 @@ class View {
   }
 
   draw() {
-    var c = this.c;
-    var d = this.d;
-    var model = this.model;
-    var that = this;
+    const c = this.c;
+    const d = this.d;
+    const model = this.model;
 
     // background
     d.fillStyle = "#def";
@@ -37,23 +38,23 @@ class View {
     d.fillStyle = "rgba(255,255,255,0.5)";
     d.fillRect(this.o_x, this.o_y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
 
-    if (!DEBUG) {
+    if (!DEBUG.cache) {
       d.save();
       d.beginPath();
       d.rect(this.o_x, this.o_y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
       d.clip();
     }
 
-    var vp = model.get_viewPort();
+    const vp = model.get_viewPort();
 
-    var drawable: ReadLayer = model;
+    let drawable: ReadLayer = model;
     if (model.state.layer != null) {
       drawable = new CompositeLayer(model.state.layer, model);
     }
 
-    for (var y = 0; y < NUM_TILES_Y + 1; y++) {
-      for (var x = 0; x < NUM_TILES_X + 1; x++) {
-        var p = { x: x, y: y };
+    for (let y = 0; y < NUM_TILES_Y + 1; y++) {
+      for (let x = 0; x < NUM_TILES_X + 1; x++) {
+        const p = { x, y };
         this.draw_sprite(drawable.getTile(vplus(p, vint(vp))), vminus(p, vfpart(vp)));
       }
     }
@@ -63,18 +64,18 @@ class View {
       model.get_player().flipState);
 
     // cache visualization
-    if (DEBUG) {
+    if (DEBUG.cache) {
       Object.values(model.cache.chunks).forEach(chunk => {
-        var chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
-        var op = vscale(vminus(chunk.pos, vp), TILE_SIZE * SCALE);
+        const chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
+        const op = vscale(vminus(chunk.pos, vp), TILE_SIZE * SCALE);
         d.strokeStyle = "red";
         d.lineWidth = 1;
 
-        d.strokeRect(that.o_x + op.x - 0.5, that.o_y + op.y - 0.5, chunk_pixels, chunk_pixels);
+        d.strokeRect(this.o_x + op.x - 0.5, this.o_y + op.y - 0.5, chunk_pixels, chunk_pixels);
       });
     }
 
-    if (!DEBUG)
+    if (!DEBUG.cache)
       d.restore();
   }
 
@@ -84,9 +85,9 @@ class View {
     if (wpos.x < -1 || wpos.y < -1 || wpos.x >= NUM_TILES_X + 1 || wpos.y >= NUM_TILES_Y + 1)
       return;
 
-    var sprite_loc = sprites[sprite_id];
+    const sprite_loc = sprites[sprite_id];
 
-    var d = this.d;
+    const d = this.d;
     d.save();
     d.translate(this.o_x + wpos.x * TILE_SIZE * SCALE,
       this.o_y + wpos.y * TILE_SIZE * SCALE);
@@ -96,9 +97,10 @@ class View {
     }
     d.imageSmoothingEnabled = false;
     d.drawImage(this.spriteImg,
-      sprite_loc.x * TILE_SIZE, sprite_loc.y * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-      0,
-      0, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
+      sprite_loc.x * TILE_SIZE, sprite_loc.y * TILE_SIZE,
+      TILE_SIZE, TILE_SIZE,
+      0, 0,
+      TILE_SIZE * SCALE, TILE_SIZE * SCALE);
     d.restore();
   }
 

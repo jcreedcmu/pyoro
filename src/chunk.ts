@@ -6,7 +6,7 @@ export const CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
 
 function rawGetTile(p: Point): Tile {
   var h = hash(p);
-  var mtn = h - (p.x * 0.015 + p.y * -0.003);
+  var mtn = h - (p.x * 0.015 + p.y * -0.03);
   if (h - p.y * 0.1 < 0.3 || mtn < 0.3) {
     return mtn < 0.25 ? 'box' : (mtn < 0.275 ? 'box3' : 'fragile_box');
   }
@@ -29,7 +29,9 @@ export class Layer implements ReadLayer {
   }
 
   extend(l: Layer): void {
-    this.tiles = { ...this.tiles, ...l.tiles };
+    Object.keys(l.tiles).forEach(k => {
+      this.tiles[k] = l.tiles[k]
+    });
   }
 }
 
