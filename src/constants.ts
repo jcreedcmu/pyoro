@@ -18,3 +18,8 @@ export const sprites = {
 };
 
 export type Sprite = keyof (typeof sprites);
+
+export const DEBUG = {
+  cache: false,
+  keys: false,
+};

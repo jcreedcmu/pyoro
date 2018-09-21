@@ -18,6 +18,12 @@ type PostExecution = {
   impetus?: number,
 };
 
+type Effect = { t: 'melt' };
+
+function resolve(move: Move, state: State): Effect[] {
+  throw "nope";
+}
+
 export class Model {
   cache: ChunkCache<Chunk>;
   cache_misses: number;

@@ -4,6 +4,8 @@ import { Model } from './model';
 import { imgProm } from './util';
 import { Dict, Move } from './types';
 import { Layer } from './chunk';
+import { DEBUG } from './constants';
+import { key } from './key';
 
 window.onload = go;
 
@@ -30,32 +32,40 @@ function go() {
   }).then(() => view.resize());
 }
 
-const keys: Dict<Move> = {
-  36: 'up-left',
-  33: 'up-right',
-  37: 'left',
-  38: 'up',
-  39: 'right',
-  40: 'down',
-  0: 'down',
+const bindings: Dict<Move> = {
+  'KP7': 'up-left',
+  'KP9': 'up-right',
+  'KP4': 'left',
+  'KP8': 'up',
+  'KP6': 'right',
+  'KP2': 'down',
+  'KP5': 'down',
+  'q': 'up-left',
+  'e': 'up-right',
+  'a': 'left',
+  'w': 'up',
+  'd': 'right',
+  's': 'down',
+  'l': 'reset',
 }
 
-keys['Q'.charCodeAt(0)] = 'up-left';
-keys['E'.charCodeAt(0)] = 'up-right';
-keys['A'.charCodeAt(0)] = 'left';
-keys['W'.charCodeAt(0)] = 'up';
-keys['D'.charCodeAt(0)] = 'right';
-keys['S'.charCodeAt(0)] = 'down';
-keys['L'.charCodeAt(0)] = 'reset';
 
 function init_keys() {
   document.onkeydown = e => {
-    if (keys[e.keyCode]) {
-      handle_key(keys[e.keyCode]);
+    if (DEBUG.keys) {
+      console.log(e.keyCode);
+      console.log(e.code);
+    }
+    const k = bindings[key(e)];
+    if (k) {
+      handle_key(k);
     }
   };
 }
 
+// XXX loule I'm not even buffering keys that were pressed during the
+// lock period? and the lock is global state? Probably should fix
+// this.
 let lock = false;
 function handle_key(ks: Move): void {
   if (!lock) {
