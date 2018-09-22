@@ -1,7 +1,7 @@
 import { Layer, ReadLayer } from './chunk';
 import { FULL_IMPETUS, Sprite } from './constants';
 import { vplus, vscale } from './util';
-import { Point } from './types';
+import { Point, Facing } from './types';
 
 export type State = {
   player: Player,
@@ -18,13 +18,13 @@ export class PlayerAnimation extends Animation {
   pos: Point = { x: 0, y: 0 };
   animState: Sprite = 'player';
   impetus: number = FULL_IMPETUS;
-  flipState: boolean = false;
+  flipState: Facing = 'left';
 
   constructor(
     pos: Point,
     animState: Sprite,
     impetus: number,
-    flipState: boolean
+    flipState: Facing
   ) {
     super();
     this.pos = pos;
@@ -73,7 +73,7 @@ export class MeltAnimation extends Animation {
 
 export type Player = {
   animState: Sprite,
-  flipState: boolean,
+  flipState: Facing,
   pos: Point,
   impetus: number,
 };
@@ -82,7 +82,7 @@ export function newPlayer(pos: Point): Player {
   return {
     pos,
     animState: 'player',
-    flipState: false,
+    flipState: 'left',
     impetus: FULL_IMPETUS,
   };
 }

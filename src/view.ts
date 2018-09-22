@@ -58,7 +58,7 @@ class View {
 
     this.draw_sprite(model.get_player().animState,
       vminus(model.get_player().pos, vp),
-      model.get_player().flipState);
+      model.get_player().flipState == 'left');
 
     // cache visualization
     if (DEBUG.cache) {

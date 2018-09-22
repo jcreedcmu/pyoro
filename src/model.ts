@@ -1,22 +1,18 @@
 import { Animation, MeltAnimation, Player, PlayerAnimation, State, ViewPortAnimation } from './animation';
 import { Chunk, ChunkCache, Layer, ReadLayer } from './chunk';
 import { CHUNK_SIZE, FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y, Sprite } from './constants';
-import { Move, Point, Tile } from './types';
+import { Move, Point, Tile, Facing } from './types';
 import { clone, div, int, vplus, vscale, nope } from './util';
 
 function openTile(x: Tile): boolean {
   return x == "empty";
 }
 
-type PostExecution = {
-  dpos?: Point,
-  forced?: Point,
-  impetus?: number,
+type Motion = {
+  dpos: Point,
+  forced?: Point, // optionally force a block in the direction of motion
+  impetus?: number, // optionally set impetus to some value
 };
-
-type Motion = PostExecution;
-
-
 
 type Board = { tiles: ReadLayer, player: Player };
 
@@ -48,9 +44,9 @@ function execute_up(b: Board): Motion {
   }
 }
 
-function execute_right(b: Board, flip: boolean): Motion {
+function execute_horiz(b: Board, flip: Facing): Motion {
   const { player } = b;
-  const dx = flip ? -1 : 1;
+  const dx = flip == 'left' ? -1 : 1;
   const forward_open = ropen(b, dx, 0);
   if (player.impetus && !ropen(b, 0, 1)) {
     return forward_open ? { dpos: { x: dx, y: 0 }, impetus: 0 } : {
@@ -67,14 +63,14 @@ function execute_right(b: Board, flip: boolean): Motion {
   }
 }
 
-function execute_up_right(b: Board, flip: boolean): Motion {
+function execute_up_diag(b: Board, flip: Facing): Motion {
   const { player } = b;
-  const dx = flip ? -1 : 1;
+  const dx = flip == 'left' ? -1 : 1;
   const forward_open = ropen(b, dx, 0);
   if (!player.impetus)
-    return execute_right(b, flip);
+    return execute_horiz(b, flip);
   if (!ropen(b, 0, -1)) {
-    const rv = execute_right(b, flip);
+    const rv = execute_horiz(b, flip);
     rv.forced = { x: 0, y: -1 };
     return rv;
   }
@@ -90,35 +86,37 @@ function execute_up_right(b: Board, flip: boolean): Motion {
 }
 
 // This goes from a Move to a Motion
-function preresolve(b: Board, move: Move): Motion {
+function get_motion(b: Board, move: Move): Motion {
   const { tiles, player } = b;
   switch (move) {
     case 'up': return execute_up(b);
     case 'down': return execute_down(b);
-    case 'left': return execute_right(b, true);
-    case 'right': return execute_right(b, false);
-    case 'up-left': return execute_up_right(b, true);
-    case 'up-right': return execute_up_right(b, false);
+    case 'left': return execute_horiz(b, 'left');
+    case 'right': return execute_horiz(b, 'right');
+    case 'up-left': return execute_up_diag(b, 'left');
+    case 'up-right': return execute_up_diag(b, 'right');
     default:
       return nope(move);
   }
 }
 
-function get_flip_state(player: Player, move: Move): boolean {
+// null means "don't change the flip state"
+function get_flip_state(move: Move): Facing | null {
   switch (move) {
     case 'left':
     case 'up-left':
-      return true;
+      return 'left';
     case 'right':
     case 'up-right':
-      return false;
+      return 'right';
     case 'up':
     case 'down':
-      return player.flipState;
+      return null;
     default:
       return nope(move);
   }
 }
+
 export class Model {
   cache: ChunkCache<Chunk>;
   cache_misses: number;
@@ -159,13 +157,6 @@ export class Model {
     return c.putTile(p, t);
   }
 
-
-  ropen(x: number, y: number) {
-    return openTile(this.getTile(vplus(this.state.player.pos, { x, y })));
-  }
-
-
-
   forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
     if (tile == 'fragile_box')
       anims.push(new MeltAnimation(pos));
@@ -186,8 +177,8 @@ export class Model {
     var supportedBefore = !openTile(tileBefore);
     if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
 
-    const result = preresolve({ tiles: this, player }, move);
-    const flipState = get_flip_state(player, move);
+    const result = get_motion({ tiles: this, player }, move);
+    const flipState = get_flip_state(move) || player.flipState;
 
     if (moved) {
       if (result.forced != null) forcedBlocks.push(result.forced);
