@@ -1,12 +1,8 @@
-import { NUM_TILES_X, NUM_TILES_Y } from './constants';
-import { vscale, div, vplus, vminus, int, clone } from './util';
-import { Chunk, ChunkCache, Layer } from './chunk';
-import {
-  Player, Animation, ViewPortAnimation,
-  MeltAnimation, PlayerAnimation, State
-} from './animation';
-import { CHUNK_SIZE, FULL_IMPETUS, Sprite } from './constants';
-import { Point, Tile, Move, Dict } from './types';
+import { Animation, MeltAnimation, Player, PlayerAnimation, State, ViewPortAnimation } from './animation';
+import { Chunk, ChunkCache, Layer, ReadLayer } from './chunk';
+import { CHUNK_SIZE, FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y, Sprite } from './constants';
+import { Move, Point, Tile } from './types';
+import { clone, div, int, vplus, vscale, nope } from './util';
 
 function openTile(x: Tile): boolean {
   return x == "empty";
@@ -18,12 +14,111 @@ type PostExecution = {
   impetus?: number,
 };
 
-type Effect = { t: 'melt' };
+type Motion = PostExecution;
 
-function resolve(move: Move, state: State): Effect[] {
-  throw "nope";
+
+
+type Board = { tiles: ReadLayer, player: Player };
+
+function ropen(b: Board, x: number, y: number): boolean {
+  const { tiles, player } = b;
+  return openTile(tiles.getTile(vplus(player.pos, { x, y })));
 }
 
+function execute_down(b: Board): Motion {
+  return ropen(b, 0, 1) ?
+    { dpos: { x: 0, y: 1 }, impetus: 0 } :
+    { dpos: { x: 0, y: 0 }, impetus: FULL_IMPETUS }
+}
+
+function execute_up(b: Board): Motion {
+  var { player } = b;
+  if (player.impetus) {
+    if (ropen(b, 0, -1)) {
+      return { dpos: { x: 0, y: -1 } }
+    }
+    else {
+      var rv = execute_down(b);
+      rv.forced = { x: 0, y: -1 };
+      return rv;
+    }
+  }
+  else {
+    return { dpos: { x: 0, y: 1 } };
+  }
+}
+
+function execute_right(b: Board, flip: boolean): Motion {
+  const { player } = b;
+  const dx = flip ? -1 : 1;
+  const forward_open = ropen(b, dx, 0);
+  if (player.impetus && !ropen(b, 0, 1)) {
+    return forward_open ? { dpos: { x: dx, y: 0 }, impetus: 0 } : {
+      dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 },
+      impetus: FULL_IMPETUS
+    };
+  }
+  else {
+    if (forward_open) {
+      return ropen(b, dx, 1) ? { dpos: { x: dx, y: 1 }, impetus: 0 } : { dpos: { x: dx, y: 0 }, impetus: 0 };
+    }
+    else
+      return { dpos: { x: 0, y: 1 }, forced: { x: dx, y: 0 }, impetus: 0 }
+  }
+}
+
+function execute_up_right(b: Board, flip: boolean): Motion {
+  const { player } = b;
+  const dx = flip ? -1 : 1;
+  const forward_open = ropen(b, dx, 0);
+  if (!player.impetus)
+    return execute_right(b, flip);
+  if (!ropen(b, 0, -1)) {
+    const rv = execute_right(b, flip);
+    rv.forced = { x: 0, y: -1 };
+    return rv;
+  }
+  if (!ropen(b, dx, 0))
+    return { dpos: { x: 0, y: -1 }, forced: { x: dx, y: 0 } };
+  if (ropen(b, dx, -1))
+    return { dpos: { x: dx, y: -1 } }
+  else {
+    const rv = execute_down(b);
+    rv.forced = { x: dx, y: -1 };
+    return rv;
+  }
+}
+
+// This goes from a Move to a Motion
+function preresolve(b: Board, move: Move): Motion {
+  const { tiles, player } = b;
+  switch (move) {
+    case 'up': return execute_up(b);
+    case 'down': return execute_down(b);
+    case 'left': return execute_right(b, true);
+    case 'right': return execute_right(b, false);
+    case 'up-left': return execute_up_right(b, true);
+    case 'up-right': return execute_up_right(b, false);
+    default:
+      return nope(move);
+  }
+}
+
+function get_flip_state(player: Player, move: Move): boolean {
+  switch (move) {
+    case 'left':
+    case 'up-left':
+      return true;
+    case 'right':
+    case 'up-right':
+      return false;
+    case 'up':
+    case 'down':
+      return player.flipState;
+    default:
+      return nope(move);
+  }
+}
 export class Model {
   cache: ChunkCache<Chunk>;
   cache_misses: number;
@@ -69,65 +164,7 @@ export class Model {
     return openTile(this.getTile(vplus(this.state.player.pos, { x, y })));
   }
 
-  execute_up(): PostExecution {
-    var player = this.state.player;
-    if (player.impetus) {
-      if (this.ropen(0, -1)) {
-        return { dpos: { x: 0, y: -1 } }
-      }
-      else {
-        var rv = this.execute_down();
-        rv.forced = { x: 0, y: -1 };
-        return rv;
-      }
-    }
-    else {
-      return { dpos: { x: 0, y: 1 } };
-    }
-  }
 
-  execute_down(): PostExecution {
-    return this.ropen(0, 1) ? { dpos: { x: 0, y: 1 }, impetus: 0 } : { dpos: { x: 0, y: 0 }, impetus: FULL_IMPETUS }
-  }
-
-  execute_right(flip: boolean): PostExecution {
-    var dx = flip ? -1 : 1;
-    var forward_open = this.ropen(dx, 0);
-    if (this.state.player.impetus && !this.ropen(0, 1)) {
-      return forward_open ? { dpos: { x: dx, y: 0 }, impetus: 0 } : {
-        dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 },
-        impetus: FULL_IMPETUS
-      };
-    }
-    else {
-      if (forward_open) {
-        return this.ropen(dx, 1) ? { dpos: { x: dx, y: 1 }, impetus: 0 } : { dpos: { x: dx, y: 0 }, impetus: 0 };
-      }
-      else
-        return { dpos: { x: 0, y: 1 }, forced: { x: dx, y: 0 }, impetus: 0 }
-    }
-  }
-
-  execute_up_right(flip: boolean): PostExecution {
-    const dx = flip ? -1 : 1;
-    const forward_open = this.ropen(dx, 0);
-    if (!this.state.player.impetus)
-      return this.execute_right(flip);
-    if (!this.ropen(0, -1)) {
-      const rv = this.execute_right(flip);
-      rv.forced = { x: 0, y: -1 };
-      return rv;
-    }
-    if (!this.ropen(dx, 0))
-      return { dpos: { x: 0, y: -1 }, forced: { x: dx, y: 0 } };
-    if (this.ropen(dx, -1))
-      return { dpos: { x: dx, y: -1 } }
-    else {
-      const rv = this.execute_down();
-      rv.forced = { x: dx, y: -1 };
-      return rv;
-    }
-  }
 
   forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
     if (tile == 'fragile_box')
@@ -137,45 +174,20 @@ export class Model {
   animate_move(move: Move): Animation[] {
     var forcedBlocks: Point[] = []
     var anims: Animation[] = [];
-    var flip = false;
+
 
     var s = this.state;
     var player = s.player;
 
-    var result: PostExecution = {};
-    var moved = true;
+    var moved = true; // XXX this should come out of preresolve, really
 
     var belowBefore = vplus(player.pos, { x: 0, y: 1 });
     var tileBefore = this.getTile(belowBefore);
     var supportedBefore = !openTile(tileBefore);
     if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
 
-    switch (move) {
-      case 'up':
-        result = this.execute_up();
-        break;
-      case 'down':
-        result = this.execute_down();
-        break;
-      case 'left':
-        result = this.execute_right(true);
-        flip = true;
-        break;
-      case 'right':
-        result = this.execute_right(false);
-        break;
-      case 'up-left':
-        result = this.execute_up_right(true);
-        flip = true;
-        break;
-      case 'up-right':
-        result = this.execute_up_right(false);
-        break;
-      case 'reset':
-        anims.push(this.resetViewPortAnimation());
-        moved = false;
-        break;
-    }
+    const result = preresolve({ tiles: this, player }, move);
+    const flipState = get_flip_state(player, move);
 
     if (moved) {
       if (result.forced != null) forcedBlocks.push(result.forced);
@@ -196,7 +208,7 @@ export class Model {
       const anim = {
         pos: vplus(player.pos, result.dpos),
         impetus: result.impetus != null ? result.impetus : player.impetus,
-        flipState: flip,
+        flipState,
         animState: 'player' as Sprite,
       };
 

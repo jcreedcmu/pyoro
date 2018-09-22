@@ -89,3 +89,9 @@ export function js(x: any): string {
 export function clone<T>(x: T): T {
   return JSON.parse(JSON.stringify(x));
 }
+
+// meant to be used in a default case
+// to enforce exhaustive pattern matching
+export function nope<T>(x: never): T {
+  throw "nope";
+}

@@ -46,7 +46,6 @@ const bindings: Dict<Move> = {
   'w': 'up',
   'd': 'right',
   's': 'down',
-  'l': 'reset',
 }
 
 
