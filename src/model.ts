@@ -1,8 +1,8 @@
 import { Animation, MeltAnimation, Player, PlayerAnimation, State, ViewPortAnimation } from './animation';
-import { Chunk, ChunkCache, Layer, ReadLayer } from './chunk';
+import { Chunk, ChunkCache, Layer, ReadLayer, TileFunc } from './chunk';
 import { CHUNK_SIZE, FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y, Sprite } from './constants';
 import { Move, Point, Tile, Facing } from './types';
-import { clone, div, int, vplus, vscale, nope } from './util';
+import { clone, div, int, vplus, vscale, nope, hash } from './util';
 
 function openTile(x: Tile): boolean {
   return x == "empty";
@@ -117,17 +117,48 @@ function get_flip_state(move: Move): Facing | null {
   }
 }
 
-export class Model {
+function rawGetTile(p: Point): Tile {
+  var h = hash(p);
+  var mtn = h - (p.x * 0.015 + p.y * -0.03);
+  if (h - p.y * 0.1 < 0.3 || mtn < 0.3) {
+    return mtn < 0.25 ? 'box' : (mtn < 0.275 ? 'box3' : 'fragile_box');
+  }
+  else return 'empty';
+}
+
+export class CachedFunctionalLayer implements ReadLayer {
   cache: ChunkCache<Chunk>;
   cache_misses: number;
-  chunk_props: any;
-  state: State;
+  readonly f: TileFunc;
 
-  constructor(state: State) {
+  constructor(f: TileFunc) {
     this.cache = new ChunkCache(CHUNK_SIZE);
     this.cache_misses = 0;
+    this.f = f;
+  }
+
+  getTile(p: Point): Tile {
+    var chunk_pos = vscale({ x: div(p.x, CHUNK_SIZE), y: div(p.y, CHUNK_SIZE) }, CHUNK_SIZE);
+    var c = this.cache.get(chunk_pos);
+    if (!c) {
+      this.cache_misses++;
+      c = this.cache.add(new Chunk(chunk_pos, this.f));
+    }
+    return c.getTile(p);
+  }
+}
+
+export class Model {
+  base: ReadLayer;
+  chunk_props: any;
+  state: State;
+  overlay: Layer;
+
+  constructor(state: State) {
+    this.base = new CachedFunctionalLayer(rawGetTile);
     this.chunk_props = {};
     this.state = state;
+    this.overlay = new Layer;
   }
 
   extend(l: Layer) {
@@ -138,23 +169,11 @@ export class Model {
   }
 
   getTile(p: Point): Tile {
-    var chunk_pos = vscale({ x: div(p.x, CHUNK_SIZE), y: div(p.y, CHUNK_SIZE) }, CHUNK_SIZE);
-    var c = this.cache.get(chunk_pos);
-    if (!c) {
-      this.cache_misses++;
-      c = this.cache.add(new Chunk(chunk_pos));
-    }
-    return c.getTile(p);
+    return this.overlay.getTile(p) || this.base.getTile(p);
   }
 
   putTile(p: Point, t: Tile): void {
-    var chunk_pos = vscale({ x: div(p.x, CHUNK_SIZE), y: div(p.y, CHUNK_SIZE) }, CHUNK_SIZE);
-    var c = this.cache.get(chunk_pos);
-    if (!c) {
-      this.cache_misses++;
-      c = this.cache.add(new Chunk(chunk_pos));
-    }
-    return c.putTile(p, t);
+    this.overlay.putTile(p, t);
   }
 
   forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
@@ -223,11 +242,6 @@ export class Model {
         anims.push(new ViewPortAnimation({ x: 0, y: 1 }));
       if (anim.pos.y - s.viewPort.y < 1)
         anims.push(new ViewPortAnimation({ x: 0, y: -1 }));
-    }
-
-    if (this.cache_misses) {
-      this.cache_misses = 0;
-      this.cache.filter({ p: s.viewPort, w: NUM_TILES_X, h: NUM_TILES_Y });
     }
 
     return anims;

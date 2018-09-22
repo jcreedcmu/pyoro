@@ -1,17 +1,10 @@
-import { rect_intersect, hash, vplus } from './util';
+import { rect_intersect, vplus } from './util';
 import { Dict, Point, Tile, Rect } from './types';
 import { NUM_TILES_X, NUM_TILES_Y } from './constants';
 
-export const CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
+export type TileFunc = (p: Point) => Tile;
 
-function rawGetTile(p: Point): Tile {
-  var h = hash(p);
-  var mtn = h - (p.x * 0.015 + p.y * -0.03);
-  if (h - p.y * 0.1 < 0.3 || mtn < 0.3) {
-    return mtn < 0.25 ? 'box' : (mtn < 0.275 ? 'box3' : 'fragile_box');
-  }
-  else return 'empty';
-}
+export const CHUNK_SIZE = 16; // in number of tiles, for purposes of caching
 
 export interface ReadLayer {
   getTile(p: Point): Tile;
@@ -37,9 +30,9 @@ export class Layer implements ReadLayer {
 
 export class Chunk extends Layer {
   pos: Point;
-  rawGetTile: (p: Point) => Tile;
+  rawGetTile: TileFunc;
 
-  constructor(p: Point) {
+  constructor(p: Point, rawGetTile: TileFunc) {
     super();
     this.pos = p;
     this.rawGetTile = rawGetTile;

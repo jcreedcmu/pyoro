@@ -35,12 +35,10 @@ class View {
     d.fillStyle = "rgba(255,255,255,0.5)";
     d.fillRect(this.o_x, this.o_y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
 
-    if (!DEBUG.cache) {
-      d.save();
-      d.beginPath();
-      d.rect(this.o_x, this.o_y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
-      d.clip();
-    }
+    d.save();
+    d.beginPath();
+    d.rect(this.o_x, this.o_y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
+    d.clip();
 
     const vp = model.get_viewPort();
 
@@ -60,20 +58,8 @@ class View {
       vminus(model.get_player().pos, vp),
       model.get_player().flipState == 'left');
 
-    // cache visualization
-    if (DEBUG.cache) {
-      Object.values(model.cache.chunks).forEach(chunk => {
-        const chunk_pixels = TILE_SIZE * SCALE * CHUNK_SIZE;
-        const op = vscale(vminus(chunk.pos, vp), TILE_SIZE * SCALE);
-        d.strokeStyle = "red";
-        d.lineWidth = 1;
 
-        d.strokeRect(this.o_x + op.x - 0.5, this.o_y + op.y - 0.5, chunk_pixels, chunk_pixels);
-      });
-    }
-
-    if (!DEBUG.cache)
-      d.restore();
+    d.restore();
   }
 
   // wpos: position in window, (0,0) is top left of viewport
