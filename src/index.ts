@@ -23,6 +23,11 @@ function go() {
 
   view = new View(model, c, d);
 
+  if (DEBUG.globals) {
+    (window as any)['view'] = view;
+    (window as any)['model'] = model;
+  }
+
   window.onresize = () => view.resize();
 
   init_keys();

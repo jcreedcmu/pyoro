@@ -20,6 +20,6 @@ export const sprites = {
 export type Sprite = keyof (typeof sprites);
 
 export const DEBUG = {
-  cache: false,
+  globals: false,
   keys: false,
 };

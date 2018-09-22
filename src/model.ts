@@ -118,12 +118,8 @@ function get_flip_state(move: Move): Facing | null {
 }
 
 function rawGetTile(p: Point): Tile {
-  var h = hash(p);
-  var mtn = h - (p.x * 0.015 + p.y * -0.03);
-  if (h - p.y * 0.1 < 0.3 || mtn < 0.3) {
-    return mtn < 0.25 ? 'box' : (mtn < 0.275 ? 'box3' : 'fragile_box');
-  }
-  else return 'empty';
+  const { x, y } = p;
+  return y > 0 ? 'box' : 'empty';
 }
 
 export class CachedFunctionalLayer implements ReadLayer {
