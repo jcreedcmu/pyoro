@@ -34,6 +34,10 @@ export function vscale(b: Point, s: number): Point {
   return { x: s * b.x, y: s * b.y };
 }
 
+export function vdiv(b: Point, s: number): Point {
+  return { x: b.x / s, y: b.y / s };
+}
+
 export function vint(v: Point): Point {
   return { x: int(v.x), y: int(v.y) };
 }

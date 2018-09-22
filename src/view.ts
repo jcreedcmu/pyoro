@@ -2,7 +2,7 @@ import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants
 import { DEBUG, CHUNK_SIZE, Sprite } from './constants';
 import { Model } from './model';
 import { CompositeLayer, ReadLayer } from './chunk';
-import { int, vplus, vint, vscale, vminus, vfpart } from './util';
+import { int, vplus, vint, vscale, vminus, vfpart, vdiv } from './util';
 import { Point } from './types';
 
 
@@ -102,6 +102,14 @@ class View {
     this.o_y = this.center_y - int(NUM_TILES_Y * TILE_SIZE * SCALE / 2);
 
     this.draw();
+  }
+
+  origin(): Point {
+    return { x: this.o_x, y: this.o_y };
+  }
+
+  world_of_canvas(p: Point): Point {
+    return vint(vplus(this.model.get_viewPort(), vdiv(vminus(p, this.origin()), TILE_SIZE * SCALE)));
   }
 }
 

@@ -7,81 +7,104 @@ import { Layer } from './chunk';
 import { DEBUG } from './constants';
 import { key } from './key';
 
-window.onload = go;
+window.onload = () => {
+  const app = new App;
+  app.run();
+};
 
-let view: View;
+class App {
+  view: View;
 
-function go() {
-  var model = new Model({
-    player: newPlayer({ x: -1, y: 0 }),
-    viewPort: { x: -13, y: -9 },
-    layer: new Layer(),
-  });
-
-  var c = document.getElementById('c') as HTMLCanvasElement;
-  var d = c.getContext('2d') as CanvasRenderingContext2D;
-
-  view = new View(model, c, d);
-
-  if (DEBUG.globals) {
-    (window as any)['view'] = view;
-    (window as any)['model'] = model;
+  static bindings: Dict<Move> = {
+    'KP7': 'up-left',
+    'KP9': 'up-right',
+    'KP4': 'left',
+    'KP8': 'up',
+    'KP6': 'right',
+    'KP2': 'down',
+    'KP5': 'down',
+    'q': 'up-left',
+    'e': 'up-right',
+    'a': 'left',
+    'w': 'up',
+    'd': 'right',
+    's': 'down',
   }
 
-  window.onresize = () => view.resize();
+  constructor() {
+    const model = new Model({
+      player: newPlayer({ x: -1, y: 0 }),
+      viewPort: { x: -13, y: -9 },
+      layer: new Layer(),
+    });
 
-  init_keys();
+    const c = document.getElementById('c') as HTMLCanvasElement;
+    const d = c.getContext('2d') as CanvasRenderingContext2D;
 
-  imgProm('assets/sprite.png').then(function(s) {
-    view.spriteImg = s;
-  }).then(() => view.resize());
-}
+    this.view = new View(model, c, d);
+  }
 
-const bindings: Dict<Move> = {
-  'KP7': 'up-left',
-  'KP9': 'up-right',
-  'KP4': 'left',
-  'KP8': 'up',
-  'KP6': 'right',
-  'KP2': 'down',
-  'KP5': 'down',
-  'q': 'up-left',
-  'e': 'up-right',
-  'a': 'left',
-  'w': 'up',
-  'd': 'right',
-  's': 'down',
-}
+  run(): void {
+    const { view } = this;
 
-
-function init_keys() {
-  document.onkeydown = e => {
-    if (DEBUG.keys) {
-      console.log(e.keyCode);
-      console.log(e.code);
+    if (DEBUG.globals) {
+      (window as any)['app'] = this;
     }
-    const k = bindings[key(e)];
-    if (k) {
-      handle_key(k);
-    }
-  };
-}
 
-// XXX loule I'm not even buffering keys that were pressed during the
-// lock period? and the lock is global state? Probably should fix
-// this.
-let lock = false;
-function handle_key(ks: Move): void {
-  if (!lock) {
-    var animator = view.model.animator_for_move(ks);
-    view.model.state = animator(0.5);
-    lock = true;
-    view.draw();
-    setTimeout(function() {
-      view.model.state = animator(1);
-      view.model.extend(view.model.state.layer);
-      lock = false;
+    window.onresize = () => view.resize();
+
+    this.init_keys();
+    this.init_mouse();
+
+    imgProm('assets/sprite.png').then(s => {
+      view.spriteImg = s;
+    }).then(() => view.resize());
+  }
+
+  init_keys(): void {
+    document.onkeydown = e => {
+      if (DEBUG.keys) {
+        console.log(e.keyCode);
+        console.log(e.code);
+      }
+      const k = App.bindings[key(e)];
+      if (k) {
+        this.handle_key(k);
+      }
+    };
+  }
+
+  // XXX loule I'm not even buffering keys that were pressed during
+  // the lock period? Probably should fix this.
+  lock = false;
+  handle_key(ks: Move): void {
+    const { view } = this;
+    const { model } = view;
+
+    if (!this.lock) {
+      const animator = model.animator_for_move(ks);
+      model.state = animator(0.5);
+      this.lock = true;
       view.draw();
-    }, 30);
+      setTimeout(() => {
+        model.state = animator(1);
+        model.extend(model.state.layer);
+        this.lock = false;
+        view.draw();
+      }, 30);
+    }
+  }
+
+  init_mouse(): void {
+    const { view } = this;
+    const { model } = view;
+    document.onmousedown = (e: MouseEvent) => {
+
+      const c = document.getElementById("c");
+      if (c == null) throw "can't find canvas element";
+      const rect = c.getBoundingClientRect();
+      model.handle_mousedown(view.world_of_canvas({ x: e.clientX, y: e.clientY }));
+      view.draw();
+    };
   }
 }

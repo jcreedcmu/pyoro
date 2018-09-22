@@ -257,6 +257,13 @@ export class Model {
     };
   }
 
+  handle_mousedown(p: Point): void {
+    if (this.getTile(p) == 'empty')
+      this.putTile(p, 'box3');
+    else
+      this.putTile(p, 'empty');
+  }
+
   execute_move(move: Move) {
     this.state = this.animator_for_move(move)(1);
     this.extend(this.state.layer);
