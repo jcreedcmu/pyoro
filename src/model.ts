@@ -8,6 +8,12 @@ function openTile(x: Tile): boolean {
   return x == "empty";
 }
 
+function genImpetus(x: Tile): number {
+  if (x == "empty") return 0;
+  if (x == "up_box") return FULL_IMPETUS;
+  return 1;
+}
+
 type Motion = {
   dpos: Point,
   forced?: Point, // optionally force a block in the direction of motion
@@ -24,7 +30,7 @@ function ropen(b: Board, x: number, y: number): boolean {
 function execute_down(b: Board): Motion {
   return ropen(b, 0, 1) ?
     { dpos: { x: 0, y: 1 }, impetus: 0 } :
-    { dpos: { x: 0, y: 0 }, impetus: FULL_IMPETUS }
+    { dpos: { x: 0, y: 0 }, impetus: 0 }
 }
 
 function execute_up(b: Board): Motion {
@@ -51,7 +57,7 @@ function execute_horiz(b: Board, flip: Facing): Motion {
   if (player.impetus && !ropen(b, 0, 1)) {
     return forward_open ? { dpos: { x: dx, y: 0 }, impetus: 0 } : {
       dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 },
-      impetus: FULL_IMPETUS
+      impetus: 0
     };
   }
   else {
@@ -205,7 +211,7 @@ export class Model {
       });
 
       if (supportedBefore) {
-        player.impetus = FULL_IMPETUS;
+        player.impetus = genImpetus(tileBefore);
       }
 
       if (result.dpos == null) {
@@ -219,10 +225,11 @@ export class Model {
         animState: 'player' as Sprite,
       };
 
-      const supportedAfter = !openTile(this.getTile(vplus(anim.pos, { x: 0, y: 1 })));
+      const tileAfter = this.getTile(vplus(anim.pos, { x: 0, y: 1 }));
+      const supportedAfter = !openTile(tileAfter);
 
       if (supportedAfter) {
-        anim.impetus = FULL_IMPETUS
+        anim.impetus = genImpetus(tileAfter);
       }
       else {
         if (anim.impetus) { anim.impetus--; }
