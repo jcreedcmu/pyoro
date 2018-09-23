@@ -1,5 +1,5 @@
 watch:
-	npx webpack --watch
+	node server.js
 
 test:
 	npx mocha --reporter list

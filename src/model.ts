@@ -1,7 +1,7 @@
 import { Animation, MeltAnimation, Player, PlayerAnimation, State, ViewPortAnimation } from './animation';
 import { Chunk, ChunkCache, Layer, ReadLayer, TileFunc } from './chunk';
-import { CHUNK_SIZE, FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y, Sprite } from './constants';
-import { Move, Point, Tile, Facing } from './types';
+import { CHUNK_SIZE, FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y } from './constants';
+import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';
 
 function openTile(x: Tile): boolean {
@@ -149,6 +149,7 @@ export class Model {
   chunk_props: any;
   state: State;
   overlay: Layer;
+  editTile: Tile = 'box3';
 
   constructor(state: State) {
     this.base = new CachedFunctionalLayer(rawGetTile);
@@ -259,7 +260,7 @@ export class Model {
 
   handle_mousedown(p: Point): void {
     if (this.getTile(p) == 'empty')
-      this.putTile(p, 'box3');
+      this.putTile(p, this.editTile);
     else
       this.putTile(p, 'empty');
   }

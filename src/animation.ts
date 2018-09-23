@@ -1,7 +1,7 @@
 import { Layer, ReadLayer } from './chunk';
-import { FULL_IMPETUS, Sprite } from './constants';
+import { FULL_IMPETUS } from './constants';
 import { vplus, vscale } from './util';
-import { Point, Facing } from './types';
+import { Point, Facing, Sprite } from './types';
 
 export type State = {
   player: Player,

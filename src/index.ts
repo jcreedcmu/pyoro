@@ -2,7 +2,7 @@ import View from './view';
 import { Player, newPlayer } from './animation';
 import { Model } from './model';
 import { imgProm } from './util';
-import { Dict, Move } from './types';
+import { Dict, Move, Tile } from './types';
 import { Layer } from './chunk';
 import { DEBUG } from './constants';
 import { key } from './key';
@@ -14,8 +14,10 @@ window.onload = () => {
 
 class App {
   view: View;
+  editTileIndex: number = 0;
+  editTiles: Tile[] = ['box3', 'up_box'];
 
-  static bindings: Dict<Move> = {
+  static moveBindings: Dict<Move> = {
     'KP7': 'up-left',
     'KP9': 'up-right',
     'KP4': 'left',
@@ -29,6 +31,17 @@ class App {
     'w': 'up',
     'd': 'right',
     's': 'down',
+  }
+
+  static commandBindings: Dict<(a: App) => void> = {
+    ',': a => {
+      a.editTileIndex = (a.editTileIndex + 1) % a.editTiles.length;
+      a.view.model.editTile = a.editTiles[a.editTileIndex];
+    },
+    '.': a => {
+      a.editTileIndex = (a.editTileIndex - 1 + a.editTiles.length) % a.editTiles.length;
+      a.view.model.editTile = a.editTiles[a.editTileIndex];
+    },
   }
 
   constructor() {
@@ -67,9 +80,16 @@ class App {
         console.log(e.keyCode);
         console.log(e.code);
       }
-      const k = App.bindings[key(e)];
-      if (k) {
-        this.handle_key(k);
+      const k = key(e);
+      const f = App.commandBindings[k];
+      if (f) {
+        f(this);
+      }
+      else {
+        const move = App.moveBindings[k];
+        if (move) {
+          this.handle_key(move);
+        }
       }
     };
   }
