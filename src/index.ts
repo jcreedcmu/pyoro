@@ -42,6 +42,18 @@ class App {
       a.editTileIndex = (a.editTileIndex - 1 + a.editTiles.length) % a.editTiles.length;
       a.view.model.editTile = a.editTiles[a.editTileIndex];
     },
+    's': a => {
+      const req = new Request('/save', {
+        method: 'POST',
+        body: JSON.stringify(a.view.model.overlay),
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      fetch(req).then(r => r.json())
+        .then(x => console.log(x))
+        .catch(console.error);
+    }
   }
 
   constructor() {

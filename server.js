@@ -10,6 +10,7 @@ const webpack = require('webpack');
 const config = require('./webpack.config.js');
 const path = require('path');
 
+const express = require('express');
 const compiler = webpack(config);
 const server = new WebpackDevServer(compiler, {
   contentBase: 'public',
@@ -21,8 +22,13 @@ const server = new WebpackDevServer(compiler, {
   },
 });
 
+var bodyParser = require('body-parser')
+server.use( bodyParser.json());
+server.use(bodyParser.urlencoded({  extended: true }));
 server.use('/save', (req, res) => {
-  res.send('hello');
+
+  console.log(req.body);
+  res.send(JSON.stringify('hello'));
 });
 
 server.listen(3000, 'localhost', function() {});
