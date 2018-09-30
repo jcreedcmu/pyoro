@@ -8,6 +8,8 @@ export const NUM_TILES_Y = 18;
 export const TILE_SIZE = 16;
 export const SCALE = 2;
 
+export const FRAME_DURATION_MS = 30;
+
 export const sprites: { [k in Sprite]: Point } = {
   box: { x: 1, y: 4 },
   fragile_box: { x: 2, y: 6 },
@@ -19,8 +21,6 @@ export const sprites: { [k in Sprite]: Point } = {
   player_rise: { x: 1, y: 1 },
   up_box: { x: 6, y: 6 },
 };
-
-
 
 export const DEBUG = {
   globals: false,

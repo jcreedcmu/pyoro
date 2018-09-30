@@ -4,7 +4,7 @@ import { Model } from './model';
 import { imgProm } from './util';
 import { Dict, Move, Tile } from './types';
 import { Layer } from './chunk';
-import { DEBUG } from './constants';
+import { DEBUG, FRAME_DURATION_MS } from './constants';
 import { key } from './key';
 
 window.onload = () => {
@@ -123,7 +123,7 @@ class App {
         model.extend(model.state.layer);
         this.lock = false;
         view.draw();
-      }, 30);
+      }, FRAME_DURATION_MS);
     }
   }
 
