@@ -24,5 +24,6 @@ export const sprites: { [k in Sprite]: Point } = {
 
 export const DEBUG = {
   globals: false,
+  mouse: false,
   keys: false,
 };

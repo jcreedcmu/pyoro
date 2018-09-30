@@ -15,7 +15,7 @@ window.onload = () => {
 class App {
   view: View;
   editTileIndex: number = 0;
-  editTiles: Tile[] = ['box3', 'up_box'];
+  editTiles: Tile[] = ['box3', 'up_box', 'fragile_box'];
 
   static moveBindings: Dict<Move> = {
     'KP7': 'up-left',
@@ -133,9 +133,13 @@ class App {
     document.onmousedown = (e: MouseEvent) => {
 
       const c = document.getElementById("c");
+      const world_pos = view.world_of_canvas({ x: e.clientX, y: e.clientY });
+      if (DEBUG.mouse) {
+        console.log(world_pos);
+      }
       if (c == null) throw "can't find canvas element";
       const rect = c.getBoundingClientRect();
-      model.handle_mousedown(view.world_of_canvas({ x: e.clientX, y: e.clientY }));
+      model.handle_mousedown(world_pos);
       view.draw();
     };
   }
