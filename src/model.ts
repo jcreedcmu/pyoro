@@ -255,6 +255,7 @@ export class Model {
 
     return (t: number): State => {
       var state: State = clone(orig_state);
+      state.overlay = orig_state.overlay; // XXX shouldn't have to shallow-copy this...
       anims.forEach(anim => { anim.apply(state, t); });
       var layer = new Layer();
       anims.forEach(anim => { layer.extend(anim.tileHook(this, t)); });

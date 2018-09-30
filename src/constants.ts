@@ -23,7 +23,7 @@ export const sprites: { [k in Sprite]: Point } = {
 };
 
 export const DEBUG = {
-  globals: false,
+  globals: true,
   mouse: false,
   keys: false,
 };

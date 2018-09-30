@@ -9,6 +9,7 @@ const WebpackDevServer = require('webpack-dev-server');
 const webpack = require('webpack');
 const config = require('./webpack.config.js');
 const path = require('path');
+const fs = require('fs');
 
 const express = require('express');
 const compiler = webpack(config);
@@ -27,8 +28,16 @@ server.use( bodyParser.json());
 server.use(bodyParser.urlencoded({  extended: true }));
 server.use('/save', (req, res) => {
 
-  console.log(req.body);
-  res.send(JSON.stringify('hello'));
+  console.log('req.body', JSON.stringify(req.body));
+  const json = JSON.stringify(req.body);
+  const string_to_write = `import { LayerData } from './chunk';
+
+export const initial_overlay: LayerData = ${json};
+`;
+
+  console.log(string_to_write);
+  fs.writeFileSync('src/initial_overlay.ts', string_to_write, 'utf8');
+  res.send(JSON.stringify('ok'));
 });
 
 server.listen(3000, 'localhost', function() {});
