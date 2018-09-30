@@ -6,6 +6,7 @@ import { Dict, Move, Tile } from './types';
 import { Layer } from './chunk';
 import { DEBUG, FRAME_DURATION_MS } from './constants';
 import { key } from './key';
+import { initial_overlay } from './initial_overlay';
 
 window.onload = () => {
   const app = new App;
@@ -45,7 +46,7 @@ class App {
     's': a => {
       const req = new Request('/save', {
         method: 'POST',
-        body: JSON.stringify(a.view.model.overlay),
+        body: JSON.stringify(a.view.model.state.overlay),
         headers: {
           'Content-Type': 'application/json',
         }
@@ -61,6 +62,7 @@ class App {
       player: newPlayer({ x: -1, y: 0 }),
       viewPort: { x: -13, y: -9 },
       transient_layer: new Layer(),
+      overlay: new Layer(initial_overlay),
     });
 
     const c = document.getElementById('c') as HTMLCanvasElement;

@@ -7,6 +7,7 @@ export type State = {
   player: Player,
   viewPort: Point,
   transient_layer: Layer,
+  overlay: Layer, // this is semi-permanent changes to the board state
 };
 
 export class Animation {

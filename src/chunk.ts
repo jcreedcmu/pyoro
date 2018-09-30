@@ -10,8 +10,16 @@ export interface ReadLayer {
   getTile(p: Point): Tile;
 }
 
+export type LayerData = { tiles: Dict<Tile> };
+
 export class Layer implements ReadLayer {
   tiles: Dict<Tile> = {};
+
+  constructor(ld?: LayerData) {
+    if (ld) {
+      this.tiles = ld.tiles;
+    }
+  }
 
   getTile(p: Point): Tile {
     return this.tiles[p.x + ',' + p.y];

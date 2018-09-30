@@ -154,14 +154,12 @@ export class Model {
   base: ReadLayer;
   chunk_props: any;
   state: State;
-  overlay: Layer;
   editTile: Tile = 'box3';
 
   constructor(state: State) {
     this.base = new CachedFunctionalLayer(rawGetTile);
     this.chunk_props = {};
     this.state = state;
-    this.overlay = new Layer;
   }
 
   extend(l: Layer) {
@@ -172,11 +170,11 @@ export class Model {
   }
 
   getTile(p: Point): Tile {
-    return this.overlay.getTile(p) || this.base.getTile(p);
+    return this.state.overlay.getTile(p) || this.base.getTile(p);
   }
 
   putTile(p: Point, t: Tile): void {
-    this.overlay.putTile(p, t);
+    this.state.overlay.putTile(p, t);
   }
 
   forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
