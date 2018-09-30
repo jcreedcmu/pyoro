@@ -60,7 +60,7 @@ class App {
     const model = new Model({
       player: newPlayer({ x: -1, y: 0 }),
       viewPort: { x: -13, y: -9 },
-      layer: new Layer(),
+      transient_layer: new Layer(),
     });
 
     const c = document.getElementById('c') as HTMLCanvasElement;
@@ -120,7 +120,8 @@ class App {
       view.draw();
       setTimeout(() => {
         model.state = animator(1);
-        model.extend(model.state.layer);
+        model.extend(model.state.transient_layer);
+        model.state.transient_layer = new Layer();
         this.lock = false;
         view.draw();
       }, FRAME_DURATION_MS);

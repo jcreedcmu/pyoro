@@ -6,7 +6,7 @@ import { Point, Facing, Sprite } from './types';
 export type State = {
   player: Player,
   viewPort: Point,
-  layer: Layer,
+  transient_layer: Layer,
 };
 
 export class Animation {

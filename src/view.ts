@@ -43,8 +43,8 @@ class View {
     const vp = model.get_viewPort();
 
     let drawable: ReadLayer = model;
-    if (model.state.layer != null) {
-      drawable = new CompositeLayer(model.state.layer, model);
+    if (model.state.transient_layer != null) {
+      drawable = new CompositeLayer(model.state.transient_layer, model);
     }
 
     for (let y = 0; y < NUM_TILES_Y + 1; y++) {

@@ -260,7 +260,7 @@ export class Model {
       anims.forEach(anim => { anim.apply(state, t); });
       var layer = new Layer();
       anims.forEach(anim => { layer.extend(anim.tileHook(this, t)); });
-      state.layer = layer;
+      state.transient_layer = layer;
       return state;
     };
   }
@@ -274,7 +274,7 @@ export class Model {
 
   execute_move(move: Move) {
     this.state = this.animator_for_move(move)(1);
-    this.extend(this.state.layer);
+    this.extend(this.state.transient_layer);
   }
 
   resetViewPortAnimation() {
