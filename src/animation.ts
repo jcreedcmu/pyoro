@@ -1,4 +1,4 @@
-import { Layer, ReadLayer } from './chunk';
+import { Layer, LayerData, ReadLayer } from './chunk';
 import { FULL_IMPETUS } from './constants';
 import { vplus, vscale } from './util';
 import { Point, Facing, Sprite } from './types';
@@ -7,7 +7,7 @@ export type State = {
   player: Player,
   viewPort: Point,
   transient_layer: Layer,
-  overlay: Layer, // this is semi-permanent changes to the board state
+  overlay: LayerData,
 };
 
 export class Animation {

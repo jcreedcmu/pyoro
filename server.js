@@ -29,7 +29,7 @@ server.use(bodyParser.urlencoded({  extended: true }));
 server.use('/save', (req, res) => {
 
   console.log('req.body', JSON.stringify(req.body));
-  const json = JSON.stringify(req.body);
+  const json = JSON.stringify(req.body, null, 2);
   const string_to_write = `import { LayerData } from './chunk';
 
 export const initial_overlay: LayerData = ${json};

@@ -12,6 +12,14 @@ export interface ReadLayer {
 
 export type LayerData = { tiles: Dict<Tile> };
 
+export function getTile(l: LayerData, p: Point) {
+  return l.tiles[p.x + ',' + p.y];
+}
+
+export function putTile(l: LayerData, p: Point, t: Tile): void {
+  l.tiles[p.x + ',' + p.y] = t;
+}
+
 export class Layer implements ReadLayer {
   tiles: Dict<Tile> = {};
 

@@ -1,5 +1,5 @@
 import { Animation, MeltAnimation, Player, PlayerAnimation, State, ViewPortAnimation } from './animation';
-import { Chunk, ChunkCache, Layer, ReadLayer, TileFunc } from './chunk';
+import { Chunk, ChunkCache, Layer, ReadLayer, TileFunc, putTile, getTile } from './chunk';
 import { CHUNK_SIZE, FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';
@@ -170,11 +170,11 @@ export class Model {
   }
 
   getTile(p: Point): Tile {
-    return this.state.overlay.getTile(p) || this.base.getTile(p);
+    return getTile(this.state.overlay, p) || this.base.getTile(p);
   }
 
   putTile(p: Point, t: Tile): void {
-    this.state.overlay.putTile(p, t);
+    putTile(this.state.overlay, p, t);
   }
 
   forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
