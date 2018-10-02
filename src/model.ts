@@ -3,6 +3,7 @@ import { Chunk, ChunkCache, Layer, ReadLayer, TileFunc, putTile, getTile } from 
 import { CHUNK_SIZE, FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';
+import { produce } from 'immer';
 
 function openTile(x: Tile): boolean {
   return x == "empty";
@@ -208,8 +209,10 @@ export class Model {
         this.forceBlock(pos, this.getTile(pos), anims);
       });
 
+      let prevImpetus = player.impetus;
+
       if (supportedBefore) {
-        player.impetus = genImpetus(tileBefore);
+        prevImpetus = genImpetus(tileBefore);
       }
 
       if (result.dpos == null) {
@@ -218,7 +221,7 @@ export class Model {
 
       const anim = {
         pos: vplus(player.pos, result.dpos),
-        impetus: result.impetus != null ? result.impetus : player.impetus,
+        impetus: result.impetus != null ? result.impetus : prevImpetus,
         flipState,
         animState: 'player' as Sprite,
       };
@@ -254,13 +257,12 @@ export class Model {
     var anims = this.animate_move(move);
 
     return (t: number): State => {
-      var state: State = clone(orig_state);
-      state.overlay = orig_state.overlay; // XXX shouldn't have to shallow-copy this...
-      anims.forEach(anim => { anim.apply(state, t); });
-      var layer = new Layer();
-      anims.forEach(anim => { layer.extend(anim.tileHook(this, t)); });
-      state.transient_layer = layer;
-      return state;
+      return produce(orig_state, dr => {
+        anims.forEach(anim => { anim.apply(dr, t); });
+        const layer = new Layer();
+        anims.forEach(anim => { layer.extend(anim.tileHook(this, t)); });
+        dr.transient_layer = layer;
+      });
     };
   }
 

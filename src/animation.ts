@@ -2,6 +2,7 @@ import { Layer, LayerData, ReadLayer } from './chunk';
 import { FULL_IMPETUS } from './constants';
 import { vplus, vscale } from './util';
 import { Point, Facing, Sprite } from './types';
+import { DraftObject } from 'immer';
 
 export type State = {
   player: Player,
@@ -11,7 +12,7 @@ export type State = {
 };
 
 export class Animation {
-  apply(state: State, t: number) { }
+  apply(state: DraftObject<State>, t: number) { }
   tileHook(map: ReadLayer, t: number) { return new Layer(); }
 }
 
@@ -34,7 +35,7 @@ export class PlayerAnimation extends Animation {
     this.impetus = impetus;
   }
 
-  apply(state: State, t: number) {
+  apply(state: DraftObject<State>, t: number) {
     state.player = {
       pos: vplus(vscale(state.player.pos, 1 - t), vscale(this.pos, t)),
       animState: this.animState,
@@ -52,7 +53,7 @@ export class ViewPortAnimation extends Animation {
     this.dpos = dpos;
   }
 
-  apply(state: State, t: number) {
+  apply(state: DraftObject<State>, t: number) {
     state.viewPort = vplus(state.viewPort, vscale(this.dpos, t));
   }
 }

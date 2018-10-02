@@ -7,6 +7,7 @@ import { Layer } from './chunk';
 import { DEBUG, FRAME_DURATION_MS } from './constants';
 import { key } from './key';
 import { initial_overlay } from './initial_overlay';
+import { produce } from 'immer';
 
 window.onload = () => {
   const app = new App;
@@ -123,7 +124,9 @@ class App {
       setTimeout(() => {
         model.state = animator(1);
         model.extend(model.state.transient_layer);
-        model.state.transient_layer = new Layer();
+        model.state = produce(model.state, st => {
+          st.transient_layer = new Layer();
+        });
         this.lock = false;
         view.draw();
       }, FRAME_DURATION_MS);
