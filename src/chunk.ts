@@ -44,24 +44,6 @@ export class Layer implements ReadLayer {
   }
 }
 
-export class Chunk extends Layer {
-  pos: Point;
-  rawGetTile: TileFunc;
-
-  constructor(p: Point, rawGetTile: TileFunc) {
-    super();
-    this.pos = p;
-    this.rawGetTile = rawGetTile;
-
-    for (var y = 0; y < CHUNK_SIZE; y++) {
-      for (var x = 0; x < CHUNK_SIZE; x++) {
-        var m = vplus(p, { x: x, y: y });
-        this.tiles[m.x + ',' + m.y] = this.rawGetTile(m);
-      }
-    }
-  }
-}
-
 export class CompositeLayer implements ReadLayer {
   l1: ReadLayer;
   l2: ReadLayer;
@@ -77,39 +59,3 @@ export class CompositeLayer implements ReadLayer {
 }
 
 type PosPt = { pos: Point };
-
-export class ChunkCache<T extends PosPt> {
-  chunks: Dict<T> = {};
-  CHUNK_SIZE: number;
-
-  constructor(CHUNK_SIZE: number) {
-    this.CHUNK_SIZE = CHUNK_SIZE;
-  }
-
-  get(p: Point): T {
-    return this.chunks[p.x + ',' + p.y];
-  }
-
-  add(c: T): T {
-    this.chunks[c.pos.x + ',' + c.pos.y] = c;
-    return c;
-  }
-
-  // returns evicted chunks, updates chunks field to contain
-  // only visible chunks.
-  filter(viewPort: Rect): T[] {
-    const oldc = this.chunks;
-    const evicted: T[] = [];
-    let newc: Dict<T> = {};
-    Object.entries(oldc).forEach(([k, chunk]) => {
-      if (rect_intersect({ p: chunk.pos, w: this.CHUNK_SIZE, h: this.CHUNK_SIZE }, viewPort)) {
-        newc[k] = chunk;
-      }
-      else {
-        evicted.push(chunk);
-      }
-    });
-    this.chunks = newc;
-    return evicted;
-  }
-}

@@ -1,7 +1,7 @@
 import { Animation, MeltAnimation, PlayerAnimation, ViewPortAnimation } from './animation';
 import { State, Player } from "./state";
-import { Chunk, ChunkCache, Layer, LayerData, ReadLayer, TileFunc, putTile, getTile } from './chunk';
-import { CHUNK_SIZE, FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y } from './constants';
+import { Layer, LayerData, ReadLayer, TileFunc, putTile, getTile } from './chunk';
+import { FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';
 import { produce } from 'immer';
@@ -125,41 +125,12 @@ function get_flip_state(move: Move): Facing | null {
   }
 }
 
-function rawGetTile(p: Point): Tile {
-  const { x, y } = p;
-  return y > 0 ? 'box' : 'empty';
-}
-
-export class CachedFunctionalLayer implements ReadLayer {
-  cache: ChunkCache<Chunk>;
-  cache_misses: number;
-  readonly f: TileFunc;
-
-  constructor(f: TileFunc) {
-    this.cache = new ChunkCache(CHUNK_SIZE);
-    this.cache_misses = 0;
-    this.f = f;
-  }
-
-  getTile(p: Point): Tile {
-    var chunk_pos = vscale({ x: div(p.x, CHUNK_SIZE), y: div(p.y, CHUNK_SIZE) }, CHUNK_SIZE);
-    var c = this.cache.get(chunk_pos);
-    if (!c) {
-      this.cache_misses++;
-      c = this.cache.add(new Chunk(chunk_pos, this.f));
-    }
-    return c.getTile(p);
-  }
-}
-
 export class Model {
-  base: ReadLayer;
   chunk_props: any;
   state: State;
   editTile: Tile = 'box3';
 
   constructor(state: State) {
-    this.base = new CachedFunctionalLayer(rawGetTile);
     this.chunk_props = {};
     this.state = state;
   }
@@ -172,7 +143,7 @@ export class Model {
   }
 
   getTile(p: Point): Tile {
-    return getTile(this.state.overlay, p) || this.base.getTile(p);
+    return getTile(this.state.overlay, p) || 'empty';
   }
 
   putTile(p: Point, t: Tile): void {

@@ -1,5 +1,5 @@
 import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants';
-import { DEBUG, CHUNK_SIZE } from './constants';
+import { DEBUG } from './constants';
 import { Model } from './model';
 import { CompositeLayer, ReadLayer, Layer } from './chunk';
 import { int, vplus, vint, vscale, vminus, vfpart, vdiv } from './util';

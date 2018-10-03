@@ -1,7 +1,6 @@
 import { Sprite, Point } from './types';
 
 export const FULL_IMPETUS = 4;
-export const CHUNK_SIZE = 16;
 
 export const NUM_TILES_X = 24;
 export const NUM_TILES_Y = 18;
