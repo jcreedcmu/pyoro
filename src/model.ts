@@ -126,20 +126,11 @@ function get_flip_state(move: Move): Facing | null {
 }
 
 export class Model {
-  chunk_props: any;
   state: State;
   editTile: Tile = 'box3';
 
   constructor(state: State) {
-    this.chunk_props = {};
     this.state = state;
-  }
-
-  extend(l: LayerData) {
-    Object.entries(l.tiles).forEach(([k, v]) => {
-      var coords = k.split(',').map(x => parseInt(x)) as [number, number]; // arrrrg
-      this.putTile({ x: coords[0], y: coords[1] }, v as Tile);
-    });
   }
 
   getTile(p: Point): Tile {
