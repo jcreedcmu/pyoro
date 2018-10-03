@@ -1,4 +1,4 @@
-import { LayerData } from './chunk';
+import { LayerData } from './layer';
 
 export const initial_overlay: LayerData = {
   "tiles": {

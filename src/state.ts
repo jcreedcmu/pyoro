@@ -1,4 +1,4 @@
-import { Layer, LayerData } from './chunk';
+import { Layer, LayerData } from './layer';
 import { Point, Facing, Sprite } from './types';
 import { FULL_IMPETUS } from './constants';
 

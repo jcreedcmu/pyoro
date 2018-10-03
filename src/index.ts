@@ -3,7 +3,7 @@ import { Player, newPlayer } from './state';
 import { Model } from './model';
 import { imgProm } from './util';
 import { Dict, Move, Tile } from './types';
-import { Layer } from './chunk';
+import { Layer } from './layer';
 import { DEBUG, FRAME_DURATION_MS } from './constants';
 import { key } from './key';
 import { initial_overlay } from './initial_overlay';
