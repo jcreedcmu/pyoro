@@ -172,7 +172,7 @@ export class Model {
 
     if (supportedBefore)
       impetus = genImpetus(tileBefore);
-    if (result.impetus)
+    if (result.impetus != null)
       impetus = result.impetus;
 
     if (result.dpos == null)
