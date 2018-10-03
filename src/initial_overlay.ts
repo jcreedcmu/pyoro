@@ -1,6 +1,6 @@
-import { Layer } from './layer';
+import { LayerData } from './chunk';
 
-export const initial_overlay: Layer = {
+export const initial_overlay: LayerData = {
   "tiles": {
     "0,1": "up_box",
     "-1,1": "box3",
@@ -27,6 +27,19 @@ export const initial_overlay: Layer = {
     "-6,2": "box3",
     "-9,1": "box3",
     "-9,2": "box3",
-    "0,2": "box3"
+    "0,2": "box3",
+    "-2,-1": "box3",
+    "-1,-1": "box3",
+    "1,2": "box3",
+    "3,2": "box3",
+    "6,2": "empty",
+    "7,2": "box3",
+    "4,2": "empty",
+    "5,2": "box3",
+    "9,2": "box3",
+    "11,2": "box3",
+    "13,2": "box3",
+    "15,2": "box3",
+    "17,2": "box3"
   }
 };

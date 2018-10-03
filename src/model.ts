@@ -134,7 +134,7 @@ export class Model {
   }
 
   getTile(p: Point): Tile {
-    return getTile(this.state.overlay, p) || 'empty';
+    return getTile(this.state.overlay, p);
   }
 
   putTile(p: Point, t: Tile): void {
