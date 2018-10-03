@@ -1,6 +1,6 @@
-import { LayerData } from './layer';
+import { Layer } from './layer';
 
-export const initial_overlay: LayerData = {
+export const initial_overlay: Layer = {
   "tiles": {
     "0,1": "up_box",
     "-1,1": "box3",

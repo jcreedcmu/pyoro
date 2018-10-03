@@ -10,38 +10,14 @@ export interface ReadLayer {
   getTile(p: Point): Tile;
 }
 
-export type LayerData = { tiles: Dict<Tile> };
+export type Layer = { tiles: Dict<Tile> };
 
-export function getTile(l: LayerData, p: Point) {
+export function getTile(l: Layer, p: Point) {
   return l.tiles[p.x + ',' + p.y];
 }
 
-export function putTile(l: LayerData, p: Point, t: Tile): void {
+export function putTile(l: Layer, p: Point, t: Tile): void {
   l.tiles[p.x + ',' + p.y] = t;
-}
-
-export class Layer implements ReadLayer {
-  tiles: Dict<Tile> = {};
-
-  constructor(ld?: LayerData) {
-    if (ld) {
-      this.tiles = ld.tiles;
-    }
-  }
-
-  getTile(p: Point): Tile {
-    return this.tiles[p.x + ',' + p.y];
-  }
-
-  putTile(p: Point, t: Tile): void {
-    this.tiles[p.x + ',' + p.y] = t;
-  }
-
-  extend(l: Layer): void {
-    Object.keys(l.tiles).forEach(k => {
-      this.tiles[k] = l.tiles[k]
-    });
-  }
 }
 
 type PosPt = { pos: Point };

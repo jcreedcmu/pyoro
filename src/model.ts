@@ -1,6 +1,6 @@
 import { Animation, MeltAnimation, PlayerAnimation, ViewPortAnimation } from './animation';
 import { State, Player } from "./state";
-import { LayerData, ReadLayer, TileFunc, putTile, getTile } from './layer';
+import { Layer, ReadLayer, TileFunc, putTile, getTile } from './layer';
 import { FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';

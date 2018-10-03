@@ -1,4 +1,4 @@
-import { LayerData } from './layer';
+import { Layer } from './layer';
 import { Point, Facing, Sprite } from './types';
 import { FULL_IMPETUS } from './constants';
 
@@ -21,5 +21,5 @@ export function newPlayer(pos: Point): Player {
 export type State = {
   player: Player;
   viewPort: Point;
-  overlay: LayerData;
+  overlay: Layer;
 };

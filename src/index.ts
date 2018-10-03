@@ -3,7 +3,6 @@ import { Player, newPlayer } from './state';
 import { Model } from './model';
 import { imgProm } from './util';
 import { Dict, Move, Tile } from './types';
-import { Layer } from './layer';
 import { DEBUG, FRAME_DURATION_MS } from './constants';
 import { key } from './key';
 import { initial_overlay } from './initial_overlay';
@@ -62,7 +61,7 @@ class App {
     const model = new Model({
       player: newPlayer({ x: -1, y: 0 }),
       viewPort: { x: -13, y: -9 },
-      overlay: new Layer(initial_overlay),
+      overlay: initial_overlay,
     });
 
     const c = document.getElementById('c') as HTMLCanvasElement;
