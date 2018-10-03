@@ -150,11 +150,8 @@ export class Model {
     var forcedBlocks: Point[] = []
     var anims: Animation[] = [];
 
-
     var s = this.state;
     var player = s.player;
-
-    var moved = true; // XXX this should come out of preresolve, really
 
     var belowBefore = vplus(player.pos, { x: 0, y: 1 });
     var tileBefore = this.getTile(belowBefore);
@@ -164,49 +161,47 @@ export class Model {
     const result = get_motion({ tiles: this, player }, move);
     const flipState = get_flip_state(move) || player.flipState;
 
-    if (moved) {
-      if (result.forced != null) forcedBlocks.push(result.forced);
+    if (result.forced != null) forcedBlocks.push(result.forced);
 
-      forcedBlocks.forEach(fb => {
-        var pos = vplus(player.pos, fb);
-        this.forceBlock(pos, this.getTile(pos), anims);
-      });
+    forcedBlocks.forEach(fb => {
+      var pos = vplus(player.pos, fb);
+      this.forceBlock(pos, this.getTile(pos), anims);
+    });
 
-      let impetus = player.impetus;
+    let impetus = player.impetus;
 
-      if (supportedBefore)
-        impetus = genImpetus(tileBefore);
-      if (result.impetus)
-        impetus = result.impetus;
+    if (supportedBefore)
+      impetus = genImpetus(tileBefore);
+    if (result.impetus)
+      impetus = result.impetus;
 
-      if (result.dpos == null)
-        throw "didn't expect to have a null dpos here";
+    if (result.dpos == null)
+      throw "didn't expect to have a null dpos here";
 
-      const nextPos = vplus(player.pos, result.dpos);
-      let animState: Sprite = 'player';
-      const tileAfter = this.getTile(vplus(nextPos, { x: 0, y: 1 }));
-      const supportedAfter = !openTile(tileAfter);
+    const nextPos = vplus(player.pos, result.dpos);
+    let animState: Sprite = 'player';
+    const tileAfter = this.getTile(vplus(nextPos, { x: 0, y: 1 }));
+    const supportedAfter = !openTile(tileAfter);
 
-      if (supportedAfter) {
-        impetus = genImpetus(tileAfter);
-      }
-      else {
-        if (impetus)
-          impetus--;
-        animState = impetus ? 'player_rise' : 'player_fall';
-      }
-
-      anims.push(PlayerAnimation(nextPos, animState, impetus, flipState));
-
-      if (nextPos.x - s.viewPort.x >= NUM_TILES_X - 1)
-        anims.push(ViewPortAnimation({ x: 1, y: 0 }));
-      if (nextPos.x - s.viewPort.x < 1)
-        anims.push(ViewPortAnimation({ x: -1, y: 0 }));
-      if (nextPos.y - s.viewPort.y >= NUM_TILES_Y - 1)
-        anims.push(ViewPortAnimation({ x: 0, y: 1 }));
-      if (nextPos.y - s.viewPort.y < 1)
-        anims.push(ViewPortAnimation({ x: 0, y: -1 }));
+    if (supportedAfter) {
+      impetus = genImpetus(tileAfter);
     }
+    else {
+      if (impetus)
+        impetus--;
+      animState = impetus ? 'player_rise' : 'player_fall';
+    }
+
+    anims.push(PlayerAnimation(nextPos, animState, impetus, flipState));
+
+    if (nextPos.x - s.viewPort.x >= NUM_TILES_X - 1)
+      anims.push(ViewPortAnimation({ x: 1, y: 0 }));
+    if (nextPos.x - s.viewPort.x < 1)
+      anims.push(ViewPortAnimation({ x: -1, y: 0 }));
+    if (nextPos.y - s.viewPort.y >= NUM_TILES_Y - 1)
+      anims.push(ViewPortAnimation({ x: 0, y: 1 }));
+    if (nextPos.y - s.viewPort.y < 1)
+      anims.push(ViewPortAnimation({ x: 0, y: -1 }));
 
     return anims;
   }
