@@ -19,12 +19,11 @@ export function PlayerAnimation(pos: Point, animState: Sprite, impetus: number, 
         flipState: flipState,
         impetus: impetus
       }
-
     },
   }
 }
 
-export function ViewPortAnimation(dpos: Point) {
+export function ViewPortAnimation(dpos: Point): Animation {
   return {
     apply: (state: DraftObject<State>, t: number) => {
       state.viewPort = vplus(state.viewPort, vscale(dpos, t));
@@ -32,7 +31,7 @@ export function ViewPortAnimation(dpos: Point) {
   };
 }
 
-export function MeltAnimation(pos: Point) {
+export function MeltAnimation(pos: Point): Animation {
   return {
     apply: (state: DraftObject<State>, t: number) => { },
     tileHook: (map: ReadLayer, t: number) => {
