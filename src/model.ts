@@ -1,6 +1,6 @@
 import { Animation, MeltAnimation, PlayerAnimation, ViewPortAnimation } from './animation';
 import { State, Player } from "./state";
-import { Layer, ReadLayer, TileFunc, putTile, getTile } from './layer';
+import { Layer, TileFunc, putTile, getTile } from './layer';
 import { FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';
@@ -22,11 +22,11 @@ type Motion = {
   impetus?: number, // optionally set impetus to some value
 };
 
-type Board = { tiles: ReadLayer, player: Player };
+type Board = { tiles: Layer, player: Player };
 
 function ropen(b: Board, x: number, y: number): boolean {
   const { tiles, player } = b;
-  return openTile(tiles.getTile(vplus(player.pos, { x, y })));
+  return openTile(getTile(tiles, vplus(player.pos, { x, y })));
 }
 
 function execute_down(b: Board): Motion {
@@ -158,7 +158,7 @@ export class Model {
     var supportedBefore = !openTile(tileBefore);
     if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
 
-    const result = get_motion({ tiles: this, player }, move);
+    const result = get_motion({ tiles: this.state.overlay, player }, move);
     const flipState = get_flip_state(move) || player.flipState;
 
     if (result.forced != null) forcedBlocks.push(result.forced);

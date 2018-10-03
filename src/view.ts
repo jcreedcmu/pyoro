@@ -1,10 +1,9 @@
 import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants';
 import { DEBUG } from './constants';
 import { Model } from './model';
-import { ReadLayer } from './layer';
 import { int, vplus, vint, vscale, vminus, vfpart, vdiv } from './util';
 import { Point, Sprite } from './types';
-
+import { getTile } from './layer';
 
 class View {
   c: HTMLCanvasElement;
@@ -42,12 +41,10 @@ class View {
 
     const vp = model.get_viewPort();
 
-    let drawable: ReadLayer = model;
-
     for (let y = 0; y < NUM_TILES_Y + 1; y++) {
       for (let x = 0; x < NUM_TILES_X + 1; x++) {
         const p = { x, y };
-        this.draw_sprite(drawable.getTile(vplus(p, vint(vp))), vminus(p, vfpart(vp)));
+        this.draw_sprite(model.getTile(vplus(p, vint(vp))), vminus(p, vfpart(vp)));
       }
     }
 
