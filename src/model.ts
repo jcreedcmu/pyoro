@@ -181,43 +181,39 @@ export class Model {
         this.forceBlock(pos, this.getTile(pos), anims);
       });
 
-      let prevImpetus = player.impetus;
+      let impetus = player.impetus;
 
-      if (supportedBefore) {
-        prevImpetus = genImpetus(tileBefore);
-      }
+      if (supportedBefore)
+        impetus = genImpetus(tileBefore);
+      if (result.impetus)
+        impetus = result.impetus;
 
-      if (result.dpos == null) {
+      if (result.dpos == null)
         throw "didn't expect to have a null dpos here";
-      }
 
-      const anim = {
-        pos: vplus(player.pos, result.dpos),
-        impetus: result.impetus != null ? result.impetus : prevImpetus,
-        flipState,
-        animState: 'player' as Sprite,
-      };
-
-      const tileAfter = this.getTile(vplus(anim.pos, { x: 0, y: 1 }));
+      const nextPos = vplus(player.pos, result.dpos);
+      let animState: Sprite = 'player';
+      const tileAfter = this.getTile(vplus(nextPos, { x: 0, y: 1 }));
       const supportedAfter = !openTile(tileAfter);
 
       if (supportedAfter) {
-        anim.impetus = genImpetus(tileAfter);
+        impetus = genImpetus(tileAfter);
       }
       else {
-        if (anim.impetus) { anim.impetus--; }
-        anim.animState = anim.impetus ? 'player_rise' : 'player_fall';
+        if (impetus)
+          impetus--;
+        animState = impetus ? 'player_rise' : 'player_fall';
       }
 
-      anims.push(PlayerAnimation(anim.pos, anim.animState, anim.impetus, anim.flipState));
+      anims.push(PlayerAnimation(nextPos, animState, impetus, flipState));
 
-      if (anim.pos.x - s.viewPort.x >= NUM_TILES_X - 1)
+      if (nextPos.x - s.viewPort.x >= NUM_TILES_X - 1)
         anims.push(ViewPortAnimation({ x: 1, y: 0 }));
-      if (anim.pos.x - s.viewPort.x < 1)
+      if (nextPos.x - s.viewPort.x < 1)
         anims.push(ViewPortAnimation({ x: -1, y: 0 }));
-      if (anim.pos.y - s.viewPort.y >= NUM_TILES_Y - 1)
+      if (nextPos.y - s.viewPort.y >= NUM_TILES_Y - 1)
         anims.push(ViewPortAnimation({ x: 0, y: 1 }));
-      if (anim.pos.y - s.viewPort.y < 1)
+      if (nextPos.y - s.viewPort.y < 1)
         anims.push(ViewPortAnimation({ x: 0, y: -1 }));
     }
 
@@ -230,13 +226,7 @@ export class Model {
 
     return (t: number): State => {
       return produce(orig_state, dr => {
-        anims.forEach(anim => { anim.apply(dr, t); });
-        const layer = new Layer();
-        anims.forEach(anim => {
-          if (anim.tileHook)
-            layer.extend(anim.tileHook(this, t));
-        });
-        dr.transient_layer = layer;
+        anims.forEach(anim => { anim(dr, t); });
       });
     };
   }
@@ -246,11 +236,6 @@ export class Model {
       this.putTile(p, this.editTile);
     else
       this.putTile(p, 'empty');
-  }
-
-  execute_move(move: Move) {
-    this.state = this.animator_for_move(move)(1);
-    this.extend(this.state.transient_layer);
   }
 
   get_player() {

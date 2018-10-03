@@ -123,10 +123,6 @@ class App {
       view.draw();
       setTimeout(() => {
         model.state = animator(1);
-        model.extend(model.state.transient_layer);
-        model.state = produce(model.state, st => {
-          st.transient_layer = new Layer();
-        });
         this.lock = false;
         view.draw();
       }, FRAME_DURATION_MS);
