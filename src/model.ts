@@ -152,7 +152,7 @@ export class Model {
 
   forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
     if (tile == 'fragile_box')
-      anims.push(new MeltAnimation(pos));
+      anims.push(MeltAnimation(pos));
   }
 
   animate_move(move: Move): Animation[] {
@@ -209,16 +209,16 @@ export class Model {
         anim.animState = anim.impetus ? 'player_rise' : 'player_fall';
       }
 
-      anims.push(new PlayerAnimation(anim.pos, anim.animState, anim.impetus, anim.flipState));
+      anims.push(PlayerAnimation(anim.pos, anim.animState, anim.impetus, anim.flipState));
 
       if (anim.pos.x - s.viewPort.x >= NUM_TILES_X - 1)
-        anims.push(new ViewPortAnimation({ x: 1, y: 0 }));
+        anims.push(ViewPortAnimation({ x: 1, y: 0 }));
       if (anim.pos.x - s.viewPort.x < 1)
-        anims.push(new ViewPortAnimation({ x: -1, y: 0 }));
+        anims.push(ViewPortAnimation({ x: -1, y: 0 }));
       if (anim.pos.y - s.viewPort.y >= NUM_TILES_Y - 1)
-        anims.push(new ViewPortAnimation({ x: 0, y: 1 }));
+        anims.push(ViewPortAnimation({ x: 0, y: 1 }));
       if (anim.pos.y - s.viewPort.y < 1)
-        anims.push(new ViewPortAnimation({ x: 0, y: -1 }));
+        anims.push(ViewPortAnimation({ x: 0, y: -1 }));
     }
 
     return anims;
@@ -232,7 +232,10 @@ export class Model {
       return produce(orig_state, dr => {
         anims.forEach(anim => { anim.apply(dr, t); });
         const layer = new Layer();
-        anims.forEach(anim => { layer.extend(anim.tileHook(this, t)); });
+        anims.forEach(anim => {
+          if (anim.tileHook)
+            layer.extend(anim.tileHook(this, t));
+        });
         dr.transient_layer = layer;
       });
     };
@@ -248,15 +251,6 @@ export class Model {
   execute_move(move: Move) {
     this.state = this.animator_for_move(move)(1);
     this.extend(this.state.transient_layer);
-  }
-
-  resetViewPortAnimation() {
-    var s = this.state;
-    return new ViewPortAnimation({
-      x: int(s.player.pos.x - NUM_TILES_X / 2) - s.viewPort.x,
-      y: int(s.player.pos.y - NUM_TILES_Y / 2) - s.viewPort.y
-    });
-
   }
 
   get_player() {
