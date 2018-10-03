@@ -44,18 +44,4 @@ export class Layer implements ReadLayer {
   }
 }
 
-export class CompositeLayer implements ReadLayer {
-  l1: ReadLayer;
-  l2: ReadLayer;
-
-  constructor(l1: ReadLayer, l2: ReadLayer) {
-    this.l1 = l1;
-    this.l2 = l2;
-  }
-
-  getTile(p: Point): Tile {
-    return this.l1.getTile(p) || this.l2.getTile(p);
-  }
-}
-
 type PosPt = { pos: Point };

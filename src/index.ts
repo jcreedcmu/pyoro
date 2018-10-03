@@ -62,7 +62,6 @@ class App {
     const model = new Model({
       player: newPlayer({ x: -1, y: 0 }),
       viewPort: { x: -13, y: -9 },
-      transient_layer: new Layer(),
       overlay: new Layer(initial_overlay),
     });
 

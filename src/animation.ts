@@ -1,4 +1,4 @@
-import { Layer, ReadLayer, putTile } from './layer';
+import { ReadLayer, putTile } from './layer';
 import { vplus, vscale } from './util';
 import { Point, Facing, Sprite } from './types';
 import { DraftObject } from 'immer';

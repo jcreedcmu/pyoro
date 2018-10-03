@@ -1,7 +1,7 @@
 import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants';
 import { DEBUG } from './constants';
 import { Model } from './model';
-import { CompositeLayer, ReadLayer, Layer } from './layer';
+import { ReadLayer } from './layer';
 import { int, vplus, vint, vscale, vminus, vfpart, vdiv } from './util';
 import { Point, Sprite } from './types';
 
@@ -43,9 +43,6 @@ class View {
     const vp = model.get_viewPort();
 
     let drawable: ReadLayer = model;
-    if (model.state.transient_layer != null) {
-      drawable = new CompositeLayer(new Layer(model.state.transient_layer), model);
-    }
 
     for (let y = 0; y < NUM_TILES_Y + 1; y++) {
       for (let x = 0; x < NUM_TILES_X + 1; x++) {
