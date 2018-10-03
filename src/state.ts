@@ -1,5 +1,5 @@
 import { Layer } from './layer';
-import { Point, Facing, Sprite } from './types';
+import { Point, Facing, Sprite, Tile } from './types';
 import { FULL_IMPETUS } from './constants';
 
 export type Player = {
@@ -18,8 +18,13 @@ export function newPlayer(pos: Point): Player {
   };
 }
 
+export type IfaceState = {
+  editTileIx: number,
+};
+
 export type State = {
-  player: Player;
-  viewPort: Point;
-  overlay: Layer;
+  player: Player,
+  viewPort: Point,
+  overlay: Layer,
+  iface: IfaceState,
 };

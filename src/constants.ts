@@ -1,4 +1,4 @@
-import { Sprite, Point } from './types';
+import { Sprite, Point, Tile } from './types';
 
 export const FULL_IMPETUS = 4;
 
@@ -26,3 +26,5 @@ export const DEBUG = {
   mouse: false,
   keys: false,
 };
+
+export const editTiles: Tile[] = ['box', 'box3', 'up_box', 'fragile_box'];

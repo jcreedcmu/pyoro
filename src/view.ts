@@ -1,5 +1,5 @@
 import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants';
-import { DEBUG } from './constants';
+import { DEBUG, editTiles } from './constants';
 import { Model } from './model';
 import { int, vplus, vint, vscale, vminus, vfpart, vdiv } from './util';
 import { Point, Sprite } from './types';
@@ -52,22 +52,18 @@ class View {
       vminus(model.get_player().pos, vp),
       model.get_player().flipState == 'left');
 
-
     d.restore();
+
+    this.raw_draw_sprite(editTiles[model.state.iface.editTileIx], { x: SCALE, y: SCALE });
   }
 
-  // wpos: position in window, (0,0) is top left of viewport
-  draw_sprite(sprite_id: Sprite, wpos: Point, flip?: boolean): void {
-
-    if (wpos.x < -1 || wpos.y < -1 || wpos.x >= NUM_TILES_X + 1 || wpos.y >= NUM_TILES_Y + 1)
-      return;
-
+  // spos: position in window, in pixels. (0,0) is top left of window
+  raw_draw_sprite(sprite_id: Sprite, spos: Point, flip?: boolean): void {
     const sprite_loc = sprites[sprite_id];
 
     const d = this.d;
     d.save();
-    d.translate(this.o_x + wpos.x * TILE_SIZE * SCALE,
-      this.o_y + wpos.y * TILE_SIZE * SCALE);
+    d.translate(spos.x, spos.y);
     if (flip) {
       d.translate(TILE_SIZE * SCALE, 0);
       d.scale(-1, 1);
@@ -79,6 +75,15 @@ class View {
       0, 0,
       TILE_SIZE * SCALE, TILE_SIZE * SCALE);
     d.restore();
+  }
+
+  // wpos: position in window, in tiles. (0,0) is top left of viewport
+  draw_sprite(sprite_id: Sprite, wpos: Point, flip?: boolean): void {
+
+    if (wpos.x < -1 || wpos.y < -1 || wpos.x >= NUM_TILES_X + 1 || wpos.y >= NUM_TILES_Y + 1)
+      return;
+
+    this.raw_draw_sprite(sprite_id, vplus({ x: this.o_x, y: this.o_y }, vscale(wpos, TILE_SIZE * SCALE)), flip);
   }
 
   resize() {

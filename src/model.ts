@@ -1,7 +1,7 @@
 import { Animation, MeltAnimation, PlayerAnimation, ViewPortAnimation } from './animation';
 import { State, Player } from "./state";
 import { Layer, TileFunc, putTile, getTile } from './layer';
-import { FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y } from './constants';
+import { FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y, editTiles } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';
 import { produce } from 'immer';
@@ -127,7 +127,6 @@ function get_flip_state(move: Move): Facing | null {
 
 export class Model {
   state: State;
-  editTile: Tile = 'box3';
 
   constructor(state: State) {
     this.state = state;
@@ -219,7 +218,7 @@ export class Model {
 
   handle_mousedown(p: Point): void {
     if (this.getTile(p) == 'empty')
-      this.putTile(p, this.editTile);
+      this.putTile(p, editTiles[this.state.iface.editTileIx]);
     else
       this.putTile(p, 'empty');
   }

@@ -1,12 +1,12 @@
 import View from './view';
-import { Player, newPlayer } from './state';
+import { Player, newPlayer, State } from './state';
 import { Model } from './model';
 import { imgProm } from './util';
 import { Dict, Move, Tile } from './types';
-import { DEBUG, FRAME_DURATION_MS } from './constants';
+import { DEBUG, FRAME_DURATION_MS, editTiles } from './constants';
 import { key } from './key';
 import { initial_overlay } from './initial_overlay';
-import { produce } from 'immer';
+import { produce, DraftObject } from 'immer';
 
 window.onload = () => {
   const app = new App;
@@ -15,8 +15,6 @@ window.onload = () => {
 
 class App {
   view: View;
-  editTileIndex: number = 0;
-  editTiles: Tile[] = ['box3', 'up_box', 'fragile_box'];
 
   static moveBindings: Dict<Move> = {
     'KP7': 'up-left',
@@ -34,19 +32,21 @@ class App {
     's': 'down',
   }
 
-  static commandBindings: Dict<(a: App) => void> = {
-    ',': a => {
-      a.editTileIndex = (a.editTileIndex + 1) % a.editTiles.length;
-      a.view.model.editTile = a.editTiles[a.editTileIndex];
+  static commandBindings: Dict<(s: State) => State> = {
+    ',': (s) => {
+      return produce(s, s => {
+        s.iface.editTileIx = (s.iface.editTileIx + 1) % editTiles.length;
+      });
     },
-    '.': a => {
-      a.editTileIndex = (a.editTileIndex - 1 + a.editTiles.length) % a.editTiles.length;
-      a.view.model.editTile = a.editTiles[a.editTileIndex];
+    '.': (s) => {
+      return produce(s, s => {
+        s.iface.editTileIx = (s.iface.editTileIx - 1 + editTiles.length) % editTiles.length;
+      });
     },
-    's': a => {
+    's': (s) => {
       const req = new Request('/save', {
         method: 'POST',
-        body: JSON.stringify(a.view.model.state.overlay),
+        body: JSON.stringify(s.overlay),
         headers: {
           'Content-Type': 'application/json',
         }
@@ -54,6 +54,7 @@ class App {
       fetch(req).then(r => r.json())
         .then(x => console.log(x))
         .catch(console.error);
+      return s;
     }
   }
 
@@ -62,6 +63,9 @@ class App {
       player: newPlayer({ x: -1, y: 0 }),
       viewPort: { x: -13, y: -9 },
       overlay: initial_overlay,
+      iface: {
+        editTileIx: 0,
+      }
     });
 
     const c = document.getElementById('c') as HTMLCanvasElement;
@@ -96,7 +100,12 @@ class App {
       const k = key(e);
       const f = App.commandBindings[k];
       if (f) {
-        f(this);
+        const oldState = this.view.model.state;
+        const newState = f(oldState);
+        if (newState != oldState) {
+          this.view.model.state = newState;
+          this.view.draw();
+        }
       }
       else {
         const move = App.moveBindings[k];
