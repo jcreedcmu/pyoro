@@ -1,5 +1,6 @@
-import { Animation, MeltAnimation, Player, PlayerAnimation, State, ViewPortAnimation } from './animation';
-import { Chunk, ChunkCache, Layer, ReadLayer, TileFunc, putTile, getTile } from './chunk';
+import { Animation, MeltAnimation, PlayerAnimation, ViewPortAnimation } from './animation';
+import { State, Player } from "./state";
+import { Chunk, ChunkCache, Layer, LayerData, ReadLayer, TileFunc, putTile, getTile } from './chunk';
 import { CHUNK_SIZE, FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';
@@ -163,7 +164,7 @@ export class Model {
     this.state = state;
   }
 
-  extend(l: Layer) {
+  extend(l: LayerData) {
     Object.entries(l.tiles).forEach(([k, v]) => {
       var coords = k.split(',').map(x => parseInt(x)) as [number, number]; // arrrrg
       this.putTile({ x: coords[0], y: coords[1] }, v as Tile);

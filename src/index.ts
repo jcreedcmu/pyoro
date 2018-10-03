@@ -1,5 +1,5 @@
 import View from './view';
-import { Player, newPlayer } from './animation';
+import { Player, newPlayer } from './state';
 import { Model } from './model';
 import { imgProm } from './util';
 import { Dict, Move, Tile } from './types';
