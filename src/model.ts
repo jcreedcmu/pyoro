@@ -1,4 +1,4 @@
-import { Animation, MeltAnimation, PlayerAnimation, ViewPortAnimation } from './animation';
+import { Animation, MeltAnimation, PlayerAnimation, ViewPortAnimation, ResetAnimation } from './animation';
 import { State, Player } from "./state";
 import { Layer, TileFunc, putTile, getTile } from './layer';
 import { FULL_IMPETUS, NUM_TILES, editTiles } from './constants';
@@ -155,6 +155,10 @@ export class Model {
 
     var s = this.state;
     var player = s.player;
+
+    if (player.dead) {
+      return [ResetAnimation()];
+    }
 
     var belowBefore = vplus(player.pos, { x: 0, y: 1 });
     var tileBefore = this.getTile(belowBefore);

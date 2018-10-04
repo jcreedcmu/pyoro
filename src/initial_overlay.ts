@@ -55,6 +55,9 @@ export const initial_overlay: Layer = {
     "4,4": "up_box",
     "-8,10": "up_box",
     "-9,11": "up_box",
-    "-5,0": "spike_up"
+    "-5,0": "spike_up",
+    "-16,10": "box",
+    "-17,9": "spike_up",
+    "-17,10": "box3"
   }
 };

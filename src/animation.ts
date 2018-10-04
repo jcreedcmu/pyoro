@@ -2,7 +2,7 @@ import { putTile } from './layer';
 import { vplus, vscale } from './util';
 import { Point, Facing, Sprite } from './types';
 import { DraftObject } from 'immer';
-import { State } from './state';
+import { State, init_state } from './state';
 
 export type Animation = (state: DraftObject<State>, t: number) => void;
 
@@ -27,5 +27,16 @@ export function ViewPortAnimation(dpos: Point): Animation {
 export function MeltAnimation(pos: Point): Animation {
   return (state: DraftObject<State>, t: number) => {
     putTile(state.overlay, pos, t > 0.5 ? 'empty' : 'broken_box');
+  };
+}
+
+export function ResetAnimation(): Animation {
+  return (state: DraftObject<State>, t: number) => {
+    if (t > 0.75) {
+      state.iface = init_state.iface;
+      state.overlay = init_state.overlay;
+      state.player = init_state.player;
+      state.viewPort = init_state.viewPort;
+    }
   };
 }
