@@ -1,6 +1,6 @@
 import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants';
-import { DEBUG, editTiles } from './constants';
-import { int, vplus, vint, vscale, vminus, vfpart, vdiv } from './util';
+import { DEBUG, editTiles, NUM_TILES } from './constants';
+import { int, vm, vm2, vm3, vplus, vminus, vint, vfpart } from './util';
 import { Point, Sprite } from './types';
 import { State } from './state';
 import { getTile } from './layer';
@@ -8,13 +8,10 @@ import { getTile } from './layer';
 class View {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
-  ww: number;
-  hh: number;
-  o_x: number;
-  o_y: number;
+  wsize: Point;
+  origin: Point;
   spriteImg: HTMLImageElement;
-  center_x: number;
-  center_y: number;
+  center: Point;
 
   constructor(c: HTMLCanvasElement, d: CanvasRenderingContext2D) {
     this.c = c;
@@ -26,13 +23,13 @@ class View {
 
     // background
     d.fillStyle = "#def";
-    d.fillRect(0, 0, this.ww, this.hh);
+    d.fillRect(0, 0, this.wsize.x, this.wsize.y);
     d.fillStyle = "rgba(255,255,255,0.5)";
-    d.fillRect(this.o_x, this.o_y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
+    d.fillRect(this.origin.x, this.origin.y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
 
     d.save();
     d.beginPath();
-    d.rect(this.o_x, this.o_y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
+    d.rect(this.origin.x, this.origin.y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
     d.clip();
 
     const vp = state.viewPort;
@@ -79,7 +76,8 @@ class View {
     if (wpos.x < -1 || wpos.y < -1 || wpos.x >= NUM_TILES_X + 1 || wpos.y >= NUM_TILES_Y + 1)
       return;
 
-    this.raw_draw_sprite(sprite_id, vplus({ x: this.o_x, y: this.o_y }, vscale(wpos, TILE_SIZE * SCALE)), flip);
+
+    this.raw_draw_sprite(sprite_id, vm2(this.origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE), flip);
   }
 
   resize() {
@@ -87,22 +85,16 @@ class View {
 
     c.width = 0;
     c.height = 0;
-    this.ww = c.width = innerWidth;
-    this.hh = c.height = innerHeight;
+    c.width = innerWidth;
+    c.height = innerHeight;
+    this.wsize = { x: c.width, y: c.height };
 
-    this.center_x = int(this.ww / 2);
-    this.center_y = int(this.hh / 2);
-
-    this.o_x = this.center_x - int(NUM_TILES_X * TILE_SIZE * SCALE / 2);
-    this.o_y = this.center_y - int(NUM_TILES_Y * TILE_SIZE * SCALE / 2);
-  }
-
-  origin(): Point {
-    return { x: this.o_x, y: this.o_y };
+    this.center = vm(this.wsize, wsize => int(wsize / 2));
+    this.origin = vm2(this.center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
   }
 
   world_of_canvas(p: Point, s: State): Point {
-    return vint(vplus(s.viewPort, vdiv(vminus(p, this.origin()), TILE_SIZE * SCALE)));
+    return vm3(s.viewPort, this.origin, p, (vp, o, p) => int(vp + (p - o) / (TILE_SIZE * SCALE)));
   }
 }
 
