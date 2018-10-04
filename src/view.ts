@@ -31,20 +31,21 @@ class View {
     d.beginPath();
     d.rect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
     d.clip();
+    // draw clipped
+    {
+      const vp = state.viewPort;
 
-    const vp = state.viewPort;
-
-    for (let y = 0; y < NUM_TILES.y + 1; y++) {
-      for (let x = 0; x < NUM_TILES.x + 1; x++) {
-        const p = { x, y };
-        this.draw_sprite(getTile(state.overlay, vplus(p, vint(vp))), vminus(p, vfpart(vp)));
+      for (let y = 0; y < NUM_TILES.y + 1; y++) {
+        for (let x = 0; x < NUM_TILES.x + 1; x++) {
+          const p = { x, y };
+          this.draw_sprite(getTile(state.overlay, vplus(p, vint(vp))), vminus(p, vfpart(vp)));
+        }
       }
+
+      this.draw_sprite(state.player.animState,
+        vminus(state.player.pos, vp),
+        state.player.flipState == 'left');
     }
-
-    this.draw_sprite(state.player.animState,
-      vminus(state.player.pos, vp),
-      state.player.flipState == 'left');
-
     d.restore();
 
     this.raw_draw_sprite(editTiles[state.iface.editTileIx], { x: SCALE, y: SCALE });
