@@ -1,11 +1,10 @@
 import View from './view';
-import { Player, newPlayer, State } from './state';
+import { Player, State, init_state } from './state';
 import { Model } from './model';
 import { imgProm } from './util';
 import { Dict, Move, Tile } from './types';
 import { DEBUG, FRAME_DURATION_MS, editTiles } from './constants';
 import { key } from './key';
-import { initial_overlay } from './initial_overlay';
 import { produce, DraftObject } from 'immer';
 
 window.onload = () => {
@@ -64,14 +63,7 @@ class App {
     const d = c.getContext('2d') as CanvasRenderingContext2D;
 
     this.view = new View(c, d);
-    this.model = new Model({
-      player: newPlayer({ x: -1, y: 0 }),
-      viewPort: { x: -13, y: -9 },
-      overlay: initial_overlay,
-      iface: {
-        editTileIx: 0,
-      }
-    });
+    this.model = new Model(init_state);
   }
 
   run(): void {
