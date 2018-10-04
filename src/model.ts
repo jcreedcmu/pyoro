@@ -1,4 +1,4 @@
-import { Animation, MeltAnimation, PlayerAnimation, ViewPortAnimation, ResetAnimation } from './animation';
+import { Animation, app } from './animation';
 import { State, Player } from "./state";
 import { Layer, TileFunc, putTile, getTile } from './layer';
 import { FULL_IMPETUS, NUM_TILES, editTiles } from './constants';
@@ -146,7 +146,7 @@ export class Model {
 
   forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
     if (tile == 'fragile_box')
-      anims.push(MeltAnimation(pos));
+      anims.push({ t: 'MeltAnimation', pos });
   }
 
   animate_move(move: Move): Animation[] {
@@ -157,7 +157,7 @@ export class Model {
     var player = s.player;
 
     if (player.dead) {
-      return [ResetAnimation()];
+      return [{ t: 'ResetAnimation' }];
     }
 
     var belowBefore = vplus(player.pos, { x: 0, y: 1 });
@@ -201,16 +201,16 @@ export class Model {
       animState = impetus ? 'player_rise' : 'player_fall';
     }
 
-    anims.push(PlayerAnimation(nextPos, animState, impetus, flipState, dead));
+    anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });
 
     if (nextPos.x - s.viewPort.x >= NUM_TILES.x - 1)
-      anims.push(ViewPortAnimation({ x: 1, y: 0 }));
+      anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
     if (nextPos.x - s.viewPort.x < 1)
-      anims.push(ViewPortAnimation({ x: -1, y: 0 }));
+      anims.push({ t: 'ViewPortAnimation', dpos: { x: -1, y: 0 } });
     if (nextPos.y - s.viewPort.y >= NUM_TILES.y - 1)
-      anims.push(ViewPortAnimation({ x: 0, y: 1 }));
+      anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: 1 } });
     if (nextPos.y - s.viewPort.y < 1)
-      anims.push(ViewPortAnimation({ x: 0, y: -1 }));
+      anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: -1 } });
 
     return anims;
   }
@@ -218,7 +218,7 @@ export class Model {
   animator_for_move(move: Move): (t: number, s: DraftObject<State>) => void {
     const anims = this.animate_move(move);
     return (t: number, s: DraftObject<State>): void => {
-      anims.forEach(anim => { anim(s, t); });
+      anims.forEach(anim => { app(anim)(s, t); });
     }
   }
 
