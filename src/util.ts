@@ -34,6 +34,10 @@ export function vm3(a: Point, b: Point, c: Point, f: (a: number, b: number, c: n
   return { x: f(a.x, b.x, c.x), y: f(a.y, b.y, c.y) };
 }
 
+export function vmn(ps: Point[], f: (ns: number[]) => number): Point {
+  return { x: f(ps.map(p => p.x)), y: f(ps.map(p => p.y)) };
+}
+
 export function vplus(a: Point, b: Point): Point {
   return { x: a.x + b.x, y: a.y + b.y };
 }

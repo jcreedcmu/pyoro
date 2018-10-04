@@ -1,6 +1,6 @@
 import { TILE_SIZE, SCALE, sprites } from './constants';
 import { DEBUG, editTiles, NUM_TILES } from './constants';
-import { int, vm, vm2, vm3, vplus, vminus, vint, vfpart } from './util';
+import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart } from './util';
 import { Point, Sprite } from './types';
 import { State } from './state';
 import { getTile } from './layer';
@@ -94,7 +94,7 @@ class View {
   }
 
   world_of_canvas(p: Point, s: State): Point {
-    return vm3(s.viewPort, this.origin, p, (vp, o, p) => int(vp + (p - o) / (TILE_SIZE * SCALE)));
+    return vmn([s.viewPort, this.origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)));
   }
 }
 
