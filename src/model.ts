@@ -218,7 +218,7 @@ export class Model {
   animator_for_move(move: Move): (t: number, s: DraftObject<State>) => void {
     const anims = this.animate_move(move);
     return (t: number, s: DraftObject<State>): void => {
-      anims.forEach(anim => { app(anim)(s, t); });
+      anims.forEach(anim => { app(anim, s, t); });
     }
   }
 

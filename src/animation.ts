@@ -18,36 +18,32 @@ export type Animation =
   | { t: 'ResetAnimation' };
 
 
-export function app(a: Animation): (state: DraftObject<State>, t: number) => void {
+export function app(a: Animation, state: DraftObject<State>, t: number): void {
   switch (a.t) {
     case 'PlayerAnimation':
-      return (state: DraftObject<State>, t: number) => {
-        const { pos, animState, impetus, flipState, dead } = a;
-        state.player = {
-          dead: dead && t >= 0.75,
-          pos: vplus(vscale(state.player.pos, 1 - t), vscale(pos, t)),
-          animState: animState,
-          flipState: flipState,
-          impetus: impetus
-        }
-      };
+      const { pos, animState, impetus, flipState, dead } = a;
+      state.player = {
+        dead: dead && t >= 0.75,
+        pos: vplus(vscale(state.player.pos, 1 - t), vscale(pos, t)),
+        animState: animState,
+        flipState: flipState,
+        impetus: impetus
+      }
+      break;
     case 'ViewPortAnimation':
-      return (state: DraftObject<State>, t: number) => {
-        state.viewPort = vplus(state.viewPort, vscale(a.dpos, t));
-      };
+      state.viewPort = vplus(state.viewPort, vscale(a.dpos, t));
+      break;
     case 'MeltAnimation':
-      return (state: DraftObject<State>, t: number) => {
-        putTile(state.overlay, a.pos, t > 0.5 ? 'empty' : 'broken_box');
-      };
+      putTile(state.overlay, a.pos, t > 0.5 ? 'empty' : 'broken_box');
+      break;
     case 'ResetAnimation':
-      return (state: DraftObject<State>, t: number) => {
-        if (t > 0.75) {
-          state.iface = init_state.iface;
-          state.overlay = init_state.overlay;
-          state.player = init_state.player;
-          state.viewPort = init_state.viewPort;
-        }
-      };
+      if (t > 0.75) {
+        state.iface = init_state.iface;
+        state.overlay = init_state.overlay;
+        state.player = init_state.player;
+        state.viewPort = init_state.viewPort;
+      }
+      break;
     default:
       return nope(a);
   }
