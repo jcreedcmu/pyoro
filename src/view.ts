@@ -1,6 +1,5 @@
 import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants';
 import { DEBUG, editTiles } from './constants';
-import { Model } from './model';
 import { int, vplus, vint, vscale, vminus, vfpart, vdiv } from './util';
 import { Point, Sprite } from './types';
 import { State } from './state';
@@ -9,7 +8,6 @@ import { getTile } from './layer';
 class View {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
-  model: Model;
   ww: number;
   hh: number;
   o_x: number;
@@ -18,15 +16,13 @@ class View {
   center_x: number;
   center_y: number;
 
-  constructor(model: Model, c: HTMLCanvasElement, d: CanvasRenderingContext2D) {
-    this.model = model;
+  constructor(c: HTMLCanvasElement, d: CanvasRenderingContext2D) {
     this.c = c;
     this.d = d;
   }
 
   draw(state: State) {
-    const c = this.c;
-    const d = this.d;
+    const { c, d } = this;
 
     // background
     d.fillStyle = "#def";
@@ -99,16 +95,14 @@ class View {
 
     this.o_x = this.center_x - int(NUM_TILES_X * TILE_SIZE * SCALE / 2);
     this.o_y = this.center_y - int(NUM_TILES_Y * TILE_SIZE * SCALE / 2);
-
-    this.draw(this.model.state);
   }
 
   origin(): Point {
     return { x: this.o_x, y: this.o_y };
   }
 
-  world_of_canvas(p: Point): Point {
-    return vint(vplus(this.model.get_viewPort(), vdiv(vminus(p, this.origin()), TILE_SIZE * SCALE)));
+  world_of_canvas(p: Point, s: State): Point {
+    return vint(vplus(s.viewPort, vdiv(vminus(p, this.origin()), TILE_SIZE * SCALE)));
   }
 }
 

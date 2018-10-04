@@ -15,6 +15,7 @@ window.onload = () => {
 
 class App {
   view: View;
+  model: Model;
 
   static moveBindings: Dict<Move> = {
     'KP7': 'up-left',
@@ -59,7 +60,11 @@ class App {
   }
 
   constructor() {
-    const model = new Model({
+    const c = document.getElementById('c') as HTMLCanvasElement;
+    const d = c.getContext('2d') as CanvasRenderingContext2D;
+
+    this.view = new View(c, d);
+    this.model = new Model({
       player: newPlayer({ x: -1, y: 0 }),
       viewPort: { x: -13, y: -9 },
       overlay: initial_overlay,
@@ -67,11 +72,6 @@ class App {
         editTileIx: 0,
       }
     });
-
-    const c = document.getElementById('c') as HTMLCanvasElement;
-    const d = c.getContext('2d') as CanvasRenderingContext2D;
-
-    this.view = new View(model, c, d);
   }
 
   run(): void {
@@ -81,14 +81,19 @@ class App {
       (window as any)['app'] = this;
     }
 
-    window.onresize = () => view.resize();
+    window.onresize = () => this.resize();
 
     this.init_keys();
     this.init_mouse();
 
     imgProm('assets/sprite.png').then(s => {
       view.spriteImg = s;
-    }).then(() => view.resize());
+    }).then(() => this.resize());
+  }
+
+  resize(): void {
+    this.view.resize();
+    this.view.draw(this.model.state);
   }
 
   init_keys(): void {
@@ -100,11 +105,11 @@ class App {
       const k = key(e);
       const f = App.commandBindings[k];
       if (f) {
-        const oldState = this.view.model.state;
+        const oldState = this.model.state;
         const newState = f(oldState);
         if (newState != oldState) {
-          this.view.model.state = newState;
-          this.view.draw(this.view.model.state);
+          this.model.state = newState;
+          this.view.draw(this.model.state);
         }
       }
       else {
@@ -120,8 +125,7 @@ class App {
   // the lock period? Probably should fix this.
   lock = false;
   handle_key(ks: Move): void {
-    const { view } = this;
-    const { model } = view;
+    const { view, model } = this;
     const state = model.state;
 
     if (!this.lock) {
@@ -138,19 +142,18 @@ class App {
   }
 
   init_mouse(): void {
-    const { view } = this;
-    const { model } = view;
+    const { view, model } = this;
     document.onmousedown = (e: MouseEvent) => {
 
       const c = document.getElementById("c");
-      const world_pos = view.world_of_canvas({ x: e.clientX, y: e.clientY });
+      const world_pos = view.world_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
       if (DEBUG.mouse) {
         console.log(world_pos);
       }
       if (c == null) throw "can't find canvas element";
       const rect = c.getBoundingClientRect();
       model.handle_mousedown(world_pos);
-      view.draw(view.model.state);
+      view.draw(model.state);
     };
   }
 }
