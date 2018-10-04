@@ -104,7 +104,7 @@ class App {
         const newState = f(oldState);
         if (newState != oldState) {
           this.view.model.state = newState;
-          this.view.draw();
+          this.view.draw(this.view.model.state);
         }
       }
       else {
@@ -122,16 +122,17 @@ class App {
   handle_key(ks: Move): void {
     const { view } = this;
     const { model } = view;
+    const state = model.state;
 
     if (!this.lock) {
       const animator = model.animator_for_move(ks);
-      model.state = animator(0.5);
       this.lock = true;
-      view.draw();
+      view.draw(produce(state, s => animator(0.5, s)));
       setTimeout(() => {
-        model.state = animator(1);
+        const finalState = produce(state, s => animator(1, s))
+        model.state = finalState;
         this.lock = false;
-        view.draw();
+        view.draw(finalState);
       }, FRAME_DURATION_MS);
     }
   }
@@ -149,7 +150,7 @@ class App {
       if (c == null) throw "can't find canvas element";
       const rect = c.getBoundingClientRect();
       model.handle_mousedown(world_pos);
-      view.draw();
+      view.draw(view.model.state);
     };
   }
 }

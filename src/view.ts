@@ -3,6 +3,7 @@ import { DEBUG, editTiles } from './constants';
 import { Model } from './model';
 import { int, vplus, vint, vscale, vminus, vfpart, vdiv } from './util';
 import { Point, Sprite } from './types';
+import { State } from './state';
 import { getTile } from './layer';
 
 class View {
@@ -23,10 +24,9 @@ class View {
     this.d = d;
   }
 
-  draw() {
+  draw(state: State) {
     const c = this.c;
     const d = this.d;
-    const model = this.model;
 
     // background
     d.fillStyle = "#def";
@@ -39,22 +39,22 @@ class View {
     d.rect(this.o_x, this.o_y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
     d.clip();
 
-    const vp = model.get_viewPort();
+    const vp = state.viewPort;
 
     for (let y = 0; y < NUM_TILES_Y + 1; y++) {
       for (let x = 0; x < NUM_TILES_X + 1; x++) {
         const p = { x, y };
-        this.draw_sprite(model.getTile(vplus(p, vint(vp))), vminus(p, vfpart(vp)));
+        this.draw_sprite(getTile(state.overlay, vplus(p, vint(vp))), vminus(p, vfpart(vp)));
       }
     }
 
-    this.draw_sprite(model.get_player().animState,
-      vminus(model.get_player().pos, vp),
-      model.get_player().flipState == 'left');
+    this.draw_sprite(state.player.animState,
+      vminus(state.player.pos, vp),
+      state.player.flipState == 'left');
 
     d.restore();
 
-    this.raw_draw_sprite(editTiles[model.state.iface.editTileIx], { x: SCALE, y: SCALE });
+    this.raw_draw_sprite(editTiles[state.iface.editTileIx], { x: SCALE, y: SCALE });
   }
 
   // spos: position in window, in pixels. (0,0) is top left of window
@@ -100,7 +100,7 @@ class View {
     this.o_x = this.center_x - int(NUM_TILES_X * TILE_SIZE * SCALE / 2);
     this.o_y = this.center_y - int(NUM_TILES_Y * TILE_SIZE * SCALE / 2);
 
-    this.draw();
+    this.draw(this.model.state);
   }
 
   origin(): Point {

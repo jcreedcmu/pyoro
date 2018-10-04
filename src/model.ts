@@ -4,7 +4,7 @@ import { Layer, TileFunc, putTile, getTile } from './layer';
 import { FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y, editTiles } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';
-import { produce } from 'immer';
+import { produce, DraftObject } from 'immer';
 
 function openTile(x: Tile): boolean {
   return x == "empty";
@@ -205,16 +205,14 @@ export class Model {
     return anims;
   }
 
-  animator_for_move(move: Move): (t: number) => State {
-    var orig_state = this.state;
-    var anims = this.animate_move(move);
-
-    return (t: number): State => {
-      return produce(orig_state, dr => {
-        anims.forEach(anim => { anim(dr, t); });
-      });
-    };
+  animator_for_move(move: Move): (t: number, s: DraftObject<State>) => void {
+    const anims = this.animate_move(move);
+    return (t: number, s: DraftObject<State>): void => {
+      anims.forEach(anim => { anim(s, t); });
+    }
   }
+
+
 
   handle_mousedown(p: Point): void {
     if (this.getTile(p) == 'empty')
