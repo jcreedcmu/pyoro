@@ -42,7 +42,9 @@ class View {
         }
       }
 
-      this.draw_sprite(state.player.animState,
+      const playerSprite = state.player.dead ? 'player_dead' : state.player.animState;
+
+      this.draw_sprite(playerSprite,
         vminus(state.player.pos, vp),
         state.player.flipState == 'left');
     }

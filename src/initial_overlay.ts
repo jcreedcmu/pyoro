@@ -13,7 +13,7 @@ export const initial_overlay: Layer = {
     "-4,3": "up_box",
     "-1,2": "box3",
     "-5,1": "box3",
-    "-6,1": "empty",
+    "-6,1": "spike_up",
     "-7,1": "empty",
     "-8,1": "empty",
     "-5,2": "box3",
@@ -22,7 +22,7 @@ export const initial_overlay: Layer = {
     "-3,2": "box3",
     "-3,3": "box3",
     "-2,2": "box3",
-    "-8,2": "empty",
+    "-8,2": "spike_up",
     "-7,2": "box3",
     "-6,2": "box3",
     "-9,1": "empty",
@@ -54,6 +54,7 @@ export const initial_overlay: Layer = {
     "3,4": "box3",
     "4,4": "up_box",
     "-8,10": "up_box",
-    "-9,11": "up_box"
+    "-9,11": "up_box",
+    "-5,0": "spike_up"
   }
 };

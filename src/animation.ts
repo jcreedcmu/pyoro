@@ -6,9 +6,10 @@ import { State } from './state';
 
 export type Animation = (state: DraftObject<State>, t: number) => void;
 
-export function PlayerAnimation(pos: Point, animState: Sprite, impetus: number, flipState: Facing): Animation {
+export function PlayerAnimation(pos: Point, animState: Sprite, impetus: number, flipState: Facing, dead: boolean): Animation {
   return (state: DraftObject<State>, t: number) => {
     state.player = {
+      dead: dead && t >= 0.75,
       pos: vplus(vscale(state.player.pos, 1 - t), vscale(pos, t)),
       animState: animState,
       flipState: flipState,

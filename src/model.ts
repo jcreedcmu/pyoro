@@ -7,7 +7,11 @@ import { clone, div, int, vplus, vscale, nope, hash } from './util';
 import { produce, DraftObject } from 'immer';
 
 function openTile(x: Tile): boolean {
-  return x == "empty";
+  return x == "empty" || x == 'spike_up';
+}
+
+function deadlyTile(x: Tile): boolean {
+  return x == 'spike_up';
 }
 
 function genImpetus(x: Tile): number {
@@ -179,11 +183,13 @@ export class Model {
 
     const nextPos = vplus(player.pos, result.dpos);
     let animState: Sprite = 'player';
-    const tileAfter = this.getTile(vplus(nextPos, { x: 0, y: 1 }));
-    const supportedAfter = !openTile(tileAfter);
+    const tileAfter = this.getTile(nextPos);
+    const suppTileAfter = this.getTile(vplus(nextPos, { x: 0, y: 1 }));
+    const supportedAfter = !openTile(suppTileAfter);
+    const dead = deadlyTile(tileAfter);
 
     if (supportedAfter) {
-      impetus = genImpetus(tileAfter);
+      impetus = genImpetus(suppTileAfter);
     }
     else {
       if (impetus)
@@ -191,7 +197,7 @@ export class Model {
       animState = impetus ? 'player_rise' : 'player_fall';
     }
 
-    anims.push(PlayerAnimation(nextPos, animState, impetus, flipState));
+    anims.push(PlayerAnimation(nextPos, animState, impetus, flipState, dead));
 
     if (nextPos.x - s.viewPort.x >= NUM_TILES.x - 1)
       anims.push(ViewPortAnimation({ x: 1, y: 0 }));

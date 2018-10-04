@@ -4,6 +4,7 @@ import { FULL_IMPETUS } from './constants';
 import { initial_overlay } from './initial_overlay';
 
 export type Player = {
+  dead: boolean,
   animState: Sprite,
   flipState: Facing,
   pos: Point,
@@ -23,6 +24,7 @@ export type State = {
 
 export const init_state: State = {
   player: {
+    dead: false,
     pos: { x: 0, y: 0 },
     animState: 'player',
     flipState: 'left',

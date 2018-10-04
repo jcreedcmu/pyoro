@@ -14,9 +14,11 @@ export const sprites: { [k in Sprite]: Point } = {
   box3: { x: 3, y: 3 },
   empty: { x: 0, y: 0 },
   player: { x: 1, y: 2 },
+  player_dead: { x: 2, y: 0 },
   player_fall: { x: 1, y: 0 },
   player_rise: { x: 1, y: 1 },
   up_box: { x: 6, y: 6 },
+  spike_up: { x: 0, y: 3 },
 };
 
 export const DEBUG = {
@@ -25,4 +27,4 @@ export const DEBUG = {
   keys: false,
 };
 
-export const editTiles: Tile[] = ['box', 'box3', 'up_box', 'fragile_box'];
+export const editTiles: Tile[] = ['box', 'box3', 'up_box', 'fragile_box', 'spike_up'];
