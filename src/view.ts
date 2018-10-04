@@ -1,4 +1,4 @@
-import { TILE_SIZE, SCALE, NUM_TILES_X, NUM_TILES_Y, sprites } from './constants';
+import { TILE_SIZE, SCALE, sprites } from './constants';
 import { DEBUG, editTiles, NUM_TILES } from './constants';
 import { int, vm, vm2, vm3, vplus, vminus, vint, vfpart } from './util';
 import { Point, Sprite } from './types';
@@ -25,17 +25,17 @@ class View {
     d.fillStyle = "#def";
     d.fillRect(0, 0, this.wsize.x, this.wsize.y);
     d.fillStyle = "rgba(255,255,255,0.5)";
-    d.fillRect(this.origin.x, this.origin.y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
+    d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
 
     d.save();
     d.beginPath();
-    d.rect(this.origin.x, this.origin.y, NUM_TILES_X * TILE_SIZE * SCALE, NUM_TILES_Y * TILE_SIZE * SCALE);
+    d.rect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
     d.clip();
 
     const vp = state.viewPort;
 
-    for (let y = 0; y < NUM_TILES_Y + 1; y++) {
-      for (let x = 0; x < NUM_TILES_X + 1; x++) {
+    for (let y = 0; y < NUM_TILES.y + 1; y++) {
+      for (let x = 0; x < NUM_TILES.x + 1; x++) {
         const p = { x, y };
         this.draw_sprite(getTile(state.overlay, vplus(p, vint(vp))), vminus(p, vfpart(vp)));
       }
@@ -73,7 +73,7 @@ class View {
   // wpos: position in window, in tiles. (0,0) is top left of viewport
   draw_sprite(sprite_id: Sprite, wpos: Point, flip?: boolean): void {
 
-    if (wpos.x < -1 || wpos.y < -1 || wpos.x >= NUM_TILES_X + 1 || wpos.y >= NUM_TILES_Y + 1)
+    if (wpos.x < -1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
       return;
 
 

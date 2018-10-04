@@ -1,5 +1,4 @@
 import { Dict, Point, Tile } from './types';
-import { NUM_TILES_X, NUM_TILES_Y } from './constants';
 
 export type TileFunc = (p: Point) => Tile;
 

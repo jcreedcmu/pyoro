@@ -1,10 +1,7 @@
 import { Sprite, Point, Tile } from './types';
 
 export const FULL_IMPETUS = 4;
-
-export const NUM_TILES_X = 24;
-export const NUM_TILES_Y = 18;
-export const NUM_TILES = { x: NUM_TILES_X, y: NUM_TILES_Y };
+export const NUM_TILES = { x: 24, y: 18 };
 export const TILE_SIZE = 16;
 export const SCALE = 2;
 

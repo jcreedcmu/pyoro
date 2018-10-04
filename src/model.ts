@@ -1,7 +1,7 @@
 import { Animation, MeltAnimation, PlayerAnimation, ViewPortAnimation } from './animation';
 import { State, Player } from "./state";
 import { Layer, TileFunc, putTile, getTile } from './layer';
-import { FULL_IMPETUS, NUM_TILES_X, NUM_TILES_Y, editTiles } from './constants';
+import { FULL_IMPETUS, NUM_TILES, editTiles } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash } from './util';
 import { produce, DraftObject } from 'immer';
@@ -193,11 +193,11 @@ export class Model {
 
     anims.push(PlayerAnimation(nextPos, animState, impetus, flipState));
 
-    if (nextPos.x - s.viewPort.x >= NUM_TILES_X - 1)
+    if (nextPos.x - s.viewPort.x >= NUM_TILES.x - 1)
       anims.push(ViewPortAnimation({ x: 1, y: 0 }));
     if (nextPos.x - s.viewPort.x < 1)
       anims.push(ViewPortAnimation({ x: -1, y: 0 }));
-    if (nextPos.y - s.viewPort.y >= NUM_TILES_Y - 1)
+    if (nextPos.y - s.viewPort.y >= NUM_TILES.y - 1)
       anims.push(ViewPortAnimation({ x: 0, y: 1 }));
     if (nextPos.y - s.viewPort.y < 1)
       anims.push(ViewPortAnimation({ x: 0, y: -1 }));

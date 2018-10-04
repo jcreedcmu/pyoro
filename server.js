@@ -30,9 +30,9 @@ server.use('/save', (req, res) => {
 
   console.log('req.body', JSON.stringify(req.body));
   const json = JSON.stringify(req.body, null, 2);
-  const string_to_write = `import { LayerData } from './chunk';
+  const string_to_write = `import { Layer } from './layer';
 
-export const initial_overlay: LayerData = ${json};
+export const initial_overlay: Layer = ${json};
 `;
 
   console.log(string_to_write);
