@@ -1,6 +1,6 @@
 import { TILE_SIZE, SCALE, sprites } from './constants';
 import { DEBUG, editTiles, NUM_TILES } from './constants';
-import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba } from './util';
+import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal } from './util';
 import { Point, Sprite } from './types';
 import { State } from './state';
 import { getTile } from './layer';
@@ -37,7 +37,14 @@ class View {
       for (let y = 0; y < NUM_TILES.y + 1; y++) {
         for (let x = 0; x < NUM_TILES.x + 1; x++) {
           const p = { x, y };
-          this.draw_sprite(getTile(state.overlay, vplus(p, vint(vp))), vminus(p, vfpart(vp)));
+          const realp = vplus(p, vint(vp));
+          let tile = getTile(state.overlay, realp);
+
+          if (tile == 'save_point' && vequal(realp, state.last_save)) {
+            tile = 'empty';
+          }
+
+          this.draw_sprite(tile, vminus(p, vfpart(vp)));
         }
       }
 

@@ -7,7 +7,7 @@ import { clone, div, int, vplus, vscale, nope, hash, max } from './util';
 import { produce, DraftObject } from 'immer';
 
 function openTile(x: Tile): boolean {
-  return x == "empty" || x == 'spike_up';
+  return x == 'empty' || x == 'spike_up' || x == 'save_point';
 }
 
 function deadlyTile(x: Tile): boolean {
@@ -202,6 +202,9 @@ export class Model {
     }
 
     anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });
+
+    if (tileAfter == 'save_point')
+      anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
 
     if (nextPos.x - s.viewPort.x >= NUM_TILES.x - 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });

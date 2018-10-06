@@ -38,6 +38,10 @@ export function vmn(ps: Point[], f: (ns: number[]) => number): Point {
   return { x: f(ps.map(p => p.x)), y: f(ps.map(p => p.y)) };
 }
 
+export function vequal(a: Point, b: Point): boolean {
+  return a.x == b.x && a.y == b.y;
+}
+
 export function vplus(a: Point, b: Point): Point {
   return { x: a.x + b.x, y: a.y + b.y };
 }

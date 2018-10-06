@@ -1,7 +1,7 @@
 import { putTile } from './layer';
 import { vplus, vscale, nope } from './util';
 import { Point, Facing, Sprite } from './types';
-import { DraftObject } from 'immer';
+import { produce, DraftObject } from 'immer';
 import { State, init_state } from './state';
 
 export type Animation =
@@ -15,6 +15,7 @@ export type Animation =
   }
   | { t: 'ViewPortAnimation', dpos: Point }
   | { t: 'MeltAnimation', pos: Point }
+  | { t: 'SavePointChangeAnimation', pos: Point }
   | { t: 'ResetAnimation' };
 
 
@@ -28,9 +29,9 @@ export type Time = {
   fr: number, // the number of frames since the animation has started
 };
 
-const DEATH_FADE_OUT = 4;
+const DEATH_FADE_OUT = 2;
 const DEATH_HOLD = 0;
-const DEATH_FADE_IN = 4;
+const DEATH_FADE_IN = 2;
 const DEATH = DEATH_FADE_OUT + DEATH_HOLD + DEATH_FADE_IN;
 
 export function app(a: Animation, state: DraftObject<State>, time: Time): void {
@@ -65,9 +66,16 @@ export function app(a: Animation, state: DraftObject<State>, time: Time): void {
       if (fr >= DEATH_FADE_OUT) {
         state.iface = init_state.iface;
         state.overlay = init_state.overlay;
-        state.player = init_state.player;
+        const last_save = state.last_save;
+        state.player = produce(init_state.player, p => {
+          p.pos = last_save;
+        });
         state.viewPort = init_state.viewPort;
       }
+      break;
+    case 'SavePointChangeAnimation':
+      if (t > 0.5)
+        state.last_save = a.pos;
       break;
     default:
       return nope(a);
@@ -81,6 +89,7 @@ export function duration(a: Animation): number {
     case 'ViewPortAnimation': return 2;
     case 'MeltAnimation': return 2;
     case 'ResetAnimation': return DEATH;
+    case 'SavePointChangeAnimation': return 2;
     default:
       return nope(a);
   }

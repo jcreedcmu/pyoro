@@ -23,6 +23,7 @@ export type State = {
   player: Player,
   viewPort: Point,
   overlay: Layer,
+  last_save: Point,
   iface: IfaceState,
   extra: ExtraState,
 };
@@ -35,6 +36,7 @@ export const init_state: State = {
     flipState: 'left',
     impetus: FULL_IMPETUS,
   },
+  last_save: { x: 0, y: 0 },
   viewPort: { x: -13, y: -9 },
   overlay: initial_overlay,
   extra: {
