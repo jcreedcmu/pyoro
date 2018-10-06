@@ -1,6 +1,6 @@
 import { TILE_SIZE, SCALE, sprites } from './constants';
 import { DEBUG, editTiles, NUM_TILES } from './constants';
-import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart } from './util';
+import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba } from './util';
 import { Point, Sprite } from './types';
 import { State } from './state';
 import { getTile } from './layer';
@@ -11,7 +11,6 @@ class View {
   wsize: Point;
   origin: Point;
   spriteImg: HTMLImageElement;
-  center: Point;
 
   constructor(c: HTMLCanvasElement, d: CanvasRenderingContext2D) {
     this.c = c;
@@ -51,6 +50,13 @@ class View {
     d.restore();
 
     this.raw_draw_sprite(editTiles[state.iface.editTileIx], { x: SCALE, y: SCALE });
+
+    if (state.extra.blackout) {
+      d.fillRect(0, 0, this.wsize.x, this.wsize.y);
+      d.fillStyle = rgba(0, 0, 0, state.extra.blackout);
+      d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
+      return;
+    }
   }
 
   // spos: position in window, in pixels. (0,0) is top left of window
@@ -86,14 +92,12 @@ class View {
   resize() {
     const c = this.c;
 
-    c.width = 0;
-    c.height = 0;
     c.width = innerWidth;
     c.height = innerHeight;
     this.wsize = { x: c.width, y: c.height };
 
-    this.center = vm(this.wsize, wsize => int(wsize / 2));
-    this.origin = vm2(this.center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
+    const center = vm(this.wsize, wsize => int(wsize / 2));
+    this.origin = vm2(center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
   }
 
   world_of_canvas(p: Point, s: State): Point {

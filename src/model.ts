@@ -1,9 +1,9 @@
-import { Animation, app } from './animation';
+import { Animation, Animator, Time, app, duration } from './animation';
 import { State, Player } from "./state";
 import { Layer, TileFunc, putTile, getTile } from './layer';
 import { FULL_IMPETUS, NUM_TILES, editTiles } from './constants';
 import { Move, Point, Tile, Facing, Sprite } from './types';
-import { clone, div, int, vplus, vscale, nope, hash } from './util';
+import { clone, div, int, vplus, vscale, nope, hash, max } from './util';
 import { produce, DraftObject } from 'immer';
 
 function openTile(x: Tile): boolean {
@@ -215,10 +215,14 @@ export class Model {
     return anims;
   }
 
-  animator_for_move(move: Move): (t: number, s: DraftObject<State>) => void {
-    const anims = this.animate_move(move);
-    return (t: number, s: DraftObject<State>): void => {
-      anims.forEach(anim => { app(anim, s, t); });
+  animator_for_move(move: Move): Animator {
+    const anims = this.animate_move(move).map(anim => ({ anim, dur: duration(anim) }));
+    const dur = max(anims.map(a => a.dur));
+    return {
+      dur,
+      anim: (fr: number, s: DraftObject<State>): void => {
+        anims.forEach(({ anim, dur }) => { app(anim, s, { t: fr / dur, fr }); })
+      }
     }
   }
 

@@ -115,3 +115,15 @@ export function clone<T>(x: T): T {
 export function nope<T>(x: never): T {
   throw "nope";
 }
+
+export function max(x: number[]): number {
+  return Math.max.apply(Math, x);
+}
+
+export function min(x: number[]): number {
+  return Math.min.apply(Math, x);
+}
+
+export function rgba(r: number, g: number, b: number, a: number): string {
+  return `rgb(${r}, ${g}, ${b}, ${a})`;
+}

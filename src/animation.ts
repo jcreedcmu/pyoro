@@ -18,7 +18,23 @@ export type Animation =
   | { t: 'ResetAnimation' };
 
 
-export function app(a: Animation, state: DraftObject<State>, t: number): void {
+export type Animator = {
+  dur: number, // duration in frames
+  anim: (fr: number, s: DraftObject<State>) => void,
+}
+
+export type Time = {
+  t: number,  // the fraction of the animation's duration that has been completed.
+  fr: number, // the number of frames since the animation has started
+};
+
+const DEATH_FADE_OUT = 4;
+const DEATH_HOLD = 0;
+const DEATH_FADE_IN = 4;
+const DEATH = DEATH_FADE_OUT + DEATH_HOLD + DEATH_FADE_IN;
+
+export function app(a: Animation, state: DraftObject<State>, time: Time): void {
+  const { t, fr } = time;
   switch (a.t) {
     case 'PlayerAnimation':
       const { pos, animState, impetus, flipState, dead } = a;
@@ -37,13 +53,34 @@ export function app(a: Animation, state: DraftObject<State>, t: number): void {
       putTile(state.overlay, a.pos, t > 0.5 ? 'empty' : 'broken_box');
       break;
     case 'ResetAnimation':
-      if (t > 0.75) {
+      if (fr <= DEATH_FADE_OUT) {
+        state.extra.blackout = fr / DEATH_FADE_OUT;
+      }
+      else if (fr <= DEATH_FADE_OUT + DEATH_HOLD) {
+        state.extra.blackout = 1;
+      }
+      else {
+        state.extra.blackout = (DEATH - fr) / DEATH_FADE_OUT;
+      }
+      if (fr >= DEATH_FADE_OUT) {
         state.iface = init_state.iface;
         state.overlay = init_state.overlay;
         state.player = init_state.player;
         state.viewPort = init_state.viewPort;
       }
       break;
+    default:
+      return nope(a);
+  }
+}
+
+// duration in frames
+export function duration(a: Animation): number {
+  switch (a.t) {
+    case 'PlayerAnimation': return 2;
+    case 'ViewPortAnimation': return 2;
+    case 'MeltAnimation': return 2;
+    case 'ResetAnimation': return DEATH;
     default:
       return nope(a);
   }

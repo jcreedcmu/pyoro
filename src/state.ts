@@ -15,11 +15,16 @@ export type IfaceState = {
   editTileIx: number,
 };
 
+export type ExtraState = {
+  blackout: number,
+};
+
 export type State = {
   player: Player,
   viewPort: Point,
   overlay: Layer,
   iface: IfaceState,
+  extra: ExtraState,
 };
 
 export const init_state: State = {
@@ -32,6 +37,9 @@ export const init_state: State = {
   },
   viewPort: { x: -13, y: -9 },
   overlay: initial_overlay,
+  extra: {
+    blackout: 0,
+  },
   iface: {
     editTileIx: 0,
   }

@@ -121,15 +121,23 @@ class App {
     const state = model.state;
 
     if (!this.lock) {
+      let cur_frame = 0;
       const animator = model.animator_for_move(ks);
       this.lock = true;
-      view.draw(produce(state, s => animator(0.5, s)));
-      setTimeout(() => {
-        const finalState = produce(state, s => animator(1, s))
-        model.state = finalState;
-        this.lock = false;
-        view.draw(finalState);
-      }, FRAME_DURATION_MS);
+
+      const step = () => {
+        cur_frame++;
+        const nextState = produce(state, s => animator.anim(cur_frame, s))
+        view.draw(nextState);
+        if (cur_frame == animator.dur) {
+          model.state = nextState;
+          this.lock = false;
+        }
+        else
+          setTimeout(step, FRAME_DURATION_MS);
+      };
+
+      step();
     }
   }
 
