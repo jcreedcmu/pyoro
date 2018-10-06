@@ -2,7 +2,7 @@ import { Animation, Animator, Time, app, duration } from './animation';
 import { State, Player } from "./state";
 import { Layer, TileFunc, putTile, getTile } from './layer';
 import { FULL_IMPETUS, NUM_TILES, editTiles } from './constants';
-import { Move, Point, Tile, Facing, Sprite } from './types';
+import { MotiveMove, Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash, max } from './util';
 import { produce, DraftObject } from 'immer';
 
@@ -98,7 +98,7 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
 }
 
 // This goes from a Move to a Motion
-function get_motion(b: Board, move: Move): Motion {
+function get_motion(b: Board, move: MotiveMove): Motion {
   const { tiles, player } = b;
   switch (move) {
     case 'up': return execute_up(b);
@@ -113,7 +113,7 @@ function get_motion(b: Board, move: Move): Motion {
 }
 
 // null means "don't change the flip state"
-function get_flip_state(move: Move): Facing | null {
+function get_flip_state(move: MotiveMove): Facing | null {
   switch (move) {
     case 'left':
     case 'up-left':
@@ -156,7 +156,7 @@ export class Model {
     var s = this.state;
     var player = s.player;
 
-    if (player.dead) {
+    if (player.dead || move == 'reset') {
       return [{ t: 'ResetAnimation' }];
     }
 

@@ -30,6 +30,7 @@ class App {
     'w': 'up',
     'd': 'right',
     's': 'down',
+    'r': 'reset',
   }
 
   static commandBindings: Dict<(s: State) => State> = {

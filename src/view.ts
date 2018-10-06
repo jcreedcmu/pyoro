@@ -59,7 +59,6 @@ class View {
     this.raw_draw_sprite(editTiles[state.iface.editTileIx], { x: SCALE, y: SCALE });
 
     if (state.extra.blackout) {
-      d.fillRect(0, 0, this.wsize.x, this.wsize.y);
       d.fillStyle = rgba(0, 0, 0, state.extra.blackout);
       d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
       return;

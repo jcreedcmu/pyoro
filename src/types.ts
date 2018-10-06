@@ -11,13 +11,16 @@ export type Tile =
   | 'up_box'
   | 'spike_up'
   | 'save_point';
-export type Move =
+export type MotiveMove =
   | 'up'
   | 'down'
   | 'left'
   | 'right'
   | 'up-left'
   | 'up-right';
+export type Move =
+  | MotiveMove
+  | 'reset';
 export type Facing =
   | 'left'
   | 'right';
