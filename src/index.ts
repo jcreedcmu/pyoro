@@ -129,7 +129,7 @@ class App {
 
       const step = () => {
         cur_frame++;
-        const nextState = produce(state, s => animator.anim(cur_frame, s))
+        const nextState = animator.anim(cur_frame, state);
         view.draw(nextState);
         if (cur_frame == animator.dur) {
           model.state = nextState;

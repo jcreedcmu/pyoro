@@ -227,8 +227,11 @@ export class Model {
     const dur = max(anims.map(a => a.dur));
     return {
       dur,
-      anim: (fr: number, s: DraftObject<State>): void => {
-        anims.forEach(({ anim, dur }) => { app(anim, s, { t: fr / dur, fr }); })
+      anim: (fr: number, s: State): State => {
+        anims.forEach(({ anim, dur }) => {
+          s = app(anim, s, { t: fr / dur, fr });
+        });
+        return s;
       }
     }
   }
