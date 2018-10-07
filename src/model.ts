@@ -141,7 +141,9 @@ export class Model {
   }
 
   putTile(p: Point, t: Tile): void {
-    putTile(this.state.overlay, p, t);
+    this.state = produce(this.state, s => {
+      putTile(s.overlay, p, t);
+    });
   }
 
   forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
