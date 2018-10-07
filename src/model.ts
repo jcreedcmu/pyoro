@@ -236,8 +236,9 @@ export class Model {
 
 
   handle_mousedown(p: Point): void {
-    if (this.getTile(p) == 'empty')
-      this.putTile(p, editTiles[this.state.iface.editTileIx]);
+    const newTile = editTiles[this.state.iface.editTileIx];
+    if (this.getTile(p) != newTile)
+      this.putTile(p, newTile);
     else
       this.putTile(p, 'empty');
   }
