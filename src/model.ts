@@ -248,7 +248,7 @@ export class Model {
 
   handle_edit_click(ix: number): void {
     this.state = produce(this.state, s => {
-      this.state.iface.editTileIx = ix;
+      s.iface.editTileIx = ix;
     });
   }
 
