@@ -1,4 +1,4 @@
-import { TILE_SIZE, SCALE, sprites } from './constants';
+import { TILE_SIZE, SCALE, sprites, rotateTile } from './constants';
 import { DEBUG, editTiles, NUM_TILES } from './constants';
 import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal, inrect } from './util';
 import { Point, Sprite } from './types';
@@ -62,7 +62,8 @@ export class View {
 
     // tiles for editor
     editTiles.forEach((et, ix) => {
-      this.raw_draw_sprite(et, { x: SCALE + ix * TILE_SIZE * SCALE, y: SCALE });
+      const t = rotateTile(et, state.iface.editTileRotation);
+      this.raw_draw_sprite(t, { x: SCALE + ix * TILE_SIZE * SCALE, y: SCALE });
     });
 
     // selected tile in editor

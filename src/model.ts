@@ -1,7 +1,7 @@
 import { Animation, Animator, Time, app, duration } from './animation';
 import { State, Player } from "./state";
 import { Layer, TileFunc, putTile, getTile } from './layer';
-import { FULL_IMPETUS, NUM_TILES, editTiles } from './constants';
+import { FULL_IMPETUS, NUM_TILES, editTiles, rotateTile } from './constants';
 import { MotiveMove, Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash, max } from './util';
 import { produce, DraftObject } from 'immer';
@@ -243,7 +243,8 @@ export class Model {
   }
 
   handle_world_click(p: Point): void {
-    const newTile = editTiles[this.state.iface.editTileIx];
+    const s = this.state;
+    const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
     if (this.getTile(p) != newTile)
       this.putTile(p, newTile);
     else

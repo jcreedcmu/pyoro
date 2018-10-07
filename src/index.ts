@@ -30,7 +30,7 @@ class App {
     'w': 'up',
     'd': 'right',
     's': 'down',
-    'r': 'reset',
+    'S-r': 'reset',
     'c': 'recenter',
   }
 
@@ -57,7 +57,12 @@ class App {
         .then(x => console.log(x))
         .catch(console.error);
       return s;
-    }
+    },
+    'r': (s) => {
+      return produce(s, s => {
+        s.iface.editTileRotation = (s.iface.editTileRotation + 1) % 4;
+      });
+    },
   }
 
   constructor() {

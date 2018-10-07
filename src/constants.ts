@@ -32,4 +32,12 @@ export const DEBUG = {
 };
 
 export const editTiles: Tile[] =
-  ['box', 'box3', 'up_box', 'fragile_box', 'spike_up', 'spike_down', 'spike_left', 'spike_right', 'save_point'];
+  ['box', 'box3', 'up_box', 'fragile_box', 'spike_up', 'save_point'];
+
+export function rotateTile(tile: Tile, amount: number): Tile {
+  const spikes: Tile[] = ['spike_up', 'spike_right', 'spike_down', 'spike_left'];
+  switch (tile) {
+    case 'spike_up': return spikes[amount];
+    default: return tile;
+  }
+}

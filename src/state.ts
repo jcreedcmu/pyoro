@@ -13,6 +13,7 @@ export type Player = {
 
 export type IfaceState = {
   editTileIx: number,
+  editTileRotation: number,
 };
 
 export type ExtraState = {
@@ -44,5 +45,6 @@ export const init_state: State = {
   },
   iface: {
     editTileIx: 0,
+    editTileRotation: 0,
   }
 };
