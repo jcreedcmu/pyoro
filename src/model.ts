@@ -7,11 +7,15 @@ import { clone, div, int, vplus, vscale, nope, hash, max } from './util';
 import { produce, DraftObject } from 'immer';
 
 function openTile(x: Tile): boolean {
-  return x == 'empty' || x == 'spike_up' || x == 'save_point';
+  return x == 'empty' || x == 'save_point' || isSpike(x);
 }
 
-function deadlyTile(x: Tile): boolean {
-  return x == 'spike_up';
+function isSpike(x: Tile): boolean {
+  return x == 'spike_up' || x == 'spike_left' || x == 'spike_right' || x == 'spike_down';
+}
+
+function isDeadly(x: Tile): boolean {
+  return isSpike(x);
 }
 
 function genImpetus(x: Tile): number {
@@ -196,7 +200,7 @@ export class Model {
     const tileAfter = this.getTile(nextPos);
     const suppTileAfter = this.getTile(vplus(nextPos, { x: 0, y: 1 }));
     const supportedAfter = !openTile(suppTileAfter);
-    const dead = deadlyTile(tileAfter);
+    const dead = isDeadly(tileAfter);
 
     if (supportedAfter) {
       impetus = genImpetus(suppTileAfter);

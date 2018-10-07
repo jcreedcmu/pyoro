@@ -11,6 +11,9 @@ export type Tile =
   | 'broken_box'
   | 'up_box'
   | 'spike_up'
+  | 'spike_left'
+  | 'spike_right'
+  | 'spike_down'
   | 'save_point';
 export type MotiveMove =
   | 'up'

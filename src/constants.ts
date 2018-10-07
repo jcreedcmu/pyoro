@@ -19,6 +19,9 @@ export const sprites: { [k in Sprite]: Point } = {
   player_rise: { x: 1, y: 1 },
   up_box: { x: 6, y: 6 },
   spike_up: { x: 0, y: 3 },
+  spike_right: { x: 2, y: 3 },
+  spike_left: { x: 2, y: 4 },
+  spike_down: { x: 2, y: 5 },
   save_point: { x: 2, y: 2 },
 };
 
@@ -29,4 +32,4 @@ export const DEBUG = {
 };
 
 export const editTiles: Tile[] =
-  ['box', 'box3', 'up_box', 'fragile_box', 'spike_up', 'save_point'];
+  ['box', 'box3', 'up_box', 'fragile_box', 'spike_up', 'spike_down', 'spike_left', 'spike_right', 'save_point'];
