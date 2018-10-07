@@ -20,7 +20,8 @@ export type MotiveMove =
   | 'up-right';
 export type Move =
   | MotiveMove
-  | 'reset';
+  | 'reset'
+  | 'recenter';
 export type Facing =
   | 'left'
   | 'right';

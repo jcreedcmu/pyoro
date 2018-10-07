@@ -131,3 +131,7 @@ export function min(x: number[]): number {
 export function rgba(r: number, g: number, b: number, a: number): string {
   return `rgb(${r}, ${g}, ${b}, ${a})`;
 }
+
+export function lerp(a: number, b: number, l: number): number {
+  return a * (1 - l) + b * l;
+}

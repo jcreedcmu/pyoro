@@ -1,8 +1,9 @@
+import { DraftObject, produce } from 'immer';
+import { NUM_TILES } from './constants';
 import { putTile } from './layer';
-import { vplus, vscale, nope } from './util';
-import { Point, Facing, Sprite } from './types';
-import { produce, DraftObject } from 'immer';
-import { State, init_state } from './state';
+import { init_state, State } from './state';
+import { Facing, Point, Sprite } from './types';
+import { nope, vm2, vplus, vscale, int, lerp } from './util';
 
 export type Animation =
   {
@@ -16,7 +17,8 @@ export type Animation =
   | { t: 'ViewPortAnimation', dpos: Point }
   | { t: 'MeltAnimation', pos: Point }
   | { t: 'SavePointChangeAnimation', pos: Point }
-  | { t: 'ResetAnimation' };
+  | { t: 'ResetAnimation' }
+  | { t: 'RecenterAnimation' };
 
 
 export type Animator = {
@@ -28,6 +30,10 @@ export type Time = {
   t: number,  // the fraction of the animation's duration that has been completed.
   fr: number, // the number of frames since the animation has started
 };
+
+export function centeredViewPort(pos: Point): Point {
+  return vm2(pos, NUM_TILES, (p, NT) => int(p - NT / 2));
+}
 
 const DEATH_FADE_OUT = 2;
 const DEATH_HOLD = 0;
@@ -70,12 +76,16 @@ export function app(a: Animation, state: DraftObject<State>, time: Time): void {
         state.player = produce(init_state.player, p => {
           p.pos = last_save;
         });
-        state.viewPort = init_state.viewPort;
+        state.viewPort = centeredViewPort(last_save);
       }
       break;
     case 'SavePointChangeAnimation':
       if (t > 0.5)
         state.last_save = a.pos;
+      break;
+    case 'RecenterAnimation':
+      const target = centeredViewPort(state.player.pos);
+      state.viewPort = vm2(target, state.viewPort, (tgt, vp) => lerp(vp, tgt, t));
       break;
     default:
       return nope(a);
@@ -90,6 +100,7 @@ export function duration(a: Animation): number {
     case 'MeltAnimation': return 2;
     case 'ResetAnimation': return DEATH;
     case 'SavePointChangeAnimation': return 2;
+    case 'RecenterAnimation': return 4;
     default:
       return nope(a);
   }

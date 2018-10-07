@@ -160,6 +160,10 @@ export class Model {
       return [{ t: 'ResetAnimation' }];
     }
 
+    if (move == 'recenter') {
+      return [{ t: 'RecenterAnimation' }];
+    }
+
     var belowBefore = vplus(player.pos, { x: 0, y: 1 });
     var tileBefore = this.getTile(belowBefore);
     var supportedBefore = !openTile(tileBefore);
