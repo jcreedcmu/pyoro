@@ -35,12 +35,12 @@ class App {
   }
 
   static commandBindings: Dict<(s: State) => State> = {
-    ',': (s) => {
+    '.': (s) => {
       return produce(s, s => {
         s.iface.editTileIx = (s.iface.editTileIx + 1) % editTiles.length;
       });
     },
-    '.': (s) => {
+    ',': (s) => {
       return produce(s, s => {
         s.iface.editTileIx = (s.iface.editTileIx - 1 + editTiles.length) % editTiles.length;
       });

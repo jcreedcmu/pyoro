@@ -56,7 +56,18 @@ class View {
     }
     d.restore();
 
-    this.raw_draw_sprite(editTiles[state.iface.editTileIx], { x: SCALE, y: SCALE });
+    // tiles for editor
+    editTiles.forEach((et, ix) => {
+      this.raw_draw_sprite(et, { x: SCALE + ix * TILE_SIZE * SCALE, y: SCALE });
+    });
+
+    // selected tile in editor
+    const sel = state.iface.editTileIx;
+    d.fillStyle = rgba(0, 192, 192, 0.7);
+    d.beginPath();
+    d.rect(sel * TILE_SIZE * SCALE, 0, (2 + TILE_SIZE) * SCALE, (2 + TILE_SIZE) * SCALE);
+    d.rect(sel * TILE_SIZE * SCALE + SCALE, SCALE, (TILE_SIZE) * SCALE, (TILE_SIZE) * SCALE);
+    d.fill('evenodd');
 
     if (state.extra.blackout) {
       d.fillStyle = rgba(0, 0, 0, state.extra.blackout);
