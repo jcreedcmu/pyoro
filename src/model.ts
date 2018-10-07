@@ -238,14 +238,18 @@ export class Model {
     }
   }
 
-
-
-  handle_mousedown(p: Point): void {
+  handle_world_click(p: Point): void {
     const newTile = editTiles[this.state.iface.editTileIx];
     if (this.getTile(p) != newTile)
       this.putTile(p, newTile);
     else
       this.putTile(p, 'empty');
+  }
+
+  handle_edit_click(ix: number): void {
+    this.state = produce(this.state, s => {
+      this.state.iface.editTileIx = ix;
+    });
   }
 
   get_player() {

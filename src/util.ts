@@ -1,4 +1,4 @@
-import { Point, Rect } from './types';
+import { Point, BadRect, Rect } from './types';
 
 export function int(x: number): number {
   return Math.floor(x);
@@ -70,7 +70,7 @@ export function interval_intersect(a: [number, number], b: [number, number]): bo
   return b[0] < a[1] && a[0] < b[1];
 }
 
-export function rect_intersect(r1: Rect, r2: Rect): boolean {
+export function rect_intersect(r1: BadRect, r2: BadRect): boolean {
   var rv = (interval_intersect([r1.p.x, r1.p.x + r1.w], [r2.p.x, r2.p.x + r2.w])
     && interval_intersect([r1.p.y, r1.p.y + r1.h], [r2.p.y, r2.p.y + r2.h]));
   return rv;
@@ -134,4 +134,8 @@ export function rgba(r: number, g: number, b: number, a: number): string {
 
 export function lerp(a: number, b: number, l: number): number {
   return a * (1 - l) + b * l;
+}
+
+export function inrect(p: Point, r: Rect): boolean {
+  return p.x >= r.p.x && p.y >= r.p.y && p.x < r.p.x + r.sz.x && p.y < r.p.y + r.sz.y;
 }

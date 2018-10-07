@@ -1,7 +1,7 @@
-import View from './view';
+import { View } from './view';
 import { Player, State, init_state } from './state';
 import { Model } from './model';
-import { imgProm } from './util';
+import { imgProm, nope } from './util';
 import { Dict, Move, Tile } from './types';
 import { DEBUG, FRAME_DURATION_MS, editTiles } from './constants';
 import { key } from './key';
@@ -148,14 +148,23 @@ class App {
     document.onmousedown = (e: MouseEvent) => {
 
       const c = document.getElementById("c");
-      const world_pos = view.world_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
+      const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
       if (DEBUG.mouse) {
-        console.log(world_pos);
+        console.log(wpoint);
       }
-      if (c == null) throw "can't find canvas element";
-      const rect = c.getBoundingClientRect();
-      model.handle_mousedown(world_pos);
-      view.draw(model.state);
+      switch (wpoint.t) {
+        case 'World':
+          if (c == null) throw "can't find canvas element";
+          model.handle_world_click(wpoint.p);
+          view.draw(model.state);
+          break;
+        case 'EditTiles':
+          model.handle_edit_click(wpoint.ix);
+          view.draw(model.state);
+          break;
+        default:
+          return nope(wpoint);
+      }
     };
   }
 }

@@ -1,11 +1,15 @@
 import { TILE_SIZE, SCALE, sprites } from './constants';
 import { DEBUG, editTiles, NUM_TILES } from './constants';
-import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal } from './util';
+import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal, inrect } from './util';
 import { Point, Sprite } from './types';
 import { State } from './state';
 import { getTile } from './layer';
 
-class View {
+export type WidgetPoint =
+  | { t: 'EditTiles', ix: number }
+  | { t: 'World', p: Point };
+
+export class View {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
   wsize: Point;
@@ -117,9 +121,18 @@ class View {
     this.origin = vm2(center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
   }
 
-  world_of_canvas(p: Point, s: State): Point {
-    return vmn([s.viewPort, this.origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)));
+  wpoint_of_canvas(p: Point, s: State): WidgetPoint {
+    const world_size = vm(NUM_TILES, NT => TILE_SIZE * SCALE * NT);
+    if (inrect(p, { p: this.origin, sz: world_size }))
+      return {
+        t: 'World',
+        p: vmn([s.viewPort, this.origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
+      };
+    else {
+      return {
+        t: 'EditTiles',
+        ix: vmn([{ x: SCALE, y: 0 }, p], ([o, p]) => int((p - o) / (TILE_SIZE * SCALE))).x,
+      }
+    }
   }
 }
-
-export default View;
