@@ -7,7 +7,6 @@ import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
 import { key } from './key';
 import { produce, DraftObject } from 'immer';
 import * as dat from 'dat.gui';
-import { initial_overlay } from './initial_overlay';
 
 window.onload = () => {
 
