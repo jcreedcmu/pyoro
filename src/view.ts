@@ -3,7 +3,7 @@ import { DEBUG, editTiles, NUM_TILES, guiData } from './constants';
 import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal } from './util';
 import * as u from './util';
 import { Point, Sprite } from './types';
-import { State } from './state';
+import { State, Item } from './state';
 import { getItem, putItem, getTile, putTile, PointMap } from './layer';
 
 export type WidgetPoint =
@@ -44,10 +44,11 @@ export class View {
       const tileOverride: PointMap<boolean> = { tiles: {} };
       putItem(tileOverride, state.last_save, true);
 
-      const v = state.inventory.has_teal_fruit;
-      if (v != undefined) {
-        putItem(tileOverride, v, true);
-      }
+      Object.entries<Point | undefined, Item>(state.inventory).forEach(([k, v]) => {
+        if (v != undefined) {
+          putItem(tileOverride, v, true);
+        }
+      });
 
       // draw the background
       for (let y = 0; y < NUM_TILES.y + 1; y++) {

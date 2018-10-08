@@ -14,7 +14,7 @@ export const initial_overlay: Layer = {
     "-1,2": "box",
     "-5,1": "box3",
     "-6,1": "spike_up",
-    "-7,1": "empty",
+    "-7,1": "teal_fruit",
     "-8,1": "empty",
     "-5,2": "box",
     "-5,3": "box",
