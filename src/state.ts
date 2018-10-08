@@ -21,7 +21,7 @@ export type ExtraState = {
 };
 
 
-export type Item = 'has_teal_fruit';
+export type Item = 'teal_fruit';
 
 export type Inventory = { [k in Item]: Point | undefined };
 
@@ -45,7 +45,7 @@ export const init_state: State = {
     impetus: FULL_IMPETUS,
   },
   inventory: {
-    has_teal_fruit: undefined,
+    teal_fruit: undefined,
   },
   last_save: { x: 0, y: 0 },
   viewPort: { x: -13, y: -9 },

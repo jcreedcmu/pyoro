@@ -97,7 +97,7 @@ export function app(a: Animation, state: State, time: Time): State {
       });
     case 'ItemGetAnimation':
       return produce(state, s => {
-        s.inventory.has_teal_fruit = a.pos;
+        s.inventory.teal_fruit = a.pos;
       });
       break;
     default:
