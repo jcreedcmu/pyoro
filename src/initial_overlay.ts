@@ -89,6 +89,10 @@ export const initial_overlay: Layer = {
     "0,5": "spike_down",
     "-3,5": "spike_down",
     "3,3": "spike_down",
-    "2,2": "empty"
+    "2,2": "empty",
+    "-1,-2": "empty",
+    "-2,0": "box",
+    "-2,1": "box",
+    "-1,0": "box"
   }
 };

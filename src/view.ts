@@ -1,6 +1,7 @@
 import { TILE_SIZE, SCALE, sprites, rotateTile } from './constants';
-import { DEBUG, editTiles, NUM_TILES } from './constants';
-import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal, inrect } from './util';
+import { DEBUG, editTiles, NUM_TILES, guiData } from './constants';
+import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal } from './util';
+import * as u from './util';
 import { Point, Sprite } from './types';
 import { State } from './state';
 import { getTile } from './layer';
@@ -25,9 +26,9 @@ export class View {
     const { c, d } = this;
 
     // background
-    d.fillStyle = "#def";
+    d.fillStyle = guiData.stage_color;
     d.fillRect(0, 0, this.wsize.x, this.wsize.y);
-    d.fillStyle = "rgba(255,255,255,0.5)";
+    d.fillStyle = guiData.background_color;
     d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
 
     d.save();
@@ -75,7 +76,8 @@ export class View {
     d.fill('evenodd');
 
     if (state.extra.blackout) {
-      d.fillStyle = rgba(0, 0, 0, state.extra.blackout);
+      const c = u.rgbOfColor(guiData.stage_color);
+      d.fillStyle = rgba(c.r, c.g, c.b, state.extra.blackout);
       d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
       return;
     }
@@ -124,7 +126,7 @@ export class View {
 
   wpoint_of_canvas(p: Point, s: State): WidgetPoint {
     const world_size = vm(NUM_TILES, NT => TILE_SIZE * SCALE * NT);
-    if (inrect(p, { p: this.origin, sz: world_size }))
+    if (u.inrect(p, { p: this.origin, sz: world_size }))
       return {
         t: 'World',
         p: vmn([s.viewPort, this.origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))

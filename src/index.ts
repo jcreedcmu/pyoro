@@ -3,13 +3,25 @@ import { Player, State, init_state } from './state';
 import { Model } from './model';
 import { imgProm, nope } from './util';
 import { Dict, Move, Tile } from './types';
-import { DEBUG, FRAME_DURATION_MS, editTiles } from './constants';
+import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
 import { key } from './key';
 import { produce, DraftObject } from 'immer';
+import * as dat from 'dat.gui';
 
 window.onload = () => {
+
   const app = new App;
   app.run();
+
+  if (DEBUG.datgui) {
+    const gui = new dat.GUI();
+    const colorCtr = gui.addColor(guiData, 'background_color');
+    colorCtr.onChange((value: string) => {
+      guiData.background_color = value;
+      app.redraw();
+    });
+  }
+
 };
 
 class App {
@@ -92,6 +104,10 @@ class App {
 
   resize(): void {
     this.view.resize();
+    this.redraw();
+  }
+
+  redraw(): void {
     this.view.draw(this.model.state);
   }
 
@@ -150,16 +166,15 @@ class App {
 
   init_mouse(): void {
     const { view, model } = this;
-    document.onmousedown = (e: MouseEvent) => {
+    const c = view.c;
+    c.addEventListener('mousedown', (e: MouseEvent) => {
 
-      const c = document.getElementById("c");
       const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
       if (DEBUG.mouse) {
         console.log(wpoint);
       }
       switch (wpoint.t) {
         case 'World':
-          if (c == null) throw "can't find canvas element";
           model.handle_world_click(wpoint.p);
           view.draw(model.state);
           break;
@@ -170,6 +185,6 @@ class App {
         default:
           return nope(wpoint);
       }
-    };
+    }, true);
   }
 }

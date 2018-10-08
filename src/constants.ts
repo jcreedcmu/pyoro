@@ -29,6 +29,7 @@ export const DEBUG = {
   globals: true,
   mouse: false,
   keys: false,
+  datgui: false,
 };
 
 export const editTiles: Tile[] =
@@ -41,3 +42,8 @@ export function rotateTile(tile: Tile, amount: number): Tile {
     default: return tile;
   }
 }
+
+export const guiData = {
+  background_color: "#b3b099",
+  stage_color: "#333333",
+};

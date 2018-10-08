@@ -1,4 +1,4 @@
-import { Point, BadRect, Rect } from './types';
+import { Point, Color, BadRect, Rect } from './types';
 
 export function int(x: number): number {
   return Math.floor(x);
@@ -139,3 +139,14 @@ export function lerp(a: number, b: number, l: number): number {
 export function inrect(p: Point, r: Rect): boolean {
   return p.x >= r.p.x && p.y >= r.p.y && p.x < r.p.x + r.sz.x && p.y < r.p.y + r.sz.y;
 }
+
+export function rgbOfColor(color: string): Color {
+  color = color.replace(/^#/, '');
+  return {
+    r: parseInt(color.slice(0, 2), 16),
+    g: parseInt(color.slice(2, 4), 16),
+    b: parseInt(color.slice(4, 6), 16)
+  };
+}
+
+(window as any)['rgbOfColor'] = rgbOfColor;
