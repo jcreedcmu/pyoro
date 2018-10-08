@@ -17,6 +17,7 @@ export type Animation =
   | { t: 'ViewPortAnimation', dpos: Point }
   | { t: 'MeltAnimation', pos: Point }
   | { t: 'SavePointChangeAnimation', pos: Point }
+  | { t: 'ItemGetAnimation', pos: Point }
   | { t: 'ResetAnimation' }
   | { t: 'RecenterAnimation' };
 
@@ -94,6 +95,11 @@ export function app(a: Animation, state: State, time: Time): State {
         const target = centeredViewPort(s.player.pos);
         s.viewPort = vm2(target, s.viewPort, (tgt, vp) => lerp(vp, tgt, t));
       });
+    case 'ItemGetAnimation':
+      return produce(state, s => {
+        s.inventory.has_teal_fruit = a.pos;
+      });
+      break;
     default:
       return nope(a);
   }
@@ -108,6 +114,7 @@ export function duration(a: Animation): number {
     case 'ResetAnimation': return DEATH;
     case 'SavePointChangeAnimation': return 2;
     case 'RecenterAnimation': return 4;
+    case 'ItemGetAnimation': return 2;
     default:
       return nope(a);
   }

@@ -4,7 +4,7 @@ import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal } from './
 import * as u from './util';
 import { Point, Sprite } from './types';
 import { State } from './state';
-import { getTile } from './layer';
+import { getItem, putItem, getTile, putTile, PointMap } from './layer';
 
 export type WidgetPoint =
   | { t: 'EditTiles', ix: number }
@@ -31,24 +31,32 @@ export class View {
     d.fillStyle = guiData.background_color;
     d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
 
+    // set up clip rect for main play field
     d.save();
     d.beginPath();
     d.rect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
     d.clip();
-    // draw clipped
+
+    // draw clipped in the following scope
     {
       const vp = state.viewPort;
 
+      const tileOverride: PointMap<boolean> = { tiles: {} };
+      putItem(tileOverride, state.last_save, true);
+
+      const v = state.inventory.has_teal_fruit;
+      if (v != undefined) {
+        putItem(tileOverride, v, true);
+      }
+
+      // draw the background
       for (let y = 0; y < NUM_TILES.y + 1; y++) {
         for (let x = 0; x < NUM_TILES.x + 1; x++) {
           const p = { x, y };
           const realp = vplus(p, vint(vp));
           let tile = getTile(state.overlay, realp);
-
-          if (tile == 'save_point' && vequal(realp, state.last_save)) {
+          if (getItem(tileOverride, realp))
             tile = 'empty';
-          }
-
           this.draw_sprite(tile, vminus(p, vfpart(vp)));
         }
       }
@@ -60,6 +68,10 @@ export class View {
         state.player.flipState == 'left');
     }
     d.restore();
+
+    // background of tile list
+    d.fillStyle = guiData.background_color;
+    d.fillRect(SCALE, SCALE, editTiles.length * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
 
     // tiles for editor
     editTiles.forEach((et, ix) => {
@@ -106,7 +118,7 @@ export class View {
   // wpos: position in window, in tiles. (0,0) is top left of viewport
   draw_sprite(sprite_id: Sprite, wpos: Point, flip?: boolean): void {
 
-    if (wpos.x < -1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
+    if (wpos.x < - 1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
       return;
 
 

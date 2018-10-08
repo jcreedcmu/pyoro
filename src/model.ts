@@ -1,13 +1,17 @@
 import { Animation, Animator, Time, app, duration } from './animation';
 import { State, Player } from "./state";
-import { Layer, TileFunc, putTile, getTile } from './layer';
+import { Layer, putTile, getTile } from './layer';
 import { FULL_IMPETUS, NUM_TILES, editTiles, rotateTile } from './constants';
 import { MotiveMove, Move, Point, Tile, Facing, Sprite } from './types';
 import { clone, div, int, vplus, vscale, nope, hash, max } from './util';
 import { produce, DraftObject } from 'immer';
 
+function isItem(x: Tile): boolean {
+  return x == 'teal_fruit';
+}
+
 function openTile(x: Tile): boolean {
-  return x == 'empty' || x == 'save_point' || isSpike(x);
+  return x == 'empty' || x == 'save_point' || isItem(x) || isSpike(x);
 }
 
 function isSpike(x: Tile): boolean {
@@ -216,6 +220,9 @@ export class Model {
     if (tileAfter == 'save_point')
       anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
 
+    if (isItem(tileAfter))
+      anims.push({ t: 'ItemGetAnimation', pos: nextPos });
+
     if (nextPos.x - s.viewPort.x >= NUM_TILES.x - 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
     if (nextPos.x - s.viewPort.x < 1)
@@ -253,7 +260,8 @@ export class Model {
 
   handle_edit_click(ix: number): void {
     this.state = produce(this.state, s => {
-      s.iface.editTileIx = ix;
+      if (ix < editTiles.length && ix >= 0)
+        s.iface.editTileIx = ix;
     });
   }
 

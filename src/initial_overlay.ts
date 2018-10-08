@@ -93,6 +93,7 @@ export const initial_overlay: Layer = {
     "-1,-2": "empty",
     "-2,0": "box",
     "-2,1": "box",
-    "-1,0": "box"
+    "-1,0": "box",
+    "3,1": "teal_fruit"
   }
 };
