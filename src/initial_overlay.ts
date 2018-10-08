@@ -118,6 +118,14 @@ export const initial_overlay: Layer = {
     "3,6": "box",
     "3,5": "box",
     "-12,2": "teal_fruit",
-    "-10,3": "spike_right"
+    "-10,3": "spike_right",
+    "4,-7": "empty",
+    "3,-6": "empty",
+    "2,-7": "empty",
+    "2,-5": "empty",
+    "4,-5": "empty",
+    "2,-6": "empty",
+    "6,-6": "empty",
+    "1,-7": "empty"
   }
 };

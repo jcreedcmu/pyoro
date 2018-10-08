@@ -7,6 +7,7 @@ import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
 import { key } from './key';
 import { produce, DraftObject } from 'immer';
 import * as dat from 'dat.gui';
+import { initial_overlay } from './initial_overlay';
 
 window.onload = () => {
 
@@ -68,7 +69,9 @@ class App {
       fetch(req).then(r => r.json())
         .then(x => console.log(x))
         .catch(console.error);
-      return s;
+      return produce(s, s => {
+        s.initial_overlay.tiles = s.overlay.tiles;
+      });
     },
     'r': (s) => {
       return produce(s, s => {

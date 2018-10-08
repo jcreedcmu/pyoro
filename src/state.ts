@@ -29,6 +29,7 @@ export type Inventory = { [k in Item]: Point | undefined };
 export type State = {
   player: Player,
   viewPort: Point,
+  initial_overlay: Layer,
   overlay: Layer,
   last_save: Point,
   iface: IfaceState,
@@ -49,6 +50,7 @@ export const init_state: State = {
   },
   last_save: { x: 0, y: 0 },
   viewPort: { x: -13, y: -9 },
+  initial_overlay: initial_overlay,
   overlay: initial_overlay,
   extra: {
     blackout: 0,

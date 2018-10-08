@@ -76,8 +76,7 @@ export function app(a: Animation, state: State, time: Time): State {
           s.extra.blackout = (DEATH - fr) / DEATH_FADE_OUT;
         }
         if (fr >= DEATH_FADE_OUT) {
-          s.iface = init_state.iface;
-          s.overlay = init_state.overlay;
+          s.overlay = s.initial_overlay;
           const last_save = s.last_save;
           s.player = produce(init_state.player, p => {
             p.pos = last_save;
