@@ -22,8 +22,17 @@ export class View {
     this.d = d;
   }
 
+
   draw(state: State) {
-    const { c, d } = this;
+    const { d } = this;
+    d.save();
+    d.scale(devicePixelRatio, devicePixelRatio);
+    this.drawScaled(state);
+    d.restore();
+  }
+
+  drawScaled(state: State) {
+    const { d } = this;
 
     // background
     d.fillStyle = guiData.stage_color;
@@ -94,6 +103,14 @@ export class View {
       d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
       return;
     }
+
+    if (DEBUG.devicePixelRatio) {
+      d.fillStyle = "black";
+      d.fillRect(200, 100.25, 100, 0.5);
+      d.fillRect(200, 110.5, 100, 0.5);
+      d.fillRect(200, 120.75, 100, 0.5);
+      d.fillRect(200, 131, 100, 0.5);
+    }
   }
 
   // spos: position in window, in pixels. (0,0) is top left of window
@@ -127,11 +144,23 @@ export class View {
   }
 
   resize() {
-    const c = this.c;
+    const { c, d } = this;
+
+    const ratio = devicePixelRatio;
 
     c.width = innerWidth;
     c.height = innerHeight;
-    this.wsize = { x: c.width, y: c.height };
+
+    const ow = innerWidth;
+    const oh = innerHeight;
+
+    c.width = ow * ratio;
+    c.height = oh * ratio;
+
+    c.style.width = ow + 'px';
+    c.style.height = oh + 'px';
+
+    this.wsize = { x: c.width / ratio, y: c.height / ratio };
 
     const center = vm(this.wsize, wsize => int(wsize / 2));
     this.origin = vm2(center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));

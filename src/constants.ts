@@ -5,7 +5,7 @@ export const NUM_TILES = { x: 24, y: 18 };
 export const TILE_SIZE = 16;
 export const SCALE = 2;
 
-export const FRAME_DURATION_MS = 100;
+export const FRAME_DURATION_MS = 30;
 
 export const sprites: { [k in Sprite]: Point } = {
   box: { x: 1, y: 4 },
@@ -31,6 +31,7 @@ export const DEBUG = {
   mouse: false,
   keys: false,
   datgui: false,
+  devicePixelRatio: false,
 };
 
 export const editTiles: Tile[] =

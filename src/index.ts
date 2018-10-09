@@ -169,8 +169,7 @@ class App {
   init_mouse(): void {
     const { view, model } = this;
     const c = view.c;
-    c.addEventListener('mousedown', (e: MouseEvent) => {
-
+    c.onmousedown = (e: MouseEvent) => {
       const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
       if (DEBUG.mouse) {
         console.log(wpoint);
@@ -187,6 +186,6 @@ class App {
         default:
           return nope(wpoint);
       }
-    }, true);
+    };
   }
 }
