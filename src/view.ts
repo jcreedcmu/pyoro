@@ -31,53 +31,8 @@ export class View {
     d.restore();
   }
 
-  drawScaled(state: State) {
+  drawEditorStuff(state: State) {
     const { d } = this;
-
-    // background
-    d.fillStyle = guiData.stage_color;
-    d.fillRect(0, 0, this.wsize.x, this.wsize.y);
-    d.fillStyle = guiData.background_color;
-    d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
-
-    // set up clip rect for main play field
-    d.save();
-    d.beginPath();
-    d.rect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
-    d.clip();
-
-    // draw clipped in the following scope
-    {
-      const vp = state.viewPort;
-
-      const tileOverride: PointMap<boolean> = { tiles: {} };
-      putItem(tileOverride, state.last_save, true);
-
-      Object.entries<Point | undefined, Item>(state.inventory).forEach(([k, v]) => {
-        if (v != undefined) {
-          putItem(tileOverride, v, true);
-        }
-      });
-
-      // draw the background
-      for (let y = 0; y < NUM_TILES.y + 1; y++) {
-        for (let x = 0; x < NUM_TILES.x + 1; x++) {
-          const p = { x, y };
-          const realp = vplus(p, vint(vp));
-          let tile = getTile(state.overlay, realp);
-          if (getItem(tileOverride, realp))
-            tile = 'empty';
-          this.draw_sprite(tile, vminus(p, vfpart(vp)));
-        }
-      }
-
-      const playerSprite = state.player.dead ? 'player_dead' : state.player.animState;
-
-      this.draw_sprite(playerSprite,
-        vminus(state.player.pos, vp),
-        state.player.flipState == 'left');
-    }
-    d.restore();
 
     // background of tile list
     d.fillStyle = guiData.background_color;
@@ -103,6 +58,61 @@ export class View {
       d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
       return;
     }
+
+  }
+
+  drawField(state: State) {
+    const { d } = this;
+    const vp = state.viewPort;
+
+    const tileOverride: PointMap<boolean> = { tiles: {} };
+    putItem(tileOverride, state.last_save, true);
+
+    Object.entries<Point | undefined, Item>(state.inventory).forEach(([k, v]) => {
+      if (v != undefined) {
+        putItem(tileOverride, v, true);
+      }
+    });
+
+    // draw the background
+    for (let y = 0; y < NUM_TILES.y + 1; y++) {
+      for (let x = 0; x < NUM_TILES.x + 1; x++) {
+        const p = { x, y };
+        const realp = vplus(p, vint(vp));
+        let tile = getTile(state.overlay, realp);
+        if (getItem(tileOverride, realp))
+          tile = 'empty';
+        this.draw_sprite(tile, vminus(p, vfpart(vp)));
+      }
+    }
+
+    const playerSprite = state.player.dead ? 'player_dead' : state.player.animState;
+
+    this.draw_sprite(playerSprite,
+      vminus(state.player.pos, vp),
+      state.player.flipState == 'left');
+  }
+
+  drawScaled(state: State) {
+    const { d } = this;
+
+    // background
+    d.fillStyle = guiData.stage_color;
+    d.fillRect(0, 0, this.wsize.x, this.wsize.y);
+    d.fillStyle = guiData.background_color;
+    d.fillRect(this.origin.x, this.origin.y,
+      NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
+
+    // set up clip rect for main play field
+    d.save();
+    d.beginPath();
+    d.rect(this.origin.x, this.origin.y,
+      NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
+    d.clip();
+    this.drawField(state);
+    d.restore();
+
+    this.drawEditorStuff(state);
 
     if (DEBUG.devicePixelRatio) {
       d.fillStyle = "black";
