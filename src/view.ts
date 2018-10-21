@@ -1,4 +1,4 @@
-import { TILE_SIZE, SCALE, sprites, rotateTile } from './constants';
+import { TILE_SIZE, SCALE, NUM_INVENTORY_ITEMS, sprites, rotateTile } from './constants';
 import { DEBUG, editTiles, NUM_TILES, guiData } from './constants';
 import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal } from './util';
 import * as u from './util';
@@ -22,8 +22,7 @@ export class View {
     this.d = d;
   }
 
-
-  draw(state: State) {
+  draw(state: State): void {
     const { d } = this;
     d.save();
     d.scale(devicePixelRatio, devicePixelRatio);
@@ -31,7 +30,7 @@ export class View {
     d.restore();
   }
 
-  drawEditorStuff(state: State) {
+  drawEditorStuff(state: State): void {
     const { d } = this;
 
     // background of tile list
@@ -58,10 +57,25 @@ export class View {
       d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
       return;
     }
-
   }
 
-  drawField(state: State) {
+  drawInventory(state: State): void {
+    const { d } = this;
+    const i = state.inventory;
+    d.fillStyle = guiData.background_color;
+    const start = {
+      x: this.origin.x,
+      y: this.origin.y + (1 + NUM_TILES.y * TILE_SIZE) * SCALE,
+    };
+    d.fillRect(start.x, start.y,
+      NUM_INVENTORY_ITEMS * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
+
+    if (i.teal_fruit != undefined) {
+      this.raw_draw_sprite('teal_fruit', start);
+    }
+  }
+
+  drawField(state: State): void {
     const { d } = this;
     const vp = state.viewPort;
 
@@ -93,7 +107,7 @@ export class View {
       state.player.flipState == 'left');
   }
 
-  drawScaled(state: State) {
+  drawScaled(state: State): void {
     const { d } = this;
 
     // background
@@ -113,6 +127,7 @@ export class View {
     d.restore();
 
     this.drawEditorStuff(state);
+    this.drawInventory(state);
 
     if (DEBUG.devicePixelRatio) {
       d.fillStyle = "black";
@@ -153,7 +168,7 @@ export class View {
     this.raw_draw_sprite(sprite_id, vm2(this.origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE), flip);
   }
 
-  resize() {
+  resize(): void {
     const { c, d } = this;
 
     const ratio = devicePixelRatio;

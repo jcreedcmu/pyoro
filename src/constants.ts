@@ -49,3 +49,5 @@ export const guiData = {
   background_color: "#b3b099",
   stage_color: "#333333",
 };
+
+export const NUM_INVENTORY_ITEMS = 5;
