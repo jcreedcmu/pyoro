@@ -1,31 +1,12 @@
-/**
- * This file runs a webpack-dev-server, using the API.
- *
- * For more information on the options passed to WebpackDevServer,
- * see the webpack-dev-server API docs:
- * https://github.com/webpack/docs/wiki/webpack-dev-server#api
- */
-const WebpackDevServer = require('webpack-dev-server');
-const webpack = require('webpack');
-const config = require('./webpack.config.js');
 const path = require('path');
 const fs = require('fs');
-
 const express = require('express');
-const compiler = webpack(config);
-const server = new WebpackDevServer(compiler, {
-  contentBase: 'public',
-  hot: true,
-  filename: 'bundle.js',
-  publicPath: '/',
-  stats: {
-	 colors: true,
-  },
-});
+const bodyParser = require('body-parser');
 
-var bodyParser = require('body-parser')
-server.use( bodyParser.json());
+const server = express();
+server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({  extended: true }));
+server.use('/', express.static(path.join(__dirname, 'public')));
 server.use('/save', (req, res) => {
 
   console.log('req.body', JSON.stringify(req.body));
@@ -40,4 +21,7 @@ export const initial_overlay: Layer = ${json};
   res.send(JSON.stringify('ok'));
 });
 
-server.listen(3000, 'localhost', function() {});
+const PORT = 3000;
+server.listen(PORT, 'localhost', () => {
+  console.log(`listening on port ${PORT}...`);
+});

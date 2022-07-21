@@ -1,4 +1,4 @@
-import { DraftObject, produce } from 'immer';
+import { produce } from 'immer';
 import { NUM_TILES } from './constants';
 import { putTile } from './layer';
 import { init_state, State } from './state';

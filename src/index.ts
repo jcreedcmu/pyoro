@@ -5,7 +5,7 @@ import { imgProm, nope } from './util';
 import { Dict, Move, Tile } from './types';
 import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
 import { key } from './key';
-import { produce, DraftObject } from 'immer';
+import { produce } from 'immer';
 import * as dat from 'dat.gui';
 
 window.onload = () => {
@@ -91,7 +91,7 @@ class App {
     const { view } = this;
 
     if (DEBUG.globals) {
-      (window as any)['app'] = this;
+      (window as any)['_app'] = this;
     }
 
     window.onresize = () => this.resize();

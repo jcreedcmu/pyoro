@@ -1,10 +1,10 @@
-import { Animation, Animator, Time, app, duration } from './animation';
-import { State, Player } from "./state";
-import { Layer, putTile, getTile } from './layer';
-import { FULL_IMPETUS, NUM_TILES, editTiles, rotateTile } from './constants';
-import { MotiveMove, Move, Point, Tile, Facing, Sprite } from './types';
-import { clone, div, int, vplus, vscale, nope, hash, max } from './util';
-import { produce, DraftObject } from 'immer';
+import { produce } from 'immer';
+import { Animation, Animator, app, duration } from './animation';
+import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile } from './constants';
+import { getTile, Layer, putTile } from './layer';
+import { Player, State } from "./state";
+import { Facing, MotiveMove, Move, Point, Sprite, Tile } from './types';
+import { max, nope, vplus } from './util';
 
 function isItem(x: Tile): boolean {
   return x == 'teal_fruit';
