@@ -5,6 +5,6 @@ build:
 	node build-client.js
 
 test:
-	npx mocha --reporter list
+	npm test
 
 .PHONY: test

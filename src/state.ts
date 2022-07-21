@@ -37,14 +37,16 @@ export type State = {
   inventory: Inventory,
 };
 
+export const init_player: Player = {
+  dead: false,
+  pos: { x: 0, y: 0 },
+  animState: 'player',
+  flipState: 'right',
+  impetus: FULL_IMPETUS,
+};
+
 export const init_state: State = {
-  player: {
-    dead: false,
-    pos: { x: 0, y: 0 },
-    animState: 'player',
-    flipState: 'left',
-    impetus: FULL_IMPETUS,
-  },
+  player: init_player,
   inventory: {
     teal_fruit: undefined,
   },

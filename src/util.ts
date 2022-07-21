@@ -1,3 +1,4 @@
+import { DEBUG } from './constants';
 import { Point, Color, BadRect, Rect } from './types';
 
 export function int(x: number): number {
@@ -148,5 +149,3 @@ export function rgbOfColor(color: string): Color {
     b: parseInt(color.slice(4, 6), 16)
   };
 }
-
-(window as any)['rgbOfColor'] = rgbOfColor;
