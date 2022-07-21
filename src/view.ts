@@ -10,12 +10,16 @@ export type WidgetPoint =
   | { t: 'EditTiles', ix: number }
   | { t: 'World', p: Point };
 
+type ViewData = {
+  wsize: Point,
+  origin: Point,
+};
+
 export class View {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
-  wsize: Point;
-  origin: Point;
-  spriteImg: HTMLImageElement;
+  vd: ViewData | null = null;
+  spriteImg: HTMLImageElement | null = null;
 
   constructor(c: HTMLCanvasElement, d: CanvasRenderingContext2D) {
     this.c = c;
@@ -31,6 +35,10 @@ export class View {
   }
 
   drawEditorStuff(state: State): void {
+    if (this.vd == null)
+      return;
+    const { origin } = this.vd;
+
     const { d } = this;
 
     // background of tile list
@@ -54,18 +62,22 @@ export class View {
     if (state.extra.blackout) {
       const c = u.rgbOfColor(guiData.stage_color);
       d.fillStyle = rgba(c.r, c.g, c.b, state.extra.blackout);
-      d.fillRect(this.origin.x, this.origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
+      d.fillRect(origin.x, origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
       return;
     }
   }
 
   drawInventory(state: State): void {
+    if (this.vd == null)
+      return;
+    const { origin } = this.vd;
+
     const { d } = this;
     const i = state.inventory;
     d.fillStyle = guiData.background_color;
     const start = {
-      x: this.origin.x,
-      y: this.origin.y + (1 + NUM_TILES.y * TILE_SIZE) * SCALE,
+      x: origin.x,
+      y: origin.y + (1 + NUM_TILES.y * TILE_SIZE) * SCALE,
     };
     d.fillRect(start.x, start.y,
       NUM_INVENTORY_ITEMS * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
@@ -108,19 +120,23 @@ export class View {
   }
 
   drawScaled(state: State): void {
+    if (this.vd == null)
+      return;
+    const { origin, wsize } = this.vd;
+
     const { d } = this;
 
     // background
     d.fillStyle = guiData.stage_color;
-    d.fillRect(0, 0, this.wsize.x, this.wsize.y);
+    d.fillRect(0, 0, wsize.x, wsize.y);
     d.fillStyle = guiData.background_color;
-    d.fillRect(this.origin.x, this.origin.y,
+    d.fillRect(origin.x, origin.y,
       NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
 
     // set up clip rect for main play field
     d.save();
     d.beginPath();
-    d.rect(this.origin.x, this.origin.y,
+    d.rect(origin.x, origin.y,
       NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
     d.clip();
     this.drawField(state);
@@ -140,6 +156,9 @@ export class View {
 
   // spos: position in window, in pixels. (0,0) is top left of window
   raw_draw_sprite(sprite_id: Sprite, spos: Point, flip?: boolean): void {
+    if (this.spriteImg == null)
+      return;
+
     const sprite_loc = sprites[sprite_id];
 
     const d = this.d;
@@ -160,15 +179,20 @@ export class View {
 
   // wpos: position in window, in tiles. (0,0) is top left of viewport
   draw_sprite(sprite_id: Sprite, wpos: Point, flip?: boolean): void {
+    if (this.vd == null)
+      return;
+    const { origin } = this.vd;
 
     if (wpos.x < - 1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
       return;
 
 
-    this.raw_draw_sprite(sprite_id, vm2(this.origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE), flip);
+    this.raw_draw_sprite(sprite_id, vm2(origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE), flip);
   }
 
   resize(): void {
+
+
     const { c, d } = this;
 
     const ratio = devicePixelRatio;
@@ -185,18 +209,23 @@ export class View {
     c.style.width = ow + 'px';
     c.style.height = oh + 'px';
 
-    this.wsize = { x: c.width / ratio, y: c.height / ratio };
+    const wsize = { x: c.width / ratio, y: c.height / ratio };
 
-    const center = vm(this.wsize, wsize => int(wsize / 2));
-    this.origin = vm2(center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
+    const center = vm(wsize, wsize => int(wsize / 2));
+    const origin = vm2(center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
+    this.vd = { origin, wsize };
   }
 
   wpoint_of_canvas(p: Point, s: State): WidgetPoint {
+    if (this.vd == null)
+      throw new Error('No View');
+    const { origin } = this.vd;
+
     const world_size = vm(NUM_TILES, NT => TILE_SIZE * SCALE * NT);
-    if (u.inrect(p, { p: this.origin, sz: world_size }))
+    if (u.inrect(p, { p: origin, sz: world_size }))
       return {
         t: 'World',
-        p: vmn([s.viewPort, this.origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
+        p: vmn([s.viewPort, origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
       };
     else {
       return {

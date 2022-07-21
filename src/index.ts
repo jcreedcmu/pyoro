@@ -16,10 +16,16 @@ window.onload = () => {
   if (DEBUG.datgui) {
     const gui = new dat.GUI();
     const colorCtr = gui.addColor(guiData, 'background_color');
+    const stageCtr = gui.addColor(guiData, 'stage_color');
     colorCtr.onChange((value: string) => {
       guiData.background_color = value;
       app.redraw();
     });
+    stageCtr.onChange((value: string) => {
+      guiData.stage_color = value;
+      app.redraw();
+    });
+
   }
 
 };
@@ -57,7 +63,7 @@ class App {
         s.iface.editTileIx = (s.iface.editTileIx - 1 + editTiles.length) % editTiles.length;
       });
     },
-    's': (s) => {
+    'C-s': (s) => {
       const req = new Request('/save', {
         method: 'POST',
         body: JSON.stringify(s.overlay),
@@ -122,6 +128,8 @@ class App {
       const k = key(e);
       const f = App.commandBindings[k];
       if (f) {
+        e.stopPropagation();
+        e.preventDefault();
         const oldState = this.model.state;
         const newState = f(oldState);
         if (newState != oldState) {
@@ -132,6 +140,8 @@ class App {
       else {
         const move = App.moveBindings[k];
         if (move) {
+          e.stopPropagation();
+          e.preventDefault();
           this.handle_key(move);
         }
       }
