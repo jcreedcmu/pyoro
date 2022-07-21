@@ -192,7 +192,7 @@ export class Model {
     let impetus = player.impetus;
 
     if (supportedBefore)
-      impetus = genImpetus(tileBefore);
+      impetus = genImpetus(tileBefore) + (s.inventory.teal_fruit != undefined ? 1 : 0);
     if (result.impetus != null)
       impetus = result.impetus;
 
