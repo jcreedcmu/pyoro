@@ -30,9 +30,7 @@ function basicModel(layer: Layer) {
 
 function executeMove(model: Model, move: Move) {
   const animator = model.animator_for_move(move);
-  for (let i = 0; i <= animator.dur; i++) {
-    model.state = animator.anim(i, model.state);
-  }
+  model.state = animator.anim(animator.dur, model.state);
 }
 
 describe('Model', function() {

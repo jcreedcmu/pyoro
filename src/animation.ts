@@ -22,6 +22,12 @@ export type Animation =
   | { t: 'RecenterAnimation' };
 
 
+// Here's the intended invariant. Suppose s is the current state. an
+// Animator has a total of dur+1 frames, 0, 1, 2, … n. To get the
+// state at frame i, we call anim(i, s) --- all based from the same
+// initial state, not folded together. If we want to get the effect of
+// the move overall, without all the intermediate animations, we can
+// simply call anim(dur, s).
 export type Animator = {
   dur: number, // duration in frames
   anim: (fr: number, s: State) => State,

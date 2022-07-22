@@ -1,3 +1,12 @@
 mouse drag to paint tiles
 buffer keypresses during animation
 sounds?
+
+=== 2022.07.22 META: (:id 4c317fa7-ba53-471c-9f20-1adfc70ca56d)
+
+mechanics:
+   double jump
+   wall jump
+   dash
+   gravity reverse
+   walls that only horizontally block
