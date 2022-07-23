@@ -53,9 +53,9 @@ export function app(a: Animation, state: State, time: Time): State {
     case 'PlayerAnimation':
       const { pos, animState, impetus, flipState, dead } = a;
       return produce(state, s => {
-        s.gameState.player = {
+        s.game.player = {
           dead: dead && t >= 0.75,
-          pos: vplus(vscale(s.gameState.player.pos, 1 - t), vscale(pos, t)),
+          pos: vplus(vscale(s.game.player.pos, 1 - t), vscale(pos, t)),
           animState: animState,
           flipState: flipState,
           impetus: impetus
@@ -68,7 +68,7 @@ export function app(a: Animation, state: State, time: Time): State {
 
     case 'MeltAnimation':
       return produce(state, s => {
-        putTile(s.gameState.overlay, a.pos, t > 0.5 ? 'empty' : 'broken_box');
+        putTile(s.game.overlay, a.pos, t > 0.5 ? 'empty' : 'broken_box');
       });
     case 'ResetAnimation':
       return produce(state, s => {
@@ -82,9 +82,9 @@ export function app(a: Animation, state: State, time: Time): State {
           s.iface.blackout = (DEATH - fr) / DEATH_FADE_OUT;
         }
         if (fr >= DEATH_FADE_OUT) {
-          s.gameState.overlay = s.gameState.initial_overlay;
-          const last_save = s.gameState.last_save;
-          s.gameState.player = produce(init_state.gameState.player, p => {
+          s.game.overlay = s.game.initOverlay;
+          const last_save = s.game.lastSave;
+          s.game.player = produce(init_state.game.player, p => {
             p.pos = last_save;
           });
           s.iface.viewPort = centeredViewPort(last_save);
@@ -93,16 +93,16 @@ export function app(a: Animation, state: State, time: Time): State {
     case 'SavePointChangeAnimation':
       return produce(state, s => {
         if (t > 0.5)
-          s.gameState.last_save = a.pos;
+          s.game.lastSave = a.pos;
       });
     case 'RecenterAnimation':
       return produce(state, s => {
-        const target = centeredViewPort(s.gameState.player.pos);
+        const target = centeredViewPort(s.game.player.pos);
         s.iface.viewPort = vm2(target, s.iface.viewPort, (tgt, vp) => lerp(vp, tgt, t));
       });
     case 'ItemGetAnimation':
       return produce(state, s => {
-        s.gameState.inventory.teal_fruit = a.pos;
+        s.game.inventory.teal_fruit = a.pos;
       });
       break;
     default:

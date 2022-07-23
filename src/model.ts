@@ -145,12 +145,12 @@ export class Model {
   }
 
   getTile(p: Point): Tile {
-    return getTile(this.state.gameState.overlay, p);
+    return getTile(this.state.game.overlay, p);
   }
 
   putTile(p: Point, t: Tile): void {
     this.state = produce(this.state, s => {
-      putTile(s.gameState.overlay, p, t);
+      putTile(s.game.overlay, p, t);
     });
   }
 
@@ -164,7 +164,7 @@ export class Model {
     var anims: Animation[] = [];
 
     var s = this.state;
-    var player = s.gameState.player;
+    var player = s.game.player;
 
     if (player.dead || move == 'reset') {
       return [{ t: 'ResetAnimation' }];
@@ -179,7 +179,7 @@ export class Model {
     var supportedBefore = !openTile(tileBefore);
     if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
 
-    const result = get_motion({ tiles: this.state.gameState.overlay, player }, move);
+    const result = get_motion({ tiles: this.state.game.overlay, player }, move);
     const flipState = get_flip_state(move) || player.flipState;
 
     if (result.forced != null) forcedBlocks.push(result.forced);
@@ -192,7 +192,7 @@ export class Model {
     let impetus = player.impetus;
 
     if (supportedBefore)
-      impetus = genImpetus(tileBefore) + (s.gameState.inventory.teal_fruit != undefined ? 1 : 0);
+      impetus = genImpetus(tileBefore) + (s.game.inventory.teal_fruit != undefined ? 1 : 0);
     if (result.impetus != null)
       impetus = result.impetus;
 
@@ -266,7 +266,7 @@ export class Model {
   }
 
   get_player() {
-    return this.state.gameState.player;
+    return this.state.game.player;
   }
 
   get_viewPort() {

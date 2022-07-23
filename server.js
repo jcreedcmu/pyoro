@@ -13,7 +13,7 @@ server.use('/save', (req, res) => {
   const json = JSON.stringify(req.body, null, 2);
   const string_to_write = `import { Layer } from './layer';
 
-export const initial_overlay: Layer = ${json};
+export const initOverlay: Layer = ${json};
 `;
 
   console.log(string_to_write);

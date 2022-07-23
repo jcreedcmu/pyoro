@@ -1,6 +1,6 @@
 import { Layer } from './layer';
 
-export const initial_overlay: Layer = {
+export const initOverlay: Layer = {
   "tiles": {
     "0,1": "up_box",
     "-1,1": "box",

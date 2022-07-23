@@ -1,7 +1,7 @@
 import { Layer } from './layer';
 import { Point, Facing, Sprite, Tile } from './types';
 import { FULL_IMPETUS } from './constants';
-import { initial_overlay } from './initial_overlay';
+import { initOverlay } from './initial_overlay';
 
 export type Player = {
   dead: boolean,
@@ -24,14 +24,14 @@ export type Inventory = { [k in Item]: Point | undefined };
 
 export type GameState = {
   player: Player,
-  initial_overlay: Layer,
+  initOverlay: Layer,
   overlay: Layer,
   inventory: Inventory,
-  last_save: Point,
+  lastSave: Point,
 }
 
 export type State = {
-  gameState: GameState,
+  game: GameState,
   iface: IfaceState,
 };
 
@@ -44,14 +44,14 @@ export const init_player: Player = {
 };
 
 export const init_state: State = {
-  gameState: {
+  game: {
     player: init_player,
-    initial_overlay: initial_overlay,
-    overlay: initial_overlay,
+    initOverlay: initOverlay,
+    overlay: initOverlay,
     inventory: {
       teal_fruit: undefined,
     },
-    last_save: { x: 0, y: 0 },
+    lastSave: { x: 0, y: 0 },
   },
   iface: {
     viewPort: { x: -13, y: -9 },

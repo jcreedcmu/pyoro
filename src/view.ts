@@ -73,7 +73,7 @@ export class View {
     const { origin } = this.vd;
 
     const { d } = this;
-    const i = state.gameState.inventory;
+    const i = state.game.inventory;
     d.fillStyle = guiData.background_color;
     const start = {
       x: origin.x,
@@ -92,9 +92,9 @@ export class View {
     const vp = state.iface.viewPort;
 
     const tileOverride: PointMap<boolean> = { tiles: {} };
-    putItem(tileOverride, state.gameState.last_save, true);
+    putItem(tileOverride, state.game.lastSave, true);
 
-    Object.entries<Point | undefined, Item>(state.gameState.inventory).forEach(([k, v]) => {
+    Object.entries<Point | undefined, Item>(state.game.inventory).forEach(([k, v]) => {
       if (v != undefined) {
         putItem(tileOverride, v, true);
       }
@@ -105,18 +105,18 @@ export class View {
       for (let x = 0; x < NUM_TILES.x + 1; x++) {
         const p = { x, y };
         const realp = vplus(p, vint(vp));
-        let tile = getTile(state.gameState.overlay, realp);
+        let tile = getTile(state.game.overlay, realp);
         if (getItem(tileOverride, realp))
           tile = 'empty';
         this.draw_sprite(tile, vminus(p, vfpart(vp)));
       }
     }
 
-    const playerSprite = state.gameState.player.dead ? 'player_dead' : state.gameState.player.animState;
+    const playerSprite = state.game.player.dead ? 'player_dead' : state.game.player.animState;
 
     this.draw_sprite(playerSprite,
-      vminus(state.gameState.player.pos, vp),
-      state.gameState.player.flipState == 'left');
+      vminus(state.game.player.pos, vp),
+      state.game.player.flipState == 'left');
   }
 
   drawScaled(state: State): void {
