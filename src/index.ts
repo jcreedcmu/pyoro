@@ -66,7 +66,7 @@ class App {
     'C-s': (s) => {
       const req = new Request('/save', {
         method: 'POST',
-        body: JSON.stringify(s.overlay),
+        body: JSON.stringify(s.gameState.overlay),
         headers: {
           'Content-Type': 'application/json',
         }
@@ -75,7 +75,7 @@ class App {
         .then(x => console.log(x))
         .catch(console.error);
       return produce(s, s => {
-        s.initial_overlay.tiles = s.overlay.tiles;
+        s.initial_overlay.tiles = s.gameState.overlay.tiles;
       });
     },
     'r': (s) => {
