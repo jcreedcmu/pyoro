@@ -223,13 +223,13 @@ export class Model {
     if (isItem(tileAfter))
       anims.push({ t: 'ItemGetAnimation', pos: nextPos });
 
-    if (nextPos.x - s.viewPort.x >= NUM_TILES.x - 1)
+    if (nextPos.x - s.iface.viewPort.x >= NUM_TILES.x - 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
-    if (nextPos.x - s.viewPort.x < 1)
+    if (nextPos.x - s.iface.viewPort.x < 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: -1, y: 0 } });
-    if (nextPos.y - s.viewPort.y >= NUM_TILES.y - 1)
+    if (nextPos.y - s.iface.viewPort.y >= NUM_TILES.y - 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: 1 } });
-    if (nextPos.y - s.viewPort.y < 1)
+    if (nextPos.y - s.iface.viewPort.y < 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: -1 } });
 
     return anims;
@@ -270,6 +270,6 @@ export class Model {
   }
 
   get_viewPort() {
-    return this.state.viewPort;
+    return this.state.iface.viewPort;
   }
 }

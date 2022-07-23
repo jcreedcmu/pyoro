@@ -59,9 +59,9 @@ export class View {
     d.rect(sel * TILE_SIZE * SCALE + SCALE, SCALE, (TILE_SIZE) * SCALE, (TILE_SIZE) * SCALE);
     d.fill('evenodd');
 
-    if (state.extra.blackout) {
+    if (state.iface.blackout) {
       const c = u.rgbOfColor(guiData.stage_color);
-      d.fillStyle = rgba(c.r, c.g, c.b, state.extra.blackout);
+      d.fillStyle = rgba(c.r, c.g, c.b, state.iface.blackout);
       d.fillRect(origin.x, origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
       return;
     }
@@ -89,7 +89,7 @@ export class View {
 
   drawField(state: State): void {
     const { d } = this;
-    const vp = state.viewPort;
+    const vp = state.iface.viewPort;
 
     const tileOverride: PointMap<boolean> = { tiles: {} };
     putItem(tileOverride, state.gameState.last_save, true);
@@ -225,7 +225,7 @@ export class View {
     if (u.inrect(p, { p: origin, sz: world_size }))
       return {
         t: 'World',
-        p: vmn([s.viewPort, origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
+        p: vmn([s.iface.viewPort, origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
       };
     else {
       return {

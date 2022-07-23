@@ -63,7 +63,7 @@ export function app(a: Animation, state: State, time: Time): State {
       });
     case 'ViewPortAnimation':
       return produce(state, s => {
-        s.viewPort = vplus(s.viewPort, vscale(a.dpos, t));
+        s.iface.viewPort = vplus(s.iface.viewPort, vscale(a.dpos, t));
       });
 
     case 'MeltAnimation':
@@ -73,21 +73,21 @@ export function app(a: Animation, state: State, time: Time): State {
     case 'ResetAnimation':
       return produce(state, s => {
         if (fr <= DEATH_FADE_OUT) {
-          s.extra.blackout = fr / DEATH_FADE_OUT;
+          s.iface.blackout = fr / DEATH_FADE_OUT;
         }
         else if (fr <= DEATH_FADE_OUT + DEATH_HOLD) {
-          s.extra.blackout = 1;
+          s.iface.blackout = 1;
         }
         else {
-          s.extra.blackout = (DEATH - fr) / DEATH_FADE_OUT;
+          s.iface.blackout = (DEATH - fr) / DEATH_FADE_OUT;
         }
         if (fr >= DEATH_FADE_OUT) {
-          s.gameState.overlay = s.initial_overlay;
+          s.gameState.overlay = s.gameState.initial_overlay;
           const last_save = s.gameState.last_save;
           s.gameState.player = produce(init_state.gameState.player, p => {
             p.pos = last_save;
           });
-          s.viewPort = centeredViewPort(last_save);
+          s.iface.viewPort = centeredViewPort(last_save);
         }
       });
     case 'SavePointChangeAnimation':
@@ -98,7 +98,7 @@ export function app(a: Animation, state: State, time: Time): State {
     case 'RecenterAnimation':
       return produce(state, s => {
         const target = centeredViewPort(s.gameState.player.pos);
-        s.viewPort = vm2(target, s.viewPort, (tgt, vp) => lerp(vp, tgt, t));
+        s.iface.viewPort = vm2(target, s.iface.viewPort, (tgt, vp) => lerp(vp, tgt, t));
       });
     case 'ItemGetAnimation':
       return produce(state, s => {

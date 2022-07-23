@@ -75,7 +75,7 @@ class App {
         .then(x => console.log(x))
         .catch(console.error);
       return produce(s, s => {
-        s.initial_overlay.tiles = s.gameState.overlay.tiles;
+        s.gameState.initial_overlay.tiles = s.gameState.overlay.tiles;
       });
     },
     'r': (s) => {

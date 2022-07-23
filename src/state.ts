@@ -14,9 +14,7 @@ export type Player = {
 export type IfaceState = {
   editTileIx: number,
   editTileRotation: number,
-};
-
-export type ExtraState = {
+  viewPort: Point,
   blackout: number,
 };
 
@@ -26,6 +24,7 @@ export type Inventory = { [k in Item]: Point | undefined };
 
 export type GameState = {
   player: Player,
+  initial_overlay: Layer,
   overlay: Layer,
   inventory: Inventory,
   last_save: Point,
@@ -33,10 +32,7 @@ export type GameState = {
 
 export type State = {
   gameState: GameState,
-  viewPort: Point,
-  initial_overlay: Layer,
   iface: IfaceState,
-  extra: ExtraState,
 };
 
 export const init_player: Player = {
@@ -50,18 +46,16 @@ export const init_player: Player = {
 export const init_state: State = {
   gameState: {
     player: init_player,
+    initial_overlay: initial_overlay,
     overlay: initial_overlay,
     inventory: {
       teal_fruit: undefined,
     },
     last_save: { x: 0, y: 0 },
   },
-  viewPort: { x: -13, y: -9 },
-  initial_overlay: initial_overlay,
-  extra: {
-    blackout: 0,
-  },
   iface: {
+    viewPort: { x: -13, y: -9 },
+    blackout: 0,
     editTileIx: 0,
     editTileRotation: 0,
   }
