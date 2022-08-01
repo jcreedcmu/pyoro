@@ -17,14 +17,19 @@ function basicLayer(): Layer {
 
 function basicModel(layer: Layer) {
   return new Model({
-    player: init_player,
-    viewPort: { x: -5, y: -5 },
-    initial_overlay: layer,
-    overlay: layer,
-    iface: { editTileIx: 0, editTileRotation: 0 },
-    inventory: { teal_fruit: undefined, },
-    last_save: { x: 0, y: 0 },
-    extra: { blackout: 0 },
+    game: {
+      initOverlay: layer,
+      inventory: { teal_fruit: undefined, },
+      lastSave: { x: 0, y: 0 },
+      overlay: layer,
+      player: init_player,
+    },
+    iface: {
+      editTileIx: 0,
+      editTileRotation: 0,
+      blackout: 0,
+      viewPort: { x: -5, y: -5 },
+    },
   })
 }
 

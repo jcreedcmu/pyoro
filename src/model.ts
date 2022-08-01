@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { Animation, Animator, app, duration } from './animation';
+import { Animation, Animator, applyAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile } from './constants';
 import { getTile, Layer, putTile } from './layer';
 import { Player, State } from "./state";
@@ -32,6 +32,7 @@ type Motion = {
   dpos: Point,
   forced?: Point, // optionally force a block in the direction of motion
   impetus?: number, // optionally set impetus to some value
+  attachWall: boolean, // optionally set attachment to some value
 };
 
 type Board = { tiles: Layer, player: Player };
@@ -43,15 +44,15 @@ function ropen(b: Board, x: number, y: number): boolean {
 
 function execute_down(b: Board): Motion {
   return ropen(b, 0, 1) ?
-    { dpos: { x: 0, y: 1 }, impetus: 0 } :
-    { dpos: { x: 0, y: 0 }, impetus: 0 }
+    { dpos: { x: 0, y: 1 }, impetus: 0, attachWall: false } :
+    { dpos: { x: 0, y: 0 }, impetus: 0, attachWall: false }
 }
 
 function execute_up(b: Board): Motion {
   var { player } = b;
   if (player.impetus) {
     if (ropen(b, 0, -1)) {
-      return { dpos: { x: 0, y: -1 } }
+      return { dpos: { x: 0, y: -1 }, attachWall: false }
     }
     else {
       var rv = execute_down(b);
@@ -60,7 +61,7 @@ function execute_up(b: Board): Motion {
     }
   }
   else {
-    return { dpos: { x: 0, y: 1 } };
+    return { dpos: { x: 0, y: 1 }, attachWall: false };
   }
 }
 
@@ -68,18 +69,23 @@ function execute_horiz(b: Board, flip: Facing): Motion {
   const { player } = b;
   const dx = flip == 'left' ? -1 : 1;
   const forward_open = ropen(b, dx, 0);
+  if (!forward_open) {
+    return { dpos: { x: 0, y: 0 }, impetus: 1, attachWall: true };
+  }
+
   if (player.impetus && !ropen(b, 0, 1)) {
-    return forward_open ? { dpos: { x: dx, y: 0 }, impetus: 0 } : {
-      dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 },
-      impetus: 0
-    };
+    return forward_open
+      ? { dpos: { x: dx, y: 0 }, impetus: 0, attachWall: false }
+      : { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, impetus: 0, attachWall: false };
   }
   else {
     if (forward_open) {
-      return ropen(b, dx, 1) ? { dpos: { x: dx, y: 1 }, impetus: 0 } : { dpos: { x: dx, y: 0 }, impetus: 0 };
+      return ropen(b, dx, 1)
+        ? { dpos: { x: dx, y: 1 }, impetus: 0, attachWall: false }
+        : { dpos: { x: dx, y: 0 }, impetus: 0, attachWall: false };
     }
     else
-      return { dpos: { x: 0, y: 1 }, forced: { x: dx, y: 0 }, impetus: 0 }
+      return { dpos: { x: 0, y: 1 }, forced: { x: dx, y: 0 }, impetus: 0, attachWall: false }
   }
 }
 
@@ -95,9 +101,9 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
     return rv;
   }
   if (!ropen(b, dx, 0))
-    return { dpos: { x: 0, y: -1 }, forced: { x: dx, y: 0 } };
+    return { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, attachWall: true };
   if (ropen(b, dx, -1))
-    return { dpos: { x: dx, y: -1 } }
+    return { dpos: { x: dx, y: -1 }, attachWall: false }
   else {
     const rv = execute_down(b);
     rv.forced = { x: dx, y: -1 };
@@ -159,12 +165,13 @@ export class Model {
       anims.push({ t: 'MeltAnimation', pos });
   }
 
+  // The animations we return here are concurrent, I think?
   animate_move(move: Move): Animation[] {
-    var forcedBlocks: Point[] = []
-    var anims: Animation[] = [];
+    const forcedBlocks: Point[] = []
+    const anims: Animation[] = [];
 
-    var s = this.state;
-    var player = s.game.player;
+    const s = this.state;
+    const player = s.game.player;
 
     if (player.dead || move == 'reset') {
       return [{ t: 'ResetAnimation' }];
@@ -174,10 +181,11 @@ export class Model {
       return [{ t: 'RecenterAnimation' }];
     }
 
-    var belowBefore = vplus(player.pos, { x: 0, y: 1 });
-    var tileBefore = this.getTile(belowBefore);
-    var supportedBefore = !openTile(tileBefore);
+    const belowBefore = vplus(player.pos, { x: 0, y: 1 });
+    const tileBefore = this.getTile(belowBefore);
+    const supportedBefore = !openTile(tileBefore);
     if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
+    const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
     const result = get_motion({ tiles: this.state.game.overlay, player }, move);
     const flipState = get_flip_state(move) || player.flipState;
@@ -185,13 +193,13 @@ export class Model {
     if (result.forced != null) forcedBlocks.push(result.forced);
 
     forcedBlocks.forEach(fb => {
-      var pos = vplus(player.pos, fb);
+      const pos = vplus(player.pos, fb);
       this.forceBlock(pos, this.getTile(pos), anims);
     });
 
     let impetus = player.impetus;
 
-    if (supportedBefore)
+    if (stableBefore)
       impetus = genImpetus(tileBefore) + (s.game.inventory.teal_fruit != undefined ? 1 : 0);
     if (result.impetus != null)
       impetus = result.impetus;
@@ -206,7 +214,10 @@ export class Model {
     const supportedAfter = !openTile(suppTileAfter);
     const dead = isDeadly(tileAfter);
 
-    if (supportedAfter) {
+    if (result.attachWall) {
+      animState = 'player_wall';
+    }
+    else if (supportedAfter) {
       impetus = genImpetus(suppTileAfter);
     }
     else {
@@ -242,7 +253,7 @@ export class Model {
       dur,
       anim: (fr: number, s: State): State => {
         anims.forEach(({ anim, dur }) => {
-          s = app(anim, s, { t: fr / dur, fr });
+          s = applyAnimation(anim, s, { t: fr / dur, fr });
         });
         return s;
       }

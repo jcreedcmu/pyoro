@@ -47,7 +47,7 @@ const DEATH_HOLD = 0;
 const DEATH_FADE_IN = 2;
 const DEATH = DEATH_FADE_OUT + DEATH_HOLD + DEATH_FADE_IN;
 
-export function app(a: Animation, state: State, time: Time): State {
+export function applyAnimation(a: Animation, state: State, time: Time): State {
   const { t, fr } = time;
   switch (a.t) {
     case 'PlayerAnimation':

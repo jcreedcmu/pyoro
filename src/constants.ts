@@ -17,6 +17,7 @@ export const sprites: { [k in Sprite]: Point } = {
   player_dead: { x: 2, y: 0 },
   player_fall: { x: 1, y: 0 },
   player_rise: { x: 1, y: 1 },
+  player_wall: { x: 2, y: 1 },
   up_box: { x: 6, y: 6 },
   spike_up: { x: 0, y: 3 },
   spike_right: { x: 2, y: 3 },

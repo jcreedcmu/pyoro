@@ -35,6 +35,7 @@ export type PlayerSprite =
   | 'player'
   | 'player_fall'
   | 'player_rise'
+  | 'player_wall'
   | 'player_dead';
 export type Sprite =
   | Tile
