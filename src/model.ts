@@ -260,13 +260,12 @@ export class Model {
     }
   }
 
-  handle_world_click(p: Point): void {
+  handle_world_click(p: Point): Tile {
     const s = this.state;
     const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
-    if (this.getTile(p) != newTile)
-      this.putTile(p, newTile);
-    else
-      this.putTile(p, 'empty');
+    const tileToPut = this.getTile(p) != newTile ? newTile : 'empty';
+    this.putTile(p, tileToPut);
+    return tileToPut;
   }
 
   handle_edit_click(ix: number): void {

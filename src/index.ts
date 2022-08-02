@@ -176,18 +176,38 @@ class App {
     }
   }
 
+  drag_world(tileToPut: Tile): void {
+    const { view, model } = this;
+    const c = view.c;
+    function mouseUp(e: MouseEvent) {
+      c.removeEventListener('mousemove', mouseMove);
+      document.removeEventListener('mouseup', mouseUp);
+    }
+    function mouseMove(e: MouseEvent) {
+      const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
+      if (wpoint.t == 'World') {
+        model.putTile(wpoint.p, tileToPut);
+        view.draw(model.state);
+      }
+    }
+    c.addEventListener('mousemove', mouseMove);
+    document.addEventListener('mouseup', mouseUp);
+  }
+
   init_mouse(): void {
     const { view, model } = this;
     const c = view.c;
     c.onmousedown = (e: MouseEvent) => {
+
       const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
       if (DEBUG.mouse) {
         console.log(wpoint);
       }
       switch (wpoint.t) {
         case 'World':
-          model.handle_world_click(wpoint.p);
+          const tileToPut = model.handle_world_click(wpoint.p);
           view.draw(model.state);
+          this.drag_world(tileToPut);
           break;
         case 'EditTiles':
           model.handle_edit_click(wpoint.ix);
