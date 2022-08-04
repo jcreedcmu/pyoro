@@ -7,6 +7,7 @@ import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
 import { key } from './key';
 import { produce } from 'immer';
 import * as dat from 'dat.gui';
+import { Animator } from './animation';
 
 window.onload = () => {
 
@@ -29,6 +30,19 @@ window.onload = () => {
   }
 
 };
+
+type Action =
+  | { t: 'changeState', f: (s: State) => State }
+  | { t: 'setState', s: State }
+  | { t: 'animate', cur_frame: number, animator: Animator };
+
+function reduce(s: State, a: Action): State {
+  switch (a.t) {
+    case 'changeState': return a.f(s);
+    case 'setState': return a.s;
+    case 'animate': return a.animator.anim(a.cur_frame, s);
+  }
+}
 
 class App {
   view: View;
@@ -102,7 +116,15 @@ class App {
 
     window.onresize = () => this.resize();
 
-    this.init_keys();
+    const dispatch = (a: Action) => {
+      const newState = reduce(this.model.state, a);
+      if (this.model.state != newState) {
+        this.model.state = newState
+        this.view.draw(newState);
+      }
+    }
+
+    this.init_keys(dispatch);
     this.init_mouse();
 
     imgProm('assets/sprite.png').then(s => {
@@ -119,7 +141,7 @@ class App {
     this.view.draw(this.model.state);
   }
 
-  init_keys(): void {
+  init_keys(dispatch: (a: Action) => void): void {
     document.onkeydown = e => {
       if (DEBUG.keys) {
         console.log(e.keyCode);
@@ -127,22 +149,17 @@ class App {
       }
       const k = key(e);
       const f = App.commandBindings[k];
-      if (f) {
+      if (f !== undefined) {
         e.stopPropagation();
         e.preventDefault();
-        const oldState = this.model.state;
-        const newState = f(oldState);
-        if (newState != oldState) {
-          this.model.state = newState;
-          this.view.draw(this.model.state);
-        }
+        dispatch({ t: 'changeState', f });
       }
       else {
         const move = App.moveBindings[k];
         if (move) {
           e.stopPropagation();
           e.preventDefault();
-          this.handle_key(move);
+          this.handle_key(dispatch, move);
         }
       }
     };
@@ -150,23 +167,22 @@ class App {
 
   // XXX loule I'm not even buffering keys that were pressed during
   // the lock period? Probably should fix this.
-  lock = false;
-  handle_key(ks: Move): void {
-    const { view, model } = this;
-    const state = model.state;
 
+  // XXX also should just update the state with the current frame and
+  // functionally render from there.
+  lock = false;
+  handle_key(dispatch: (s: Action) => void, ks: Move): void {
+    const { view, model } = this;
     if (!this.lock) {
-      let cur_frame = 0;
+      let cur_frame = 0; // XXX this belongs in interface state
       const animator = model.animator_for_move(ks);
-      this.lock = true;
+      this.lock = true; // XXX this belongs in interface state
 
       const step = () => {
         cur_frame++;
-        const nextState = animator.anim(cur_frame, state);
-        view.draw(nextState);
+        dispatch({ t: 'animate', cur_frame, animator });
         if (cur_frame == animator.dur) {
-          model.state = nextState;
-          this.lock = false;
+          this.lock = false; // XXX this belongs in interface state
         }
         else
           setTimeout(step, FRAME_DURATION_MS);
