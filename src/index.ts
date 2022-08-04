@@ -10,10 +10,9 @@ import * as dat from 'dat.gui';
 import { Animator } from './animation';
 import { Action, Dispatch, reduce } from './reduce';
 
-window.onload = () => {
-
+async function onload() {
   const app = new App;
-  app.run();
+  await app.run();
 
   if (DEBUG.datgui) {
     const gui = new dat.GUI();
@@ -27,10 +26,10 @@ window.onload = () => {
       guiData.stage_color = value;
       app.redraw();
     });
-
   }
+}
 
-};
+window.addEventListener('load', onload);
 
 class App {
   view: View;
