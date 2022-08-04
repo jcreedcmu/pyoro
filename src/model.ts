@@ -4,7 +4,8 @@ import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile } from './constants';
 import { getTile, Layer, putTile } from './layer';
 import { Player, State } from "./state";
 import { Facing, MotiveMove, Move, Point, Sprite, Tile } from './types';
-import { max, nope, vplus } from './util';
+import { max } from './util';
+import { vplus } from './point';
 
 function isItem(x: Tile): boolean {
   return x == 'teal_fruit';
@@ -121,8 +122,6 @@ function get_motion(b: Board, move: MotiveMove): Motion {
     case 'right': return execute_horiz(b, 'right');
     case 'up-left': return execute_up_diag(b, 'left');
     case 'up-right': return execute_up_diag(b, 'right');
-    default:
-      return nope(move);
   }
 }
 
@@ -138,8 +137,6 @@ function get_flip_state(move: MotiveMove): Facing | null {
     case 'up':
     case 'down':
       return null;
-    default:
-      return nope(move);
   }
 }
 

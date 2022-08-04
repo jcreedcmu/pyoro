@@ -1,6 +1,7 @@
 import { TILE_SIZE, SCALE, NUM_INVENTORY_ITEMS, sprites, rotateTile } from './constants';
 import { DEBUG, editTiles, NUM_TILES, guiData } from './constants';
-import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, rgba, vequal } from './util';
+import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, vequal } from './point';
+import { rgba } from './util';
 import * as u from './util';
 import { Point, Sprite } from './types';
 import { State, Item } from './state';
@@ -33,6 +34,11 @@ function CanvasTest(props: { msg: string }): JSX.Element {
   return React.createElement('canvas', { ref: cref });
 }
 
+export function initView() {
+  const root = ReactDOM.createRoot(document.getElementById('render-root')!);
+  root.render(React.createElement(CanvasTest, { msg: 'Hello World' }));
+}
+
 export class View {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
@@ -42,9 +48,6 @@ export class View {
   constructor(c: HTMLCanvasElement, d: CanvasRenderingContext2D) {
     this.c = c;
     this.d = d;
-
-    const root = ReactDOM.createRoot(document.getElementById('render-root')!);
-    root.render(React.createElement(CanvasTest, { msg: 'Hello World' }));
   }
 
   draw(state: State): void {

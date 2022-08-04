@@ -3,7 +3,7 @@ import { NUM_TILES } from './constants';
 import { putTile } from './layer';
 import { init_state, State } from './state';
 import { Facing, Point, Sprite } from './types';
-import { nope, vm2, vplus, vscale, int, lerp } from './util';
+import { vm2, vplus, vscale, int, lerp } from './point';
 
 export type Animation =
   {
@@ -105,8 +105,6 @@ export function applyAnimation(a: Animation, state: State, time: Time): State {
         s.game.inventory.teal_fruit = a.pos;
       });
       break;
-    default:
-      return nope(a);
   }
 }
 
@@ -120,7 +118,5 @@ export function duration(a: Animation): number {
     case 'SavePointChangeAnimation': return 2;
     case 'RecenterAnimation': return 4;
     case 'ItemGetAnimation': return 2;
-    default:
-      return nope(a);
   }
 }

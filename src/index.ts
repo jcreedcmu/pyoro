@@ -1,7 +1,7 @@
-import { View } from './view';
+import { initView, View } from './view';
 import { Player, State, init_state } from './state';
 import { animator_for_move, handle_edit_click, handle_world_click, _putTile } from './model';
-import { imgProm, nope } from './util';
+import { imgProm } from './util';
 import { Dict, Move, Tile } from './types';
 import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
 import { key } from './key';
@@ -91,6 +91,7 @@ class App {
     const d = c.getContext('2d') as CanvasRenderingContext2D;
 
     this.view = new View(c, d);
+    initView();
   }
 
   async run(): Promise<void> {
@@ -208,8 +209,6 @@ class App {
       switch (wpoint.t) {
         case 'World': dispatch({ t: 'worldClick', p: wpoint.p }); break;
         case 'EditTiles': dispatch({ t: 'editClick', ix: wpoint.ix }); break;
-        default:
-          return nope(wpoint);
       }
     };
   }
