@@ -94,7 +94,7 @@ class App {
     this.view = new View(c, d);
   }
 
-  run(): void {
+  async run(): Promise<void> {
     const { view } = this;
 
     if (DEBUG.globals) {
@@ -114,9 +114,9 @@ class App {
     this.init_keys(dispatch);
     this.init_mouse(dispatch);
 
-    imgProm('assets/sprite.png').then(s => {
-      view.spriteImg = s;
-    }).then(() => this.resize());
+    const s = await imgProm('assets/sprite.png');
+    view.spriteImg = s;
+    this.resize();
   }
 
   resize(): void {
