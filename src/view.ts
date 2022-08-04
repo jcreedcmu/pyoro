@@ -8,6 +8,7 @@ import { getItem, putItem, getTile, putTile, PointMap } from './layer';
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
+import { CanvasInfo, useCanvas } from './use-canvas';
 
 export type WidgetPoint =
   | { t: 'EditTiles', ix: number }
@@ -17,6 +18,20 @@ type ViewData = {
   wsize: Point,
   origin: Point,
 };
+
+function CanvasTest(props: { msg: string }): JSX.Element {
+  function render(ci: CanvasInfo, s: string) {
+    const { d, size: { x, y } } = ci;
+    console.log(s);
+    d.fillStyle = 'white';
+    d.fillRect(0, 0, x, y);
+    d.fillStyle = 'red';
+    d.fillText(props.msg, 12, 24);
+  }
+  const [canvasState, setCanvasState] = React.useState('hello');
+  const [cref, mc] = useCanvas(canvasState, render)
+  return React.createElement('canvas', { ref: cref });
+}
 
 export class View {
   c: HTMLCanvasElement;
@@ -29,7 +44,7 @@ export class View {
     this.d = d;
 
     const root = ReactDOM.createRoot(document.getElementById('render-root')!);
-    root.render(React.createElement('div', {}, 'Hello, World'));
+    root.render(React.createElement(CanvasTest, { msg: 'Hello World' }));
   }
 
   draw(state: State): void {
