@@ -252,10 +252,10 @@ export function animator_for_move(s: State, move: Move): Animator {
   }
 }
 
-export function handle_world_click(s: State, p: Point): { tile: Tile, state: State } {
+export function handle_world_click(s: State, p: Point): State {
   const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
   const tileToPut = _getTile(s, p) != newTile ? newTile : 'empty';
-  return { tile: tileToPut, state: _putTile(s, p, tileToPut) };
+  return produce(_putTile(s, p, tileToPut), s => { s.iface.dragTile = tileToPut });
 }
 
 export function handle_edit_click(s: State, ix: number): State {

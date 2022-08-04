@@ -8,6 +8,7 @@ import { key } from './key';
 import { produce } from 'immer';
 import * as dat from 'dat.gui';
 import { Animator } from './animation';
+import { Action, Dispatch, reduce } from './reduce';
 
 window.onload = () => {
 
@@ -30,19 +31,6 @@ window.onload = () => {
   }
 
 };
-
-type Action =
-  | { t: 'changeState', f: (s: State) => State }
-  | { t: 'setState', s: State }
-  | { t: 'animate', cur_frame: number, animator: Animator };
-
-function reduce(s: State, a: Action): State {
-  switch (a.t) {
-    case 'changeState': return a.f(s);
-    case 'setState': return a.s;
-    case 'animate': return a.animator.anim(a.cur_frame, s);
-  }
-}
 
 class App {
   view: View;
@@ -124,7 +112,7 @@ class App {
     }
 
     this.init_keys(dispatch);
-    this.init_mouse();
+    this.init_mouse(dispatch);
 
     imgProm('assets/sprite.png').then(s => {
       view.spriteImg = s;
@@ -140,7 +128,7 @@ class App {
     this.view.draw(this.state);
   }
 
-  init_keys(dispatch: (a: Action) => void): void {
+  init_keys(dispatch: Dispatch): void {
     document.onkeydown = e => {
       if (DEBUG.keys) {
         console.log(e.keyCode);
@@ -170,7 +158,7 @@ class App {
   // XXX also should just update the state with the current frame and
   // functionally render from there.
   lock = false;
-  handle_key(dispatch: (s: Action) => void, ks: Move): void {
+  handle_key(dispatch: Dispatch, ks: Move): void {
     const { view } = this;
     if (!this.lock) {
       let cur_frame = 0; // XXX this belongs in interface state
@@ -191,7 +179,8 @@ class App {
     }
   }
 
-  drag_world(tileToPut: Tile): void {
+  // XXX doesn't get called right now
+  drag_world(dispatch: Dispatch, tileToPut: Tile): void {
     const { view } = this;
     const c = view.c;
 
@@ -201,16 +190,14 @@ class App {
     }
     const mouseMove = (e: MouseEvent) => {
       const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, this.state);
-      if (wpoint.t == 'World') {
-        this.state = _putTile(this.state, wpoint.p, tileToPut);
-        view.draw(this.state);
-      }
+      if (wpoint.t == 'World')
+        dispatch({ t: 'putTile', p: wpoint.p, tile: tileToPut });
+      c.addEventListener('mousemove', mouseMove);
+      document.addEventListener('mouseup', mouseUp);
     }
-    c.addEventListener('mousemove', mouseMove);
-    document.addEventListener('mouseup', mouseUp);
   }
 
-  init_mouse(): void {
+  init_mouse(dispatch: Dispatch): void {
     const { view } = this;
     const c = view.c;
     c.onmousedown = (e: MouseEvent) => {
@@ -220,16 +207,8 @@ class App {
         console.log(wpoint);
       }
       switch (wpoint.t) {
-        case 'World':
-          const { tile, state } = handle_world_click(this.state, wpoint.p);
-          this.state = state;
-          view.draw(this.state);
-          this.drag_world(tile);
-          break;
-        case 'EditTiles':
-          this.state = handle_edit_click(this.state, wpoint.ix);
-          view.draw(this.state);
-          break;
+        case 'World': dispatch({ t: 'worldClick', p: wpoint.p }); break;
+        case 'EditTiles': dispatch({ t: 'editClick', ix: wpoint.ix }); break;
         default:
           return nope(wpoint);
       }

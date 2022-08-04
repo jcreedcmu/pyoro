@@ -16,6 +16,7 @@ export type IfaceState = {
   editTileRotation: number,
   viewPort: Point,
   blackout: number,
+  dragTile: Tile | undefined,
 };
 
 export type Item = 'teal_fruit';
@@ -58,5 +59,6 @@ export const init_state: State = {
     blackout: 0,
     editTileIx: 0,
     editTileRotation: 0,
+    dragTile: undefined,
   }
 };

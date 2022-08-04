@@ -28,6 +28,7 @@ function basicState(layer: Layer): State {
       editTileRotation: 0,
       blackout: 0,
       viewPort: { x: -5, y: -5 },
+      dragTile: undefined,
     },
   };
 }
