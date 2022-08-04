@@ -206,10 +206,7 @@ class App {
       if (DEBUG.mouse) {
         console.log(wpoint);
       }
-      switch (wpoint.t) {
-        case 'World': dispatch({ t: 'worldClick', p: wpoint.p }); break;
-        case 'EditTiles': dispatch({ t: 'editClick', ix: wpoint.ix }); break;
-      }
+      dispatch({ t: 'click', wpoint });
     };
   }
 }
