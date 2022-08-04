@@ -264,19 +264,3 @@ export function handle_edit_click(s: State, ix: number): State {
       s.iface.editTileIx = ix;
   });
 }
-
-export class Model {
-  state: State;
-
-  constructor(state: State) {
-    this.state = state;
-  }
-
-  get_player() {
-    return this.state.game.player;
-  }
-
-  get_viewPort() {
-    return this.state.iface.viewPort;
-  }
-}

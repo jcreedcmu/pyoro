@@ -1,6 +1,6 @@
 import { View } from './view';
 import { Player, State, init_state } from './state';
-import { animator_for_move, handle_edit_click, handle_world_click, Model, _putTile } from './model';
+import { animator_for_move, handle_edit_click, handle_world_click, _putTile } from './model';
 import { imgProm, nope } from './util';
 import { Dict, Move, Tile } from './types';
 import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
@@ -46,7 +46,7 @@ function reduce(s: State, a: Action): State {
 
 class App {
   view: View;
-  model: Model;
+  state: State = init_state;
 
   static moveBindings: Dict<Move> = {
     'KP7': 'up-left',
@@ -104,7 +104,6 @@ class App {
     const d = c.getContext('2d') as CanvasRenderingContext2D;
 
     this.view = new View(c, d);
-    this.model = new Model(init_state);
   }
 
   run(): void {
@@ -117,9 +116,9 @@ class App {
     window.onresize = () => this.resize();
 
     const dispatch = (a: Action) => {
-      const newState = reduce(this.model.state, a);
-      if (this.model.state != newState) {
-        this.model.state = newState
+      const newState = reduce(this.state, a);
+      if (this.state != newState) {
+        this.state = newState
         this.view.draw(newState);
       }
     }
@@ -138,7 +137,7 @@ class App {
   }
 
   redraw(): void {
-    this.view.draw(this.model.state);
+    this.view.draw(this.state);
   }
 
   init_keys(dispatch: (a: Action) => void): void {
@@ -172,10 +171,10 @@ class App {
   // functionally render from there.
   lock = false;
   handle_key(dispatch: (s: Action) => void, ks: Move): void {
-    const { view, model } = this;
+    const { view } = this;
     if (!this.lock) {
       let cur_frame = 0; // XXX this belongs in interface state
-      const animator = animator_for_move(model.state, ks);
+      const animator = animator_for_move(this.state, ks);
       this.lock = true; // XXX this belongs in interface state
 
       const step = () => {
@@ -193,17 +192,18 @@ class App {
   }
 
   drag_world(tileToPut: Tile): void {
-    const { view, model } = this;
+    const { view } = this;
     const c = view.c;
-    function mouseUp(e: MouseEvent) {
+
+    const mouseUp = (e: MouseEvent) => {
       c.removeEventListener('mousemove', mouseMove);
       document.removeEventListener('mouseup', mouseUp);
     }
-    function mouseMove(e: MouseEvent) {
-      const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
+    const mouseMove = (e: MouseEvent) => {
+      const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, this.state);
       if (wpoint.t == 'World') {
-        model.state = _putTile(model.state, wpoint.p, tileToPut);
-        view.draw(model.state);
+        this.state = _putTile(this.state, wpoint.p, tileToPut);
+        view.draw(this.state);
       }
     }
     c.addEventListener('mousemove', mouseMove);
@@ -211,24 +211,24 @@ class App {
   }
 
   init_mouse(): void {
-    const { view, model } = this;
+    const { view } = this;
     const c = view.c;
     c.onmousedown = (e: MouseEvent) => {
 
-      const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
+      const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, this.state);
       if (DEBUG.mouse) {
         console.log(wpoint);
       }
       switch (wpoint.t) {
         case 'World':
-          const { tile, state } = handle_world_click(model.state, wpoint.p);
-          model.state = state;
-          view.draw(model.state);
+          const { tile, state } = handle_world_click(this.state, wpoint.p);
+          this.state = state;
+          view.draw(this.state);
           this.drag_world(tile);
           break;
         case 'EditTiles':
-          model.state = handle_edit_click(model.state, wpoint.ix);
-          view.draw(model.state);
+          this.state = handle_edit_click(this.state, wpoint.ix);
+          view.draw(this.state);
           break;
         default:
           return nope(wpoint);
