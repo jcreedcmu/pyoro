@@ -201,7 +201,6 @@ class App {
     const { view } = this;
     const c = view.c;
     c.onmousedown = (e: MouseEvent) => {
-
       const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, this.state);
       if (DEBUG.mouse) {
         console.log(wpoint);
