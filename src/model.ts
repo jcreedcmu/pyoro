@@ -158,121 +158,118 @@ function forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
     anims.push({ t: 'MeltAnimation', pos });
 }
 
+// The animations we return here are concurrent, I think?
+function animate_move(s: State, move: Move): Animation[] {
+  const forcedBlocks: Point[] = []
+  const anims: Animation[] = [];
+
+  const player = s.game.player;
+
+  if (player.dead || move == 'reset') {
+    return [{ t: 'ResetAnimation' }];
+  }
+
+  if (move == 'recenter') {
+    return [{ t: 'RecenterAnimation' }];
+  }
+
+  const belowBefore = vplus(player.pos, { x: 0, y: 1 });
+  const tileBefore = _getTile(s, belowBefore);
+  const supportedBefore = !openTile(tileBefore);
+  if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
+  const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
+
+  const result = get_motion({ tiles: s.game.overlay, player }, move);
+  const flipState = get_flip_state(move) || player.flipState;
+
+  if (result.forced != null) forcedBlocks.push(result.forced);
+
+  forcedBlocks.forEach(fb => {
+    const pos = vplus(player.pos, fb);
+    forceBlock(pos, _getTile(s, pos), anims);
+  });
+
+  let impetus = player.impetus;
+
+  if (stableBefore)
+    impetus = genImpetus(tileBefore) + (s.game.inventory.teal_fruit != undefined ? 1 : 0);
+  if (result.impetus != null)
+    impetus = result.impetus;
+
+  if (result.dpos == null)
+    throw "didn't expect to have a null dpos here";
+
+  const nextPos = vplus(player.pos, result.dpos);
+  let animState: Sprite = 'player';
+  const tileAfter = _getTile(s, nextPos);
+  const suppTileAfter = _getTile(s, vplus(nextPos, { x: 0, y: 1 }));
+  const supportedAfter = !openTile(suppTileAfter);
+  const dead = isDeadly(tileAfter);
+
+  if (result.attachWall) {
+    animState = 'player_wall';
+  }
+  else if (supportedAfter) {
+    impetus = genImpetus(suppTileAfter);
+  }
+  else {
+    if (impetus)
+      impetus--;
+    animState = impetus ? 'player_rise' : 'player_fall';
+  }
+
+  anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });
+
+  if (tileAfter == 'save_point')
+    anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
+
+  if (isItem(tileAfter))
+    anims.push({ t: 'ItemGetAnimation', pos: nextPos });
+
+  if (nextPos.x - s.iface.viewPort.x >= NUM_TILES.x - 1)
+    anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
+  if (nextPos.x - s.iface.viewPort.x < 1)
+    anims.push({ t: 'ViewPortAnimation', dpos: { x: -1, y: 0 } });
+  if (nextPos.y - s.iface.viewPort.y >= NUM_TILES.y - 1)
+    anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: 1 } });
+  if (nextPos.y - s.iface.viewPort.y < 1)
+    anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: -1 } });
+
+  return anims;
+}
+
+export function animator_for_move(s: State, move: Move): Animator {
+  const anims = animate_move(s, move).map(anim => ({ anim, dur: duration(anim) }));
+  const dur = max(anims.map(a => a.dur));
+  return {
+    dur,
+    anim: (fr: number, s: State): State => {
+      anims.forEach(({ anim, dur }) => {
+        s = applyAnimation(anim, s, { t: fr / dur, fr });
+      });
+      return s;
+    }
+  }
+}
+
+export function handle_world_click(s: State, p: Point): { tile: Tile, state: State } {
+  const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
+  const tileToPut = _getTile(s, p) != newTile ? newTile : 'empty';
+  return { tile: tileToPut, state: _putTile(s, p, tileToPut) };
+}
+
+export function handle_edit_click(s: State, ix: number): State {
+  return produce(s, s => {
+    if (ix < editTiles.length && ix >= 0)
+      s.iface.editTileIx = ix;
+  });
+}
+
 export class Model {
   state: State;
 
   constructor(state: State) {
     this.state = state;
-  }
-
-  // The animations we return here are concurrent, I think?
-  animate_move(move: Move): Animation[] {
-    const forcedBlocks: Point[] = []
-    const anims: Animation[] = [];
-
-    const s = this.state;
-    const player = s.game.player;
-
-    if (player.dead || move == 'reset') {
-      return [{ t: 'ResetAnimation' }];
-    }
-
-    if (move == 'recenter') {
-      return [{ t: 'RecenterAnimation' }];
-    }
-
-    const belowBefore = vplus(player.pos, { x: 0, y: 1 });
-    const tileBefore = _getTile(this.state, belowBefore);
-    const supportedBefore = !openTile(tileBefore);
-    if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
-    const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
-
-    const result = get_motion({ tiles: this.state.game.overlay, player }, move);
-    const flipState = get_flip_state(move) || player.flipState;
-
-    if (result.forced != null) forcedBlocks.push(result.forced);
-
-    forcedBlocks.forEach(fb => {
-      const pos = vplus(player.pos, fb);
-      forceBlock(pos, _getTile(this.state, pos), anims);
-    });
-
-    let impetus = player.impetus;
-
-    if (stableBefore)
-      impetus = genImpetus(tileBefore) + (s.game.inventory.teal_fruit != undefined ? 1 : 0);
-    if (result.impetus != null)
-      impetus = result.impetus;
-
-    if (result.dpos == null)
-      throw "didn't expect to have a null dpos here";
-
-    const nextPos = vplus(player.pos, result.dpos);
-    let animState: Sprite = 'player';
-    const tileAfter = _getTile(this.state, nextPos);
-    const suppTileAfter = _getTile(this.state, vplus(nextPos, { x: 0, y: 1 }));
-    const supportedAfter = !openTile(suppTileAfter);
-    const dead = isDeadly(tileAfter);
-
-    if (result.attachWall) {
-      animState = 'player_wall';
-    }
-    else if (supportedAfter) {
-      impetus = genImpetus(suppTileAfter);
-    }
-    else {
-      if (impetus)
-        impetus--;
-      animState = impetus ? 'player_rise' : 'player_fall';
-    }
-
-    anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });
-
-    if (tileAfter == 'save_point')
-      anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
-
-    if (isItem(tileAfter))
-      anims.push({ t: 'ItemGetAnimation', pos: nextPos });
-
-    if (nextPos.x - s.iface.viewPort.x >= NUM_TILES.x - 1)
-      anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
-    if (nextPos.x - s.iface.viewPort.x < 1)
-      anims.push({ t: 'ViewPortAnimation', dpos: { x: -1, y: 0 } });
-    if (nextPos.y - s.iface.viewPort.y >= NUM_TILES.y - 1)
-      anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: 1 } });
-    if (nextPos.y - s.iface.viewPort.y < 1)
-      anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: -1 } });
-
-    return anims;
-  }
-
-  animator_for_move(move: Move): Animator {
-    const anims = this.animate_move(move).map(anim => ({ anim, dur: duration(anim) }));
-    const dur = max(anims.map(a => a.dur));
-    return {
-      dur,
-      anim: (fr: number, s: State): State => {
-        anims.forEach(({ anim, dur }) => {
-          s = applyAnimation(anim, s, { t: fr / dur, fr });
-        });
-        return s;
-      }
-    }
-  }
-
-  handle_world_click(p: Point): Tile {
-    const s = this.state;
-    const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
-    const tileToPut = _getTile(this.state, p) != newTile ? newTile : 'empty';
-    this.state = _putTile(this.state, p, tileToPut);
-    return tileToPut;
-  }
-
-  handle_edit_click(ix: number): void {
-    this.state = produce(this.state, s => {
-      if (ix < editTiles.length && ix >= 0)
-        s.iface.editTileIx = ix;
-    });
   }
 
   get_player() {

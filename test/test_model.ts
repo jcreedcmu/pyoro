@@ -2,9 +2,7 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import { FULL_IMPETUS } from '../src/constants';
 import * as util from '../src/util';
-import * as model from '../src/model';
-import { _getTile } from '../src/model';
-import { Model } from '../src/model';
+import { _getTile, animator_for_move, Model } from '../src/model';
 import { init_player } from '../src/state';
 import { Layer } from '../src/layer';
 import { Move } from '../src/types';
@@ -35,7 +33,7 @@ function basicModel(layer: Layer) {
 }
 
 function executeMove(model: Model, move: Move) {
-  const animator = model.animator_for_move(move);
+  const animator = animator_for_move(model.state, move);
   model.state = animator.anim(animator.dur, model.state);
 }
 

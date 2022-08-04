@@ -1,6 +1,6 @@
 import { View } from './view';
 import { Player, State, init_state } from './state';
-import { Model, _putTile } from './model';
+import { animator_for_move, handle_edit_click, handle_world_click, Model, _putTile } from './model';
 import { imgProm, nope } from './util';
 import { Dict, Move, Tile } from './types';
 import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
@@ -175,7 +175,7 @@ class App {
     const { view, model } = this;
     if (!this.lock) {
       let cur_frame = 0; // XXX this belongs in interface state
-      const animator = model.animator_for_move(ks);
+      const animator = animator_for_move(model.state, ks);
       this.lock = true; // XXX this belongs in interface state
 
       const step = () => {
@@ -221,12 +221,13 @@ class App {
       }
       switch (wpoint.t) {
         case 'World':
-          const tileToPut = model.handle_world_click(wpoint.p);
+          const { tile, state } = handle_world_click(model.state, wpoint.p);
+          model.state = state;
           view.draw(model.state);
-          this.drag_world(tileToPut);
+          this.drag_world(tile);
           break;
         case 'EditTiles':
-          model.handle_edit_click(wpoint.ix);
+          model.state = handle_edit_click(model.state, wpoint.ix);
           view.draw(model.state);
           break;
         default:
