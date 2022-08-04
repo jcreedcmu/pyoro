@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { FULL_IMPETUS } from '../src/constants';
 import * as util from '../src/util';
 import * as model from '../src/model';
+import { _getTile } from '../src/model';
 import { Model } from '../src/model';
 import { init_player } from '../src/state';
 import { Layer } from '../src/layer';
@@ -140,7 +141,7 @@ describe('Model', function() {
     for (let i = 0; i < FULL_IMPETUS; i++)
       executeMove(m, 'up');
 
-    assert.equal(m.getTile({ x: 0, y: -FULL_IMPETUS }), 'empty');
+    assert.equal(_getTile(m.state, { x: 0, y: -FULL_IMPETUS }), 'empty');
   });
 
   it('should not breaking ice bricks if there is not enough impetus', function() {
@@ -151,7 +152,7 @@ describe('Model', function() {
     for (let i = 0; i < FULL_IMPETUS + 1; i++)
       executeMove(m, 'up');
 
-    assert.equal(m.getTile({ x: 0, y: -FULL_IMPETUS - 1 }), 'fragile_box');
+    assert.equal(_getTile(m.state, { x: 0, y: -FULL_IMPETUS - 1 }), 'fragile_box');
   });
 
 });

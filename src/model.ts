@@ -143,26 +143,26 @@ function get_flip_state(move: MotiveMove): Facing | null {
   }
 }
 
+export function _getTile(s: State, p: Point): Tile {
+  return getTile(s.game.overlay, p);
+}
+
+export function _putTile(s: State, p: Point, t: Tile): State {
+  return produce(s, s => {
+    putTile(s.game.overlay, p, t);
+  });
+}
+
+function forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
+  if (tile == 'fragile_box')
+    anims.push({ t: 'MeltAnimation', pos });
+}
+
 export class Model {
   state: State;
 
   constructor(state: State) {
     this.state = state;
-  }
-
-  getTile(p: Point): Tile {
-    return getTile(this.state.game.overlay, p);
-  }
-
-  putTile(p: Point, t: Tile): void {
-    this.state = produce(this.state, s => {
-      putTile(s.game.overlay, p, t);
-    });
-  }
-
-  forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
-    if (tile == 'fragile_box')
-      anims.push({ t: 'MeltAnimation', pos });
   }
 
   // The animations we return here are concurrent, I think?
@@ -182,7 +182,7 @@ export class Model {
     }
 
     const belowBefore = vplus(player.pos, { x: 0, y: 1 });
-    const tileBefore = this.getTile(belowBefore);
+    const tileBefore = _getTile(this.state, belowBefore);
     const supportedBefore = !openTile(tileBefore);
     if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
     const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
@@ -194,7 +194,7 @@ export class Model {
 
     forcedBlocks.forEach(fb => {
       const pos = vplus(player.pos, fb);
-      this.forceBlock(pos, this.getTile(pos), anims);
+      forceBlock(pos, _getTile(this.state, pos), anims);
     });
 
     let impetus = player.impetus;
@@ -209,8 +209,8 @@ export class Model {
 
     const nextPos = vplus(player.pos, result.dpos);
     let animState: Sprite = 'player';
-    const tileAfter = this.getTile(nextPos);
-    const suppTileAfter = this.getTile(vplus(nextPos, { x: 0, y: 1 }));
+    const tileAfter = _getTile(this.state, nextPos);
+    const suppTileAfter = _getTile(this.state, vplus(nextPos, { x: 0, y: 1 }));
     const supportedAfter = !openTile(suppTileAfter);
     const dead = isDeadly(tileAfter);
 
@@ -263,8 +263,8 @@ export class Model {
   handle_world_click(p: Point): Tile {
     const s = this.state;
     const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
-    const tileToPut = this.getTile(p) != newTile ? newTile : 'empty';
-    this.putTile(p, tileToPut);
+    const tileToPut = _getTile(this.state, p) != newTile ? newTile : 'empty';
+    this.state = _putTile(this.state, p, tileToPut);
     return tileToPut;
   }
 

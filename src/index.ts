@@ -1,6 +1,6 @@
 import { View } from './view';
 import { Player, State, init_state } from './state';
-import { Model } from './model';
+import { Model, _putTile } from './model';
 import { imgProm, nope } from './util';
 import { Dict, Move, Tile } from './types';
 import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
@@ -202,7 +202,7 @@ class App {
     function mouseMove(e: MouseEvent) {
       const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, model.state);
       if (wpoint.t == 'World') {
-        model.putTile(wpoint.p, tileToPut);
+        model.state = _putTile(model.state, wpoint.p, tileToPut);
         view.draw(model.state);
       }
     }
