@@ -8,7 +8,7 @@ import { key } from './key';
 import { produce } from 'immer';
 import * as dat from 'dat.gui';
 import { Animator } from './animation';
-import { Action, Dispatch, reduce } from './reduce';
+import { Action, Dispatch, doEffect, reduce } from './reduce';
 
 async function onload() {
   const app = new App;
@@ -104,10 +104,13 @@ class App {
     window.onresize = () => this.resize();
 
     const dispatch = (a: Action) => {
-      const newState = reduce(this.state, a);
+      const { s: newState, effects } = reduce(this.state, a);
       if (this.state != newState) {
         this.state = newState
         this.view.draw(newState);
+      }
+      if (effects) {
+        effects.forEach(doEffect);
       }
     }
 
