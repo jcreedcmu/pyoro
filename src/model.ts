@@ -1,8 +1,8 @@
 import { produce } from 'immer';
-import { Animation, Animator, applyAnimation, duration } from './animation';
+import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile } from './constants';
 import { getTile, Layer, putTile } from './layer';
-import { Player, State } from "./state";
+import { GameState, IfaceState, Player, State } from "./state";
 import { Facing, MotiveMove, Move, Point, Sprite, Tile } from './types';
 import { max } from './util';
 import { vplus } from './point';
@@ -141,7 +141,11 @@ function get_flip_state(move: MotiveMove): Facing | null {
 }
 
 export function _getTile(s: State, p: Point): Tile {
-  return getTile(s.game.overlay, p);
+  return tileOfGameState(s.game, p);
+}
+
+export function tileOfGameState(s: GameState, p: Point): Tile {
+  return getTile(s.overlay, p);
 }
 
 export function _putTile(s: State, p: Point, t: Tile): State {
@@ -235,16 +239,23 @@ function animate_move(s: State, move: Move): Animation[] {
   return anims;
 }
 
+
 export function animator_for_move(s: State, move: Move): Animator {
   const anims = animate_move(s, move).map(anim => ({ anim, dur: duration(anim) }));
   const dur = max(anims.map(a => a.dur));
   return {
     dur,
-    anim: (fr: number, s: State): State => {
+    gameAnim: (fr: number, s: GameState): GameState => {
       anims.forEach(({ anim, dur }) => {
-        s = applyAnimation(anim, s, { t: fr / dur, fr });
+        s = applyGameAnimation(anim, s, { t: fr / dur, fr });
       });
       return s;
+    },
+    ifaceAnim: (fr: number, s: State): IfaceState => {
+      anims.forEach(({ anim, dur }) => {
+        s = produce(s, s => { s.iface = applyIfaceAnimation(anim, s, { t: fr / dur, fr }) });
+      });
+      return s.iface;
     }
   }
 }

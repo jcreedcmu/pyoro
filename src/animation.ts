@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
 import { putTile } from './layer';
-import { init_state, State } from './state';
+import { GameState, IfaceState, init_state, State } from './state';
 import { Facing, Point, Sprite } from './types';
 import { vm2, vplus, vscale, int, lerp } from './point';
 
@@ -30,7 +30,11 @@ export type Animation =
 // simply call anim(dur, s).
 export type Animator = {
   dur: number, // duration in frames
-  anim: (fr: number, s: State) => State,
+
+  // There is an intrinsic asymmetry here in that I want to allow ifaceAnim to depend
+  // on game state, but not vice-versa.
+  gameAnim: (fr: number, s: GameState) => GameState,
+  ifaceAnim: (fr: number, s: State) => IfaceState,
 }
 
 export type Time = {
@@ -47,66 +51,81 @@ const DEATH_HOLD = 0;
 const DEATH_FADE_IN = 2;
 const DEATH = DEATH_FADE_OUT + DEATH_HOLD + DEATH_FADE_IN;
 
-export function applyAnimation(a: Animation, state: State, time: Time): State {
+export function applyIfaceAnimation(a: Animation, state: State, time: Time): IfaceState {
+  const { game, iface } = state;
+  const { t, fr } = time;
+  switch (a.t) {
+    case 'PlayerAnimation': return iface;
+    case 'ViewPortAnimation':
+      return produce(iface, s => {
+        s.viewPort = vplus(s.viewPort, vscale(a.dpos, t));
+      });
+    case 'MeltAnimation': return iface;
+    case 'ResetAnimation':
+      return produce(iface, s => {
+        if (fr <= DEATH_FADE_OUT) {
+          s.blackout = fr / DEATH_FADE_OUT;
+        }
+        else if (fr <= DEATH_FADE_OUT + DEATH_HOLD) {
+          s.blackout = 1;
+        }
+        else {
+          s.blackout = (DEATH - fr) / DEATH_FADE_OUT;
+        }
+        if (fr >= DEATH_FADE_OUT) {
+          s.viewPort = centeredViewPort(game.lastSave);
+        }
+      });
+    case 'SavePointChangeAnimation': return iface;
+    case 'RecenterAnimation':
+      return produce(iface, s => {
+        const target = centeredViewPort(game.player.pos);
+        s.viewPort = vm2(target, s.viewPort, (tgt, vp) => lerp(vp, tgt, t));
+      });
+    case 'ItemGetAnimation': return iface;
+  }
+}
+
+export function applyGameAnimation(a: Animation, state: GameState, time: Time): GameState {
   const { t, fr } = time;
   switch (a.t) {
     case 'PlayerAnimation':
       const { pos, animState, impetus, flipState, dead } = a;
       return produce(state, s => {
-        s.game.player = {
+        s.player = {
           dead: dead && t >= 0.75,
-          pos: vplus(vscale(s.game.player.pos, 1 - t), vscale(pos, t)),
+          pos: vplus(vscale(s.player.pos, 1 - t), vscale(pos, t)),
           animState: animState,
           flipState: flipState,
           impetus: impetus
         }
       });
-    case 'ViewPortAnimation':
-      return produce(state, s => {
-        s.iface.viewPort = vplus(s.iface.viewPort, vscale(a.dpos, t));
-      });
-
+    case 'ViewPortAnimation': return state;
     case 'MeltAnimation':
       return produce(state, s => {
-        putTile(s.game.overlay, a.pos, t > 0.5 ? 'empty' : 'broken_box');
+        putTile(s.overlay, a.pos, t > 0.5 ? 'empty' : 'broken_box');
       });
     case 'ResetAnimation':
       return produce(state, s => {
-        if (fr <= DEATH_FADE_OUT) {
-          s.iface.blackout = fr / DEATH_FADE_OUT;
-        }
-        else if (fr <= DEATH_FADE_OUT + DEATH_HOLD) {
-          s.iface.blackout = 1;
-        }
-        else {
-          s.iface.blackout = (DEATH - fr) / DEATH_FADE_OUT;
-        }
         if (fr >= DEATH_FADE_OUT) {
-          s.game.overlay = s.game.initOverlay;
-          const last_save = s.game.lastSave;
-          s.game.player = produce(init_state.game.player, p => {
+          s.overlay = s.initOverlay;
+          const last_save = s.lastSave;
+          s.player = produce(init_state.game.player, p => {
             p.pos = last_save;
           });
-          s.iface.viewPort = centeredViewPort(last_save);
         }
       });
     case 'SavePointChangeAnimation':
       return produce(state, s => {
         if (t > 0.5)
-          s.game.lastSave = a.pos;
+          s.lastSave = a.pos;
       });
-    case 'RecenterAnimation':
-      return produce(state, s => {
-        const target = centeredViewPort(s.game.player.pos);
-        s.iface.viewPort = vm2(target, s.iface.viewPort, (tgt, vp) => lerp(vp, tgt, t));
-      });
+    case 'RecenterAnimation': return state;
     case 'ItemGetAnimation':
-      return produce(state, s => {
-        s.game.inventory.teal_fruit = a.pos;
-      });
-      break;
+      return produce(state, s => { s.inventory.teal_fruit = a.pos; });
   }
 }
+
 
 // duration in frames
 export function duration(a: Animation): number {

@@ -25,7 +25,10 @@ export function reduce(s: State, a: Action): Result {
   switch (a.t) {
     case 'changeState': return pure(a.f(s));
     case 'setState': return pure(a.s);
-    case 'animate': return pure(a.animator.anim(a.cur_frame, s));
+    case 'animate': return pure({
+      game: a.animator.gameAnim(a.cur_frame, s.game),
+      iface: a.animator.ifaceAnim(a.cur_frame, s)
+    });
     case 'putTile': return pure(_putTile(s, a.p, a.tile));
     case 'click':
       switch (a.wpoint.t) {

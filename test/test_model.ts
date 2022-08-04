@@ -2,8 +2,8 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import { FULL_IMPETUS } from '../src/constants';
 import * as util from '../src/util';
-import { _getTile, animator_for_move } from '../src/model';
-import { init_player, State } from '../src/state';
+import { _getTile, animator_for_move, tileOfGameState } from '../src/model';
+import { GameState, init_player, State } from '../src/state';
 import { Layer } from '../src/layer';
 import { Move } from '../src/types';
 
@@ -14,28 +14,20 @@ function basicLayer(): Layer {
   }
 };
 
-function basicState(layer: Layer): State {
+function basicState(layer: Layer): GameState {
   return {
-    game: {
-      initOverlay: layer,
-      inventory: { teal_fruit: undefined, },
-      lastSave: { x: 0, y: 0 },
-      overlay: layer,
-      player: init_player,
-    },
-    iface: {
-      editTileIx: 0,
-      editTileRotation: 0,
-      blackout: 0,
-      viewPort: { x: -5, y: -5 },
-      dragTile: undefined,
-    },
+    initOverlay: layer,
+    inventory: { teal_fruit: undefined, },
+    lastSave: { x: 0, y: 0 },
+    overlay: layer,
+    player: init_player,
   };
 }
 
-function executeMove(s: State, move: Move): State {
-  const animator = animator_for_move(s, move);
-  return animator.anim(animator.dur, s);
+function executeMove(s: GameState, move: Move): GameState {
+  throw 'nope';
+  //  const animator = animator_for_move(s, move);
+  // return animator.gameAnim(animator.dur, s);
 }
 
 describe('State', () => {
@@ -43,7 +35,7 @@ describe('State', () => {
 
     let m = basicState(basicLayer());
     m = executeMove(m, 'up');
-    const player = m.game.player;
+    const player = m.player;
     assert.equal(player.animState, "player_rise");
     assert.equal(player.flipState, 'right');
     assert.deepEqual(player.pos, { x: 0, y: -1 });
@@ -56,7 +48,7 @@ describe('State', () => {
     let m = basicState(layer);
     m = executeMove(m, 'up');
 
-    const player = m.game.player;
+    const player = m.player;
     assert.equal(player.animState, "player");
     assert.equal(player.flipState, 'right');
     assert.deepEqual(player.pos, { x: 0, y: 0 });
@@ -69,7 +61,7 @@ describe('State', () => {
     let m = basicState(layer);
     m = executeMove(m, 'left');
     {
-      const player = m.game.player;
+      const player = m.player;
       assert.equal(player.animState, "player_fall");
       assert.equal(player.flipState, 'left');
       assert.deepEqual(player.pos, { x: -1, y: 0 });
@@ -77,7 +69,7 @@ describe('State', () => {
     }
     m = executeMove(m, 'left');
     {
-      const player = m.game.player;
+      const player = m.player;
       assert.equal(player.animState, "player");
       assert.equal(player.flipState, 'left');
       assert.deepEqual(player.pos, { x: -2, y: 0 });
@@ -92,7 +84,7 @@ describe('State', () => {
     let m = basicState(layer);
     m = executeMove(m, 'up');
     {
-      const player = m.game.player;
+      const player = m.player;
       assert.equal(player.animState, "player_rise");
       assert.equal(player.flipState, 'right');
       assert.deepEqual(player.pos, { x: 0, y: -1 });
@@ -101,7 +93,7 @@ describe('State', () => {
     m = executeMove(m, 'up');
 
     {
-      const player = m.game.player;
+      const player = m.player;
       assert.equal(player.animState, "player_rise");
       assert.equal(player.flipState, 'right');
       assert.deepEqual(player.pos, { x: 0, y: -2 });
@@ -110,7 +102,7 @@ describe('State', () => {
     m = executeMove(m, 'up-left');
 
     {
-      const player = m.game.player;
+      const player = m.player;
       assert.equal(player.animState, "player_wall");
       assert.equal(player.flipState, 'left');
       assert.deepEqual(player.pos, { x: 0, y: -2 });
@@ -124,7 +116,7 @@ describe('State', () => {
     let m = basicState(layer);
     m = executeMove(m, 'up-left');
 
-    const player = m.game.player;
+    const player = m.player;
     assert.equal(player.animState, "player_fall");
     assert.equal(player.flipState, 'left');
     assert.deepEqual(player.pos, { x: -1, y: 0 });
@@ -140,7 +132,7 @@ describe('State', () => {
     for (let i = 0; i < FULL_IMPETUS; i++)
       m = executeMove(m, 'up');
 
-    assert.equal(_getTile(m, { x: 0, y: -FULL_IMPETUS }), 'empty');
+    assert.equal(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS }), 'empty');
   });
 
   it('should not breaking ice bricks if there is not enough impetus', () => {
@@ -151,7 +143,7 @@ describe('State', () => {
     for (let i = 0; i < FULL_IMPETUS + 1; i++)
       m = executeMove(m, 'up');
 
-    assert.equal(_getTile(m, { x: 0, y: -FULL_IMPETUS - 1 }), 'fragile_box');
+    assert.equal(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 }), 'fragile_box');
   });
 
 });
