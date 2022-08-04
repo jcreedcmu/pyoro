@@ -159,41 +159,43 @@ function forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
     anims.push({ t: 'MeltAnimation', pos });
 }
 
-// The animations we return here are concurrent, I think?
-function animate_move(s: State, move: Move): Animation[] {
+// The animations we return here are concurrent
+export function animateMoveGame(s: GameState, move: Move): Animation[] {
   const forcedBlocks: Point[] = []
   const anims: Animation[] = [];
 
-  const player = s.game.player;
+  const player = s.player;
 
+  // ugh XXX this is duplicated across animateMoveGame and animateMoveIface
   if (player.dead || move == 'reset') {
     return [{ t: 'ResetAnimation' }];
   }
 
+  // XXX so is this, in a way
   if (move == 'recenter') {
-    return [{ t: 'RecenterAnimation' }];
+    return [];
   }
 
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
-  const tileBefore = _getTile(s, belowBefore);
+  const tileBefore = tileOfGameState(s, belowBefore);
   const supportedBefore = !openTile(tileBefore);
   if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
-  const result = get_motion({ tiles: s.game.overlay, player }, move);
+  const result = get_motion({ tiles: s.overlay, player }, move);
   const flipState = get_flip_state(move) || player.flipState;
 
   if (result.forced != null) forcedBlocks.push(result.forced);
 
   forcedBlocks.forEach(fb => {
     const pos = vplus(player.pos, fb);
-    forceBlock(pos, _getTile(s, pos), anims);
+    forceBlock(pos, tileOfGameState(s, pos), anims);
   });
 
   let impetus = player.impetus;
 
   if (stableBefore)
-    impetus = genImpetus(tileBefore) + (s.game.inventory.teal_fruit != undefined ? 1 : 0);
+    impetus = genImpetus(tileBefore) + (s.inventory.teal_fruit != undefined ? 1 : 0);
   if (result.impetus != null)
     impetus = result.impetus;
 
@@ -202,8 +204,8 @@ function animate_move(s: State, move: Move): Animation[] {
 
   const nextPos = vplus(player.pos, result.dpos);
   let animState: Sprite = 'player';
-  const tileAfter = _getTile(s, nextPos);
-  const suppTileAfter = _getTile(s, vplus(nextPos, { x: 0, y: 1 }));
+  const tileAfter = tileOfGameState(s, nextPos);
+  const suppTileAfter = tileOfGameState(s, vplus(nextPos, { x: 0, y: 1 }));
   const supportedAfter = !openTile(suppTileAfter);
   const dead = isDeadly(tileAfter);
 
@@ -227,36 +229,83 @@ function animate_move(s: State, move: Move): Animation[] {
   if (isItem(tileAfter))
     anims.push({ t: 'ItemGetAnimation', pos: nextPos });
 
-  if (nextPos.x - s.iface.viewPort.x >= NUM_TILES.x - 1)
-    anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
-  if (nextPos.x - s.iface.viewPort.x < 1)
-    anims.push({ t: 'ViewPortAnimation', dpos: { x: -1, y: 0 } });
-  if (nextPos.y - s.iface.viewPort.y >= NUM_TILES.y - 1)
-    anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: 1 } });
-  if (nextPos.y - s.iface.viewPort.y < 1)
-    anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: -1 } });
-
   return anims;
 }
 
+export function animateMoveIface(s: State, move: Move, nextPos: Point | undefined): Animation[] {
+  const iface = s.iface;
+  if (s.game.player.dead || move == 'reset') {
+    return [{ t: 'ResetAnimation' }];
+  }
+
+  if (move == 'recenter') {
+    return [{ t: 'RecenterAnimation' }];
+  }
+
+  const anims: Animation[] = [];
+  if (nextPos !== undefined) {
+    if (nextPos.x - iface.viewPort.x >= NUM_TILES.x - 1)
+      anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
+    if (nextPos.x - iface.viewPort.x < 1)
+      anims.push({ t: 'ViewPortAnimation', dpos: { x: -1, y: 0 } });
+    if (nextPos.y - iface.viewPort.y >= NUM_TILES.y - 1)
+      anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: 1 } });
+    if (nextPos.y - iface.viewPort.y < 1)
+      anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: -1 } });
+  }
+  return anims;
+}
+
+function hasNextPos(anim: Animation): Point | undefined {
+  switch (anim.t) {
+    case 'PlayerAnimation': return anim.pos;
+    case 'ItemGetAnimation': return anim.pos;
+    case 'SavePointChangeAnimation': return anim.pos;
+    default:
+      return undefined;
+  }
+}
+
+// only used in testing right now
+export function completeGameAnims(animsGame: Animation[], s: GameState): GameState {
+  animsGame.forEach(anim => {
+    s = applyGameAnimation(anim, s, { t: 1, fr: duration(anim) });
+  });
+  return s;
+}
+
+export function renderGameAnims(animsGameDur: { anim: Animation, dur: number }[]): (fr: number, s: GameState) => GameState {
+  return (fr: number, s: GameState): GameState => {
+    animsGameDur.forEach(({ anim, dur }) => {
+      s = applyGameAnimation(anim, s, { t: fr / dur, fr });
+    });
+    return s;
+  }
+}
+
+export function renderIfaceAnims(animsIfaceDur: { anim: Animation, dur: number }[]): (fr: number, s: State) => IfaceState {
+  return (fr: number, s: State): IfaceState => {
+    animsIfaceDur.forEach(({ anim, dur }) => {
+      s = produce(s, s => { s.iface = applyIfaceAnimation(anim, s, { t: fr / dur, fr }) });
+    });
+    return s.iface;
+  }
+}
 
 export function animator_for_move(s: State, move: Move): Animator {
-  const anims = animate_move(s, move).map(anim => ({ anim, dur: duration(anim) }));
-  const dur = max(anims.map(a => a.dur));
+  const animsGame = animateMoveGame(s.game, move);
+  const nextPos = animsGame.map(hasNextPos).find(x => x !== undefined);
+  const animsIface = animateMoveIface(s, move, nextPos);
+
+  const animsGameDur = animsGame.map(anim => ({ anim, dur: duration(anim) }));
+  const animsIfaceDur = animsIface.map(anim => ({ anim, dur: duration(anim) }));
+  const dur = max([...animsGameDur.map(a => a.dur), ...animsIfaceDur.map(a => a.dur)]);
+  const gameAnim = renderGameAnims(animsGameDur);
+  const ifaceAnim = renderIfaceAnims(animsIfaceDur);
   return {
     dur,
-    gameAnim: (fr: number, s: GameState): GameState => {
-      anims.forEach(({ anim, dur }) => {
-        s = applyGameAnimation(anim, s, { t: fr / dur, fr });
-      });
-      return s;
-    },
-    ifaceAnim: (fr: number, s: State): IfaceState => {
-      anims.forEach(({ anim, dur }) => {
-        s = produce(s, s => { s.iface = applyIfaceAnimation(anim, s, { t: fr / dur, fr }) });
-      });
-      return s.iface;
-    }
+    gameAnim,
+    ifaceAnim,
   }
 }
 

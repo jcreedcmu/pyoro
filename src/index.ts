@@ -173,19 +173,22 @@ class App {
     if (!this.lock) {
       let cur_frame = 0; // XXX this belongs in interface state
       const animator = animator_for_move(this.state, ks);
-      this.lock = true; // XXX this belongs in interface state
 
-      const step = () => {
-        cur_frame++;
-        dispatch({ t: 'animate', cur_frame, animator });
-        if (cur_frame == animator.dur) {
-          this.lock = false; // XXX this belongs in interface state
-        }
-        else
-          setTimeout(step, FRAME_DURATION_MS);
-      };
+      if (animator.dur > 0) {
+        this.lock = true; // XXX this belongs in interface state
 
-      step();
+        const step = () => {
+          cur_frame++;
+          dispatch({ t: 'animate', cur_frame, animator });
+          if (cur_frame == animator.dur) {
+            this.lock = false; // XXX this belongs in interface state
+          }
+          else
+            setTimeout(step, FRAME_DURATION_MS);
+        };
+
+        step();
+      }
     }
   }
 
