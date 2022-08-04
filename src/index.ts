@@ -1,4 +1,4 @@
-import { initView, View } from './view';
+import { drawView, FView, initView, resizeView, ViewData, wpoint_of_canvas } from './view';
 import { Player, State, init_state } from './state';
 import { animator_for_move, handle_edit_click, handle_world_click, _putTile } from './model';
 import { imgProm } from './util';
@@ -20,11 +20,11 @@ async function onload() {
     const stageCtr = gui.addColor(guiData, 'stage_color');
     colorCtr.onChange((value: string) => {
       guiData.background_color = value;
-      app.redraw();
+      //      app.redraw(); // XXX doesn't work now
     });
     stageCtr.onChange((value: string) => {
       guiData.stage_color = value;
-      app.redraw();
+      //    app.redraw(); // XXX doesn't work now
     });
   }
 }
@@ -32,7 +32,10 @@ async function onload() {
 window.addEventListener('load', onload);
 
 class App {
-  view: View;
+  c: HTMLCanvasElement;
+  d: CanvasRenderingContext2D;
+  vd: ViewData | null = null;
+  spriteImg: HTMLImageElement | null = null;
   state: State = init_state;
 
   static moveBindings: Dict<Move> = {
@@ -87,27 +90,33 @@ class App {
   }
 
   constructor() {
-    const c = document.getElementById('c') as HTMLCanvasElement;
-    const d = c.getContext('2d') as CanvasRenderingContext2D;
+    this.c = document.getElementById('c') as HTMLCanvasElement;
+    this.d = this.c.getContext('2d') as CanvasRenderingContext2D;
 
-    this.view = new View(c, d);
     initView();
   }
 
-  async run(): Promise<void> {
-    const { view } = this;
+  getFview(): FView | null {
+    if (this.vd == null) return null;
+    if (this.spriteImg == null) return null;
+    return { d: this.d, vd: this.vd, spriteImg: this.spriteImg };
+  }
 
+  async run(): Promise<void> {
     if (DEBUG.globals) {
       (window as any)['_app'] = this;
     }
 
-    window.onresize = () => this.resize();
+    window.addEventListener('resize', () => this.resize());
 
     const dispatch = (a: Action) => {
       const { s: newState, effects } = reduce(this.state, a);
       if (this.state != newState) {
         this.state = newState
-        this.view.draw(newState);
+        const fv = this.getFview();
+        if (fv !== null) {
+          drawView(fv, newState);
+        }
       }
       if (effects) {
         effects.forEach(doEffect);
@@ -118,17 +127,16 @@ class App {
     this.init_mouse(dispatch);
 
     const s = await imgProm('assets/sprite.png');
-    view.spriteImg = s;
+    this.spriteImg = s;
     this.resize();
   }
 
   resize(): void {
-    this.view.resize();
-    this.redraw();
-  }
-
-  redraw(): void {
-    this.view.draw(this.state);
+    this.vd = resizeView(this.c);
+    const fv = this.getFview();
+    if (fv !== null) {
+      drawView(fv, this.state);
+    }
   }
 
   init_keys(dispatch: Dispatch): void {
@@ -162,7 +170,6 @@ class App {
   // functionally render from there.
   lock = false;
   handle_key(dispatch: Dispatch, ks: Move): void {
-    const { view } = this;
     if (!this.lock) {
       let cur_frame = 0; // XXX this belongs in interface state
       const animator = animator_for_move(this.state, ks);
@@ -184,15 +191,17 @@ class App {
 
   // XXX doesn't get called right now
   drag_world(dispatch: Dispatch, tileToPut: Tile): void {
-    const { view } = this;
-    const c = view.c;
+    const c = this.c;
 
     const mouseUp = (e: MouseEvent) => {
       c.removeEventListener('mousemove', mouseMove);
       document.removeEventListener('mouseup', mouseUp);
     }
     const mouseMove = (e: MouseEvent) => {
-      const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, this.state);
+      const fv = this.getFview();
+      if (fv == null)
+        return;
+      const wpoint = wpoint_of_canvas(fv, { x: e.clientX, y: e.clientY }, this.state);
       if (wpoint.t == 'World')
         dispatch({ t: 'putTile', p: wpoint.p, tile: tileToPut });
       c.addEventListener('mousemove', mouseMove);
@@ -201,10 +210,12 @@ class App {
   }
 
   init_mouse(dispatch: Dispatch): void {
-    const { view } = this;
-    const c = view.c;
+    const c = this.c;
     c.onmousedown = (e: MouseEvent) => {
-      const wpoint = view.wpoint_of_canvas({ x: e.clientX, y: e.clientY }, this.state);
+      const fv = this.getFview();
+      if (fv == null)
+        return;
+      const wpoint = wpoint_of_canvas(fv, { x: e.clientX, y: e.clientY }, this.state);
       if (DEBUG.mouse) {
         console.log(wpoint);
       }

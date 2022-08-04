@@ -16,13 +16,13 @@ export type WidgetPoint =
   | { t: 'World', p: Point };
 
 // Functional View Data
-type FView = {
+export type FView = {
   d: CanvasRenderingContext2D;
   vd: ViewData;
   spriteImg: HTMLImageElement;
 }
 
-type ViewData = {
+export type ViewData = {
   wsize: Point,
   origin: Point,
 };
@@ -30,7 +30,6 @@ type ViewData = {
 function CanvasTest(props: { msg: string }): JSX.Element {
   function render(ci: CanvasInfo, s: string) {
     const { d, size: { x, y } } = ci;
-    console.log(s);
     d.fillStyle = 'white';
     d.fillRect(0, 0, x, y);
     d.fillStyle = 'red';
@@ -182,74 +181,49 @@ function draw_sprite(fv: FView, sprite_id: Sprite, wpos: Point, flip?: boolean):
   raw_draw_sprite(fv, sprite_id, vm2(origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE), flip);
 }
 
-export class View {
-  c: HTMLCanvasElement;
-  d: CanvasRenderingContext2D;
-  vd: ViewData | null = null;
-  spriteImg: HTMLImageElement | null = null;
+export function drawView(fv: FView, state: State): void {
+  const { d } = fv;
+  d.save();
+  d.scale(devicePixelRatio, devicePixelRatio);
+  drawScaled(fv, state);
+  d.restore();
+}
 
-  constructor(c: HTMLCanvasElement, d: CanvasRenderingContext2D) {
-    this.c = c;
-    this.d = d;
-  }
+export function resizeView(c: HTMLCanvasElement): ViewData {
+  const ratio = devicePixelRatio;
 
-  getFview(): FView | null {
-    if (this.vd == null) return null;
-    if (this.spriteImg == null) return null;
-    return { d: this.d, vd: this.vd, spriteImg: this.spriteImg };
-  }
+  c.width = innerWidth;
+  c.height = innerHeight;
 
-  draw(state: State): void {
-    const fv = this.getFview();
-    if (fv !== null) {
-      const { d } = fv;
-      d.save();
-      d.scale(devicePixelRatio, devicePixelRatio);
-      drawScaled(fv, state);
-      d.restore();
-    }
-  }
+  const ow = innerWidth;
+  const oh = innerHeight;
 
-  resize(): void {
-    const { c, d } = this;
+  c.width = ow * ratio;
+  c.height = oh * ratio;
 
-    const ratio = devicePixelRatio;
+  c.style.width = ow + 'px';
+  c.style.height = oh + 'px';
 
-    c.width = innerWidth;
-    c.height = innerHeight;
+  const wsize = { x: c.width / ratio, y: c.height / ratio };
 
-    const ow = innerWidth;
-    const oh = innerHeight;
+  const center = vm(wsize, wsize => int(wsize / 2));
+  const origin = vm2(center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
+  return { origin, wsize };
+}
 
-    c.width = ow * ratio;
-    c.height = oh * ratio;
+export function wpoint_of_canvas(fv: FView, p: Point, s: State): WidgetPoint {
+  const { vd: { origin } } = fv;
 
-    c.style.width = ow + 'px';
-    c.style.height = oh + 'px';
-
-    const wsize = { x: c.width / ratio, y: c.height / ratio };
-
-    const center = vm(wsize, wsize => int(wsize / 2));
-    const origin = vm2(center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
-    this.vd = { origin, wsize };
-  }
-
-  wpoint_of_canvas(p: Point, s: State): WidgetPoint {
-    if (this.vd == null)
-      throw new Error('No View');
-    const { origin } = this.vd;
-
-    const world_size = vm(NUM_TILES, NT => TILE_SIZE * SCALE * NT);
-    if (u.inrect(p, { p: origin, sz: world_size }))
-      return {
-        t: 'World',
-        p: vmn([s.iface.viewPort, origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
-      };
-    else {
-      return {
-        t: 'EditTiles',
-        ix: vmn([{ x: SCALE, y: 0 }, p], ([o, p]) => int((p - o) / (TILE_SIZE * SCALE))).x,
-      }
+  const world_size = vm(NUM_TILES, NT => TILE_SIZE * SCALE * NT);
+  if (u.inrect(p, { p: origin, sz: world_size }))
+    return {
+      t: 'World',
+      p: vmn([s.iface.viewPort, origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
+    };
+  else {
+    return {
+      t: 'EditTiles',
+      ix: vmn([{ x: SCALE, y: 0 }, p], ([o, p]) => int((p - o) / (TILE_SIZE * SCALE))).x,
     }
   }
 }
