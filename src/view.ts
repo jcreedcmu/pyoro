@@ -6,6 +6,9 @@ import { Point, Sprite } from './types';
 import { State, Item } from './state';
 import { getItem, putItem, getTile, putTile, PointMap } from './layer';
 
+import * as React from 'react';
+import * as ReactDOM from 'react-dom/client';
+
 export type WidgetPoint =
   | { t: 'EditTiles', ix: number }
   | { t: 'World', p: Point };
@@ -24,6 +27,9 @@ export class View {
   constructor(c: HTMLCanvasElement, d: CanvasRenderingContext2D) {
     this.c = c;
     this.d = d;
+
+    const root = ReactDOM.createRoot(document.getElementById('render-root')!);
+    root.render(React.createElement('div', {}, 'Hello, World'));
   }
 
   draw(state: State): void {
