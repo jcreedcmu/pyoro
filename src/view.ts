@@ -204,10 +204,11 @@ export function resizeView(c: HTMLCanvasElement): ViewData {
   c.style.width = ow + 'px';
   c.style.height = oh + 'px';
 
-  const wsize = { x: c.width / ratio, y: c.height / ratio };
+  const wsize = vm({ x: c.width / ratio, y: c.height / ratio }, w => int(w));
 
   const center = vm(wsize, wsize => int(wsize / 2));
   const origin = vm2(center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
+
   return { origin, wsize };
 }
 
