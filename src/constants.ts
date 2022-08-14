@@ -25,6 +25,7 @@ export const sprites: { [k in Sprite]: Point } = {
   spike_down: { x: 2, y: 5 },
   save_point: { x: 2, y: 2 },
   teal_fruit: { x: 3, y: 5 },
+  grip_wall: { x: 3, y: 0 },
 };
 
 export const DEBUG = {
@@ -36,7 +37,16 @@ export const DEBUG = {
 };
 
 export const editTiles: Tile[] =
-  ['box', 'box3', 'up_box', 'fragile_box', 'spike_up', 'save_point', 'teal_fruit'];
+  [
+    'box',
+    'grip_wall',
+    'box3',
+    'up_box',
+    'fragile_box',
+    'spike_up',
+    'save_point',
+    'teal_fruit'
+  ];
 
 export function rotateTile(tile: Tile, amount: number): Tile {
   const spikes: Tile[] = ['spike_up', 'spike_right', 'spike_down', 'spike_left'];

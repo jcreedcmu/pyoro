@@ -34,7 +34,7 @@ export const initOverlay: Layer = {
     "17,2": "box3",
     "-7,3": "box",
     "-9,6": "box",
-    "-8,3": "box3",
+    "-8,3": "grip_wall",
     "-8,4": "box",
     "-8,6": "box",
     "3,4": "box",

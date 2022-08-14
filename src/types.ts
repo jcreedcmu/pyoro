@@ -16,7 +16,8 @@ export type Tile =
   | 'spike_right'
   | 'spike_down'
   | 'save_point'
-  | 'teal_fruit';
+  | 'teal_fruit'
+  | 'grip_wall';
 export type MotiveMove =
   | 'up'
   | 'down'

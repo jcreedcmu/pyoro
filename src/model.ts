@@ -15,6 +15,10 @@ function openTile(x: Tile): boolean {
   return x == 'empty' || x == 'save_point' || isItem(x) || isSpike(x);
 }
 
+function isGrabbable(x: Tile): boolean {
+  return x == 'grip_wall';
+}
+
 function isSpike(x: Tile): boolean {
   return x == 'spike_up' || x == 'spike_left' || x == 'spike_right' || x == 'spike_down';
 }
@@ -41,6 +45,11 @@ type Board = { tiles: Layer, player: Player };
 function ropen(b: Board, x: number, y: number): boolean {
   const { tiles, player } = b;
   return openTile(getTile(tiles, vplus(player.pos, { x, y })));
+}
+
+function rgrabbable(b: Board, x: number, y: number): boolean {
+  const { tiles, player } = b;
+  return isGrabbable(getTile(tiles, vplus(player.pos, { x, y })));
 }
 
 function execute_down(b: Board): Motion {
@@ -70,7 +79,7 @@ function execute_horiz(b: Board, flip: Facing): Motion {
   const { player } = b;
   const dx = flip == 'left' ? -1 : 1;
   const forward_open = ropen(b, dx, 0);
-  if (!forward_open) {
+  if (!forward_open && rgrabbable(b, dx, 0)) {
     return { dpos: { x: 0, y: 0 }, impetus: 1, attachWall: true };
   }
 
