@@ -48,7 +48,7 @@ describe('State', () => {
     m = executeMove(m, 'up');
 
     const player = m.player;
-    assert.equal(player.animState, "player");
+    assert.equal(player.animState, 'player');
     assert.equal(player.flipState, 'right');
     assert.deepEqual(player.pos, { x: 0, y: 0 });
     assert.equal(player.impetus, FULL_IMPETUS);
@@ -102,10 +102,10 @@ describe('State', () => {
 
     {
       const player = m.player;
-      assert.equal(player.animState, "player_wall");
+      assert.equal(player.animState, "player_fall");
       assert.equal(player.flipState, 'left');
-      assert.deepEqual(player.pos, { x: 0, y: -2 });
-      assert.equal(player.impetus, 1);
+      assert.deepEqual(player.pos, { x: 0, y: -1 });
+      assert.equal(player.impetus, 0);
     }
   });
 

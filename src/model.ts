@@ -53,10 +53,10 @@ function rgrabbable(b: Board, x: number, y: number): boolean {
   return isGrabbable(getTile(tiles, vplus(player.pos, { x, y })));
 }
 
-function execute_down(b: Board): Motion {
+function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
   return ropen(b, 0, 1) ?
     { dpos: { x: 0, y: 1 }, impetus: 0, posture: 'stand' } :
-    { dpos: { x: 0, y: 0 }, impetus: 0, posture: 'crouch' }
+    { dpos: { x: 0, y: 0 }, impetus: 0, posture: opts?.preventCrouch ? 'stand' : 'crouch' }
 }
 
 function execute_up(b: Board): Motion {
@@ -66,7 +66,7 @@ function execute_up(b: Board): Motion {
       return { dpos: { x: 0, y: -1 }, posture: 'stand' }
     }
     else {
-      var rv = execute_down(b);
+      var rv = execute_down(b, { preventCrouch: true });
       rv.forced = { x: 0, y: -1 };
       return rv;
     }
@@ -236,7 +236,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
     animState = 'player_crouch';
   }
   else {
-    animState = impetus ? 'player_rise' : 'player_fall';
+    animState = supportedAfter ? 'player' : impetus ? 'player_rise' : 'player_fall';
   }
 
   anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });
