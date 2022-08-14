@@ -79,7 +79,7 @@ function execute_horiz(b: Board, flip: Facing): Motion {
   const { player } = b;
   const dx = flip == 'left' ? -1 : 1;
   const forward_open = ropen(b, dx, 0);
-  if (!forward_open && rgrabbable(b, dx, 0)) {
+  if (rgrabbable(b, dx, 0)) {
     return { dpos: { x: 0, y: 0 }, impetus: 1, attachWall: true };
   }
 
@@ -110,7 +110,7 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
     rv.forced = { x: 0, y: -1 };
     return rv;
   }
-  if (!ropen(b, dx, 0))
+  if (rgrabbable(b, dx, 0))
     return { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, attachWall: true };
   if (ropen(b, dx, -1))
     return { dpos: { x: dx, y: -1 }, attachWall: false }
