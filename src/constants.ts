@@ -26,6 +26,7 @@ export const sprites: { [k in Sprite]: Point } = {
   save_point: { x: 2, y: 2 },
   teal_fruit: { x: 3, y: 5 },
   grip_wall: { x: 3, y: 0 },
+  player_crouch: { x: 3, y: 6 },
 };
 
 export const DEBUG = {

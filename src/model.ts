@@ -33,11 +33,12 @@ function genImpetus(x: Tile): number {
   return 1;
 }
 
+type Posture = 'stand' | 'attachWall' | 'crouch';
 type Motion = {
   dpos: Point,
   forced?: Point, // optionally force a block in the direction of motion
   impetus?: number, // optionally set impetus to some value
-  attachWall: boolean, // optionally set attachment to some value
+  posture?: Posture, // optionally set posture to some value
 };
 
 type Board = { tiles: Layer, player: Player };
@@ -54,15 +55,15 @@ function rgrabbable(b: Board, x: number, y: number): boolean {
 
 function execute_down(b: Board): Motion {
   return ropen(b, 0, 1) ?
-    { dpos: { x: 0, y: 1 }, impetus: 0, attachWall: false } :
-    { dpos: { x: 0, y: 0 }, impetus: 0, attachWall: false }
+    { dpos: { x: 0, y: 1 }, impetus: 0, posture: 'stand' } :
+    { dpos: { x: 0, y: 0 }, impetus: 0, posture: 'crouch' }
 }
 
 function execute_up(b: Board): Motion {
   var { player } = b;
   if (player.impetus) {
     if (ropen(b, 0, -1)) {
-      return { dpos: { x: 0, y: -1 }, attachWall: false }
+      return { dpos: { x: 0, y: -1 }, posture: 'stand' }
     }
     else {
       var rv = execute_down(b);
@@ -71,7 +72,7 @@ function execute_up(b: Board): Motion {
     }
   }
   else {
-    return { dpos: { x: 0, y: 1 }, attachWall: false };
+    return { dpos: { x: 0, y: 1 }, posture: 'stand' };
   }
 }
 
@@ -80,22 +81,22 @@ function execute_horiz(b: Board, flip: Facing): Motion {
   const dx = flip == 'left' ? -1 : 1;
   const forward_open = ropen(b, dx, 0);
   if (rgrabbable(b, dx, 0)) {
-    return { dpos: { x: 0, y: 0 }, impetus: 1, attachWall: true };
+    return { dpos: { x: 0, y: 0 }, impetus: 1, posture: 'attachWall' };
   }
 
   if (player.impetus && !ropen(b, 0, 1)) {
     return forward_open
-      ? { dpos: { x: dx, y: 0 }, impetus: 0, attachWall: false }
-      : { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, impetus: 0, attachWall: false };
+      ? { dpos: { x: dx, y: 0 }, impetus: 0, posture: 'stand' }
+      : { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, impetus: 0, posture: 'stand' };
   }
   else {
     if (forward_open) {
       return ropen(b, dx, 1)
-        ? { dpos: { x: dx, y: 1 }, impetus: 0, attachWall: false }
-        : { dpos: { x: dx, y: 0 }, impetus: 0, attachWall: false };
+        ? { dpos: { x: dx, y: 1 }, impetus: 0, posture: 'stand' }
+        : { dpos: { x: dx, y: 0 }, impetus: 0, posture: 'stand' };
     }
     else
-      return { dpos: { x: 0, y: 1 }, forced: { x: dx, y: 0 }, impetus: 0, attachWall: false }
+      return { dpos: { x: 0, y: 1 }, forced: { x: dx, y: 0 }, impetus: 0, posture: 'stand' }
   }
 }
 
@@ -111,9 +112,9 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
     return rv;
   }
   if (rgrabbable(b, dx, 0))
-    return { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, attachWall: true };
+    return { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, posture: 'attachWall' };
   if (ropen(b, dx, -1))
-    return { dpos: { x: dx, y: -1 }, attachWall: false }
+    return { dpos: { x: dx, y: -1 }, posture: 'stand' }
   else {
     const rv = execute_down(b);
     rv.forced = { x: dx, y: -1 };
@@ -218,15 +219,23 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   const supportedAfter = !openTile(suppTileAfter);
   const dead = isDeadly(tileAfter);
 
-  if (result.attachWall) {
+  if (result.posture != 'attachWall') {
+    if (supportedAfter) {
+      impetus = genImpetus(suppTileAfter);
+    }
+    else {
+      if (impetus)
+        impetus--;
+    }
+  }
+
+  if (result.posture == 'attachWall') {
     animState = 'player_wall';
   }
-  else if (supportedAfter) {
-    impetus = genImpetus(suppTileAfter);
+  else if (result.posture == 'crouch') {
+    animState = 'player_crouch';
   }
   else {
-    if (impetus)
-      impetus--;
     animState = impetus ? 'player_rise' : 'player_fall';
   }
 

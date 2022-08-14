@@ -85,6 +85,7 @@ export const initOverlay: Layer = {
     "3,6": "box",
     "3,5": "box",
     "-12,2": "teal_fruit",
-    "-10,3": "spike_right"
+    "-10,3": "spike_right",
+    "1,-2": "grip_wall"
   }
 };
