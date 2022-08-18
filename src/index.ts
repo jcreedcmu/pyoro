@@ -8,7 +8,7 @@ import { key } from './key';
 import { produce } from 'immer';
 import * as dat from 'dat.gui';
 import { Animator } from './animation';
-import { Action, Dispatch, doEffect, reduce } from './reduce';
+import { Action, Dispatch, Effect, reduce } from './reduce';
 
 async function onload() {
   const app = new App;
@@ -34,7 +34,6 @@ window.addEventListener('load', onload);
 class App {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
-  vd: ViewData | null = null;
   spriteImg: HTMLImageElement | null = null;
   state: State = init_state;
 
@@ -97,9 +96,9 @@ class App {
   }
 
   getFview(): FView | null {
-    if (this.vd == null) return null;
+    if (this.state.iface.vd == null) return null;
     if (this.spriteImg == null) return null;
-    return { d: this.d, vd: this.vd, spriteImg: this.spriteImg };
+    return { d: this.d, vd: this.state.iface.vd, spriteImg: this.spriteImg };
   }
 
   async run(): Promise<void> {
@@ -107,7 +106,7 @@ class App {
       (window as any)['_app'] = this;
     }
 
-    window.addEventListener('resize', () => this.resize());
+    window.addEventListener('resize', () => this.resize(dispatch));
 
     const dispatch = (a: Action) => {
       const { s: newState, effects } = reduce(this.state, a);
@@ -119,7 +118,7 @@ class App {
         }
       }
       if (effects) {
-        effects.forEach(doEffect);
+        effects.forEach(e => this.doEffect(e));
       }
     }
 
@@ -128,15 +127,14 @@ class App {
 
     const s = await imgProm('assets/sprite.png');
     this.spriteImg = s;
-    this.resize();
+    this.resize(dispatch);
   }
 
-  resize(): void {
-    this.vd = resizeView(this.c);
-    const fv = this.getFview();
-    if (fv !== null) {
-      drawView(fv, this.state);
-    }
+  doEffect(e: Effect) {
+  }
+
+  resize(dispatch: (a: Action) => void): void {
+    dispatch({ t: 'resize', vd: resizeView(this.c) });
   }
 
   init_keys(dispatch: Dispatch): void {

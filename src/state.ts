@@ -2,6 +2,7 @@ import { Layer } from './layer';
 import { Point, Facing, Sprite, Tile } from './types';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
+import { ViewData } from './view';
 
 export type Player = {
   dead: boolean,
@@ -17,6 +18,7 @@ export type IfaceState = {
   viewPort: Point,
   blackout: number,
   dragTile: Tile | undefined,
+  vd: ViewData | null,
 };
 
 export type Item = 'teal_fruit';
@@ -60,5 +62,6 @@ export const init_state: State = {
     editTileIx: 0,
     editTileRotation: 0,
     dragTile: undefined,
+    vd: null,
   }
 };

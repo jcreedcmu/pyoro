@@ -3,24 +3,28 @@ import { handle_edit_click, handle_world_click, _putTile } from "./model";
 import { State } from "./state";
 import { Point } from "./point";
 import { Tile } from "./types";
-import { WidgetPoint } from "./view";
+import { ViewData, WidgetPoint } from "./view";
+import { produce } from 'immer';
 
 export type Action =
   | { t: 'changeState', f: (s: State) => State }
   | { t: 'setState', s: State }
   | { t: 'animate', cur_frame: number, animator: Animator }
   | { t: 'putTile', p: Point, tile: Tile }
-  | { t: 'click', wpoint: WidgetPoint };
+  | { t: 'click', wpoint: WidgetPoint }
+  | { t: 'resize', vd: ViewData };
 
 export type Dispatch = (a: Action) => void;
 
-export type Effect = void;
+export type Effect =
+  void;
 
 export type Result = { s: State, effects?: Effect[] };
 
 export function pure(s: State): Result {
   return { s };
 }
+
 export function reduce(s: State, a: Action): Result {
   switch (a.t) {
     case 'changeState': return pure(a.f(s));
@@ -36,9 +40,7 @@ export function reduce(s: State, a: Action): Result {
         case 'EditTiles': return pure(handle_edit_click(s, a.wpoint.ix));
       }
       break;
+    case 'resize':
+      return pure(produce(s, s => { s.iface.vd = a.vd; }));
   }
-}
-
-export function doEffect(): void {
-
 }
