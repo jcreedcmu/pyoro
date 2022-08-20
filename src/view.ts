@@ -1,15 +1,14 @@
-import { TILE_SIZE, SCALE, NUM_INVENTORY_ITEMS, sprites, rotateTile } from './constants';
-import { DEBUG, editTiles, NUM_TILES, guiData } from './constants';
-import { int, vm, vm2, vmn, vplus, vminus, vint, vfpart, vequal } from './point';
-import { rgba } from './util';
-import * as u from './util';
-import { Point, Sprite } from './types';
-import { State, Item } from './state';
-import { getItem, putItem, getTile, putTile, PointMap } from './layer';
-
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { CanvasInfo, useCanvas } from './use-canvas';
+import { App } from './app';
+import { DEBUG, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE } from './constants';
+import { getItem, getTile, PointMap, putItem } from './layer';
+import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus } from './point';
+import { Dispatch } from './reduce';
+import { Item, State } from './state';
+import { Point, Sprite } from './types';
+import * as u from './util';
+import { rgba } from './util';
 
 export type WidgetPoint =
   | { t: 'EditTiles', ix: number }
@@ -27,22 +26,10 @@ export type ViewData = {
   origin: Point,
 };
 
-function CanvasTest(props: { msg: string }): JSX.Element {
-  function render(ci: CanvasInfo, s: string) {
-    const { d, size: { x, y } } = ci;
-    d.fillStyle = 'white';
-    d.fillRect(0, 0, x, y);
-    d.fillStyle = 'red';
-    d.fillText(props.msg, 12, 24);
-  }
-  const [canvasState, setCanvasState] = React.useState('hello');
-  const [cref, mc] = useCanvas(canvasState, render)
-  return React.createElement('canvas', { ref: cref });
-}
-
-export function initView() {
+export function initView(dispatch: Dispatch) {
+  console.log('initView');
   const root = ReactDOM.createRoot(document.getElementById('render-root')!);
-  root.render(React.createElement(CanvasTest, { msg: 'Hello World' }));
+  root.render(React.createElement(App, { msg: 'Hello World' }));
 }
 
 function drawScaled(fv: FView, state: State): void {

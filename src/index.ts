@@ -91,8 +91,6 @@ class App {
   constructor() {
     this.c = document.getElementById('c') as HTMLCanvasElement;
     this.d = this.c.getContext('2d') as CanvasRenderingContext2D;
-
-    initView();
   }
 
   getFview(): FView | null {
@@ -121,6 +119,8 @@ class App {
         effects.forEach(e => this.doEffect(e));
       }
     }
+
+    initView(dispatch);
 
     this.init_keys(dispatch);
     this.init_mouse(dispatch);
