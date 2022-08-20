@@ -6,9 +6,9 @@ import { Tile } from './types';
 import { imgProm } from './util';
 import { drawView, FView, initView, resizeView } from './view';
 
+window.addEventListener('load', onload);
 async function onload() {
-  const app = new App;
-  await app.run();
+  await run();
 
   if (DEBUG.datgui) {
     const gui = new dat.GUI();
@@ -24,8 +24,6 @@ async function onload() {
     });
   }
 }
-
-window.addEventListener('load', onload);
 
 function doEffect(dispatch: Dispatch, e: Effect) {
   switch (e.t) {
@@ -71,52 +69,45 @@ function dispatch(a: Action): void {
   }
 }
 
-class App {
-  constructor() {
-  }
-
-
-  async run(): Promise<void> {
-    if (DEBUG.globals) {
-      (window as any)['_app'] = this;
-    }
-
-    window.addEventListener('resize', () => this.resize(dispatch));
-
-
-    initView(dispatch);
-
-    const spriteImg = await imgProm('assets/sprite.png');
-    const c = document.getElementById('c') as HTMLCanvasElement;
-    const d = c.getContext('2d') as CanvasRenderingContext2D;
-    blob.richState = { spriteImg, c, d };
-    this.resize(dispatch);
-  }
-
-  resize(dispatch: (a: Action) => void): void {
-    dispatch({ t: 'resize', vd: resizeView(blob.richState!.c) });
-  }
-
-  // XXX doesn't get called right now
-  /*
-    drag_world(dispatch: Dispatch, tileToPut: Tile): void {
-      const c = this.c;
-
-      const mouseUp = (e: MouseEvent) => {
-        c.removeEventListener('mousemove', mouseMove);
-        document.removeEventListener('mouseup', mouseUp);
-      }
-      const mouseMove = (e: MouseEvent) => {
-        const fv = this.getFview();
-        if (fv == null)
-          return;
-        const wpoint = wpoint_of_canvas(fv, { x: e.clientX, y: e.clientY }, this.state);
-        if (wpoint.t == 'World')
-          dispatch({ t: 'putTile', p: wpoint.p, tile: tileToPut });
-        c.addEventListener('mousemove', mouseMove);
-        document.addEventListener('mouseup', mouseUp);
-      }
-    }
-  */
-
+function resize(dispatch: (a: Action) => void): void {
+  dispatch({ t: 'resize', vd: resizeView(blob.richState!.c) });
 }
+
+async function run(): Promise<void> {
+  if (DEBUG.globals) {
+    (window as any)['_app'] = blob;
+  }
+
+  window.addEventListener('resize', () => resize(dispatch));
+
+  initView(dispatch);
+
+  const spriteImg = await imgProm('assets/sprite.png');
+  const c = document.getElementById('c') as HTMLCanvasElement;
+  const d = c.getContext('2d') as CanvasRenderingContext2D;
+  blob.richState = { spriteImg, c, d };
+  resize(dispatch);
+}
+
+
+// XXX doesn't get called right now
+/*
+  drag_world(dispatch: Dispatch, tileToPut: Tile): void {
+    const c = this.c;
+
+    const mouseUp = (e: MouseEvent) => {
+      c.removeEventListener('mousemove', mouseMove);
+      document.removeEventListener('mouseup', mouseUp);
+    }
+    const mouseMove = (e: MouseEvent) => {
+      const fv = this.getFview();
+      if (fv == null)
+        return;
+      const wpoint = wpoint_of_canvas(fv, { x: e.clientX, y: e.clientY }, this.state);
+      if (wpoint.t == 'World')
+        dispatch({ t: 'putTile', p: wpoint.p, tile: tileToPut });
+      c.addEventListener('mousemove', mouseMove);
+      document.addEventListener('mouseup', mouseUp);
+    }
+  }
+*/
