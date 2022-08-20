@@ -25,7 +25,6 @@ export type IfaceState = {
   blackout: number,
   dragTile: Tile | undefined,
   vd: ViewData | null,
-  animState: AnimState | null,
 };
 
 export type Item = 'teal_fruit';
@@ -43,6 +42,7 @@ export type GameState = {
 export type State = {
   game: GameState,
   iface: IfaceState,
+  anim: AnimState | null,
 };
 
 export const init_player: Player = {
@@ -70,6 +70,6 @@ export const init_state: State = {
     editTileRotation: 0,
     dragTile: undefined,
     vd: null,
-    animState: null,
-  }
+  },
+  anim: null,
 };

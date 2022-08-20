@@ -176,7 +176,7 @@ export function drawView(fv: FView, state: State): void {
 
   // Here's where we let animators actually act
   let effectiveState = state;
-  const ams = state.iface.animState;
+  const ams = state.anim;
   if (ams !== null) {
     effectiveState = produce(state, s => {
       s.iface = ams.animator.ifaceAnim(ams.frame, s);

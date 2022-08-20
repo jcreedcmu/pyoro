@@ -9,7 +9,6 @@ import { produce } from 'immer';
 export type Action =
   | { t: 'changeState', f: (s: State) => State }
   | { t: 'setState', s: State }
-  | { t: 'animate', cur_frame: number, animator: Animator }
   | { t: 'putTile', p: Point, tile: Tile }
   | { t: 'click', wpoint: WidgetPoint }
   | { t: 'resize', vd: ViewData }
@@ -32,10 +31,6 @@ export function reduce(s: State, a: Action): Result {
   switch (a.t) {
     case 'changeState': return pure(a.f(s));
     case 'setState': return pure(a.s);
-    case 'animate': return pure({
-      game: a.animator.gameAnim(a.cur_frame, s.game),
-      iface: a.animator.ifaceAnim(a.cur_frame, s)
-    });
     case 'putTile': return pure(_putTile(s, a.p, a.tile));
     case 'click':
       switch (a.wpoint.t) {
@@ -48,7 +43,7 @@ export function reduce(s: State, a: Action): Result {
     case 'nextFrame': {
       const effects: Effect[] = [];
       const nextState = produce(s, s => {
-        const ams = s.iface.animState;
+        const ams = s.anim;
         if (ams == null) {
           throw new Error('Tried to advance frame without active animation');
         }
@@ -56,7 +51,7 @@ export function reduce(s: State, a: Action): Result {
         if (ams.animator.dur == ams.frame) {
           s.iface = ams.animator.ifaceAnim(ams.animator.dur, s);
           s.game = ams.animator.gameAnim(ams.animator.dur, s.game);
-          s.iface.animState = null;
+          s.anim = null;
         }
         else {
           effects.push({ t: 'scheduleFrame' });
@@ -67,7 +62,7 @@ export function reduce(s: State, a: Action): Result {
     case 'startAnim': {
       return {
         s: produce(s, s => {
-          s.iface.animState = {
+          s.anim = {
             frame: 0,
             animator: animator_for_move(s, a.m)
           }
