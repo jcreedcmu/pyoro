@@ -60,15 +60,21 @@ export function reduce(s: State, a: Action): Result {
       return { s: nextState, effects };
     }
     case 'startAnim': {
-      return {
-        s: produce(s, s => {
-          s.anim = {
-            frame: 1,
-            animator: animator_for_move(s, a.m)
-          }
-        }),
-        effects: [{ t: 'scheduleFrame' }]
-      };
+      // XXX should instead buffer moves?
+      if (s.anim == null) {
+        return {
+          s: produce(s, s => {
+            s.anim = {
+              frame: 1,
+              animator: animator_for_move(s, a.m)
+            }
+          }),
+          effects: [{ t: 'scheduleFrame' }]
+        };
+      }
+      else {
+        return pure(s);
+      }
     }
   }
 }

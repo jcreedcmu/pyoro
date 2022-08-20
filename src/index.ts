@@ -115,7 +115,6 @@ class App {
   }
 
   handle_key(dispatch: Dispatch, ks: Move): void {
-    // XXX now I'm not even locking keys during animation
     dispatch({ t: 'startAnim', m: ks });
   }
 
