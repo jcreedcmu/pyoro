@@ -35,21 +35,23 @@ function doEffect(dispatch: Dispatch, e: Effect) {
   }
 }
 
-class App {
+type RichState = {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
-  spriteImg: HTMLImageElement | null = null;
+  spriteImg: HTMLImageElement;
+};
+
+class App {
+  richState: RichState | null = null;
   state: State = init_state;
 
   constructor() {
-    this.c = document.getElementById('c') as HTMLCanvasElement;
-    this.d = this.c.getContext('2d') as CanvasRenderingContext2D;
   }
 
   getFview(): FView | null {
     if (this.state.iface.vd == null) return null;
-    if (this.spriteImg == null) return null;
-    return { d: this.d, vd: this.state.iface.vd, spriteImg: this.spriteImg };
+    if (this.richState == null) return null;
+    return { d: this.richState.d, vd: this.state.iface.vd, spriteImg: this.richState.spriteImg };
   }
 
   async run(): Promise<void> {
@@ -75,15 +77,17 @@ class App {
 
     initView(dispatch);
 
-    const s = await imgProm('assets/sprite.png');
-    this.spriteImg = s;
+    const spriteImg = await imgProm('assets/sprite.png');
+    const c = document.getElementById('c') as HTMLCanvasElement;
+    const d = c.getContext('2d') as CanvasRenderingContext2D;
+    this.richState = { spriteImg, c, d };
     this.resize(dispatch);
   }
 
 
 
   resize(dispatch: (a: Action) => void): void {
-    dispatch({ t: 'resize', vd: resizeView(this.c) });
+    dispatch({ t: 'resize', vd: resizeView(this.richState!.c) });
   }
 
   // XXX doesn't get called right now
