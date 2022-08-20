@@ -30,31 +30,6 @@ async function onload() {
 
 window.addEventListener('load', onload);
 
-function init_keys(dispatch: Dispatch): void {
-  document.onkeydown = e => {
-    if (DEBUG.keys) {
-      console.log(e.keyCode);
-      console.log(e.code);
-    }
-    const k = keyFromCode(e);
-    const f = commandBindings[k];
-    if (f !== undefined) {
-      e.stopPropagation();
-      e.preventDefault();
-      dispatch({ t: 'changeState', f });
-    }
-    else {
-      const move = moveBindings[k];
-      if (move) {
-        e.stopPropagation();
-        e.preventDefault();
-        dispatch({ t: 'startAnim', m: move });
-      }
-    }
-  };
-}
-
-
 class App {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
@@ -94,7 +69,6 @@ class App {
     }
 
     initView(dispatch);
-    init_keys(dispatch);
     this.init_mouse(dispatch);
 
     const s = await imgProm('assets/sprite.png');
@@ -102,6 +76,8 @@ class App {
     this.resize(dispatch);
   }
 
+  // XXX Eventually want to move this out of App once I'm confident I
+  // don't need anything else in App's context.
   doEffect(dispatch: Dispatch, e: Effect) {
     switch (e.t) {
       case 'scheduleFrame':
