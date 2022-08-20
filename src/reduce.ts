@@ -54,9 +54,9 @@ export function reduce(s: State, a: Action): Result {
         }
         ams.frame++;
         if (ams.animator.dur == ams.frame) {
-          s.iface.animState = null;
-          s.game = ams.animator.gameAnim(ams.animator.dur, s.game);
           s.iface = ams.animator.ifaceAnim(ams.animator.dur, s);
+          s.game = ams.animator.gameAnim(ams.animator.dur, s.game);
+          s.iface.animState = null;
         }
         else {
           effects.push({ t: 'scheduleFrame' });

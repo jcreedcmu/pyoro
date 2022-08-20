@@ -1,3 +1,4 @@
+import produce from 'immer';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { App } from './app';
@@ -172,7 +173,17 @@ export function drawView(fv: FView, state: State): void {
   const { d } = fv;
   d.save();
   d.scale(devicePixelRatio, devicePixelRatio);
-  drawScaled(fv, state);
+
+  // Here's where we let animators actually act
+  let effectiveState = state;
+  const ams = state.iface.animState;
+  if (ams !== null) {
+    effectiveState = produce(state, s => {
+      s.iface = ams.animator.ifaceAnim(ams.frame, s);
+      s.game = ams.animator.gameAnim(ams.frame, s.game);
+    });
+  }
+  drawScaled(fv, effectiveState);
   d.restore();
 }
 

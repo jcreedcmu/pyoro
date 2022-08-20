@@ -64,7 +64,7 @@ class App {
         }
       }
       if (effects) {
-        effects.forEach(e => this.doEffect(e));
+        effects.forEach(e => this.doEffect(dispatch, e));
       }
     }
 
@@ -78,7 +78,12 @@ class App {
     this.resize(dispatch);
   }
 
-  doEffect(e: Effect) {
+  doEffect(dispatch: Dispatch, e: Effect) {
+    switch (e.t) {
+      case 'scheduleFrame':
+        setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
+        break;
+    }
   }
 
   resize(dispatch: (a: Action) => void): void {
@@ -109,33 +114,9 @@ class App {
     };
   }
 
-  // XXX loule I'm not even buffering keys that were pressed during
-  // the lock period? Probably should fix this.
-
-  // XXX also should just update the state with the current frame and
-  // functionally render from there.
-  lock = false;
   handle_key(dispatch: Dispatch, ks: Move): void {
-    if (!this.lock) {
-      let cur_frame = 0; // XXX this belongs in interface state
-      const animator = animator_for_move(this.state, ks);
-
-      if (animator.dur > 0) {
-        this.lock = true; // XXX this belongs in interface state
-
-        const step = () => {
-          cur_frame++;
-          dispatch({ t: 'animate', cur_frame, animator });
-          if (cur_frame == animator.dur) {
-            this.lock = false; // XXX this belongs in interface state
-          }
-          else
-            setTimeout(step, FRAME_DURATION_MS);
-        };
-
-        step();
-      }
-    }
+    // XXX now I'm not even locking keys during animation
+    dispatch({ t: 'startAnim', m: ks });
   }
 
   // XXX doesn't get called right now
