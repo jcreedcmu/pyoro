@@ -27,6 +27,14 @@ async function onload() {
 
 window.addEventListener('load', onload);
 
+function doEffect(dispatch: Dispatch, e: Effect) {
+  switch (e.t) {
+    case 'scheduleFrame':
+      setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
+      break;
+  }
+}
+
 class App {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
@@ -61,7 +69,7 @@ class App {
         }
       }
       if (effects) {
-        effects.forEach(e => this.doEffect(dispatch, e));
+        effects.forEach(e => doEffect(dispatch, e));
       }
     }
 
@@ -72,15 +80,7 @@ class App {
     this.resize(dispatch);
   }
 
-  // XXX Eventually want to move this out of App once I'm confident I
-  // don't need anything else in App's context.
-  doEffect(dispatch: Dispatch, e: Effect) {
-    switch (e.t) {
-      case 'scheduleFrame':
-        setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
-        break;
-    }
-  }
+
 
   resize(dispatch: (a: Action) => void): void {
     dispatch({ t: 'resize', vd: resizeView(this.c) });
