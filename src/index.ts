@@ -30,6 +30,31 @@ async function onload() {
 
 window.addEventListener('load', onload);
 
+function init_keys(dispatch: Dispatch): void {
+  document.onkeydown = e => {
+    if (DEBUG.keys) {
+      console.log(e.keyCode);
+      console.log(e.code);
+    }
+    const k = keyFromCode(e);
+    const f = commandBindings[k];
+    if (f !== undefined) {
+      e.stopPropagation();
+      e.preventDefault();
+      dispatch({ t: 'changeState', f });
+    }
+    else {
+      const move = moveBindings[k];
+      if (move) {
+        e.stopPropagation();
+        e.preventDefault();
+        dispatch({ t: 'startAnim', m: move });
+      }
+    }
+  };
+}
+
+
 class App {
   c: HTMLCanvasElement;
   d: CanvasRenderingContext2D;
@@ -69,8 +94,7 @@ class App {
     }
 
     initView(dispatch);
-
-    this.init_keys(dispatch);
+    init_keys(dispatch);
     this.init_mouse(dispatch);
 
     const s = await imgProm('assets/sprite.png');
@@ -88,34 +112,6 @@ class App {
 
   resize(dispatch: (a: Action) => void): void {
     dispatch({ t: 'resize', vd: resizeView(this.c) });
-  }
-
-  init_keys(dispatch: Dispatch): void {
-    document.onkeydown = e => {
-      if (DEBUG.keys) {
-        console.log(e.keyCode);
-        console.log(e.code);
-      }
-      const k = keyFromCode(e);
-      const f = commandBindings[k];
-      if (f !== undefined) {
-        e.stopPropagation();
-        e.preventDefault();
-        dispatch({ t: 'changeState', f });
-      }
-      else {
-        const move = moveBindings[k];
-        if (move) {
-          e.stopPropagation();
-          e.preventDefault();
-          this.handle_key(dispatch, move);
-        }
-      }
-    };
-  }
-
-  handle_key(dispatch: Dispatch, ks: Move): void {
-    dispatch({ t: 'startAnim', m: ks });
   }
 
   // XXX doesn't get called right now
