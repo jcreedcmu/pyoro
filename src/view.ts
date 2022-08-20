@@ -29,7 +29,7 @@ export type ViewData = {
 export function initView(dispatch: Dispatch) {
   console.log('initView');
   const root = ReactDOM.createRoot(document.getElementById('render-root')!);
-  root.render(React.createElement(App, { msg: 'Hello World' }));
+  root.render(React.createElement(App, { dispatch, msg: 'Hello World' }));
 }
 
 function drawScaled(fv: FView, state: State): void {
