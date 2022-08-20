@@ -69,16 +69,12 @@ function dispatch(a: Action): void {
   }
 }
 
-function resize(dispatch: (a: Action) => void): void {
-  dispatch({ t: 'resize', vd: resizeView(blob.richState!.c) });
-}
-
 async function run(): Promise<void> {
   if (DEBUG.globals) {
     (window as any)['_app'] = blob;
   }
 
-  window.addEventListener('resize', () => resize(dispatch));
+  window.addEventListener('resize', () => dispatch({ t: 'resize', vd: resizeView(blob.richState!.c) }));
 
   initView(dispatch);
 
@@ -86,7 +82,7 @@ async function run(): Promise<void> {
   const c = document.getElementById('c') as HTMLCanvasElement;
   const d = c.getContext('2d') as CanvasRenderingContext2D;
   blob.richState = { spriteImg, c, d };
-  resize(dispatch);
+  dispatch({ t: 'resize', vd: resizeView(blob.richState!.c) });
 }
 
 
