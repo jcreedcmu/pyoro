@@ -41,18 +41,40 @@ type RichState = {
   spriteImg: HTMLImageElement;
 };
 
-class App {
-  richState: RichState | null = null;
-  state: State = init_state;
+type Blob = {
+  richState: RichState | null;
+  state: State
+}
 
+const blob: Blob = {
+  richState: null,
+  state: init_state,
+}
+
+function getFview(): FView | null {
+  if (blob.state.iface.vd == null) return null;
+  if (blob.richState == null) return null;
+  return { d: blob.richState.d, vd: blob.state.iface.vd, spriteImg: blob.richState.spriteImg };
+}
+
+function dispatch(a: Action): void {
+  const { s: newState, effects } = reduce(blob.state, a);
+  if (blob.state != newState) {
+    blob.state = newState
+    const fv = getFview();
+    if (fv !== null) {
+      drawView(fv, newState);
+    }
+  }
+  if (effects) {
+    effects.forEach(e => doEffect(dispatch, e));
+  }
+}
+
+class App {
   constructor() {
   }
 
-  getFview(): FView | null {
-    if (this.state.iface.vd == null) return null;
-    if (this.richState == null) return null;
-    return { d: this.richState.d, vd: this.state.iface.vd, spriteImg: this.richState.spriteImg };
-  }
 
   async run(): Promise<void> {
     if (DEBUG.globals) {
@@ -61,33 +83,18 @@ class App {
 
     window.addEventListener('resize', () => this.resize(dispatch));
 
-    const dispatch = (a: Action) => {
-      const { s: newState, effects } = reduce(this.state, a);
-      if (this.state != newState) {
-        this.state = newState
-        const fv = this.getFview();
-        if (fv !== null) {
-          drawView(fv, newState);
-        }
-      }
-      if (effects) {
-        effects.forEach(e => doEffect(dispatch, e));
-      }
-    }
 
     initView(dispatch);
 
     const spriteImg = await imgProm('assets/sprite.png');
     const c = document.getElementById('c') as HTMLCanvasElement;
     const d = c.getContext('2d') as CanvasRenderingContext2D;
-    this.richState = { spriteImg, c, d };
+    blob.richState = { spriteImg, c, d };
     this.resize(dispatch);
   }
 
-
-
   resize(dispatch: (a: Action) => void): void {
-    dispatch({ t: 'resize', vd: resizeView(this.richState!.c) });
+    dispatch({ t: 'resize', vd: resizeView(blob.richState!.c) });
   }
 
   // XXX doesn't get called right now
