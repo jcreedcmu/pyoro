@@ -63,7 +63,7 @@ export function reduce(s: State, a: Action): Result {
       return {
         s: produce(s, s => {
           s.anim = {
-            frame: 0,
+            frame: 1,
             animator: animator_for_move(s, a.m)
           }
         }),
