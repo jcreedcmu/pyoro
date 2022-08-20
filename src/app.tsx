@@ -5,15 +5,19 @@ import { keyFromCode } from './key';
 import { Dispatch } from './reduce';
 import { CanvasInfo, useCanvas } from './use-canvas';
 
+type CanvasProps = {
+  vestigial: string,
+}
+
 export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
   const { dispatch, msg } = props;
 
-  function render(ci: CanvasInfo, s: string) {
+  function render(ci: CanvasInfo, props: CanvasProps) {
     const { d, size: { x, y } } = ci;
     d.fillStyle = 'white';
     d.fillRect(0, 0, x, y);
     d.fillStyle = 'red';
-    d.fillText(msg, 12, 24);
+    d.fillText(props.vestigial, 12, 24);
   }
 
   function handleKey(e: KeyboardEvent) {
@@ -54,6 +58,6 @@ export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
   }, []);
 
   const [canvasState, setCanvasState] = React.useState('hello');
-  const [cref, mc] = useCanvas(canvasState, render)
+  const [cref, mc] = useCanvas({ vestigial: canvasState }, render)
   return <span><canvas ref={cref} /></span>;
 }
