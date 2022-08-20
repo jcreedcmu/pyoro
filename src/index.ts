@@ -1,15 +1,13 @@
-import { drawView, FView, initView, resizeView, ViewData, wpoint_of_canvas } from './view';
-import { Player, State, init_state } from './state';
-import { animator_for_move, handle_edit_click, handle_world_click, _putTile } from './model';
-import { imgProm } from './util';
-import { Dict, Move, Tile } from './types';
-import { DEBUG, FRAME_DURATION_MS, editTiles, guiData } from './constants';
-import { key } from './key';
-import { produce } from 'immer';
 import * as dat from 'dat.gui';
-import { Animator } from './animation';
+import { commandBindings, moveBindings } from './bindings';
+import { DEBUG, FRAME_DURATION_MS, guiData } from './constants';
+import { key, keyFromCode } from './key';
+import { animator_for_move } from './model';
 import { Action, Dispatch, Effect, reduce } from './reduce';
-import { moveBindings } from './bindings';
+import { init_state, State } from './state';
+import { Move, Tile } from './types';
+import { imgProm } from './util';
+import { drawView, FView, initView, resizeView, wpoint_of_canvas } from './view';
 
 async function onload() {
   const app = new App;
@@ -37,39 +35,6 @@ class App {
   d: CanvasRenderingContext2D;
   spriteImg: HTMLImageElement | null = null;
   state: State = init_state;
-
-  static commandBindings: Dict<(s: State) => State> = {
-    '.': (s) => {
-      return produce(s, s => {
-        s.iface.editTileIx = (s.iface.editTileIx + 1) % editTiles.length;
-      });
-    },
-    ',': (s) => {
-      return produce(s, s => {
-        s.iface.editTileIx = (s.iface.editTileIx - 1 + editTiles.length) % editTiles.length;
-      });
-    },
-    'C-s': (s) => {
-      const req = new Request('/save', {
-        method: 'POST',
-        body: JSON.stringify(s.game.overlay),
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      fetch(req).then(r => r.json())
-        .then(x => console.log(x))
-        .catch(console.error);
-      return produce(s, s => {
-        s.game.initOverlay.tiles = s.game.overlay.tiles;
-      });
-    },
-    'r': (s) => {
-      return produce(s, s => {
-        s.iface.editTileRotation = (s.iface.editTileRotation + 1) % 4;
-      });
-    },
-  }
 
   constructor() {
     this.c = document.getElementById('c') as HTMLCanvasElement;
@@ -126,8 +91,8 @@ class App {
         console.log(e.keyCode);
         console.log(e.code);
       }
-      const k = key(e);
-      const f = App.commandBindings[k];
+      const k = keyFromCode(e);
+      const f = commandBindings[k];
       if (f !== undefined) {
         e.stopPropagation();
         e.preventDefault();
