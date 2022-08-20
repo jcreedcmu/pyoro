@@ -9,6 +9,7 @@ import { produce } from 'immer';
 import * as dat from 'dat.gui';
 import { Animator } from './animation';
 import { Action, Dispatch, Effect, reduce } from './reduce';
+import { moveBindings } from './bindings';
 
 async function onload() {
   const app = new App;
@@ -36,24 +37,6 @@ class App {
   d: CanvasRenderingContext2D;
   spriteImg: HTMLImageElement | null = null;
   state: State = init_state;
-
-  static moveBindings: Dict<Move> = {
-    'KP7': 'up-left',
-    'KP9': 'up-right',
-    'KP4': 'left',
-    'KP8': 'up',
-    'KP6': 'right',
-    'KP2': 'down',
-    'KP5': 'down',
-    'q': 'up-left',
-    'e': 'up-right',
-    'a': 'left',
-    'w': 'up',
-    'd': 'right',
-    's': 'down',
-    'S-r': 'reset',
-    'c': 'recenter',
-  }
 
   static commandBindings: Dict<(s: State) => State> = {
     '.': (s) => {
@@ -151,7 +134,7 @@ class App {
         dispatch({ t: 'changeState', f });
       }
       else {
-        const move = App.moveBindings[k];
+        const move = moveBindings[k];
         if (move) {
           e.stopPropagation();
           e.preventDefault();
