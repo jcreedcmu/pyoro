@@ -210,6 +210,23 @@ export function resizeView(c: HTMLCanvasElement): ViewData {
   return { origin, wsize };
 }
 
+export function wpoint_of_vd(vd: ViewData, p: Point, s: State): WidgetPoint {
+  const { origin } = vd;
+
+  const world_size = vm(NUM_TILES, NT => TILE_SIZE * SCALE * NT);
+  if (u.inrect(p, { p: origin, sz: world_size }))
+    return {
+      t: 'World',
+      p: vmn([s.iface.viewPort, origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
+    };
+  else {
+    return {
+      t: 'EditTiles',
+      ix: vmn([{ x: SCALE, y: 0 }, p], ([o, p]) => int((p - o) / (TILE_SIZE * SCALE))).x,
+    }
+  }
+}
+
 export function wpoint_of_canvas(fv: FView, p: Point, s: State): WidgetPoint {
   const { vd: { origin } } = fv;
 

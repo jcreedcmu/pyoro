@@ -113,14 +113,7 @@ class App {
   init_mouse(dispatch: Dispatch): void {
     const c = this.c;
     c.onmousedown = (e: MouseEvent) => {
-      const fv = this.getFview();
-      if (fv == null)
-        return;
-      const wpoint = wpoint_of_canvas(fv, { x: e.clientX, y: e.clientY }, this.state);
-      if (DEBUG.mouse) {
-        console.log(wpoint);
-      }
-      dispatch({ t: 'click', wpoint });
+      dispatch({ t: 'click', point: { x: e.clientX, y: e.clientY } });
     };
   }
 }
