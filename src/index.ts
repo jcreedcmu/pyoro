@@ -66,7 +66,6 @@ class App {
     }
 
     initView(dispatch);
-    this.init_mouse(dispatch);
 
     const s = await imgProm('assets/sprite.png');
     this.spriteImg = s;
@@ -109,10 +108,4 @@ class App {
     }
   */
 
-  init_mouse(dispatch: Dispatch): void {
-    const c = this.c;
-    c.onmousedown = (e: MouseEvent) => {
-      dispatch({ t: 'click', point: { x: e.clientX, y: e.clientY } });
-    };
-  }
 }

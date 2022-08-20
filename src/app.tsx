@@ -38,12 +38,18 @@ export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
     }
   }
 
+  function handleMouseDown(e: MouseEvent) {
+    dispatch({ t: 'click', point: { x: e.clientX, y: e.clientY } });
+  }
+
   React.useEffect(() => {
     console.log('installing');
     document.addEventListener('keydown', handleKey);
+    document.addEventListener('mousedown', handleMouseDown);
     return () => {
       console.log('uninstalling');
       document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('mousedown', handleMouseDown);
     }
   }, []);
 
