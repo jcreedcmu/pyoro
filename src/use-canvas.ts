@@ -7,10 +7,15 @@ export type CanvasInfo = {
   size: Point,
 };
 
-export function useCanvas<S>(state: S, render: (ci: CanvasInfo, state: S) => void, deps?: any[]): [
-  React.RefCallback<HTMLCanvasElement>,
-  React.MutableRefObject<CanvasInfo | undefined>,
-] {
+export function useCanvas<S>(
+  state: S,
+  render: (ci: CanvasInfo, state: S) => void,
+  deps: any[],
+  onLoad: (ci: CanvasInfo) => void,
+): [
+    React.RefCallback<HTMLCanvasElement>,
+    React.MutableRefObject<CanvasInfo | undefined>,
+  ] {
   const infoRef = useRef<CanvasInfo | undefined>(undefined);
   console.log('in usecanvas');
   useEffect(() => {
@@ -30,6 +35,7 @@ export function useCanvas<S>(state: S, render: (ci: CanvasInfo, state: S) => voi
         canvas.width = width;
         canvas.height = height;
         infoRef.current = { c: canvas, d: canvas.getContext('2d')!, size: { x: width, y: height } };
+        onLoad(infoRef.current);
       }
     }
   };

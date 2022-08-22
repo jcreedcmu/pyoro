@@ -23,7 +23,7 @@ function resize(ci: CanvasInfo | undefined): void {
   resizeView(ci.c);
 }
 
-export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
+export function App(props: { msg: string }): JSX.Element {
   const { msg } = props;
 
   console.log('rendering App');
@@ -83,7 +83,14 @@ export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
   const [spriteImg, setSpriteImg] = React.useState(null as (null | HTMLImageElement));
   const [state, dispatch] = useEffectfulReducer(init_state, reduce, doEffect);
   const [canvasState, setCanvasState] = React.useState('hello');
-  const [cref, mc] = useCanvas({ vestigial: canvasState, main: state, spriteImg: spriteImg }, render, [canvasState, state, spriteImg, state.iface.vd]);
+  const [cref, mc] = useCanvas(
+    { vestigial: canvasState, main: state, spriteImg: spriteImg }, render,
+    [canvasState, state, spriteImg, state.iface.vd],
+    ci => {
+      dispatch({ t: 'resize', vd: resizeView(ci.c) });
+    }
+  );
+  console.log('finished usecanvas');
 
   React.useEffect(() => {
     (async () => {

@@ -33,56 +33,9 @@ function doEffect(dispatch: Dispatch, e: Effect) {
   }
 }
 
-type RichState = {
-  c: HTMLCanvasElement;
-  d: CanvasRenderingContext2D;
-  spriteImg: HTMLImageElement;
-};
-
-type Blob = {
-  richState: RichState | null;
-  state: State
-}
-
-const blob: Blob = {
-  richState: null,
-  state: init_state,
-}
-
-function getFview(): FView | null {
-  if (blob.state.iface.vd == null) return null;
-  if (blob.richState == null) return null;
-  return { d: blob.richState.d, vd: blob.state.iface.vd, spriteImg: blob.richState.spriteImg };
-}
-
-function dispatch(a: Action): void {
-  const { state: newState, effects } = reduce(blob.state, a);
-  if (blob.state != newState) {
-    blob.state = newState
-    const fv = getFview();
-    if (fv !== null) {
-      drawView(fv, newState);
-    }
-  }
-  if (effects) {
-    effects.forEach(e => doEffect(dispatch, e));
-  }
-}
 
 async function run(): Promise<void> {
-  if (DEBUG.globals) {
-    (window as any)['_app'] = blob;
-  }
-
-  window.addEventListener('resize', () => dispatch({ t: 'resize', vd: resizeView(blob.richState!.c) }));
-
-  initView(dispatch);
-
-  const spriteImg = await imgProm('assets/sprite.png');
-  const c = document.getElementById('c') as HTMLCanvasElement;
-  const d = c.getContext('2d') as CanvasRenderingContext2D;
-  blob.richState = { spriteImg, c, d };
-  dispatch({ t: 'resize', vd: resizeView(blob.richState!.c) });
+  initView();
 }
 
 
