@@ -56,7 +56,7 @@ function getFview(): FView | null {
 }
 
 function dispatch(a: Action): void {
-  const { s: newState, effects } = reduce(blob.state, a);
+  const { state: newState, effects } = reduce(blob.state, a);
   if (blob.state != newState) {
     blob.state = newState
     const fv = getFview();

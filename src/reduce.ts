@@ -6,6 +6,7 @@ import { Move, Tile } from "./types";
 import { ViewData, WidgetPoint, wpoint_of_vd } from "./view";
 import { produce } from 'immer';
 import { DEBUG } from "./constants";
+import * as effectful from "./use-effectful-reducer";
 
 export type Action =
   | { t: 'changeState', f: (s: State) => State }
@@ -22,10 +23,10 @@ export type Dispatch = (a: Action) => void;
 export type Effect =
   | { t: 'scheduleFrame' };
 
-export type Result = { s: State, effects?: Effect[] };
+type Result = effectful.Result<State, Effect>;
 
-export function pure(s: State): Result {
-  return { s };
+export function pure(state: State): Result {
+  return { state };
 }
 
 export function reduce(s: State, a: Action): Result {
@@ -52,13 +53,13 @@ export function reduce(s: State, a: Action): Result {
           effects.push({ t: 'scheduleFrame' });
         }
       });
-      return { s: nextState, effects };
+      return { state: nextState, effects: effects };
     }
     case 'startAnim': {
       // XXX should instead buffer moves?
       if (s.anim == null) {
         return {
-          s: produce(s, s => {
+          state: produce(s, s => {
             s.anim = {
               frame: 1,
               animator: animator_for_move(s, a.m)

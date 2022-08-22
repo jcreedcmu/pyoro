@@ -2,7 +2,7 @@ import * as React from 'react';
 import { commandBindings, moveBindings } from './bindings';
 import { DEBUG } from './constants';
 import { keyFromCode } from './key';
-import { Dispatch } from './reduce';
+import { Dispatch, Effect, reduce } from './reduce';
 import { init_state, State } from './state';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
@@ -24,7 +24,9 @@ function resize(ci: CanvasInfo | undefined): void {
 }
 
 export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
-  const { dispatch, msg } = props;
+  const { msg } = props;
+
+  console.log('rendering App');
 
   function render(ci: CanvasInfo, props: CanvasProps) {
     console.log('rendering small canvas');
@@ -33,8 +35,10 @@ export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
     d.fillRect(0, 0, x, y);
     d.fillStyle = 'red';
     d.fillText(props.vestigial, 12, 24);
-    if (props.spriteImg !== null && props.main.iface.vd !== null)
+    if (props.spriteImg !== null && props.main.iface.vd !== null) {
+      console.log('got to drawing');
       drawView({ d, spriteImg: props.spriteImg, vd: props.main.iface.vd }, props.main);
+    }
     else {
       console.log('not fully loaded:', props.spriteImg, props.main.iface.vd);
     }
@@ -66,14 +70,20 @@ export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
     dispatch({ t: 'click', point: { x: e.clientX, y: e.clientY } });
   }
 
-  // State
+  function handleResize(e: UIEvent) {
+    console.log('resize event');
+    dispatch({ t: 'resize', vd: resizeView(mc.current!.c) });
+  }
+
+  // State 
+
+  function doEffect(effect: Effect): void {
+
+  }
   const [spriteImg, setSpriteImg] = React.useState(null as (null | HTMLImageElement));
-  const [state, setState] = React.useState(init_state);
+  const [state, dispatch] = useEffectfulReducer(init_state, reduce, doEffect);
   const [canvasState, setCanvasState] = React.useState('hello');
-  const [cref, mc] = useCanvas({ vestigial: canvasState, main: state, spriteImg: spriteImg }, render);
-  React.useEffect(() => {
-    setTimeout(() => { resize(mc.current) }, 100);
-  }, [mc]);
+  const [cref, mc] = useCanvas({ vestigial: canvasState, main: state, spriteImg: spriteImg }, render, [canvasState, state, spriteImg, state.iface.vd]);
 
   React.useEffect(() => {
     (async () => {
@@ -88,12 +98,14 @@ export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
     console.log('installing');
     document.addEventListener('keydown', handleKey);
     document.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('resize', handleResize);
     return () => {
       console.log('uninstalling');
       document.removeEventListener('keydown', handleKey);
       document.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('resize', handleResize);
     }
   }, []);
 
-  return <span><canvas ref={cref} /></span>;
+  return <div><canvas ref={cref} /></div>;
 }

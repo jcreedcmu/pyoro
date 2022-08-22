@@ -7,17 +7,20 @@ export type CanvasInfo = {
   size: Point,
 };
 
-export function useCanvas<S>(state: S, render: (ci: CanvasInfo, state: S) => void): [
+export function useCanvas<S>(state: S, render: (ci: CanvasInfo, state: S) => void, deps?: any[]): [
   React.RefCallback<HTMLCanvasElement>,
   React.MutableRefObject<CanvasInfo | undefined>,
 ] {
   const infoRef = useRef<CanvasInfo | undefined>(undefined);
+  console.log('in usecanvas');
   useEffect(() => {
+    console.log('in canvas useeffect');
+
     const ci = infoRef.current;
     if (ci != null) {
       render(ci, state);
     }
-  }, [state]);
+  }, deps ?? [state]);
 
   const ref: React.RefCallback<HTMLCanvasElement> = canvas => {
     if (infoRef.current === undefined) {
