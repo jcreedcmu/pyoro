@@ -5,14 +5,23 @@ import { keyFromCode } from './key';
 import { Dispatch } from './reduce';
 import { init_state, State } from './state';
 import { CanvasInfo, useCanvas } from './use-canvas';
+import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
-import { drawView } from './view';
+import { drawView, resizeView } from './view';
 
 type CanvasProps = {
   vestigial: string,
   main: State,
   spriteImg: HTMLImageElement | null
 };
+
+function resize(ci: CanvasInfo | undefined): void {
+  if (ci == undefined) {
+    return;
+  }
+  console.log('resize', ci);
+  resizeView(ci.c);
+}
 
 export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
   const { dispatch, msg } = props;
@@ -62,6 +71,9 @@ export function App(props: { dispatch: Dispatch, msg: string }): JSX.Element {
   const [state, setState] = React.useState(init_state);
   const [canvasState, setCanvasState] = React.useState('hello');
   const [cref, mc] = useCanvas({ vestigial: canvasState, main: state, spriteImg: spriteImg }, render);
+  React.useEffect(() => {
+    setTimeout(() => { resize(mc.current) }, 100);
+  }, [mc]);
 
   React.useEffect(() => {
     (async () => {
