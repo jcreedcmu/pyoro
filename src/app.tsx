@@ -10,17 +10,9 @@ import { imgProm } from './util';
 import { drawView, resizeView } from './view';
 
 type CanvasProps = {
-  vestigial: string,
   main: State,
   spriteImg: HTMLImageElement | null
 };
-
-function resize(ci: CanvasInfo | undefined): void {
-  if (ci == undefined) {
-    return;
-  }
-  resizeView(ci.c);
-}
 
 function doEffect(dispatch: Dispatch, e: Effect) {
   switch (e.t) {
@@ -30,15 +22,9 @@ function doEffect(dispatch: Dispatch, e: Effect) {
   }
 }
 
-export function App(props: { msg: string }): JSX.Element {
-  const { msg } = props;
-
+export function App(props: {}): JSX.Element {
   function render(ci: CanvasInfo, props: CanvasProps) {
     const { d, size: { x, y } } = ci;
-    d.fillStyle = 'white';
-    d.fillRect(0, 0, x, y);
-    d.fillStyle = 'red';
-    d.fillText(props.vestigial, 12, 24);
     if (props.spriteImg !== null && props.main.iface.vd !== null) {
       drawView({ d, spriteImg: props.spriteImg, vd: props.main.iface.vd }, props.main);
     }
@@ -78,10 +64,9 @@ export function App(props: { msg: string }): JSX.Element {
   // State 
   const [spriteImg, setSpriteImg] = React.useState(null as (null | HTMLImageElement));
   const [state, dispatch] = useEffectfulReducer(init_state, reduce, doEffect);
-  const [canvasState, setCanvasState] = React.useState('hello');
   const [cref, mc] = useCanvas(
-    { vestigial: canvasState, main: state, spriteImg: spriteImg }, render,
-    [canvasState, state, spriteImg, state.iface.vd],
+    { main: state, spriteImg: spriteImg }, render,
+    [state, spriteImg, state.iface.vd],
     ci => {
       dispatch({ t: 'resize', vd: resizeView(ci.c) });
     }
