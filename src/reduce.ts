@@ -1,12 +1,11 @@
-import { Animator } from "./animation";
-import { animator_for_move, handle_edit_click, handle_world_click, _putTile } from "./model";
-import { State } from "./state";
-import { Point } from "./point";
-import { Move, Tile } from "./types";
-import { ViewData, WidgetPoint, wpoint_of_vd } from "./view";
 import { produce } from 'immer';
-import { DEBUG } from "./constants";
+import { logger } from "./constants";
+import { animator_for_move, handle_edit_click, handle_world_click, _putTile } from "./model";
+import { Point } from "./point";
+import { State } from "./state";
+import { Move, Tile } from "./types";
 import * as effectful from "./use-effectful-reducer";
+import { ViewData, wpoint_of_vd } from "./view";
 
 export type Action =
   | { t: 'changeState', f: (s: State) => State }
@@ -77,9 +76,7 @@ export function reduce(s: State, a: Action): Result {
       if (vd == null)
         return pure(s);
       const wpoint = wpoint_of_vd(vd, a.point, s);
-      if (DEBUG.mouse) {
-        console.log(wpoint);
-      }
+      logger('mouse', wpoint);
       switch (wpoint.t) {
         case 'World': return pure(handle_world_click(s, wpoint.p));
         case 'EditTiles': return pure(handle_edit_click(s, wpoint.ix));

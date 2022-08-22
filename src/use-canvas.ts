@@ -17,10 +17,7 @@ export function useCanvas<S>(
     React.MutableRefObject<CanvasInfo | undefined>,
   ] {
   const infoRef = useRef<CanvasInfo | undefined>(undefined);
-  console.log('in usecanvas');
   useEffect(() => {
-    console.log('in canvas useeffect');
-
     const ci = infoRef.current;
     if (ci != null) {
       render(ci, state);

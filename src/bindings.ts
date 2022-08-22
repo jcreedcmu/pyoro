@@ -1,5 +1,5 @@
 import produce from "immer";
-import { editTiles } from "./constants";
+import { editTiles, logger } from "./constants";
 import { State } from "./state";
 import { Dict, Move } from "./types";
 
@@ -45,7 +45,7 @@ export const commandBindings: Dict<(s: State) => State> = {
       }
     });
     fetch(req).then(r => r.json())
-      .then(x => console.log(x))
+      .then(x => logger('networkRequest', x))
       .catch(console.error);
     return produce(s, s => {
       s.game.initOverlay.tiles = s.game.overlay.tiles;

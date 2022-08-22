@@ -30,12 +30,21 @@ export const sprites: { [k in Sprite]: Point } = {
 };
 
 export const DEBUG = {
+  chatty: true,
   globals: false,
   mouse: false,
   keys: false,
   datgui: false,
   devicePixelRatio: false,
+  networkRequest: true,
+  error: true,
 };
+
+export function logger(level: keyof (typeof DEBUG), ...args: any[]) {
+  if (DEBUG[level]) {
+    console.log(...args);
+  }
+}
 
 export const editTiles: Tile[] =
   [

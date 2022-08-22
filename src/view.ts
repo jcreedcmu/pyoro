@@ -28,7 +28,6 @@ export type ViewData = {
 };
 
 export function initView() {
-  console.log('initView');
   const root = ReactDOM.createRoot(document.getElementById('render-root')!);
   root.render(React.createElement(App, { msg: 'Hello World' }));
 }
