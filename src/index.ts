@@ -25,15 +25,6 @@ async function onload() {
   }
 }
 
-function doEffect(dispatch: Dispatch, e: Effect) {
-  switch (e.t) {
-    case 'scheduleFrame':
-      setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
-      break;
-  }
-}
-
-
 async function run(): Promise<void> {
   initView();
 }

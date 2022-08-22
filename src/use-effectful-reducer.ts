@@ -42,20 +42,24 @@ export type Result<S, E> = { state: S, effects?: E[] };
 export function useEffectfulReducer<A, S, E>(
   initialState: S,
   reduce: (state: S, action: A) => Result<S, E>,
-  doEffect: (effect: E) => void):
+  doEffect: (dispatch: (action: A) => void, effect: E) => void):
   [S, (action: A) => void] {
   const [state, setState] = React.useState<S>(initialState);
-  return [state, (a: A) => {
+  function dispatch(action: A) {
     setState(prevState => {
-      const result = reduce(prevState, a);
+      const result = reduce(prevState, action);
       setTimeout(() => {
         if (result.effects !== undefined) {
           for (const effect of result.effects) {
-            doEffect(effect);
+            doEffect(
+              dispatch, // Notice there is some recursion happening here!
+              effect
+            );
           }
         }
       }, 0);
       return result.state;
     });
-  }];
+  }
+  return [state, dispatch];
 }

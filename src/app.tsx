@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { commandBindings, moveBindings } from './bindings';
-import { DEBUG } from './constants';
+import { DEBUG, FRAME_DURATION_MS } from './constants';
 import { keyFromCode } from './key';
 import { Dispatch, Effect, reduce } from './reduce';
 import { init_state, State } from './state';
@@ -21,6 +21,14 @@ function resize(ci: CanvasInfo | undefined): void {
   }
   console.log('resize', ci);
   resizeView(ci.c);
+}
+
+function doEffect(dispatch: Dispatch, e: Effect) {
+  switch (e.t) {
+    case 'scheduleFrame':
+      setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
+      break;
+  }
 }
 
 export function App(props: { msg: string }): JSX.Element {
@@ -76,10 +84,6 @@ export function App(props: { msg: string }): JSX.Element {
   }
 
   // State 
-
-  function doEffect(effect: Effect): void {
-
-  }
   const [spriteImg, setSpriteImg] = React.useState(null as (null | HTMLImageElement));
   const [state, dispatch] = useEffectfulReducer(init_state, reduce, doEffect);
   const [canvasState, setCanvasState] = React.useState('hello');
