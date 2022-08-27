@@ -5,9 +5,9 @@ import { App } from './app';
 import { DEBUG, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE } from './constants';
 import { getItem, getTile, PointMap, putItem } from './layer';
 import { renderGameAnims, renderIfaceAnims } from './model';
-import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus } from './point';
+import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale } from './point';
 import { State } from './state';
-import { Point, Sprite } from './types';
+import { Item, Point, Sprite } from './types';
 import * as u from './util';
 import { rgba } from './util';
 
@@ -135,12 +135,31 @@ function drawInventory(fv: FView, state: State): void {
   d.fillRect(start.x, start.y,
     NUM_INVENTORY_ITEMS * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
 
-  if (i.teal_fruit != undefined) {
-    raw_draw_sprite(fv, 'teal_fruit', start);
+  function drawInventoryItem(item: Item, count: number, p: Point) {
+    const ipos = vplus(start, vscale(p, TILE_SIZE * SCALE));
+    raw_draw_sprite(fv, item, ipos);
+
+    // XXX temporary debugging count display, should do nice pixel font or something.
+    if (count > 1) {
+      d.fillStyle = 'white';
+      const size = 7 * SCALE;
+      const offset = SCALE * TILE_SIZE - size;
+      d.fillRect(ipos.x + offset, ipos.y + offset, size, size);
+      d.fillStyle = 'black';
+      d.textBaseline = 'middle';
+      d.textAlign = 'center';
+      d.fillText(`${count}`, ipos.x + offset + size / 2, ipos.y + offset + size / 2);
+    }
   }
-  if (i.coin != undefined) {
-    raw_draw_sprite(fv, 'coin', vplus({ x: TILE_SIZE * SCALE, y: 0 }, start));
-  }
+
+  const items: Item[] = ['teal_fruit', 'coin'];
+  items.forEach((item, ix) => {
+    const count = i[item];
+    if (count != undefined) {
+      drawInventoryItem(item, count, { x: ix, y: 0 });
+    }
+  });
+
 }
 
 // spos: position in window, in pixels. (0,0) is top left of window
