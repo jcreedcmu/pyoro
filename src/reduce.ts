@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { logger } from "./constants";
+import { editTiles, logger } from "./constants";
 import { animator_for_move, handle_edit_click, handle_world_click, _putTile } from "./model";
 import { Point } from "./point";
 import { State } from "./state";
@@ -7,15 +7,20 @@ import { Move, Tile } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
 
+export type Command =
+  | 'prevEditTile'
+  | 'nextEditTile'
+  | 'saveOverlay'
+  | 'rotateEditTile';
+
 export type Action =
-  | { t: 'changeState', f: (s: State) => State }
+  | { t: 'commandKey', cmd: Command }
   | { t: 'setState', s: State }
   | { t: 'putTile', p: Point, tile: Tile }
   | { t: 'click', point: Point }
   | { t: 'resize', vd: ViewData }
   | { t: 'startAnim', m: Move }
   | { t: 'nextFrame' };
-//  | { t: 'keyDown', code: string };
 
 export type Dispatch = (a: Action) => void;
 
@@ -28,9 +33,45 @@ export function pure(state: State): Result {
   return { state };
 }
 
+export function reduceCommand(s: State, cmd: Command): State {
+  switch (cmd) {
+    case 'nextEditTile':
+      return produce(s, s => {
+        s.iface.editTileIx = (s.iface.editTileIx + 1) % editTiles.length;
+      });
+
+    case 'prevEditTile':
+      return produce(s, s => {
+        s.iface.editTileIx = (s.iface.editTileIx - 1 + editTiles.length) % editTiles.length;
+      });
+
+    case 'saveOverlay': {
+      const req = new Request('/save', {
+        method: 'POST',
+        body: JSON.stringify(s.game.overlay),
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      fetch(req).then(r => r.json())
+        .then(x => logger('networkRequest', x))
+        .catch(console.error);
+      return produce(s, s => {
+        s.game.initOverlay.tiles = s.game.overlay.tiles;
+      });
+    }
+
+    case 'rotateEditTile':
+      return produce(s, s => {
+        s.iface.editTileRotation = (s.iface.editTileRotation + 1) % 4;
+      });
+  }
+}
+
 export function reduce(s: State, a: Action): Result {
   switch (a.t) {
-    case 'changeState': return pure(a.f(s));
+    case 'commandKey': return pure(reduceCommand(s, a.cmd));
+
     case 'setState': return pure(a.s);
     case 'putTile': return pure(_putTile(s, a.p, a.tile));
     case 'resize':

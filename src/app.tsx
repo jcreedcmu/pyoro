@@ -37,11 +37,11 @@ export function App(props: {}): JSX.Element {
     logger('keys', 'keycode', e.keyCode);
     logger('keys', 'code', e.code);
     const k = keyFromCode(e);
-    const f = commandBindings[k];
-    if (f !== undefined) {
+    const cmd = commandBindings[k];
+    if (cmd !== undefined) {
       e.stopPropagation();
       e.preventDefault();
-      dispatch({ t: 'changeState', f });
+      dispatch({ t: 'commandKey', cmd });
     }
     else {
       const move = moveBindings[k];
