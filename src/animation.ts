@@ -33,8 +33,8 @@ export type Animator = {
 
   // There is an intrinsic asymmetry here in that I want to allow ifaceAnim to depend
   // on game state, but not vice-versa.
-  gameAnim: (fr: number, s: GameState) => GameState,
-  ifaceAnim: (fr: number, s: State) => IfaceState,
+  animsGame: Animation[],
+  animsIface: Animation[],
 }
 
 export type Time = {

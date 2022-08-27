@@ -1,9 +1,11 @@
 import produce from 'immer';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
+import { duration } from './animation';
 import { App } from './app';
 import { DEBUG, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE } from './constants';
 import { getItem, getTile, PointMap, putItem } from './layer';
+import { renderGameAnims, renderIfaceAnims } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus } from './point';
 import { Dispatch } from './reduce';
 import { Item, State } from './state';
@@ -178,8 +180,8 @@ export function drawView(fv: FView, state: State): void {
   const ams = state.anim;
   if (ams !== null) {
     effectiveState = produce(state, s => {
-      s.iface = ams.animator.ifaceAnim(ams.frame, s);
-      s.game = ams.animator.gameAnim(ams.frame, s.game);
+      s.iface = renderIfaceAnims(ams.animator.animsIface.map(anim => ({ anim, dur: duration(anim) })))(ams.frame, s);
+      s.game = renderGameAnims(ams.animator.animsGame.map(anim => ({ anim, dur: duration(anim) })))(ams.frame, s.game);
     });
   }
   drawScaled(fv, effectiveState);

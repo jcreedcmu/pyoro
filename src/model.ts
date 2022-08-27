@@ -284,12 +284,20 @@ function hasNextPos(anim: Animation): Point | undefined {
   }
 }
 
-// only used in testing right now
 export function completeGameAnims(animsGame: Animation[], s: GameState): GameState {
   animsGame.forEach(anim => {
     s = applyGameAnimation(anim, s, { t: 1, fr: duration(anim) });
   });
   return s;
+}
+
+export function completeIfaceAnims(animsIface: Animation[], s: State): State {
+  return produce(s, s => {
+    animsIface.forEach(anim => {
+      s.iface = applyIfaceAnimation(anim, s, { t: 1, fr: duration(anim) });
+    });
+    return s;
+  });
 }
 
 export function renderGameAnims(animsGameDur: { anim: Animation, dur: number }[]): (fr: number, s: GameState) => GameState {
@@ -314,16 +322,12 @@ export function animator_for_move(s: State, move: Move): Animator {
   const animsGame = animateMoveGame(s.game, move);
   const nextPos = animsGame.map(hasNextPos).find(x => x !== undefined);
   const animsIface = animateMoveIface(s, move, nextPos);
+  const dur = max([...animsGame.map(a => duration(a)), ...animsIface.map(a => duration(a))]);
 
-  const animsGameDur = animsGame.map(anim => ({ anim, dur: duration(anim) }));
-  const animsIfaceDur = animsIface.map(anim => ({ anim, dur: duration(anim) }));
-  const dur = max([...animsGameDur.map(a => a.dur), ...animsIfaceDur.map(a => a.dur)]);
-  const gameAnim = renderGameAnims(animsGameDur);
-  const ifaceAnim = renderIfaceAnims(animsIfaceDur);
   return {
     dur,
-    gameAnim,
-    ifaceAnim,
+    animsGame,
+    animsIface,
   }
 }
 
