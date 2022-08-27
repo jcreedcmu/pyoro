@@ -1,9 +1,9 @@
-import { Layer } from './layer';
-import { Point, Facing, Sprite, Tile } from './types';
+import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
+import { Layer } from './layer';
+import { Facing, Item, Point, Sprite, Tile } from './types';
 import { ViewData } from './view';
-import { Animator } from './animation';
 
 export type Player = {
   dead: boolean,
@@ -26,8 +26,6 @@ export type IfaceState = {
   dragTile: Tile | undefined,
   vd: ViewData | null,
 };
-
-export type Item = 'teal_fruit';
 
 export type Inventory = Partial<Record<Item, number>>;
 

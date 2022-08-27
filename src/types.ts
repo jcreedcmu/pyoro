@@ -4,6 +4,13 @@ export type Color = { r: number, g: number, b: number };
 export type BadRect = { p: Point, w: number, h: number };
 export type Rect = { p: Point, sz: Point };
 export type Ctx = CanvasRenderingContext2D;
+
+
+export type Item =
+  | 'teal_fruit'
+  | 'coin'
+  ;
+
 export type Tile =
   | 'box'
   | 'box3'
@@ -16,29 +23,35 @@ export type Tile =
   | 'spike_right'
   | 'spike_down'
   | 'save_point'
-  | 'teal_fruit'
-  | 'grip_wall';
+  | 'grip_wall'
+  | Item
+  ;
 export type MotiveMove =
   | 'up'
   | 'down'
   | 'left'
   | 'right'
   | 'up-left'
-  | 'up-right';
+  | 'up-right'
+  ;
 export type Move =
   | MotiveMove
   | 'reset'
-  | 'recenter';
+  | 'recenter'
+  ;
 export type Facing =
   | 'left'
-  | 'right';
+  | 'right'
+  ;
 export type PlayerSprite =
   | 'player'
   | 'player_fall'
   | 'player_rise'
   | 'player_wall'
   | 'player_dead'
-  | 'player_crouch';
+  | 'player_crouch'
+  ;
 export type Sprite =
   | Tile
-  | PlayerSprite;
+  | PlayerSprite
+  ;

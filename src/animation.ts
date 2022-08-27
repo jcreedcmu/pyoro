@@ -1,8 +1,8 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
 import { putTile } from './layer';
-import { GameState, IfaceState, init_state, Item, State } from './state';
-import { Facing, Point, Sprite } from './types';
+import { GameState, IfaceState, init_state, State } from './state';
+import { Facing, Point, Sprite, Item } from './types';
 import { vm2, vplus, vscale, int, lerp } from './point';
 
 export type Animation =

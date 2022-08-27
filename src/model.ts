@@ -2,13 +2,13 @@ import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile } from './constants';
 import { getTile, Layer, putTile } from './layer';
-import { GameState, IfaceState, Item, Player, State } from "./state";
-import { Facing, MotiveMove, Move, Point, Sprite, Tile } from './types';
-import { max } from './util';
 import { vplus } from './point';
+import { GameState, IfaceState, Player, State } from "./state";
+import { Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
+import { max } from './util';
 
 function getItem(x: Tile): Item | undefined {
-  if (x == 'teal_fruit') return x;
+  if (x == 'teal_fruit' || x == 'coin') return x;
 }
 
 function isItem(x: Tile): boolean {

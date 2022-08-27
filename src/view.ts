@@ -1,14 +1,12 @@
 import produce from 'immer';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { duration } from './animation';
 import { App } from './app';
 import { DEBUG, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE } from './constants';
 import { getItem, getTile, PointMap, putItem } from './layer';
 import { renderGameAnims, renderIfaceAnims } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus } from './point';
-import { Dispatch } from './reduce';
-import { Item, State } from './state';
+import { State } from './state';
 import { Point, Sprite } from './types';
 import * as u from './util';
 import { rgba } from './util';
@@ -139,6 +137,9 @@ function drawInventory(fv: FView, state: State): void {
 
   if (i.teal_fruit != undefined) {
     raw_draw_sprite(fv, 'teal_fruit', start);
+  }
+  if (i.coin != undefined) {
+    raw_draw_sprite(fv, 'coin', vplus({ x: TILE_SIZE * SCALE, y: 0 }, start));
   }
 }
 

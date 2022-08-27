@@ -27,6 +27,7 @@ export const sprites: { [k in Sprite]: Point } = {
   teal_fruit: { x: 3, y: 5 },
   grip_wall: { x: 3, y: 0 },
   player_crouch: { x: 3, y: 6 },
+  coin: { x: 3, y: 4 },
 };
 
 export const DEBUG = {
@@ -55,7 +56,8 @@ export const editTiles: Tile[] =
     'fragile_box',
     'spike_up',
     'save_point',
-    'teal_fruit'
+    'teal_fruit',
+    'coin',
   ];
 
 export function rotateTile(tile: Tile, amount: number): Tile {

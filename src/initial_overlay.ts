@@ -86,6 +86,13 @@ export const initOverlay: Layer = {
     "3,5": "box",
     "-12,2": "teal_fruit",
     "-10,3": "spike_right",
-    "1,-2": "grip_wall"
+    "1,-2": "grip_wall",
+    "7,1": "coin",
+    "9,1": "coin",
+    "17,1": "coin",
+    "15,1": "coin",
+    "13,1": "coin",
+    "11,1": "coin",
+    "3,1": "empty"
   }
 };
