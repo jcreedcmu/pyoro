@@ -300,13 +300,11 @@ export function completeIfaceAnims(animsIface: Animation[], s: State): State {
   });
 }
 
-export function renderGameAnims(animsGameDur: { anim: Animation, dur: number }[]): (fr: number, s: GameState) => GameState {
-  return (fr: number, s: GameState): GameState => {
-    animsGameDur.forEach(({ anim, dur }) => {
-      s = applyGameAnimation(anim, s, { t: fr / dur, fr });
-    });
-    return s;
-  }
+export function renderGameAnims(anims: Animation[], fr: number, s: GameState): GameState {
+  anims.forEach(anim => {
+    s = applyGameAnimation(anim, s, { t: fr / duration(anim), fr });
+  });
+  return s;
 }
 
 export function renderIfaceAnims(animsIfaceDur: { anim: Animation, dur: number }[]): (fr: number, s: State) => IfaceState {

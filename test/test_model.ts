@@ -1,12 +1,9 @@
 import * as assert from 'assert';
-import * as fs from 'fs';
 import { FULL_IMPETUS } from '../src/constants';
-import * as util from '../src/util';
-import { _getTile, animator_for_move, tileOfGameState, animateMoveGame, renderGameAnims, completeGameAnims } from '../src/model';
-import { GameState, init_player, State } from '../src/state';
 import { Layer } from '../src/layer';
+import { animateMoveGame, completeGameAnims, tileOfGameState } from '../src/model';
+import { GameState, init_player } from '../src/state';
 import { Move } from '../src/types';
-import { duration } from '../src/animation';
 
 function basicLayer(): Layer {
   return {
