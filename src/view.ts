@@ -69,14 +69,14 @@ function drawField(fv: FView, state: State): void {
   const { d } = fv;
   const vp = state.iface.viewPort;
 
-  const tileOverride: PointMap<boolean> = { tiles: {} };
-  putItem(tileOverride, state.game.lastSave, true);
-
-  Object.entries<Point | undefined, Item>(state.game.inventory).forEach(([k, v]) => {
-    if (v != undefined) {
-      putItem(tileOverride, v, true);
-    }
-  });
+  // emptyTileOverride "temporarily" displays things as empty, for
+  // which we want to retain some kind of convenient way of reinstating
+  // them. Therefore I am using this for savepoints (because I want old
+  // savepoints to spring back into existence when I change lastSave)
+  // but not any longer for other inventory stuff, which I just want to
+  // statefully update in the actual overlay layer.
+  const emptyTileOverride: PointMap<boolean> = { tiles: {} };
+  putItem(emptyTileOverride, state.game.lastSave, true);
 
   // draw the background
   for (let y = 0; y < NUM_TILES.y + 1; y++) {
@@ -84,7 +84,7 @@ function drawField(fv: FView, state: State): void {
       const p = { x, y };
       const realp = vplus(p, vint(vp));
       let tile = getTile(state.game.overlay, realp);
-      if (getItem(tileOverride, realp))
+      if (getItem(emptyTileOverride, realp))
         tile = 'empty';
       draw_sprite(fv, tile, vminus(p, vfpart(vp)));
     }

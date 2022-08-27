@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
 import { putTile } from './layer';
-import { GameState, IfaceState, init_state, State } from './state';
+import { GameState, IfaceState, init_state, Item, State } from './state';
 import { Facing, Point, Sprite } from './types';
 import { vm2, vplus, vscale, int, lerp } from './point';
 
@@ -17,7 +17,7 @@ export type Animation =
   | { t: 'ViewPortAnimation', dpos: Point }
   | { t: 'MeltAnimation', pos: Point }
   | { t: 'SavePointChangeAnimation', pos: Point }
-  | { t: 'ItemGetAnimation', pos: Point }
+  | { t: 'ItemGetAnimation', pos: Point, item: Item }
   | { t: 'ResetAnimation' }
   | { t: 'RecenterAnimation' };
 
@@ -129,7 +129,10 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       });
     case 'RecenterAnimation': return state;
     case 'ItemGetAnimation':
-      return produce(state, s => { s.inventory.teal_fruit = a.pos; });
+      return produce(state, s => {
+        s.inventory[a.item] = (s.inventory[a.item] ?? 0) + 1;
+        putTile(s.overlay, a.pos, 'empty');
+      });
   }
 }
 

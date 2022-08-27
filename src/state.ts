@@ -29,7 +29,7 @@ export type IfaceState = {
 
 export type Item = 'teal_fruit';
 
-export type Inventory = { [k in Item]: Point | undefined };
+export type Inventory = Partial<Record<Item, number>>;
 
 export type GameState = {
   player: Player,
@@ -59,7 +59,6 @@ export const init_state: State = {
     initOverlay: initOverlay,
     overlay: initOverlay,
     inventory: {
-      teal_fruit: undefined,
     },
     lastSave: { x: 0, y: 0 },
   },

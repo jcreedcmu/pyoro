@@ -51,3 +51,7 @@ export function rgbOfColor(color: string): Color {
     b: parseInt(color.slice(4, 6), 16)
   };
 }
+
+export function partialRecordEntries<K extends string, V>(pr: Partial<Record<K, V>>): [K, V][] {
+  return Object.entries(pr) as [K, V][];
+}

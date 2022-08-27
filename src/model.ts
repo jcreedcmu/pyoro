@@ -2,13 +2,17 @@ import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile } from './constants';
 import { getTile, Layer, putTile } from './layer';
-import { GameState, IfaceState, Player, State } from "./state";
+import { GameState, IfaceState, Item, Player, State } from "./state";
 import { Facing, MotiveMove, Move, Point, Sprite, Tile } from './types';
 import { max } from './util';
 import { vplus } from './point';
 
+function getItem(x: Tile): Item | undefined {
+  if (x == 'teal_fruit') return x;
+}
+
 function isItem(x: Tile): boolean {
-  return x == 'teal_fruit';
+  return getItem(x) !== undefined;
 }
 
 function openTile(x: Tile): boolean {
@@ -244,8 +248,9 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   if (tileAfter == 'save_point')
     anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
 
-  if (isItem(tileAfter))
-    anims.push({ t: 'ItemGetAnimation', pos: nextPos });
+  const item = getItem(tileAfter);
+  if (item !== undefined)
+    anims.push({ t: 'ItemGetAnimation', pos: nextPos, item });
 
   return anims;
 }
