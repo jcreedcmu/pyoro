@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import { FULL_IMPETUS } from '../src/constants';
 import { Layer } from '../src/layer';
-import { animateMoveGame, completeGameAnims, tileOfGameState } from '../src/model';
+import { animateMoveGame, renderGameAnims, tileOfGameState } from '../src/model';
 import { GameState, init_player } from '../src/state';
 import { Move } from '../src/types';
 
@@ -23,7 +23,7 @@ function basicState(layer: Layer): GameState {
 }
 
 function executeMove(s: GameState, move: Move): GameState {
-  return completeGameAnims(animateMoveGame(s, move), s);
+  return renderGameAnims(animateMoveGame(s, move), 'complete', s);
 }
 
 describe('State', () => {

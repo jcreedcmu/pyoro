@@ -284,32 +284,16 @@ function hasNextPos(anim: Animation): Point | undefined {
   }
 }
 
-export function completeGameAnims(animsGame: Animation[], s: GameState): GameState {
-  animsGame.forEach(anim => {
-    s = applyGameAnimation(anim, s, { t: 1, fr: duration(anim) });
+export function renderGameAnims(anims: Animation[], fr: number | 'complete', s: GameState): GameState {
+  anims.forEach(anim => {
+    s = applyGameAnimation(anim, s, fr);
   });
   return s;
 }
 
-export function completeIfaceAnims(animsIface: Animation[], s: State): State {
-  return produce(s, s => {
-    animsIface.forEach(anim => {
-      s.iface = applyIfaceAnimation(anim, s, { t: 1, fr: duration(anim) });
-    });
-    return s;
-  });
-}
-
-export function renderGameAnims(anims: Animation[], fr: number, s: GameState): GameState {
+export function renderIfaceAnims(anims: Animation[], fr: number | 'complete', s: State): IfaceState {
   anims.forEach(anim => {
-    s = applyGameAnimation(anim, s, { t: fr / duration(anim), fr });
-  });
-  return s;
-}
-
-export function renderIfaceAnims(anims: Animation[], fr: number, s: State): IfaceState {
-  anims.forEach(anim => {
-    s = produce(s, s => { s.iface = applyIfaceAnimation(anim, s, { t: fr / duration(anim), fr }) });
+    s = produce(s, s => { s.iface = applyIfaceAnimation(anim, s, fr) });
   });
   return s.iface;
 }

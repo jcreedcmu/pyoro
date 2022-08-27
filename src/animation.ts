@@ -51,9 +51,13 @@ const DEATH_HOLD = 0;
 const DEATH_FADE_IN = 2;
 const DEATH = DEATH_FADE_OUT + DEATH_HOLD + DEATH_FADE_IN;
 
-export function applyIfaceAnimation(a: Animation, state: State, time: Time): IfaceState {
+export function applyIfaceAnimation(a: Animation, state: State, frc: number | 'complete'): IfaceState {
+  const dur = duration(a);
+  const fr = frc == 'complete' ? dur : frc;
+  const t = fr / dur;
+
   const { game, iface } = state;
-  const { t, fr } = time;
+
   switch (a.t) {
     case 'PlayerAnimation': return iface;
     case 'ViewPortAnimation':
@@ -86,8 +90,11 @@ export function applyIfaceAnimation(a: Animation, state: State, time: Time): Ifa
   }
 }
 
-export function applyGameAnimation(a: Animation, state: GameState, time: Time): GameState {
-  const { t, fr } = time;
+export function applyGameAnimation(a: Animation, state: GameState, frc: number | 'complete'): GameState {
+  const dur = duration(a);
+  const fr = frc == 'complete' ? dur : frc;
+  const t = fr / dur;
+
   switch (a.t) {
     case 'PlayerAnimation':
       const { pos, animState, impetus, flipState, dead } = a;

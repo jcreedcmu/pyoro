@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { editTiles, logger } from "./constants";
-import { animator_for_move, completeGameAnims, completeIfaceAnims, handle_edit_click, handle_world_click, _putTile } from "./model";
+import { animator_for_move, handle_edit_click, handle_world_click, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
 import { State } from "./state";
 import { Move, Tile } from "./types";
@@ -87,12 +87,12 @@ export function reduce(s: State, a: Action): Result {
         throw new Error('Tried to advance frame without active animation');
       }
       if (ams.animator.dur == ams.frame + 1) {
-        const s2 = completeIfaceAnims(ams.animator.animsIface, s);
-        const s3 = produce(s2, s => {
-          s.game = completeGameAnims(ams.animator.animsGame, s.game);
+        const nextState = produce(s, s => {
+          s.iface = renderIfaceAnims(ams.animator.animsIface, 'complete', s);
+          s.game = renderGameAnims(ams.animator.animsGame, 'complete', s.game);
           s.anim = null;
         });
-        return { state: s3, effects: effects };
+        return { state: nextState, effects: effects };
       }
       else {
         effects.push({ t: 'scheduleFrame' });
