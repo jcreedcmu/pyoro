@@ -180,7 +180,7 @@ export function drawView(fv: FView, state: State): void {
   const ams = state.anim;
   if (ams !== null) {
     effectiveState = produce(state, s => {
-      s.iface = renderIfaceAnims(ams.animator.animsIface.map(anim => ({ anim, dur: duration(anim) })))(ams.frame, s);
+      s.iface = renderIfaceAnims(ams.animator.animsIface, ams.frame, s);
       s.game = renderGameAnims(ams.animator.animsGame, ams.frame, s.game);
     });
   }

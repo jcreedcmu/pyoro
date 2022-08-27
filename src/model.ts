@@ -307,13 +307,11 @@ export function renderGameAnims(anims: Animation[], fr: number, s: GameState): G
   return s;
 }
 
-export function renderIfaceAnims(animsIfaceDur: { anim: Animation, dur: number }[]): (fr: number, s: State) => IfaceState {
-  return (fr: number, s: State): IfaceState => {
-    animsIfaceDur.forEach(({ anim, dur }) => {
-      s = produce(s, s => { s.iface = applyIfaceAnimation(anim, s, { t: fr / dur, fr }) });
-    });
-    return s.iface;
-  }
+export function renderIfaceAnims(anims: Animation[], fr: number, s: State): IfaceState {
+  anims.forEach(anim => {
+    s = produce(s, s => { s.iface = applyIfaceAnimation(anim, s, { t: fr / duration(anim), fr }) });
+  });
+  return s.iface;
 }
 
 export function animator_for_move(s: State, move: Move): Animator {
