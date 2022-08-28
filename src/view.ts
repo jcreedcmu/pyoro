@@ -155,7 +155,7 @@ function drawInventory(fv: FView, state: State): void {
   const items: Item[] = ['teal_fruit', 'coin'];
   items.forEach((item, ix) => {
     const count = i[item];
-    if (count != undefined) {
+    if (count != undefined && count > 0) {
       drawInventoryItem(item, count, { x: ix, y: 0 });
     }
   });

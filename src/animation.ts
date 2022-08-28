@@ -19,7 +19,8 @@ export type Animation =
   | { t: 'SavePointChangeAnimation', pos: Point }
   | { t: 'ItemGetAnimation', pos: Point, item: Item }
   | { t: 'ResetAnimation' }
-  | { t: 'RecenterAnimation' };
+  | { t: 'RecenterAnimation' }
+  | { t: 'SpendCoinAnimation', pos: Point };
 
 
 // Here's the intended invariant. Suppose s is the current state. an
@@ -87,6 +88,7 @@ export function applyIfaceAnimation(a: Animation, state: State, frc: number | 'c
         s.viewPort = vm2(target, s.viewPort, (tgt, vp) => lerp(vp, tgt, t));
       });
     case 'ItemGetAnimation': return iface;
+    case 'SpendCoinAnimation': return iface;
   }
 }
 
@@ -133,6 +135,14 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         s.inventory[a.item] = (s.inventory[a.item] ?? 0) + 1;
         putTile(s.overlay, a.pos, 'empty');
       });
+    case 'SpendCoinAnimation':
+      return produce(state, s => {
+        putTile(s.overlay, a.pos, 'empty');
+        if (s.inventory.coin == undefined || s.inventory.coin == 0) {
+          throw new Error("Trying to spend coins we don't have");
+        }
+        s.inventory.coin--;
+      });
   }
 }
 
@@ -147,5 +157,6 @@ export function duration(a: Animation): number {
     case 'SavePointChangeAnimation': return 2;
     case 'RecenterAnimation': return 4;
     case 'ItemGetAnimation': return 2;
+    case 'SpendCoinAnimation': return 1;
   }
 }

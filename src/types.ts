@@ -24,6 +24,7 @@ export type Tile =
   | 'spike_down'
   | 'save_point'
   | 'grip_wall'
+  | 'coin_wall'
   | Item
   ;
 export type MotiveMove =

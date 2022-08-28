@@ -168,9 +168,20 @@ export function _putTile(s: State, p: Point, t: Tile): State {
   });
 }
 
-function forceBlock(pos: Point, tile: Tile, anims: Animation[]): void {
-  if (tile == 'fragile_box')
-    anims.push({ t: 'MeltAnimation', pos });
+function forceBlock(s: GameState, pos: Point, tile: Tile): Animation[] {
+  switch (tile) {
+    case 'fragile_box':
+      return [{ t: 'MeltAnimation', pos }];
+    case 'coin_wall':
+      if ((s.inventory.coin ?? 0) >= 1) {
+        return [{ t: 'SpendCoinAnimation', pos }];
+      }
+      else {
+        return [];
+      }
+    default:
+      return [];
+  }
 }
 
 // The animations we return here are concurrent
@@ -203,7 +214,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   forcedBlocks.forEach(fb => {
     const pos = vplus(player.pos, fb);
-    forceBlock(pos, tileOfGameState(s, pos), anims);
+    anims.push(...forceBlock(s, pos, tileOfGameState(s, pos)));
   });
 
   let impetus = player.impetus;
