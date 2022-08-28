@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { editTiles, logger } from "./constants";
-import { animator_for_move, handle_edit_click, handle_world_click, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
+import { animator_for_move, handle_edit_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
 import { State } from "./state";
 import { Move, Tile } from "./types";
@@ -18,7 +18,9 @@ export type Action =
   | { t: 'commandKey', cmd: Command }
   | { t: 'setState', s: State }
   | { t: 'putTile', p: Point, tile: Tile }
-  | { t: 'click', point: Point }
+  | { t: 'mouseDown', point: Point }
+  | { t: 'mouseUp' }
+  | { t: 'mouseMove', point: Point }
   | { t: 'resize', vd: ViewData }
   | { t: 'startAnim', m: Move }
   | { t: 'nextFrame' };
@@ -116,15 +118,27 @@ export function reduce(s: State, a: Action): Result {
         return pure(s);
       }
     }
-    case 'click': {
+    case 'mouseDown': {
       const vd = s.iface.vd;
       if (vd == null)
         return pure(s);
       const wpoint = wpoint_of_vd(vd, a.point, s);
-      logger('mouse', wpoint);
+      logger('mouse', 'mouseDown wpoint=', wpoint);
       switch (wpoint.t) {
-        case 'World': return pure(handle_world_click(s, wpoint.p));
-        case 'EditTiles': return pure(handle_edit_click(s, wpoint.ix));
+        case 'World': return pure(handle_world_mousedown(s, wpoint.p));
+        case 'EditTiles': return pure(handle_edit_mousedown(s, wpoint.ix));
+      }
+    }
+    case 'mouseUp': return pure(produce(s, s => { s.iface.mouse = { t: 'up' } }));
+    case 'mouseMove': {
+      const vd = s.iface.vd;
+      if (vd == null)
+        return pure(s);
+      const wpoint = wpoint_of_vd(vd, a.point, s);
+      logger('mouse', 'mouseMove wpoint=', wpoint);
+      switch (wpoint.t) {
+        case 'World': return pure(handle_world_drag(s, wpoint.p));
+        default: return pure(s); // dragging should have no effect otherwise
       }
     }
   }

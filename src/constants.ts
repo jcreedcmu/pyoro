@@ -32,7 +32,7 @@ export const sprites: { [k in Sprite]: Point } = {
 };
 
 export const DEBUG = {
-  chatty: true,
+  chatty: false,
   globals: false,
   mouse: false,
   keys: false,

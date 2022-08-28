@@ -327,13 +327,25 @@ export function animator_for_move(s: State, move: Move): Animator {
   }
 }
 
-export function handle_world_click(s: State, p: Point): State {
+export function handle_world_mousedown(s: State, p: Point): State {
   const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
   const tileToPut = _getTile(s, p) != newTile ? newTile : 'empty';
-  return produce(_putTile(s, p, tileToPut), s => { s.iface.dragTile = tileToPut });
+  return produce(_putTile(s, p, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
 }
 
-export function handle_edit_click(s: State, ix: number): State {
+export function handle_world_drag(s: State, p: Point): State {
+  if (s.iface.mouse.t == 'tileDrag') {
+    return _putTile(s, p, s.iface.mouse.tile);
+  }
+  else {
+    console.error(`inconsistent mouse state: ` +
+      `processing drag event but mouse stat isn't "drag". ` +
+      `Not sure how this happened?`);
+    return s;
+  }
+}
+
+export function handle_edit_mousedown(s: State, ix: number): State {
   return produce(s, s => {
     if (ix < editTiles.length && ix >= 0)
       s.iface.editTileIx = ix;

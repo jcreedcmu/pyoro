@@ -18,12 +18,16 @@ export type AnimState = {
   frame: number,
 }
 
+export type MouseState =
+  | { t: 'up' }
+  | { t: 'tileDrag', tile: Tile }
+
 export type IfaceState = {
   editTileIx: number,
   editTileRotation: number,
   viewPort: Point,
   blackout: number,
-  dragTile: Tile | undefined,
+  mouse: MouseState,
   vd: ViewData | null,
 };
 
@@ -65,7 +69,7 @@ export const init_state: State = {
     blackout: 0,
     editTileIx: 0,
     editTileRotation: 0,
-    dragTile: undefined,
+    mouse: { t: 'up' },
     vd: null,
   },
   anim: null,

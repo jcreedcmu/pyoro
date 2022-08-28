@@ -32,13 +32,6 @@ async function run(): Promise<void> {
 
 // XXX doesn't get called right now
 /*
-  drag_world(dispatch: Dispatch, tileToPut: Tile): void {
-    const c = this.c;
-
-    const mouseUp = (e: MouseEvent) => {
-      c.removeEventListener('mousemove', mouseMove);
-      document.removeEventListener('mouseup', mouseUp);
-    }
     const mouseMove = (e: MouseEvent) => {
       const fv = this.getFview();
       if (fv == null)

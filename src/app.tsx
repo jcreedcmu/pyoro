@@ -8,7 +8,7 @@ import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
-
+import { DragHandler } from './drag-handler';
 type CanvasProps = {
   main: State,
   spriteImg: HTMLImageElement | null
@@ -54,14 +54,14 @@ export function App(props: {}): JSX.Element {
   }
 
   function handleMouseDown(e: MouseEvent) {
-    dispatch({ t: 'click', point: { x: e.clientX, y: e.clientY } });
+    dispatch({ t: 'mouseDown', point: { x: e.clientX, y: e.clientY } });
   }
 
   function handleResize(e: UIEvent) {
     dispatch({ t: 'resize', vd: resizeView(mc.current!.c) });
   }
 
-  // State 
+  // State
   const [spriteImg, setSpriteImg] = React.useState(null as (null | HTMLImageElement));
   const [state, dispatch] = useEffectfulReducer(init_state, reduce, doEffect);
   const [cref, mc] = useCanvas(
@@ -92,5 +92,9 @@ export function App(props: {}): JSX.Element {
     }
   }, []);
 
-  return <div><canvas ref={cref} /></div>;
+  const dragHandler = state.iface.mouse.t == 'tileDrag'
+    ? <DragHandler dispatch={dispatch} />
+    : undefined;
+
+  return <div><canvas ref={cref} />{dragHandler}</div>;
 }
