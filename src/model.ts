@@ -351,3 +351,7 @@ export function handle_edit_mousedown(s: State, ix: number): State {
       s.iface.editTileIx = ix;
   });
 }
+
+export function show_empty_tile_override(s: State): boolean {
+  return !s.iface.keysDown['KeyN']; // XXX Debugging
+}

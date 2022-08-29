@@ -4,7 +4,7 @@ import * as ReactDOM from 'react-dom/client';
 import { App } from './app';
 import { DEBUG, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE } from './constants';
 import { getItem, getTile, PointMap, putItem } from './layer';
-import { renderGameAnims, renderIfaceAnims } from './model';
+import { renderGameAnims, renderIfaceAnims, show_empty_tile_override } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale } from './point';
 import { State } from './state';
 import { Item, Point, Sprite } from './types';
@@ -82,7 +82,7 @@ function drawField(fv: FView, state: State): void {
       const p = { x, y };
       const realp = vplus(p, vint(vp));
       let tile = getTile(state.game.overlay, realp);
-      if (getItem(emptyTileOverride, realp))
+      if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state))
         tile = 'empty';
       draw_sprite(fv, tile, vminus(p, vfpart(vp)));
     }
