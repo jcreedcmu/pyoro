@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { commandBindings, moveBindings } from './bindings';
 import { editTiles, logger } from "./constants";
-import { animator_for_move, handle_edit_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
+import { animator_for_move, getOverlayForSave, handle_edit_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
 import { State } from "./state";
 import { Move, Tile } from "./types";
@@ -53,7 +53,7 @@ export function reduceCommand(s: State, cmd: Command): State {
       // XXX this belongs in an Effect, I reckon.
       const req = new Request('/save', {
         method: 'POST',
-        body: JSON.stringify(s.game.initOverlay),
+        body: JSON.stringify(getOverlayForSave(s)),
         headers: {
           'Content-Type': 'application/json',
         }

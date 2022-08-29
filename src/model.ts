@@ -373,3 +373,7 @@ export function handle_edit_mousedown(s: State, ix: number): State {
 export function show_empty_tile_override(s: State): boolean {
   return !s.iface.keysDown['KeyN']; // XXX Debugging
 }
+
+export function getOverlayForSave(s: State): Layer {
+  return s.game.initOverlay;
+}
