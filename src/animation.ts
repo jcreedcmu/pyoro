@@ -117,7 +117,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ResetAnimation':
       return produce(state, s => {
         if (fr >= DEATH_FADE_OUT) {
-          s.overlay = s.initOverlay;
+          s.overlay = { tiles: {} };
           s.inventory = {};
           const last_save = s.lastSave;
           s.player = produce(init_state.game.player, p => {

@@ -53,7 +53,7 @@ export function reduceCommand(s: State, cmd: Command): State {
       // XXX this belongs in an Effect, I reckon.
       const req = new Request('/save', {
         method: 'POST',
-        body: JSON.stringify(s.game.overlay),
+        body: JSON.stringify(s.game.initOverlay),
         headers: {
           'Content-Type': 'application/json',
         }

@@ -180,6 +180,12 @@ export function _putTile(s: State, p: Point, t: Tile): State {
   });
 }
 
+export function _putTileInInitOverlay(s: State, p: Point, t: Tile): State {
+  return produce(s, s => {
+    putTile(s.game.initOverlay, p, t);
+  });
+}
+
 function forceBlock(s: GameState, pos: Point, tile: Tile): Animation[] {
   switch (tile) {
     case 'fragile_box':
@@ -342,12 +348,12 @@ export function animator_for_move(s: State, move: Move): Animator {
 export function handle_world_mousedown(s: State, p: Point): State {
   const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
   const tileToPut = tileOfState(s, p) != newTile ? newTile : 'empty';
-  return produce(_putTile(s, p, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
+  return produce(_putTileInInitOverlay(s, p, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
 }
 
 export function handle_world_drag(s: State, p: Point): State {
   if (s.iface.mouse.t == 'tileDrag') {
-    return _putTile(s, p, s.iface.mouse.tile);
+    return _putTileInInitOverlay(s, p, s.iface.mouse.tile);
   }
   else {
     console.error(`inconsistent mouse state: ` +
