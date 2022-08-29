@@ -28,19 +28,3 @@ async function onload() {
 async function run(): Promise<void> {
   initView();
 }
-
-
-// XXX doesn't get called right now
-/*
-    const mouseMove = (e: MouseEvent) => {
-      const fv = this.getFview();
-      if (fv == null)
-        return;
-      const wpoint = wpoint_of_canvas(fv, { x: e.clientX, y: e.clientY }, this.state);
-      if (wpoint.t == 'World')
-        dispatch({ t: 'putTile', p: wpoint.p, tile: tileToPut });
-      c.addEventListener('mousemove', mouseMove);
-      document.addEventListener('mouseup', mouseUp);
-    }
-  }
-*/
