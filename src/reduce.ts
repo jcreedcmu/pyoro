@@ -15,6 +15,7 @@ export type Command =
   | 'debug';
 
 export type Action =
+  | { t: 'keyUp', k: string }
   | { t: 'commandKey', cmd: Command }
   | { t: 'setState', s: State }
   | { t: 'putTile', p: Point, tile: Tile }
@@ -141,5 +142,7 @@ export function reduce(s: State, a: Action): Result {
         default: return pure(s); // dragging should have no effect otherwise
       }
     }
+    case 'keyUp':
+      return pure(produce(s, s => { delete s.iface.keysDown[a.k]; }));
   }
 }

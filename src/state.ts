@@ -23,6 +23,7 @@ export type MouseState =
   | { t: 'tileDrag', tile: Tile }
 
 export type IfaceState = {
+  keysDown: Record<string, boolean>,
   editTileIx: number,
   editTileRotation: number,
   viewPort: Point,
@@ -65,6 +66,7 @@ export const init_state: State = {
     lastSave: { x: 0, y: 0 },
   },
   iface: {
+    keysDown: {},
     viewPort: { x: -13, y: -9 },
     blackout: 0,
     editTileIx: 0,

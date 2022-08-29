@@ -53,6 +53,11 @@ export function App(props: {}): JSX.Element {
     }
   }
 
+  function handleKeyUp(e: KeyboardEvent) {
+    const k = keyFromCode(e);
+    dispatch({ t: 'keyUp', k });
+  }
+
   function handleMouseDown(e: MouseEvent) {
     dispatch({ t: 'mouseDown', point: { x: e.clientX, y: e.clientY } });
   }
@@ -82,11 +87,13 @@ export function App(props: {}): JSX.Element {
   React.useEffect(() => {
     logger('chatty', 'installing global event handlers');
     document.addEventListener('keydown', handleKey);
+    document.addEventListener('keyup', handleKeyUp);
     document.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('resize', handleResize);
     return () => {
       logger('chatty', 'uninstalling global event handlers');
       document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('keyup', handleKeyUp);
       document.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('resize', handleResize);
     }
