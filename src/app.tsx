@@ -22,6 +22,10 @@ function doEffect(dispatch: Dispatch, e: Effect) {
   }
 }
 
+function passthrough(k: string): boolean {
+  return k == 'C-r';
+}
+
 export function App(props: {}): JSX.Element {
   function render(ci: CanvasInfo, props: CanvasProps) {
     const { d, size: { x, y } } = ci;
@@ -33,29 +37,20 @@ export function App(props: {}): JSX.Element {
     }
   }
 
-  function handleKey(e: KeyboardEvent) {
-    logger('keys', 'keycode', e.keyCode);
-    logger('keys', 'code', e.code);
-    const k = keyFromCode(e);
-    const cmd = commandBindings[k];
-    if (cmd !== undefined) {
+  function handleKeyDown(e: KeyboardEvent) {
+    const name = keyFromCode(e);
+    logger('keys', 'keydown: [keycode, key, code, name]', e.keyCode, e.key, e.code, name);
+    if (!passthrough(name)) {
       e.stopPropagation();
       e.preventDefault();
-      dispatch({ t: 'commandKey', cmd });
     }
-    else {
-      const move = moveBindings[k];
-      if (move) {
-        e.stopPropagation();
-        e.preventDefault();
-        dispatch({ t: 'startAnim', m: move });
-      }
-    }
+    dispatch({ t: 'keyDown', key: e.key, code: e.code, name: name });
   }
 
   function handleKeyUp(e: KeyboardEvent) {
     const k = keyFromCode(e);
-    dispatch({ t: 'keyUp', k });
+    logger('keys', 'keyup: [keycode, key, code, name]', e.keyCode, e.key, e.code, k);
+    dispatch({ t: 'keyUp', key: e.key, code: e.code, name: k });
   }
 
   function handleMouseDown(e: MouseEvent) {
@@ -86,13 +81,13 @@ export function App(props: {}): JSX.Element {
   // Event handlers
   React.useEffect(() => {
     logger('chatty', 'installing global event handlers');
-    document.addEventListener('keydown', handleKey);
+    document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
     document.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('resize', handleResize);
     return () => {
       logger('chatty', 'uninstalling global event handlers');
-      document.removeEventListener('keydown', handleKey);
+      document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
       document.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('resize', handleResize);

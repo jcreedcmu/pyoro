@@ -35,7 +35,7 @@ export const DEBUG = {
   chatty: false,
   globals: false,
   mouse: false,
-  keys: false,
+  keys: true,
   datgui: false,
   devicePixelRatio: false,
   networkRequest: true,

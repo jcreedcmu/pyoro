@@ -1,4 +1,5 @@
 import { produce } from 'immer';
+import { commandBindings, moveBindings } from './bindings';
 import { editTiles, logger } from "./constants";
 import { animator_for_move, handle_edit_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
@@ -15,15 +16,14 @@ export type Command =
   | 'debug';
 
 export type Action =
-  | { t: 'keyUp', k: string }
-  | { t: 'commandKey', cmd: Command }
+  | { t: 'keyUp', key: string, code: string, name: string }
+  | { t: 'keyDown', key: string, code: string, name: string }
   | { t: 'setState', s: State }
   | { t: 'putTile', p: Point, tile: Tile }
   | { t: 'mouseDown', point: Point }
   | { t: 'mouseUp' }
   | { t: 'mouseMove', point: Point }
   | { t: 'resize', vd: ViewData }
-  | { t: 'startAnim', m: Move }
   | { t: 'nextFrame' };
 
 export type Dispatch = (a: Action) => void;
@@ -75,10 +75,42 @@ export function reduceCommand(s: State, cmd: Command): State {
   }
 }
 
+function reduceAnim(s: State, move: Move): Result {
+  // XXX should instead buffer moves?
+  if (s.anim == null) {
+    return {
+      state: produce(s, s => {
+        s.anim = {
+          frame: 1,
+          animator: animator_for_move(s, move)
+        }
+      }),
+      effects: [{ t: 'scheduleFrame' }]
+    };
+  }
+  else {
+    return pure(s);
+  }
+}
+
 export function reduce(s: State, a: Action): Result {
   switch (a.t) {
-    case 'commandKey': return pure(reduceCommand(s, a.cmd));
-
+    case 'keyDown': {
+      const name = a.name;
+      const cmd = commandBindings[name];
+      const move = moveBindings[name];
+      const ss = produce(s, s => { s.iface.keysDown[a.code] = true; });
+      if (cmd) {
+        return pure(reduceCommand(ss, cmd));
+      }
+      else if (move) {
+        return reduceAnim(ss, move);
+      }
+      else {
+        logger('chatty', `unbound key ${name} pressed`);
+        return pure(ss);
+      }
+    }
     case 'setState': return pure(a.s);
     case 'putTile': return pure(_putTile(s, a.p, a.tile));
     case 'resize':
@@ -100,23 +132,6 @@ export function reduce(s: State, a: Action): Result {
       else {
         effects.push({ t: 'scheduleFrame' });
         return { state: produce(s, s => { s.anim!.frame++ }), effects: effects };
-      }
-    }
-    case 'startAnim': {
-      // XXX should instead buffer moves?
-      if (s.anim == null) {
-        return {
-          state: produce(s, s => {
-            s.anim = {
-              frame: 1,
-              animator: animator_for_move(s, a.m)
-            }
-          }),
-          effects: [{ t: 'scheduleFrame' }]
-        };
-      }
-      else {
-        return pure(s);
       }
     }
     case 'mouseDown': {
@@ -143,6 +158,6 @@ export function reduce(s: State, a: Action): Result {
       }
     }
     case 'keyUp':
-      return pure(produce(s, s => { delete s.iface.keysDown[a.k]; }));
+      return pure(produce(s, s => { delete s.iface.keysDown[a.code]; }));
   }
 }
