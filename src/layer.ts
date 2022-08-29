@@ -12,8 +12,8 @@ export function putItem<T>(l: PointMap<T>, p: Point, v: T): void {
   l.tiles[p.x + ',' + p.y] = v;
 }
 
-export function getTile(l: Layer, p: Point): Tile {
-  return getItem(l, p) || 'empty';
+export function getTile(l: Layer, p: Point): Tile | undefined {
+  return getItem(l, p);
 }
 
 export function putTile(l: Layer, p: Point, t: Tile): void {
@@ -26,10 +26,10 @@ export type LayerStack =
 
 export function tileOfStack(ls: LayerStack, p: Point): Tile {
   switch (ls.t) {
-    case 'base': return getTile(ls.layer, p);
+    case 'base': return getTile(ls.layer, p) || 'empty';
     case 'overlay': {
       const top = getTile(ls.top, p);
-      return top == 'empty' ? tileOfStack(ls.rest, p) : top;
+      return top == undefined ? tileOfStack(ls.rest, p) : top;
     }
   }
 }

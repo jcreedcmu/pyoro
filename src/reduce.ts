@@ -50,6 +50,7 @@ export function reduceCommand(s: State, cmd: Command): State {
       });
 
     case 'saveOverlay': {
+      // XXX this belongs in an Effect, I reckon.
       const req = new Request('/save', {
         method: 'POST',
         body: JSON.stringify(s.game.overlay),
@@ -60,9 +61,7 @@ export function reduceCommand(s: State, cmd: Command): State {
       fetch(req).then(r => r.json())
         .then(x => logger('networkRequest', x))
         .catch(console.error);
-      return produce(s, s => {
-        s.game.initOverlay.tiles = s.game.overlay.tiles;
-      });
+      return s;
     }
 
     case 'rotateEditTile':

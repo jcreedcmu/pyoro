@@ -127,7 +127,11 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
 }
 
 function layerStackOfState(s: GameState): LayerStack {
-  return { t: 'base', layer: s.overlay };
+  return {
+    t: 'overlay',
+    top: s.overlay,
+    rest: { t: 'base', layer: s.initOverlay }
+  };
 }
 
 function boardOfState(s: GameState): Board {
@@ -162,7 +166,7 @@ function get_flip_state(move: MotiveMove): Facing | null {
   }
 }
 
-export function _getTile(s: State, p: Point): Tile {
+export function tileOfState(s: State, p: Point): Tile {
   return tileOfGameState(s.game, p);
 }
 
@@ -337,7 +341,7 @@ export function animator_for_move(s: State, move: Move): Animator {
 
 export function handle_world_mousedown(s: State, p: Point): State {
   const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
-  const tileToPut = _getTile(s, p) != newTile ? newTile : 'empty';
+  const tileToPut = tileOfState(s, p) != newTile ? newTile : 'empty';
   return produce(_putTile(s, p, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
 }
 

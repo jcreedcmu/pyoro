@@ -56,11 +56,13 @@ export const init_player: Player = {
   impetus: FULL_IMPETUS,
 };
 
+const emptyOverlay: Layer = { tiles: {} };
+
 export const init_state: State = {
   game: {
     player: init_player,
     initOverlay: initOverlay,
-    overlay: initOverlay,
+    overlay: emptyOverlay,
     inventory: {
     },
     lastSave: { x: 0, y: 0 },
