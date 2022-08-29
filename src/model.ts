@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile } from './constants';
-import { getTile, Layer, putTile } from './layer';
+import { getTile, Layer, LayerStack, putTile, tileOfStack } from './layer';
 import { vplus } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
 import { Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
@@ -45,16 +45,16 @@ type Motion = {
   posture?: Posture, // optionally set posture to some value
 };
 
-type Board = { tiles: Layer, player: Player };
+type Board = { tiles: LayerStack, player: Player };
 
 function ropen(b: Board, x: number, y: number): boolean {
   const { tiles, player } = b;
-  return openTile(getTile(tiles, vplus(player.pos, { x, y })));
+  return openTile(tileOfStack(tiles, vplus(player.pos, { x, y })));
 }
 
 function rgrabbable(b: Board, x: number, y: number): boolean {
   const { tiles, player } = b;
-  return isGrabbable(getTile(tiles, vplus(player.pos, { x, y })));
+  return isGrabbable(tileOfStack(tiles, vplus(player.pos, { x, y })));
 }
 
 function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
@@ -126,6 +126,14 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
   }
 }
 
+function layerStackOfState(s: GameState): LayerStack {
+  return { t: 'base', layer: s.overlay };
+}
+
+function boardOfState(s: GameState): Board {
+  return { player: s.player, tiles: layerStackOfState(s) }
+}
+
 // This goes from a Move to a Motion
 function get_motion(b: Board, move: MotiveMove): Motion {
   const { tiles, player } = b;
@@ -159,7 +167,7 @@ export function _getTile(s: State, p: Point): Tile {
 }
 
 export function tileOfGameState(s: GameState, p: Point): Tile {
-  return getTile(s.overlay, p);
+  return tileOfStack(layerStackOfState(s), p);
 }
 
 export function _putTile(s: State, p: Point, t: Tile): State {
@@ -207,7 +215,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
-  const result = get_motion({ tiles: s.overlay, player }, move);
+  const result = get_motion(boardOfState(s), move);
   const flipState = get_flip_state(move) || player.flipState;
 
   if (result.forced != null) forcedBlocks.push(result.forced);
