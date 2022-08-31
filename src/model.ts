@@ -180,9 +180,15 @@ export function _putTile(s: State, p: Point, t: Tile): State {
   });
 }
 
+export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: Tile): GameState {
+  return produce(s, s => {
+    putTile(s.initOverlay, p, t);
+  });
+}
+
 export function _putTileInInitOverlay(s: State, p: Point, t: Tile): State {
   return produce(s, s => {
-    putTile(s.game.initOverlay, p, t);
+    s.game = _putTileInGameStateInitOverlay(s.game, p, t);
   });
 }
 
@@ -374,6 +380,11 @@ export function show_empty_tile_override(s: State): boolean {
   return !s.iface.keysDown['KeyN']; // XXX Debugging
 }
 
-export function getOverlayForSave(s: State): Layer {
-  return s.game.initOverlay;
+export function getOverlayForSave(s: GameState): Layer {
+  const layer: Layer = { tiles: {} };
+  for (const [k, v] of Object.entries(s.initOverlay.tiles)) {
+    if (v !== 'empty')
+      layer.tiles[k] = v;
+  }
+  return layer;
 }

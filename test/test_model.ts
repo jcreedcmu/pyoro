@@ -1,8 +1,9 @@
 import * as assert from 'assert';
+import produce from 'immer';
 import { FULL_IMPETUS } from '../src/constants';
 import { Layer } from '../src/layer';
-import { animateMoveGame, renderGameAnims, tileOfGameState } from '../src/model';
-import { GameState, init_player } from '../src/state';
+import { animateMoveGame, getOverlayForSave, renderGameAnims, tileOfGameState, _putTile, _putTileInGameStateInitOverlay, _putTileInInitOverlay } from '../src/model';
+import { GameState, init_player, init_state } from '../src/state';
 import { Move } from '../src/types';
 
 function basicLayer(): Layer {
@@ -142,4 +143,15 @@ describe('State', () => {
     assert.equal(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 }), 'fragile_box');
   });
 
+});
+
+describe('getOverlayForSave', () => {
+  it('should filter out empties', () => {
+    let s = basicState(basicLayer());
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, 'empty'); // delete the existing box
+    assert.deepEqual(getOverlayForSave(s).tiles, {});
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, 'box'); // add some box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, 'empty'); // add another spurious empty
+    assert.deepEqual(getOverlayForSave(s).tiles, { '0,2': 'box' });
+  });
 });
