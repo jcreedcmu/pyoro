@@ -14,7 +14,7 @@ type CanvasProps = {
   spriteImg: HTMLImageElement | null
 };
 
-function doEffect(dispatch: Dispatch, e: Effect) {
+function doEffect(state:State, dispatch: Dispatch, e: Effect) {
   switch (e.t) {
     case 'scheduleFrame':
       setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
