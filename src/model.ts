@@ -1,8 +1,8 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
-import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, tools } from './constants';
+import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
 import { getTile, Layer, LayerStack, putTile, tileOfStack } from './layer';
-import { vplus, vsub } from './point';
+import { vmn, vplus, vsub } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
 import { Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
 import { max } from './util';
@@ -359,22 +359,26 @@ export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Po
       const tileToPut = tileOfState(s, worldPoint) != newTile ? newTile : 'empty';
       return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
     case 'hand_tool':
-      return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint } });
+      return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint, initViewPort: s.iface.viewPort } });
   }
 }
 
 export function handle_world_drag(s: State, rawPoint: Point, widgetPoint: WidgetPoint): State {
-  switch (s.iface.mouse.t) {
+  const mouse = s.iface.mouse;
+  switch (mouse.t) {
     case 'tileDrag':
       if (widgetPoint.t == 'World') {
-        return _putTileInInitOverlay(s, widgetPoint.p, s.iface.mouse.tile);
+        return _putTileInInitOverlay(s, widgetPoint.p, mouse.tile);
       }
       else {
         return s;
       }
     case 'panDrag':
-      console.log(vsub(rawPoint, s.iface.mouse.init));
-      return s;
+      return produce(s, s => {
+        s.iface.viewPort = vmn(
+          [mouse.init, mouse.initViewPort, rawPoint],
+          ([i, ivp, rp]) => ivp + Math.round((i - rp) / (TILE_SIZE * SCALE)))
+      });
     default:
       console.error(`inconsistent mouse state: ` +
         `processing drag event but mouse stat isn't "drag". ` +

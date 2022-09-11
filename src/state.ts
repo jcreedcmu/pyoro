@@ -21,7 +21,7 @@ export type AnimState = {
 export type MouseState =
   | { t: 'up' }
   | { t: 'tileDrag', tile: Tile }
-  | { t: 'panDrag', init: Point }
+  | { t: 'panDrag', init: Point, initViewPort: Point }
 
 export type IfaceState = {
   keysDown: Record<string, boolean>,
