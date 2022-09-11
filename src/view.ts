@@ -95,6 +95,14 @@ function drawField(fv: FView, state: State): void {
     state.game.player.flipState == 'left');
 }
 
+function drawSelection(d: CanvasRenderingContext2D, p: Point): void {
+  d.fillStyle = rgba(0, 192, 192, 0.7);
+  d.beginPath();
+  d.rect(p.x * TILE_SIZE * SCALE, p.y * TILE_SIZE * SCALE, (2 + TILE_SIZE) * SCALE, (2 + TILE_SIZE) * SCALE);
+  d.rect(p.x * TILE_SIZE * SCALE + SCALE, p.y * TILE_SIZE * SCALE + SCALE, (TILE_SIZE) * SCALE, (TILE_SIZE) * SCALE);
+  d.fill('evenodd');
+}
+
 function drawEditorStuff(fv: FView, state: State): void {
   const { d, vd: { origin } } = fv;
 
@@ -108,13 +116,8 @@ function drawEditorStuff(fv: FView, state: State): void {
     raw_draw_sprite(fv, t, { x: SCALE + ix * TILE_SIZE * SCALE, y: SCALE });
   });
 
-  // selected tile in editor
-  const sel = state.iface.editTileIx;
-  d.fillStyle = rgba(0, 192, 192, 0.7);
-  d.beginPath();
-  d.rect(sel * TILE_SIZE * SCALE, 0, (2 + TILE_SIZE) * SCALE, (2 + TILE_SIZE) * SCALE);
-  d.rect(sel * TILE_SIZE * SCALE + SCALE, SCALE, (TILE_SIZE) * SCALE, (TILE_SIZE) * SCALE);
-  d.fill('evenodd');
+  // selected tile & selected tool
+  drawSelection(d, { x: state.iface.editTileIx, y: 0 });
 
   if (state.iface.blackout) {
     const c = u.rgbOfColor(guiData.stage_color);
