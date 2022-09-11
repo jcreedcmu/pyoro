@@ -369,11 +369,16 @@ export function handle_world_drag(s: State, p: Point): State {
   }
 }
 
-export function handle_edit_mousedown(s: State, ix: number): State {
-  return produce(s, s => {
-    if (ix < editTiles.length && ix >= 0)
-      s.iface.editTileIx = ix;
-  });
+export function handle_toolbar_mousedown(s: State, p: Point): State {
+  if (p.y == 0) {
+    return produce(s, s => {
+      if (p.x < editTiles.length && p.x >= 0)
+        s.iface.editTileIx = p.x;
+    });
+  }
+  else {
+    return s;
+  }
 }
 
 export function show_empty_tile_override(s: State): boolean {

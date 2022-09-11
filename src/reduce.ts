@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { commandBindings, moveBindings } from './bindings';
 import { editTiles, logger } from "./constants";
-import { animator_for_move, getOverlayForSave, handle_edit_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
+import { animator_for_move, getOverlayForSave, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
 import { State } from "./state";
 import { Move, Tile } from "./types";
@@ -141,7 +141,7 @@ export function reduce(s: State, a: Action): Result {
       logger('mouse', 'mouseDown wpoint=', wpoint);
       switch (wpoint.t) {
         case 'World': return pure(handle_world_mousedown(s, wpoint.p));
-        case 'EditTiles': return pure(handle_edit_mousedown(s, wpoint.ix));
+        case 'Toolbar': return pure(handle_toolbar_mousedown(s, wpoint.tilePoint));
       }
     }
     case 'mouseUp': return pure(produce(s, s => { s.iface.mouse = { t: 'up' } }));

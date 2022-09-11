@@ -12,7 +12,7 @@ import * as u from './util';
 import { rgba } from './util';
 
 export type WidgetPoint =
-  | { t: 'EditTiles', ix: number }
+  | { t: 'Toolbar', tilePoint: Point }
   | { t: 'World', p: Point };
 
 // Functional View Data
@@ -241,9 +241,10 @@ export function wpoint_of_vd(vd: ViewData, p: Point, s: State): WidgetPoint {
       p: vmn([s.iface.viewPort, origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
     };
   else {
-    return {
-      t: 'EditTiles',
-      ix: vmn([{ x: SCALE, y: 0 }, p], ([o, p]) => int((p - o) / (TILE_SIZE * SCALE))).x,
+    const rv: WidgetPoint = {
+      t: 'Toolbar',
+      tilePoint: vm(p, p => int((p / SCALE - 1) / TILE_SIZE)),
     }
+    return rv;
   }
 }
