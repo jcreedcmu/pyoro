@@ -98,8 +98,8 @@ function drawField(fv: FView, state: State): void {
 function drawSelection(d: CanvasRenderingContext2D, p: Point): void {
   d.fillStyle = rgba(0, 192, 192, 0.7);
   d.beginPath();
-  d.rect(p.x * TILE_SIZE * SCALE, p.y * TILE_SIZE * SCALE, (2 + TILE_SIZE) * SCALE, (2 + TILE_SIZE) * SCALE);
-  d.rect(p.x * TILE_SIZE * SCALE + SCALE, p.y * TILE_SIZE * SCALE + SCALE, (TILE_SIZE) * SCALE, (TILE_SIZE) * SCALE);
+  d.rect(p.x * TILE_SIZE * SCALE, p.y * TILE_SIZE * SCALE, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
+  d.rect((p.x * TILE_SIZE + 1) * SCALE, (p.y * TILE_SIZE + 1) * SCALE, (TILE_SIZE - 2) * SCALE, (TILE_SIZE - 2) * SCALE);
   d.fill('evenodd');
 }
 
@@ -108,12 +108,12 @@ function drawEditorStuff(fv: FView, state: State): void {
 
   // background of tile list
   d.fillStyle = guiData.background_color;
-  d.fillRect(SCALE, SCALE, editTiles.length * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
+  d.fillRect(0, 0, editTiles.length * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
 
   // tiles for editor
   editTiles.forEach((et, ix) => {
     const t = rotateTile(et, state.iface.editTileRotation);
-    raw_draw_sprite(fv, t, { x: SCALE + ix * TILE_SIZE * SCALE, y: SCALE });
+    raw_draw_sprite(fv, t, { x: ix * TILE_SIZE * SCALE, y: 0 });
   });
 
   // selected tile & selected tool
@@ -246,7 +246,7 @@ export function wpoint_of_vd(vd: ViewData, p: Point, s: State): WidgetPoint {
   else {
     const rv: WidgetPoint = {
       t: 'Toolbar',
-      tilePoint: vm(p, p => int((p / SCALE - 1) / TILE_SIZE)),
+      tilePoint: vm(p, p => int(p / (SCALE * TILE_SIZE))),
     }
     return rv;
   }
