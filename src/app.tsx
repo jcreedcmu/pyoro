@@ -14,7 +14,7 @@ type CanvasProps = {
   spriteImg: HTMLImageElement | null
 };
 
-function doEffect(state:State, dispatch: Dispatch, e: Effect) {
+function doEffect(state: State, dispatch: Dispatch, e: Effect) {
   switch (e.t) {
     case 'scheduleFrame':
       setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
@@ -94,7 +94,7 @@ export function App(props: {}): JSX.Element {
     }
   }, []);
 
-  const dragHandler = state.iface.mouse.t == 'tileDrag'
+  const dragHandler = (state.iface.mouse.t == 'tileDrag' || state.iface.mouse.t == 'panDrag')
     ? <DragHandler dispatch={dispatch} />
     : undefined;
 

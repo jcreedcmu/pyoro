@@ -352,20 +352,28 @@ export function animator_for_move(s: State, move: Move): Animator {
 }
 
 export function handle_world_mousedown(s: State, p: Point): State {
-  const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
-  const tileToPut = tileOfState(s, p) != newTile ? newTile : 'empty';
-  return produce(_putTileInInitOverlay(s, p, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
+  switch (tools[s.iface.currentToolIx]) {
+    case 'pencil_tool':
+      const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
+      const tileToPut = tileOfState(s, p) != newTile ? newTile : 'empty';
+      return produce(_putTileInInitOverlay(s, p, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
+    case 'hand_tool':
+      return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: p } });
+  }
 }
 
 export function handle_world_drag(s: State, p: Point): State {
-  if (s.iface.mouse.t == 'tileDrag') {
-    return _putTileInInitOverlay(s, p, s.iface.mouse.tile);
-  }
-  else {
-    console.error(`inconsistent mouse state: ` +
-      `processing drag event but mouse stat isn't "drag". ` +
-      `Not sure how this happened?`);
-    return s;
+  switch (s.iface.mouse.t) {
+    case 'tileDrag':
+      return _putTileInInitOverlay(s, p, s.iface.mouse.tile);
+    case 'panDrag':
+      console.log(p, s.iface.mouse.init);
+      return s;
+    default:
+      console.error(`inconsistent mouse state: ` +
+        `processing drag event but mouse stat isn't "drag". ` +
+        `Not sure how this happened?`);
+      return s;
   }
 }
 

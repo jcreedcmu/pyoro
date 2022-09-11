@@ -154,6 +154,7 @@ export function reduce(s: State, a: Action): Result {
       switch (wpoint.t) {
         case 'World': return pure(handle_world_drag(s, wpoint.p));
         default: return pure(s); // dragging should have no effect otherwise
+        // XXX reconsider this, because panning should work wherever
       }
     }
     case 'keyUp':
