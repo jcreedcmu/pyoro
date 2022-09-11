@@ -25,6 +25,7 @@ export type MouseState =
 export type IfaceState = {
   keysDown: Record<string, boolean>,
   editTileIx: number,
+  currentToolIx: number,
   editTileRotation: number,
   viewPort: Point,
   blackout: number,
@@ -72,6 +73,7 @@ export const init_state: State = {
     viewPort: { x: -13, y: -9 },
     blackout: 0,
     editTileIx: 0,
+    currentToolIx: 0,
     editTileRotation: 0,
     mouse: { t: 'up' },
     vd: null,
