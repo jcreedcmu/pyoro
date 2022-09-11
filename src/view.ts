@@ -2,12 +2,12 @@ import produce from 'immer';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { App } from './app';
-import { DEBUG, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE } from './constants';
+import { DEBUG, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE, tools } from './constants';
 import { getItem, getTile, PointMap, putItem } from './layer';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale } from './point';
 import { State } from './state';
-import { Item, Point, Sprite } from './types';
+import { Item, Point, Sprite, Tool, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
 
@@ -106,11 +106,17 @@ function drawSelection(d: CanvasRenderingContext2D, p: Point): void {
 function drawEditorStuff(fv: FView, state: State): void {
   const { d, vd: { origin } } = fv;
 
+  // toolbar
+  tools.forEach((t, ix) => {
+    raw_draw_sprite(fv, ix == state.iface.currentToolIx ? `${t}_active` : `${t}_inactive`,
+      { x: ix * TILE_SIZE * SCALE, y: TILE_SIZE * SCALE });
+  });
+
   // background of tile list
   d.fillStyle = guiData.background_color;
   d.fillRect(0, 0, editTiles.length * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
 
-  // tiles for editor
+  // tiles for pencil tool
   editTiles.forEach((et, ix) => {
     const t = rotateTile(et, state.iface.editTileRotation);
     raw_draw_sprite(fv, t, { x: ix * TILE_SIZE * SCALE, y: 0 });

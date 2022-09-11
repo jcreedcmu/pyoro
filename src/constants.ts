@@ -1,4 +1,4 @@
-import { Sprite, Point, Tile } from './types';
+import { Sprite, Point, Tile, Tool } from './types';
 
 export const FULL_IMPETUS = 4;
 export const NUM_TILES = { x: 24, y: 18 };
@@ -29,6 +29,10 @@ export const sprites: { [k in Sprite]: Point } = {
   player_crouch: { x: 3, y: 6 },
   coin: { x: 3, y: 4 },
   coin_wall: { x: 4, y: 5 },
+  hand_tool_inactive: { x: 10, y: 0 },
+  hand_tool_active: { x: 10, y: 1 },
+  pencil_tool_inactive: { x: 11, y: 0 },
+  pencil_tool_active: { x: 11, y: 1 },
 };
 
 export const DEBUG = {
@@ -47,6 +51,11 @@ export function logger(level: keyof (typeof DEBUG), ...args: any[]) {
     console.log(...args);
   }
 }
+
+export const tools: Tool[] = [
+  'pencil_tool',
+  'hand_tool'
+]
 
 export const editTiles: Tile[] =
   [

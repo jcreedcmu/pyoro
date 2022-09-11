@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
-import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile } from './constants';
+import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, tools } from './constants';
 import { getTile, Layer, LayerStack, putTile, tileOfStack } from './layer';
 import { vplus } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
@@ -374,6 +374,12 @@ export function handle_toolbar_mousedown(s: State, p: Point): State {
     return produce(s, s => {
       if (p.x < editTiles.length && p.x >= 0)
         s.iface.editTileIx = p.x;
+    });
+  }
+  else if (p.y == 1) {
+    return produce(s, s => {
+      if (p.x < tools.length && p.x >= 0)
+        s.iface.currentToolIx = p.x;
     });
   }
   else {

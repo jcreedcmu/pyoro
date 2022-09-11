@@ -52,7 +52,19 @@ export type PlayerSprite =
   | 'player_dead'
   | 'player_crouch'
   ;
+
+export type Tool =
+  | 'hand_tool'
+  | 'pencil_tool'
+  ;
+
+export type ToolTile =
+  | `${Tool}_inactive`
+  | `${Tool}_active`
+  ;
+
 export type Sprite =
   | Tile
   | PlayerSprite
+  | ToolTile
   ;
