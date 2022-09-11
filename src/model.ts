@@ -2,10 +2,11 @@ import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, tools } from './constants';
 import { getTile, Layer, LayerStack, putTile, tileOfStack } from './layer';
-import { vplus } from './point';
+import { vplus, vsub } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
 import { Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
 import { max } from './util';
+import { WidgetPoint } from './view';
 
 function getItem(x: Tile): Item | undefined {
   if (x == 'teal_fruit' || x == 'coin') return x;
@@ -351,23 +352,28 @@ export function animator_for_move(s: State, move: Move): Animator {
   }
 }
 
-export function handle_world_mousedown(s: State, p: Point): State {
+export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Point): State {
   switch (tools[s.iface.currentToolIx]) {
     case 'pencil_tool':
       const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
-      const tileToPut = tileOfState(s, p) != newTile ? newTile : 'empty';
-      return produce(_putTileInInitOverlay(s, p, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
+      const tileToPut = tileOfState(s, worldPoint) != newTile ? newTile : 'empty';
+      return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
     case 'hand_tool':
-      return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: p } });
+      return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint } });
   }
 }
 
-export function handle_world_drag(s: State, p: Point): State {
+export function handle_world_drag(s: State, rawPoint: Point, widgetPoint: WidgetPoint): State {
   switch (s.iface.mouse.t) {
     case 'tileDrag':
-      return _putTileInInitOverlay(s, p, s.iface.mouse.tile);
+      if (widgetPoint.t == 'World') {
+        return _putTileInInitOverlay(s, widgetPoint.p, s.iface.mouse.tile);
+      }
+      else {
+        return s;
+      }
     case 'panDrag':
-      console.log(p, s.iface.mouse.init);
+      console.log(vsub(rawPoint, s.iface.mouse.init));
       return s;
     default:
       console.error(`inconsistent mouse state: ` +

@@ -140,7 +140,7 @@ export function reduce(s: State, a: Action): Result {
       const wpoint = wpoint_of_vd(vd, a.point, s);
       logger('mouse', 'mouseDown wpoint=', wpoint);
       switch (wpoint.t) {
-        case 'World': return pure(handle_world_mousedown(s, wpoint.p));
+        case 'World': return pure(handle_world_mousedown(s, a.point, wpoint.p));
         case 'Toolbar': return pure(handle_toolbar_mousedown(s, wpoint.tilePoint));
       }
     }
@@ -150,12 +150,8 @@ export function reduce(s: State, a: Action): Result {
       if (vd == null)
         return pure(s);
       const wpoint = wpoint_of_vd(vd, a.point, s);
-      logger('mouse', 'mouseMove wpoint=', wpoint);
-      switch (wpoint.t) {
-        case 'World': return pure(handle_world_drag(s, wpoint.p));
-        default: return pure(s); // dragging should have no effect otherwise
-        // XXX reconsider this, because panning should work wherever
-      }
+      return pure(handle_world_drag(s, a.point, wpoint));
+
     }
     case 'keyUp':
       return pure(produce(s, s => { delete s.iface.keysDown[a.code]; }));
