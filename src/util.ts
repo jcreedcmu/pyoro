@@ -1,4 +1,3 @@
-import { DEBUG } from './constants';
 import { Point, Color, BadRect, Rect } from './types';
 
 export function int(x: number): number {

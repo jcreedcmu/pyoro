@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { commandBindings, moveBindings } from './bindings';
-import { DEBUG, FRAME_DURATION_MS, logger } from './constants';
+import { FRAME_DURATION_MS } from './constants';
+import { DragHandler } from './drag-handler';
 import { keyFromCode } from './key';
+import { logger } from './logger';
 import { Dispatch, Effect, reduce } from './reduce';
 import { init_state, State } from './state';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
-import { DragHandler } from './drag-handler';
 type CanvasProps = {
   main: State,
   spriteImg: HTMLImageElement | null

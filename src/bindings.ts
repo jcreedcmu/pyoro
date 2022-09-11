@@ -1,7 +1,4 @@
-import produce from "immer";
-import { editTiles, logger } from "./constants";
 import { Command } from "./reduce";
-import { State } from "./state";
 import { Dict, Move } from "./types";
 
 export const moveBindings: Dict<Move> = {

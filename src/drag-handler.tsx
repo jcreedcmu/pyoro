@@ -1,13 +1,6 @@
 import * as React from 'react';
-import { commandBindings, moveBindings } from './bindings';
-import { DEBUG, FRAME_DURATION_MS, logger } from './constants';
-import { keyFromCode } from './key';
-import { Dispatch, Effect, reduce } from './reduce';
-import { init_state, State } from './state';
-import { CanvasInfo, useCanvas } from './use-canvas';
-import { useEffectfulReducer } from './use-effectful-reducer';
-import { imgProm } from './util';
-import { drawView, resizeView } from './view';
+import { logger } from './logger';
+import { Dispatch } from './reduce';
 
 export function DragHandler(props: { dispatch: Dispatch }): JSX.Element {
   const { dispatch } = props;

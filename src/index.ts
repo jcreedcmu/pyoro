@@ -1,10 +1,7 @@
 import * as dat from 'dat.gui';
-import { DEBUG, FRAME_DURATION_MS, guiData } from './constants';
-import { Action, Dispatch, Effect, reduce } from './reduce';
-import { init_state, State } from './state';
-import { Tile } from './types';
-import { imgProm } from './util';
-import { drawView, FView, initView, resizeView } from './view';
+import { guiData } from './constants';
+import { DEBUG } from './logger';
+import { initView } from './view';
 
 window.addEventListener('load', onload);
 async function onload() {

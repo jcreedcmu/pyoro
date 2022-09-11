@@ -35,23 +35,6 @@ export const sprites: { [k in Sprite]: Point } = {
   pencil_tool_active: { x: 11, y: 1 },
 };
 
-export const DEBUG = {
-  chatty: false,
-  globals: false,
-  mouse: false,
-  keys: true,
-  datgui: false,
-  devicePixelRatio: false,
-  networkRequest: true,
-  error: true,
-};
-
-export function logger(level: keyof (typeof DEBUG), ...args: any[]) {
-  if (DEBUG[level]) {
-    console.log(...args);
-  }
-}
-
 export const tools: Tool[] = [
   'pencil_tool',
   'hand_tool'

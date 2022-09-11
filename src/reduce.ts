@@ -1,6 +1,7 @@
 import { produce } from 'immer';
 import { commandBindings, moveBindings } from './bindings';
-import { editTiles, logger } from "./constants";
+import { editTiles } from "./constants";
+import { logger } from './logger';
 import { animator_for_move, getOverlayForSave, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
 import { State } from "./state";
