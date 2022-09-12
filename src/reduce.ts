@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { commandBindings, miscBindings, moveBindings } from './bindings';
+import { bindings } from './bindings';
 import { editTiles, tools } from "./constants";
 import { logger } from './logger';
 import { animator_for_move, getOverlayForSave, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
@@ -26,6 +26,8 @@ export type Action =
   | { t: 'mouseMove', point: Point }
   | { t: 'resize', vd: ViewData }
   | { t: 'nextFrame' }
+  | { t: 'doCommand', command: Command }
+  | { t: 'doMove', move: Move }
   | { t: 'setCurrentTool', tool: Tool };
 
 export type Dispatch = (a: Action) => void;
@@ -76,7 +78,7 @@ export function reduceCommand(s: State, cmd: Command): State {
   }
 }
 
-function reduceAnim(s: State, move: Move): Result {
+function reduceMove(s: State, move: Move): Result {
   // XXX should instead buffer moves?
   if (s.anim == null) {
     return {
@@ -98,17 +100,9 @@ export function reduce(s: State, a: Action): Result {
   switch (a.t) {
     case 'keyDown': {
       const name = a.name;
-      const cmd = commandBindings[name];
-      const move = moveBindings[name];
-      const action = miscBindings[name];
+      const action = bindings[name];
       const ss = produce(s, s => { s.iface.keysDown[a.code] = true; });
-      if (cmd) {
-        return pure(reduceCommand(ss, cmd));
-      }
-      else if (move) {
-        return reduceAnim(ss, move);
-      }
-      else if (action) {
+      if (action) {
         return reduce(ss, action);
       }
       else {
@@ -116,6 +110,8 @@ export function reduce(s: State, a: Action): Result {
         return pure(ss);
       }
     }
+    case 'keyUp':
+      return pure(produce(s, s => { delete s.iface.keysDown[a.code]; }));
     case 'setState': return pure(a.s);
     case 'putTile': return pure(_putTile(s, a.p, a.tile));
     case 'resize':
@@ -159,8 +155,10 @@ export function reduce(s: State, a: Action): Result {
       return pure(handle_world_drag(s, a.point, wpoint));
 
     }
-    case 'keyUp':
-      return pure(produce(s, s => { delete s.iface.keysDown[a.code]; }));
+    case 'doCommand':
+      return pure(reduceCommand(s, a.command));
+    case 'doMove':
+      return reduceMove(s, a.move);
     case 'setCurrentTool':
       return pure(produce(s, s => {
         const ix = tools.findIndex(x => x == a.tool);

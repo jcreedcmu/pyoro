@@ -1,4 +1,4 @@
-import { Point, Color, BadRect, Rect } from './types';
+import { Point, Color, BadRect, Rect, Dict } from './types';
 
 export function int(x: number): number {
   return Math.floor(x);
@@ -53,4 +53,12 @@ export function rgbOfColor(color: string): Color {
 
 export function partialRecordEntries<K extends string, V>(pr: Partial<Record<K, V>>): [K, V][] {
   return Object.entries(pr) as [K, V][];
+}
+
+export function mapValues<T, U>(d: Dict<T>, f: (x: T, key: string) => U): Dict<U> {
+  const rv: Dict<U> = {};
+  for (const key of Object.keys(d)) {
+    rv[key] = f(d[key], key);
+  }
+  return rv;
 }

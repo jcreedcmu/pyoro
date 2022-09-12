@@ -1,5 +1,6 @@
 import { Action, Command } from "./reduce";
 import { Dict, Move } from "./types";
+import { mapValues } from "./util";
 
 export const moveBindings: Dict<Move> = {
   'KP7': 'up-left',
@@ -34,4 +35,10 @@ export const commandBindings: Dict<Command> = {
 export const miscBindings: Dict<Action> = {
   'h': { t: 'setCurrentTool', tool: 'hand_tool' },
   'n': { t: 'setCurrentTool', tool: 'pencil_tool' },
+}
+
+export const bindings: Dict<Action> = {
+  ...miscBindings,
+  ...mapValues(commandBindings, command => ({ t: 'doCommand', command })),
+  ...mapValues(moveBindings, move => ({ t: 'doMove', move })),
 }
