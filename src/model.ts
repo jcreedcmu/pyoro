@@ -204,6 +204,9 @@ function forceBlock(s: GameState, pos: Point, tile: Tile): Animation[] {
       else {
         return [];
       }
+    case 'button_on':
+    case 'button_off': // fallthrough intentional
+      return [{ t: 'ButtonToggleAnimation', pos }];
     default:
       return [];
   }

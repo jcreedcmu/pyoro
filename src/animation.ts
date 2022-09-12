@@ -1,9 +1,10 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { putTile } from './layer';
+import { getTile, putTile } from './layer';
 import { GameState, IfaceState, init_state, State } from './state';
 import { Facing, Point, Sprite, Item } from './types';
 import { vm2, vplus, vscale, int, lerp } from './point';
+import { tileOfGameState, tileOfState } from './model';
 
 export type Animation =
   {
@@ -20,7 +21,8 @@ export type Animation =
   | { t: 'ItemGetAnimation', pos: Point, item: Item }
   | { t: 'ResetAnimation' }
   | { t: 'RecenterAnimation' }
-  | { t: 'SpendCoinAnimation', pos: Point };
+  | { t: 'SpendCoinAnimation', pos: Point }
+  | { t: 'ButtonToggleAnimation', pos: Point };
 
 
 // Here's the intended invariant. Suppose s is the current state. an
@@ -89,6 +91,7 @@ export function applyIfaceAnimation(a: Animation, state: State, frc: number | 'c
       });
     case 'ItemGetAnimation': return iface;
     case 'SpendCoinAnimation': return iface;
+    case 'ButtonToggleAnimation': return iface;
   }
 }
 
@@ -144,6 +147,10 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         }
         s.inventory.coin--;
       });
+    case 'ButtonToggleAnimation':
+      return produce(state, s => {
+        putTile(s.overlay, a.pos, tileOfGameState(s, a.pos) == 'button_on' ? 'button_off' : 'button_on');
+      });
   }
 }
 
@@ -159,5 +166,6 @@ export function duration(a: Animation): number {
     case 'RecenterAnimation': return 4;
     case 'ItemGetAnimation': return 2;
     case 'SpendCoinAnimation': return 1;
+    case 'ButtonToggleAnimation': return 1;
   }
 }
