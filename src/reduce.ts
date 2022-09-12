@@ -1,11 +1,11 @@
 import { produce } from 'immer';
-import { commandBindings, moveBindings } from './bindings';
-import { editTiles } from "./constants";
+import { commandBindings, miscBindings, moveBindings } from './bindings';
+import { editTiles, tools } from "./constants";
 import { logger } from './logger';
 import { animator_for_move, getOverlayForSave, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
 import { State } from "./state";
-import { Move, Tile } from "./types";
+import { Move, Tile, Tool } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
 
@@ -25,7 +25,8 @@ export type Action =
   | { t: 'mouseUp' }
   | { t: 'mouseMove', point: Point }
   | { t: 'resize', vd: ViewData }
-  | { t: 'nextFrame' };
+  | { t: 'nextFrame' }
+  | { t: 'setCurrentTool', tool: Tool };
 
 export type Dispatch = (a: Action) => void;
 
@@ -99,12 +100,16 @@ export function reduce(s: State, a: Action): Result {
       const name = a.name;
       const cmd = commandBindings[name];
       const move = moveBindings[name];
+      const action = miscBindings[name];
       const ss = produce(s, s => { s.iface.keysDown[a.code] = true; });
       if (cmd) {
         return pure(reduceCommand(ss, cmd));
       }
       else if (move) {
         return reduceAnim(ss, move);
+      }
+      else if (action) {
+        return reduce(ss, action);
       }
       else {
         logger('chatty', `unbound key ${name} pressed`);
@@ -156,5 +161,15 @@ export function reduce(s: State, a: Action): Result {
     }
     case 'keyUp':
       return pure(produce(s, s => { delete s.iface.keysDown[a.code]; }));
+    case 'setCurrentTool':
+      return pure(produce(s, s => {
+        const ix = tools.findIndex(x => x == a.tool);
+        if (ix !== -1) {
+          s.iface.currentToolIx = ix;
+        }
+        else {
+          console.error(`invalid tool ${a.tool}`);
+        }
+      }));
   }
 }

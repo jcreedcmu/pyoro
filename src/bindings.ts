@@ -1,4 +1,4 @@
-import { Command } from "./reduce";
+import { Action, Command } from "./reduce";
 import { Dict, Move } from "./types";
 
 export const moveBindings: Dict<Move> = {
@@ -29,4 +29,9 @@ export const commandBindings: Dict<Command> = {
   'C-s': 'saveOverlay',
   'r': 'rotateEditTile',
   'C-d': 'debug',
+}
+
+export const miscBindings: Dict<Action> = {
+  'h': { t: 'setCurrentTool', tool: 'hand_tool' },
+  'n': { t: 'setCurrentTool', tool: 'pencil_tool' },
 }
