@@ -26,7 +26,8 @@ export function getTile(l: Layer, p: Point): Tile | undefined {
 }
 
 export function getTileOfComplexLayer(l: ComplexLayer, p: Point): Tile | undefined {
-  return resolveComplexTile(getItem(l, p), l);
+  const item = getItem(l, p);
+  return item == undefined ? undefined : resolveComplexTile(item, l);
 }
 
 export function putTileInComplexLayer(l: ComplexLayer, p: Point, t: Tile): void {
