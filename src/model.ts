@@ -1,11 +1,11 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { getTile, Layer, LayerStack, putTile, tileOfStack } from './layer';
+import { getTile, Layer, LayerStack, mapPointMap, putTile, tileOfStack } from './layer';
 import { vmn, vplus, vsub } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
 import { Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
-import { max } from './util';
+import { mapValues, max } from './util';
 import { WidgetPoint } from './view';
 
 function getItem(x: Tile): Item | undefined {
@@ -131,7 +131,7 @@ function layerStackOfState(s: GameState): LayerStack {
   return {
     t: 'overlay',
     top: s.overlay,
-    rest: { t: 'base', layer: s.initOverlay }
+    rest: { t: 'base', layer: mapPointMap(s.initOverlay, x => ({ t: 'simple', tile: x })) }
   };
 }
 

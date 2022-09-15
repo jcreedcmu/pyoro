@@ -1,4 +1,5 @@
 import { ComplexTile, Dict, Point, Tile } from './types';
+import { mapValues } from './util';
 
 export type PointMap<T> = { tiles: Dict<T> };
 
@@ -37,15 +38,21 @@ export function putTile(l: Layer, p: Point, t: Tile): void {
 }
 
 export type LayerStack =
-  | { t: 'base', layer: Layer }
+  | { t: 'base', layer: ComplexLayer }
   | { t: 'overlay', top: Layer, rest: LayerStack };
 
 export function tileOfStack(ls: LayerStack, p: Point): Tile {
   switch (ls.t) {
-    case 'base': return getTile(ls.layer, p) || 'empty';
+    case 'base': return getTileOfComplexLayer(ls.layer, p) || 'empty';
     case 'overlay': {
       const top = getTile(ls.top, p);
       return top == undefined ? tileOfStack(ls.rest, p) : top;
     }
   }
+}
+
+export function mapPointMap<T, U>(pointMap: PointMap<T>, f: (x: T) => U): PointMap<U> {
+  return {
+    tiles: mapValues(pointMap.tiles, f)
+  };
 }
