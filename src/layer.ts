@@ -1,8 +1,9 @@
-import { Dict, Point, Tile } from './types';
+import { ComplexTile, Dict, Point, Tile } from './types';
 
 export type PointMap<T> = { tiles: Dict<T> };
 
 export type Layer = PointMap<Tile>;
+export type ComplexLayer = PointMap<ComplexTile>;
 
 export function getItem<T>(l: PointMap<T>, p: Point): T {
   return l.tiles[p.x + ',' + p.y];
@@ -12,8 +13,23 @@ export function putItem<T>(l: PointMap<T>, p: Point, v: T): void {
   l.tiles[p.x + ',' + p.y] = v;
 }
 
+function resolveComplexTile(ct: ComplexTile, l: ComplexLayer): Tile {
+  switch (ct.t) {
+    case 'simple':
+      return ct.tile;
+  }
+}
+
 export function getTile(l: Layer, p: Point): Tile | undefined {
   return getItem(l, p);
+}
+
+export function getTileOfComplexLayer(l: ComplexLayer, p: Point): Tile | undefined {
+  return resolveComplexTile(getItem(l, p), l);
+}
+
+export function putTileInComplexLayer(l: ComplexLayer, p: Point, t: Tile): void {
+  putItem(l, p, { t: 'simple', tile: t });
 }
 
 export function putTile(l: Layer, p: Point, t: Tile): void {

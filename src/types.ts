@@ -11,6 +11,10 @@ export type Item =
   | 'coin'
   ;
 
+export type ComplexTile =
+  | { t: 'simple', tile: Tile }
+  ;
+
 export type Tile =
   | 'box'
   | 'box3'
