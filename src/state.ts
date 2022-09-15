@@ -1,7 +1,7 @@
 import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
-import { Layer } from './layer';
+import { ComplexLayer, Layer } from './layer';
 import { Facing, Item, Point, Sprite, Tile } from './types';
 import { ViewData } from './view';
 
@@ -39,7 +39,7 @@ export type Inventory = Partial<Record<Item, number>>;
 export type GameState = {
   player: Player,
   initOverlay: Layer,
-  overlay: Layer,
+  overlay: ComplexLayer,
   inventory: Inventory,
   lastSave: Point,
 }
@@ -58,7 +58,7 @@ export const init_player: Player = {
   impetus: FULL_IMPETUS,
 };
 
-const emptyOverlay: Layer = { tiles: {} };
+const emptyOverlay: ComplexLayer = { tiles: {} };
 
 export const init_state: State = {
   game: {

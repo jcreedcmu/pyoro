@@ -56,3 +56,7 @@ export function mapPointMap<T, U>(pointMap: PointMap<T>, f: (x: T) => U): PointM
     tiles: mapValues(pointMap.tiles, f)
   };
 }
+
+export function bootstrapComplexLayer(layer: Layer): ComplexLayer {
+  return mapPointMap(layer, x => ({ t: 'simple', tile: x }));
+}

@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { getTile, Layer, LayerStack, mapPointMap, putTile, tileOfStack } from './layer';
+import { bootstrapComplexLayer, getTile, Layer, LayerStack, mapPointMap, putTile, putTileInComplexLayer, tileOfStack } from './layer';
 import { vmn, vplus, vsub } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
 import { Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
@@ -130,8 +130,8 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
 function layerStackOfState(s: GameState): LayerStack {
   return {
     t: 'overlay',
-    top: mapPointMap(s.overlay, x => ({ t: 'simple', tile: x })),
-    rest: { t: 'base', layer: mapPointMap(s.initOverlay, x => ({ t: 'simple', tile: x })) }
+    top: s.overlay,
+    rest: { t: 'base', layer: bootstrapComplexLayer(s.initOverlay) }
   };
 }
 
@@ -177,7 +177,7 @@ export function tileOfGameState(s: GameState, p: Point): Tile {
 
 export function _putTile(s: State, p: Point, t: Tile): State {
   return produce(s, s => {
-    putTile(s.game.overlay, p, t);
+    putTileInComplexLayer(s.game.overlay, p, t);
   });
 }
 

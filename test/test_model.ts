@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import produce from 'immer';
 import { FULL_IMPETUS } from '../src/constants';
-import { Layer } from '../src/layer';
+import { bootstrapComplexLayer, Layer } from '../src/layer';
 import { animateMoveGame, getOverlayForSave, renderGameAnims, tileOfGameState, _putTile, _putTileInGameStateInitOverlay, _putTileInInitOverlay } from '../src/model';
 import { GameState, init_player, init_state } from '../src/state';
 import { Move } from '../src/types';
@@ -18,7 +18,7 @@ function basicState(layer: Layer): GameState {
     initOverlay: layer,
     inventory: { teal_fruit: undefined, },
     lastSave: { x: 0, y: 0 },
-    overlay: layer,
+    overlay: bootstrapComplexLayer(layer),
     player: init_player,
   };
 }
