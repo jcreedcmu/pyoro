@@ -39,13 +39,13 @@ export function putTile(l: Layer, p: Point, t: Tile): void {
 
 export type LayerStack =
   | { t: 'base', layer: ComplexLayer }
-  | { t: 'overlay', top: Layer, rest: LayerStack };
+  | { t: 'overlay', top: ComplexLayer, rest: LayerStack };
 
 export function tileOfStack(ls: LayerStack, p: Point): Tile {
   switch (ls.t) {
     case 'base': return getTileOfComplexLayer(ls.layer, p) || 'empty';
     case 'overlay': {
-      const top = getTile(ls.top, p);
+      const top = getTileOfComplexLayer(ls.top, p);
       return top == undefined ? tileOfStack(ls.rest, p) : top;
     }
   }

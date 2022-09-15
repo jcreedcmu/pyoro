@@ -130,7 +130,7 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
 function layerStackOfState(s: GameState): LayerStack {
   return {
     t: 'overlay',
-    top: s.overlay,
+    top: mapPointMap(s.overlay, x => ({ t: 'simple', tile: x })),
     rest: { t: 'base', layer: mapPointMap(s.initOverlay, x => ({ t: 'simple', tile: x })) }
   };
 }
