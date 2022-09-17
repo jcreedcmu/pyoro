@@ -41,17 +41,17 @@ export function pure(state: State): Result {
   return { state };
 }
 
-export function reduceCommand(s: State, cmd: Command): State {
+export function reduceCommand(s: State, cmd: Command): Result {
   switch (cmd) {
     case 'nextEditTile':
-      return produce(s, s => {
+      return pure(produce(s, s => {
         s.iface.editTileIx = (s.iface.editTileIx + 1) % editTiles.length;
-      });
+      }));
 
     case 'prevEditTile':
-      return produce(s, s => {
+      return pure(produce(s, s => {
         s.iface.editTileIx = (s.iface.editTileIx - 1 + editTiles.length) % editTiles.length;
-      });
+      }));
 
     case 'saveOverlay': {
       // XXX this belongs in an Effect, I reckon.
@@ -65,16 +65,16 @@ export function reduceCommand(s: State, cmd: Command): State {
       fetch(req).then(r => r.json())
         .then(x => logger('networkRequest', x))
         .catch(console.error);
-      return s;
+      return pure(s);
     }
 
     case 'rotateEditTile':
-      return produce(s, s => {
+      return pure(produce(s, s => {
         s.iface.editTileRotation = (s.iface.editTileRotation + 1) % 4;
-      });
+      }));
     case 'debug':
       console.log(s);
-      return s;
+      return pure(s);
   }
 }
 
@@ -156,7 +156,7 @@ export function reduce(s: State, a: Action): Result {
 
     }
     case 'doCommand':
-      return pure(reduceCommand(s, a.command));
+      return reduceCommand(s, a.command);
     case 'doMove':
       return reduceMove(s, a.move);
     case 'setCurrentTool':
