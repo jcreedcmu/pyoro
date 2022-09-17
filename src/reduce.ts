@@ -33,7 +33,9 @@ export type Action =
 export type Dispatch = (a: Action) => void;
 
 export type Effect =
-  | { t: 'scheduleFrame' };
+  | { t: 'scheduleFrame' }
+  | { t: 'saveOverlay' }
+  ;
 
 type Result = effectful.Result<State, Effect>;
 
@@ -54,18 +56,7 @@ export function reduceCommand(s: State, cmd: Command): Result {
       }));
 
     case 'saveOverlay': {
-      // XXX this belongs in an Effect, I reckon.
-      const req = new Request('/save', {
-        method: 'POST',
-        body: JSON.stringify(getOverlayForSave(s.game)),
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      fetch(req).then(r => r.json())
-        .then(x => logger('networkRequest', x))
-        .catch(console.error);
-      return pure(s);
+      return { state: s, effects: [{ t: 'saveOverlay' }] };
     }
 
     case 'rotateEditTile':
