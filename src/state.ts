@@ -38,7 +38,7 @@ export type Inventory = Partial<Record<Item, number>>;
 
 export type GameState = {
   player: Player,
-  initOverlay: Layer,
+  initOverlay: ComplexLayer,
   overlay: ComplexLayer,
   inventory: Inventory,
   lastSave: Point,

@@ -15,7 +15,7 @@ function basicLayer(): Layer {
 
 function basicState(layer: Layer): GameState {
   return {
-    initOverlay: layer,
+    initOverlay: bootstrapComplexLayer(layer),
     inventory: { teal_fruit: undefined, },
     lastSave: { x: 0, y: 0 },
     overlay: bootstrapComplexLayer(layer),
@@ -149,9 +149,9 @@ describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
     let s = basicState(basicLayer());
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, 'empty'); // delete the existing box
-    assert.deepEqual(getOverlayForSave(s).tiles, {});
+    assert.deepEqual(getOverlayForSave(s), bootstrapComplexLayer({ tiles: {} }));
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, 'box'); // add some box
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, 'empty'); // add another spurious empty
-    assert.deepEqual(getOverlayForSave(s).tiles, { '0,2': 'box' });
+    assert.deepEqual(getOverlayForSave(s), bootstrapComplexLayer({ tiles: { '0,2': 'box' } }));
   });
 });

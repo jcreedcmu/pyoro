@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { bootstrapComplexLayer, getTile, Layer, LayerStack, mapPointMap, putTile, putTileInComplexLayer, tileOfStack } from './layer';
+import { bootstrapComplexLayer, ComplexLayer, getTile, isEmptyTile, Layer, LayerStack, mapPointMap, putTile, putTileInComplexLayer, tileOfStack } from './layer';
 import { vmn, vplus, vsub } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
 import { Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
@@ -131,7 +131,7 @@ function layerStackOfState(s: GameState): LayerStack {
   return {
     t: 'overlay',
     top: s.overlay,
-    rest: { t: 'base', layer: bootstrapComplexLayer(s.initOverlay) }
+    rest: { t: 'base', layer: s.initOverlay }
   };
 }
 
@@ -183,7 +183,7 @@ export function _putTile(s: State, p: Point, t: Tile): State {
 
 export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: Tile): GameState {
   return produce(s, s => {
-    putTile(s.initOverlay, p, t);
+    putTileInComplexLayer(s.initOverlay, p, t);
   });
 }
 
@@ -412,10 +412,10 @@ export function show_empty_tile_override(s: State): boolean {
   return !s.iface.keysDown['KeyN']; // XXX Debugging
 }
 
-export function getOverlayForSave(s: GameState): Layer {
-  const layer: Layer = { tiles: {} };
+export function getOverlayForSave(s: GameState): ComplexLayer {
+  const layer: ComplexLayer = { tiles: {} };
   for (const [k, v] of Object.entries(s.initOverlay.tiles)) {
-    if (v !== 'empty')
+    if (!isEmptyTile(v))
       layer.tiles[k] = v;
   }
   return layer;

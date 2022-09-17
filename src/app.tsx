@@ -2,6 +2,7 @@ import * as React from 'react';
 import { FRAME_DURATION_MS } from './constants';
 import { DragHandler } from './drag-handler';
 import { keyFromCode } from './key';
+import { bootstrapComplexLayer } from './layer';
 import { logger } from './logger';
 import { getOverlayForSave } from './model';
 import { Dispatch, Effect, reduce } from './reduce';

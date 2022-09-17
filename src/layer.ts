@@ -21,6 +21,10 @@ function resolveComplexTile(ct: ComplexTile, l: ComplexLayer): Tile {
   }
 }
 
+export function isEmptyTile(ct: ComplexTile): boolean {
+  return ct.t == 'simple' && ct.tile == 'empty';
+}
+
 export function getTile(l: Layer, p: Point): Tile | undefined {
   return getItem(l, p);
 }

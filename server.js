@@ -11,9 +11,9 @@ server.use('/save', (req, res) => {
 
   console.log('req.body', JSON.stringify(req.body));
   const json = JSON.stringify(req.body, null, 2);
-  const string_to_write = `import { Layer } from './layer';
+  const string_to_write = `import { ComplexLayer } from './layer';
 
-export const initOverlay: Layer = ${json};
+export const initOverlay: ComplexLayer = ${json};
 `;
 
   console.log(string_to_write);
