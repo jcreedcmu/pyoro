@@ -2,7 +2,7 @@ import { produce } from 'immer';
 import { bindings } from './bindings';
 import { editTiles, tools } from "./constants";
 import { logger } from './logger';
-import { animator_for_move, getOverlayForSave, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
+import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
 import { State } from "./state";
 import { Move, Tile, Tool } from "./types";
