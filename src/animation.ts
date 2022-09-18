@@ -104,14 +104,18 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'PlayerAnimation':
       const { pos, animState, impetus, flipState, dead } = a;
       return produce(state, s => {
-        if (t == 1)
-          s.time++;
         s.player = {
           dead: dead && t >= 0.75,
-          pos: vplus(vscale(s.player.pos, 1 - t), vscale(pos, t)),
+          pos: s.player.pos,
+          posOffset: vplus(vscale(s.player.pos, -t), vscale(pos, t)),
           animState: animState,
           flipState: flipState,
           impetus: impetus
+        }
+        if (t == 1) {
+          s.time++;
+          s.player.pos = pos;
+          s.player.posOffset = undefined;
         }
       });
     case 'ViewPortAnimation': return state;

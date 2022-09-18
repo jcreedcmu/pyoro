@@ -91,8 +91,10 @@ function drawField(fv: FView, state: State): void {
 
   const playerSprite = state.game.player.dead ? 'player_dead' : state.game.player.animState;
 
+  const player = state.game.player;
+  const effectivePos = player.posOffset == undefined ? player.pos : vplus(player.pos, player.posOffset);
   draw_sprite(fv, playerSprite,
-    vminus(state.game.player.pos, vp),
+    vminus(effectivePos, vp),
     state.game.player.flipState == 'left');
 }
 

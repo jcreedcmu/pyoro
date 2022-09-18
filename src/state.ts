@@ -10,6 +10,7 @@ export type Player = {
   animState: Sprite,
   flipState: Facing,
   pos: Point,
+  posOffset?: Point, // undefined in all non-animated GameStates
   impetus: number,
 };
 
