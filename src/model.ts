@@ -135,7 +135,7 @@ function layerStackOfState(s: GameState): LayerStack {
   };
 }
 
-function boardOfState(s: GameState): Board {
+export function boardOfState(s: GameState): Board {
   return {
     player: s.player,
     trc: {
@@ -174,20 +174,22 @@ function get_flip_state(move: MotiveMove): Facing | null {
 }
 
 export function tileOfState(s: State, p: Point): Tile {
-  return tileOfGameState(s.game, p);
+  const b = boardOfState(s.game);
+  return tileOfBoard(b, p);
 }
 
 export function complexTileOfState(s: State, p: Point): ComplexTile {
-  return complexTileOfGameState(s.game, p);
+  const b = boardOfState(s.game);
+  return complexTileOfBoard(b, p);
 }
 
-export function tileOfGameState(s: GameState, p: Point): Tile {
-  const { player, trc } = boardOfState(s);
+export function tileOfBoard(b: Board, p: Point): Tile {
+  const { player, trc } = b;
   return tileOfStack(trc.layerStack, p, trc);
 }
 
-export function complexTileOfGameState(s: GameState, p: Point): ComplexTile {
-  const { player, trc } = boardOfState(s);
+export function complexTileOfBoard(b: Board, p: Point): ComplexTile {
+  const { player, trc } = b;
   return complexTileOfStack(trc.layerStack, p);
 }
 
@@ -246,7 +248,8 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   }
 
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
-  const tileBefore = tileOfGameState(s, belowBefore);
+  const b = boardOfState(s);
+  const tileBefore = tileOfBoard(b, belowBefore);
   const supportedBefore = !openTile(tileBefore);
   if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
@@ -258,7 +261,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   forcedBlocks.forEach(fb => {
     const pos = vplus(player.pos, fb);
-    anims.push(...forceBlock(s, pos, tileOfGameState(s, pos)));
+    anims.push(...forceBlock(s, pos, tileOfBoard(b, pos)));
   });
 
   let impetus = player.impetus;
@@ -276,10 +279,10 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   // I'm not sure how generally this will work, but it works for
   // predicting the next state of time-oscillating blocks.
-  const nextTimeS = produce(s, s => { s.time++ });
+  const nextB = produce(b, b => { b.trc.time++; });
 
-  const tileAfter = tileOfGameState(s, nextPos);
-  const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
+  const tileAfter = tileOfBoard(b, nextPos);
+  const suppTileAfter = tileOfBoard(nextB, vplus(nextPos, { x: 0, y: 1 }));
   const supportedAfter = !openTile(suppTileAfter);
   const dead = isDeadly(tileAfter);
 
@@ -311,7 +314,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   const item = getItem(tileAfter);
   if (item !== undefined)
     anims.push({ t: 'ItemGetAnimation', pos: nextPos, item });
-
+  console.log(anims);
   return anims;
 }
 
