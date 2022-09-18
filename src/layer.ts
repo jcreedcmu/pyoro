@@ -28,7 +28,7 @@ function resolveComplexTile(ct: ComplexTile, trc: TileResolutionContext): Tile {
     case 'simple':
       return ct.tile;
     case 'timed':
-      return 'box';
+      return trc.time % 2 ? 'box' : 'empty';
   }
 }
 

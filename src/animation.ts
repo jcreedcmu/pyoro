@@ -104,6 +104,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'PlayerAnimation':
       const { pos, animState, impetus, flipState, dead } = a;
       return produce(state, s => {
+        s.time++;
         s.player = {
           dead: dead && t >= 0.75,
           pos: vplus(vscale(s.player.pos, 1 - t), vscale(pos, t)),
@@ -126,6 +127,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
           s.player = produce(init_state.game.player, p => {
             p.pos = last_save;
           });
+          s.time = 0;
         }
       });
     case 'SavePointChangeAnimation':

@@ -136,7 +136,7 @@ function layerStackOfState(s: GameState): LayerStack {
 }
 
 function boardOfState(s: GameState): Board {
-  return { player: s.player, trc: { layerStack: layerStackOfState(s), time: 0 } }
+  return { player: s.player, trc: { layerStack: layerStackOfState(s), time: s.time } }
 }
 
 // This goes from a Move to a Motion
