@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { ComplexLayer, isEmptyTile, LayerStack, putComplexTile, putTileInComplexLayer, tileOfStack, TileResolutionContext } from './layer';
+import { ComplexLayer, complexTileOfStack, isEmptyTile, LayerStack, putComplexTile, putTileInComplexLayer, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
 import { ComplexTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
@@ -177,9 +177,18 @@ export function tileOfState(s: State, p: Point): Tile {
   return tileOfGameState(s.game, p);
 }
 
+export function complexTileOfState(s: State, p: Point): ComplexTile {
+  return complexTileOfGameState(s.game, p);
+}
+
 export function tileOfGameState(s: GameState, p: Point): Tile {
   const { player, trc } = boardOfState(s);
   return tileOfStack(trc.layerStack, p, trc);
+}
+
+export function complexTileOfGameState(s: GameState, p: Point): ComplexTile {
+  const { player, trc } = boardOfState(s);
+  return complexTileOfStack(trc.layerStack, p);
 }
 
 export function _putTile(s: State, p: Point, t: Tile): State {
@@ -367,13 +376,24 @@ export function animator_for_move(s: State, move: Move): Animator {
   }
 }
 
-function determineTileToPut(s: State, worldPoint: Point): ComplexTile {
-  const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
-  const simpleTileToPut = tileOfState(s, worldPoint) != newTile ? newTile : 'empty';
-  if (simpleTileToPut == 'timed_wall')
+function similarTiles(ct1: ComplexTile, ct2: ComplexTile): boolean {
+  switch (ct1.t) {
+    case 'simple': return ct2.t == 'simple' && ct2.tile == ct1.tile;
+    case 'timed': return ct2.t == 'timed';
+  }
+}
+
+function defaultComplexTileToPut(tile: Tile): ComplexTile {
+  if (tile == 'timed_wall')
     return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
   else
-    return { t: 'simple', tile: simpleTileToPut };
+    return { t: 'simple', tile: tile };
+}
+
+function determineTileToPut(s: State, worldPoint: Point): ComplexTile {
+  const newTile = defaultComplexTileToPut(rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation));
+
+  return similarTiles(complexTileOfState(s, worldPoint), newTile) ? { t: 'simple', tile: 'empty' } : newTile;
 }
 
 export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Point): State {

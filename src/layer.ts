@@ -7,7 +7,7 @@ export type PointMap<T> = { tiles: Dict<T> };
 export type Layer = PointMap<Tile>;
 export type ComplexLayer = PointMap<ComplexTile>;
 
-export function getItem<T>(l: PointMap<T>, p: Point): T {
+export function getItem<T>(l: PointMap<T>, p: Point): T | undefined {
   return l.tiles[p.x + ',' + p.y];
 }
 
@@ -60,11 +60,16 @@ export function putTile(l: Layer, p: Point, t: Tile): void {
 }
 
 export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext): Tile {
+  const ct = complexTileOfStack(ls, p);
+  return resolveComplexTile(ct, p, trc);
+}
+
+export function complexTileOfStack(ls: LayerStack, p: Point): ComplexTile {
   switch (ls.t) {
-    case 'base': return getTileOfComplexLayer(ls.layer, p, trc) || 'empty';
+    case 'base': return getItem(ls.layer, p) ?? { t: 'simple', tile: 'empty' };
     case 'overlay': {
-      const top = getTileOfComplexLayer(ls.top, p, trc);
-      return top == undefined ? tileOfStack(ls.rest, p, trc) : top;
+      const top = getItem(ls.top, p);
+      return top == undefined ? complexTileOfStack(ls.rest, p) : top;
     }
   }
 }
