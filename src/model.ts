@@ -358,7 +358,10 @@ export function animator_for_move(s: State, move: Move): Animator {
 function determineTileToPut(s: State, worldPoint: Point): ComplexTile {
   const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
   const simpleTileToPut = tileOfState(s, worldPoint) != newTile ? newTile : 'empty';
-  return { t: 'simple', tile: simpleTileToPut };
+  if (simpleTileToPut == 'timed_wall')
+    return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
+  else
+    return { t: 'simple', tile: simpleTileToPut };
 }
 
 export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Point): State {

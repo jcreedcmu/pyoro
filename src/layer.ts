@@ -18,6 +18,8 @@ function resolveComplexTile(ct: ComplexTile, l: ComplexLayer): Tile {
   switch (ct.t) {
     case 'simple':
       return ct.tile;
+    case 'timed':
+      return 'box';
   }
 }
 

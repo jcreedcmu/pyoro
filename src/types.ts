@@ -13,6 +13,7 @@ export type Item =
 
 export type ComplexTile =
   | { t: 'simple', tile: Tile }
+  | { t: 'timed', phase: 0, on_for: number, off_for: number }
   ;
 
 export type Tile =

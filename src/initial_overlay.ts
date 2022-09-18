@@ -541,6 +541,12 @@ export const initOverlay: ComplexLayer = {
     "-5,5": {
       "t": "simple",
       "tile": "coin"
+    },
+    "4,2": {
+      "t": "timed",
+      "phase": 0,
+      "on_for": 1,
+      "off_for": 1
     }
   }
 };
