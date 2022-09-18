@@ -104,7 +104,8 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'PlayerAnimation':
       const { pos, animState, impetus, flipState, dead } = a;
       return produce(state, s => {
-        s.time++;
+        if (t == 1)
+          s.time++;
         s.player = {
           dead: dead && t >= 0.75,
           pos: vplus(vscale(s.player.pos, 1 - t), vscale(pos, t)),
