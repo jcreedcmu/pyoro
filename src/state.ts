@@ -42,6 +42,7 @@ export type GameState = {
   overlay: ComplexLayer,
   inventory: Inventory,
   lastSave: Point,
+  time: number,
 }
 
 export type State = {
@@ -68,6 +69,7 @@ export const init_state: State = {
     inventory: {
     },
     lastSave: { x: 0, y: 0 },
+    time: 0,
   },
   iface: {
     keysDown: {},

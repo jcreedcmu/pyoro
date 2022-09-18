@@ -1,11 +1,11 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { bootstrapComplexLayer, ComplexLayer, getTile, isEmptyTile, Layer, LayerStack, mapPointMap, putComplexTile, putTile, putTileInComplexLayer, tileOfStack, TileResolutionContext } from './layer';
-import { vmn, vplus, vsub } from './point';
+import { ComplexLayer, isEmptyTile, LayerStack, putComplexTile, putTileInComplexLayer, tileOfStack, TileResolutionContext } from './layer';
+import { vmn, vplus } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
 import { ComplexTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
-import { mapValues, max } from './util';
+import { max } from './util';
 import { WidgetPoint } from './view';
 
 function getItem(x: Tile): Item | undefined {

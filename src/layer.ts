@@ -40,7 +40,6 @@ export function getTile(l: Layer, p: Point): Tile | undefined {
   return getItem(l, p);
 }
 
-
 export function getTileOfComplexLayer(l: ComplexLayer, p: Point, trc: TileResolutionContext): Tile | undefined {
   const item = getItem(l, p);
   return item == undefined ? undefined : resolveComplexTile(item, trc);
@@ -57,7 +56,6 @@ export function putComplexTile(l: ComplexLayer, p: Point, t: ComplexTile): void 
 export function putTile(l: Layer, p: Point, t: Tile): void {
   putItem(l, p, t);
 }
-
 
 export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext): Tile {
   switch (ls.t) {
