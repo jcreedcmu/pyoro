@@ -31,6 +31,7 @@ export type Tile =
   | 'coin_wall'
   | 'button_on'
   | 'button_off'
+  | 'timed_wall'
   | Item
   ;
 export type MotiveMove =

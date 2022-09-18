@@ -1,10 +1,10 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { bootstrapComplexLayer, ComplexLayer, getTile, isEmptyTile, Layer, LayerStack, mapPointMap, putTile, putTileInComplexLayer, tileOfStack } from './layer';
+import { bootstrapComplexLayer, ComplexLayer, getTile, isEmptyTile, Layer, LayerStack, mapPointMap, putComplexTile, putTile, putTileInComplexLayer, tileOfStack } from './layer';
 import { vmn, vplus, vsub } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
-import { Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
+import { ComplexTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
 import { mapValues, max } from './util';
 import { WidgetPoint } from './view';
 
@@ -181,13 +181,13 @@ export function _putTile(s: State, p: Point, t: Tile): State {
   });
 }
 
-export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: Tile): GameState {
+export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: ComplexTile): GameState {
   return produce(s, s => {
-    putTileInComplexLayer(s.initOverlay, p, t);
+    putComplexTile(s.initOverlay, p, t);
   });
 }
 
-export function _putTileInInitOverlay(s: State, p: Point, t: Tile): State {
+export function _putTileInInitOverlay(s: State, p: Point, t: ComplexTile): State {
   return produce(s, s => {
     s.game = _putTileInGameStateInitOverlay(s.game, p, t);
   });
@@ -355,11 +355,16 @@ export function animator_for_move(s: State, move: Move): Animator {
   }
 }
 
+function determineTileToPut(s: State, worldPoint: Point): ComplexTile {
+  const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
+  const simpleTileToPut = tileOfState(s, worldPoint) != newTile ? newTile : 'empty';
+  return { t: 'simple', tile: simpleTileToPut };
+}
+
 export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Point): State {
   switch (tools[s.iface.currentToolIx]) {
     case 'pencil_tool':
-      const newTile = rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation);
-      const tileToPut = tileOfState(s, worldPoint) != newTile ? newTile : 'empty';
+      const tileToPut = determineTileToPut(s, worldPoint);
       return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
     case 'hand_tool':
       return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint, initViewPort: s.iface.viewPort } });

@@ -2,7 +2,7 @@ import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
 import { ComplexLayer, Layer } from './layer';
-import { Facing, Item, Point, Sprite, Tile } from './types';
+import { ComplexTile, Facing, Item, Point, Sprite, Tile } from './types';
 import { ViewData } from './view';
 
 export type Player = {
@@ -20,7 +20,7 @@ export type AnimState = {
 
 export type MouseState =
   | { t: 'up' }
-  | { t: 'tileDrag', tile: Tile }
+  | { t: 'tileDrag', tile: ComplexTile }
   | { t: 'panDrag', init: Point, initViewPort: Point }
 
 export type IfaceState = {

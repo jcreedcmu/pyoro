@@ -148,10 +148,10 @@ describe('State', () => {
 describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
     let s = basicState(basicLayer());
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, 'empty'); // delete the existing box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, { t: 'simple', tile: 'empty' }); // delete the existing box
     assert.deepEqual(getOverlayForSave(s), bootstrapComplexLayer({ tiles: {} }));
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, 'box'); // add some box
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, 'empty'); // add another spurious empty
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, { t: 'simple', tile: 'box' }); // add some box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, { t: 'simple', tile: 'empty' }); // add another spurious empty
     assert.deepEqual(getOverlayForSave(s), bootstrapComplexLayer({ tiles: { '0,2': 'box' } }));
   });
 });

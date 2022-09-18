@@ -35,6 +35,7 @@ export const sprites: { [k in Sprite]: Point } = {
   pencil_tool_active: { x: 11, y: 1 },
   button_on: { x: 5, y: 5 },
   button_off: { x: 5, y: 6 },
+  timed_wall: { x: 9, y: 2 },
 };
 
 export const tools: Tool[] = [
@@ -56,6 +57,7 @@ export const editTiles: Tile[] =
     'coin_wall',
     'button_on',
     'button_off',
+    'timed_wall',
   ];
 
 export function rotateTile(tile: Tile, amount: number): Tile {

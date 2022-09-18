@@ -38,6 +38,10 @@ export function putTileInComplexLayer(l: ComplexLayer, p: Point, t: Tile): void 
   putItem(l, p, { t: 'simple', tile: t });
 }
 
+export function putComplexTile(l: ComplexLayer, p: Point, t: ComplexTile): void {
+  putItem(l, p, t);
+}
+
 export function putTile(l: Layer, p: Point, t: Tile): void {
   putItem(l, p, t);
 }
