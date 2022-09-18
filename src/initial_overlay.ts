@@ -547,6 +547,50 @@ export const initOverlay: ComplexLayer = {
       "phase": 0,
       "on_for": 1,
       "off_for": 1
+    },
+    "4,4": {
+      "t": "simple",
+      "tile": "box"
+    },
+    "5,4": {
+      "t": "simple",
+      "tile": "box"
+    },
+    "6,4": {
+      "t": "simple",
+      "tile": "box"
+    },
+    "8,4": {
+      "t": "simple",
+      "tile": "up_box"
+    },
+    "7,4": {
+      "t": "simple",
+      "tile": "box"
+    },
+    "4,0": {
+      "t": "simple",
+      "tile": "button_off"
+    },
+    "3,0": {
+      "t": "simple",
+      "tile": "spike_down"
+    },
+    "5,0": {
+      "t": "simple",
+      "tile": "spike_down"
+    },
+    "3,-1": {
+      "t": "simple",
+      "tile": "box3"
+    },
+    "4,-1": {
+      "t": "simple",
+      "tile": "box3"
+    },
+    "5,-1": {
+      "t": "simple",
+      "tile": "box3"
     }
   }
 };
