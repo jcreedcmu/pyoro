@@ -256,7 +256,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   if (stableBefore)
     impetus = genImpetus(tileBefore) + (s.inventory.teal_fruit ?? 0);
-  if (result.impetus != null)
+  else if (result.impetus != null)
     impetus = result.impetus;
 
   if (result.dpos == null)
@@ -264,8 +264,13 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   const nextPos = vplus(player.pos, result.dpos);
   let animState: Sprite = 'player';
+
+  // I'm not sure how generally this will work, but it works for
+  // predicting the next state of time-oscillating blocks.
+  const nextTimeS = produce(s, s => { s.time++ });
+
   const tileAfter = tileOfGameState(s, nextPos);
-  const suppTileAfter = tileOfGameState(s, vplus(nextPos, { x: 0, y: 1 }));
+  const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
   const supportedAfter = !openTile(suppTileAfter);
   const dead = isDeadly(tileAfter);
 
