@@ -7,6 +7,7 @@ export const DEBUG = {
   devicePixelRatio: false,
   networkRequest: false,
   error: true,
+  gameTime: true,
 };
 
 export function logger(level: keyof (typeof DEBUG), ...args: any[]) {

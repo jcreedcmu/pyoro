@@ -62,6 +62,13 @@ function drawScaled(fv: FView, state: State): void {
     d.fillRect(200, 120.75, 100, 0.5);
     d.fillRect(200, 131, 100, 0.5);
   }
+
+  if (DEBUG.gameTime) {
+    d.fillStyle = 'black';
+    d.font = '10px sans-serif';
+    d.textBaseline = 'top';
+    d.fillText(`time: ${state.game.time}`, fv.vd.origin.x + 3, fv.vd.origin.y + 3);
+  }
 }
 
 function drawField(fv: FView, state: State): void {
