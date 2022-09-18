@@ -20,6 +20,7 @@ function basicState(layer: Layer): GameState {
     lastSave: { x: 0, y: 0 },
     overlay: bootstrapComplexLayer(layer),
     player: init_player,
+    time: 0,
   };
 }
 

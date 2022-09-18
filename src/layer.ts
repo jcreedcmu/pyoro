@@ -1,3 +1,4 @@
+import { vequal } from './point';
 import { ComplexTile, Dict, Point, Tile } from './types';
 import { mapValues } from './util';
 
@@ -19,16 +20,17 @@ export type LayerStack =
   | { t: 'overlay', top: ComplexLayer, rest: LayerStack };
 
 export type TileResolutionContext = {
+  playerPos: Point,
   time: number,
   layerStack: LayerStack,
 }
 
-function resolveComplexTile(ct: ComplexTile, trc: TileResolutionContext): Tile {
+function resolveComplexTile(ct: ComplexTile, tilePos: Point, trc: TileResolutionContext): Tile {
   switch (ct.t) {
     case 'simple':
       return ct.tile;
     case 'timed':
-      return trc.time % 2 ? 'box' : 'empty';
+      return trc.time % 2 && !(vequal(trc.playerPos, tilePos)) ? 'box' : 'empty';
   }
 }
 
@@ -42,7 +44,7 @@ export function getTile(l: Layer, p: Point): Tile | undefined {
 
 export function getTileOfComplexLayer(l: ComplexLayer, p: Point, trc: TileResolutionContext): Tile | undefined {
   const item = getItem(l, p);
-  return item == undefined ? undefined : resolveComplexTile(item, trc);
+  return item == undefined ? undefined : resolveComplexTile(item, p, trc);
 }
 
 export function putTileInComplexLayer(l: ComplexLayer, p: Point, t: Tile): void {
