@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { bootstrapComplexLayer, ComplexLayer, getTile, isEmptyTile, Layer, LayerStack, mapPointMap, putComplexTile, putTile, putTileInComplexLayer, tileOfStack } from './layer';
+import { bootstrapComplexLayer, ComplexLayer, getTile, isEmptyTile, Layer, LayerStack, mapPointMap, putComplexTile, putTile, putTileInComplexLayer, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus, vsub } from './point';
 import { GameState, IfaceState, Player, State } from "./state";
 import { ComplexTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
@@ -38,6 +38,8 @@ function genImpetus(x: Tile): number {
   return 1;
 }
 
+export type Board = { player: Player, trc: TileResolutionContext };
+
 type Posture = 'stand' | 'attachWall' | 'crouch';
 type Motion = {
   dpos: Point,
@@ -46,16 +48,14 @@ type Motion = {
   posture?: Posture, // optionally set posture to some value
 };
 
-type Board = { tiles: LayerStack, player: Player };
-
 function ropen(b: Board, x: number, y: number): boolean {
-  const { tiles, player } = b;
-  return openTile(tileOfStack(tiles, vplus(player.pos, { x, y })));
+  const { player, trc } = b;
+  return openTile(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
 }
 
 function rgrabbable(b: Board, x: number, y: number): boolean {
-  const { tiles, player } = b;
-  return isGrabbable(tileOfStack(tiles, vplus(player.pos, { x, y })));
+  const { player, trc } = b;
+  return isGrabbable(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
 }
 
 function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
@@ -136,12 +136,11 @@ function layerStackOfState(s: GameState): LayerStack {
 }
 
 function boardOfState(s: GameState): Board {
-  return { player: s.player, tiles: layerStackOfState(s) }
+  return { player: s.player, trc: { layerStack: layerStackOfState(s), time: 0 } }
 }
 
 // This goes from a Move to a Motion
 function get_motion(b: Board, move: MotiveMove): Motion {
-  const { tiles, player } = b;
   switch (move) {
     case 'up': return execute_up(b);
     case 'down': return execute_down(b);
@@ -172,7 +171,8 @@ export function tileOfState(s: State, p: Point): Tile {
 }
 
 export function tileOfGameState(s: GameState, p: Point): Tile {
-  return tileOfStack(layerStackOfState(s), p);
+  const { player, trc } = boardOfState(s);
+  return tileOfStack(trc.layerStack, p, trc);
 }
 
 export function _putTile(s: State, p: Point, t: Tile): State {

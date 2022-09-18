@@ -14,7 +14,16 @@ export function putItem<T>(l: PointMap<T>, p: Point, v: T): void {
   l.tiles[p.x + ',' + p.y] = v;
 }
 
-function resolveComplexTile(ct: ComplexTile, l: ComplexLayer): Tile {
+export type LayerStack =
+  | { t: 'base', layer: ComplexLayer }
+  | { t: 'overlay', top: ComplexLayer, rest: LayerStack };
+
+export type TileResolutionContext = {
+  time: number,
+  layerStack: LayerStack,
+}
+
+function resolveComplexTile(ct: ComplexTile, trc: TileResolutionContext): Tile {
   switch (ct.t) {
     case 'simple':
       return ct.tile;
@@ -31,9 +40,10 @@ export function getTile(l: Layer, p: Point): Tile | undefined {
   return getItem(l, p);
 }
 
-export function getTileOfComplexLayer(l: ComplexLayer, p: Point): Tile | undefined {
+
+export function getTileOfComplexLayer(l: ComplexLayer, p: Point, trc: TileResolutionContext): Tile | undefined {
   const item = getItem(l, p);
-  return item == undefined ? undefined : resolveComplexTile(item, l);
+  return item == undefined ? undefined : resolveComplexTile(item, trc);
 }
 
 export function putTileInComplexLayer(l: ComplexLayer, p: Point, t: Tile): void {
@@ -48,16 +58,13 @@ export function putTile(l: Layer, p: Point, t: Tile): void {
   putItem(l, p, t);
 }
 
-export type LayerStack =
-  | { t: 'base', layer: ComplexLayer }
-  | { t: 'overlay', top: ComplexLayer, rest: LayerStack };
 
-export function tileOfStack(ls: LayerStack, p: Point): Tile {
+export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext): Tile {
   switch (ls.t) {
-    case 'base': return getTileOfComplexLayer(ls.layer, p) || 'empty';
+    case 'base': return getTileOfComplexLayer(ls.layer, p, trc) || 'empty';
     case 'overlay': {
-      const top = getTileOfComplexLayer(ls.top, p);
-      return top == undefined ? tileOfStack(ls.rest, p) : top;
+      const top = getTileOfComplexLayer(ls.top, p, trc);
+      return top == undefined ? tileOfStack(ls.rest, p, trc) : top;
     }
   }
 }
