@@ -99,7 +99,6 @@ function drawField(fv: FView, state: State): void {
   const playerSprite = state.game.player.dead ? 'player_dead' : state.game.player.animState;
 
   const player = state.game.player;
-  console.log(player.pos);
   const effectivePos = player.posOffset == undefined ? player.pos : vplus(player.pos, player.posOffset);
   draw_sprite(fv, playerSprite,
     vminus(effectivePos, vp),

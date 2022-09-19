@@ -4,7 +4,7 @@ import { getTile, putTile, putTileInComplexLayer } from './layer';
 import { GameState, IfaceState, init_state, State } from './state';
 import { Facing, Point, Sprite, Item } from './types';
 import { vm2, vplus, vscale, int, lerp } from './point';
-import { tileOfBoard, boardOfState } from './model';
+import { tileOfGameState, tileOfState } from './model';
 
 export type Animation =
   {
@@ -104,27 +104,18 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'PlayerAnimation':
       const { pos, animState, impetus, flipState, dead } = a;
       return produce(state, s => {
-        if (t == 1) {
-          console.log(pos);
-          s.player = {
-            dead: dead && t >= 0.75,
-            pos: a.pos,
-            posOffset: undefined,
-            animState: animState,
-            flipState: flipState,
-            impetus: impetus
-          };
-          s.time++;
+        s.player = {
+          dead: dead && t >= 0.75,
+          pos: s.player.pos,
+          posOffset: vplus(vscale(s.player.pos, -t), vscale(pos, t)),
+          animState: animState,
+          flipState: flipState,
+          impetus: impetus
         }
-        else {
-          s.player = {
-            dead: dead && t >= 0.75,
-            pos: s.player.pos,
-            posOffset: vplus(vscale(s.player.pos, -t), vscale(pos, t)),
-            animState: animState,
-            flipState: flipState,
-            impetus: impetus
-          };
+        if (t == 1) {
+          s.time++;
+          s.player.pos = pos;
+          s.player.posOffset = undefined;
         }
       });
     case 'ViewPortAnimation': return state;
@@ -146,8 +137,8 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       });
     case 'SavePointChangeAnimation':
       return produce(state, s => {
-        // if (t > 0.5)
-        //   s.lastSave = a.pos;
+        if (t > 0.5)
+          s.lastSave = a.pos;
       });
     case 'RecenterAnimation': return state;
     case 'ItemGetAnimation':
@@ -165,7 +156,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       });
     case 'ButtonToggleAnimation':
       return produce(state, s => {
-        putTileInComplexLayer(s.overlay, a.pos, tileOfBoard(boardOfState(s), a.pos) == 'button_on' ? 'button_off' : 'button_on');
+        putTileInComplexLayer(s.overlay, a.pos, tileOfGameState(s, a.pos) == 'button_on' ? 'button_off' : 'button_on');
       });
   }
 }

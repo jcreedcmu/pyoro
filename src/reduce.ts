@@ -88,13 +88,6 @@ function reduceMove(s: State, move: Move): Result {
 }
 
 export function reduce(s: State, a: Action): Result {
-  const res = _reduce(s, a);
-  console.log(res.state.game.player.pos);
-  console.log(res.state.game.player.pos.x);
-  return res;
-}
-
-export function _reduce(s: State, a: Action): Result {
   switch (a.t) {
     case 'keyDown': {
       const name = a.name;

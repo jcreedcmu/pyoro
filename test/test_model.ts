@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import produce from 'immer';
 import { FULL_IMPETUS } from '../src/constants';
 import { bootstrapComplexLayer, Layer } from '../src/layer';
-import { animateMoveGame, boardOfState, getOverlayForSave, renderGameAnims, tileOfBoard, _putTile, _putTileInGameStateInitOverlay, _putTileInInitOverlay } from '../src/model';
+import { animateMoveGame, getOverlayForSave, renderGameAnims, tileOfGameState, _putTile, _putTileInGameStateInitOverlay, _putTileInInitOverlay } from '../src/model';
 import { GameState, init_player, init_state } from '../src/state';
 import { Move } from '../src/types';
 
@@ -130,7 +130,7 @@ describe('State', () => {
     for (let i = 0; i < FULL_IMPETUS; i++)
       m = executeMove(m, 'up');
 
-    assert.equal(tileOfBoard(boardOfState(m), { x: 0, y: -FULL_IMPETUS }), 'empty');
+    assert.equal(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS }), 'empty');
   });
 
   it('should not breaking ice bricks if there is not enough impetus', () => {
@@ -141,7 +141,7 @@ describe('State', () => {
     for (let i = 0; i < FULL_IMPETUS + 1; i++)
       m = executeMove(m, 'up');
 
-    assert.equal(tileOfBoard(boardOfState(m), { x: 0, y: -FULL_IMPETUS - 1 }), 'fragile_box');
+    assert.equal(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 }), 'fragile_box');
   });
 
 });
