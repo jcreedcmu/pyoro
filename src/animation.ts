@@ -106,7 +106,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       return produce(state, s => {
         s.player = {
           dead: dead && t >= 0.75,
-          pos: { x: s.player.pos.x, y: s.player.pos.y },
+          pos: s.player.pos,
           posOffset: vplus(vscale(s.player.pos, -t), vscale(pos, t)),
           animState: animState,
           flipState: flipState,

@@ -114,11 +114,11 @@ export function reduce(s: State, a: Action): Result {
         throw new Error('Tried to advance frame without active animation');
       }
       if (ams.animator.dur == ams.frame + 1) {
-        const nextState = produce(s, s => {
-          s.iface = renderIfaceAnims(ams.animator.animsIface, 'complete', s);
-          s.game = renderGameAnims(ams.animator.animsGame, 'complete', s.game);
-          s.anim = null;
-        });
+        const nextState = {
+          iface: renderIfaceAnims(ams.animator.animsIface, 'complete', s),
+          game: renderGameAnims(ams.animator.animsGame, 'complete', s.game),
+          anim: null,
+        }
         return { state: nextState, effects: effects };
       }
       else {
