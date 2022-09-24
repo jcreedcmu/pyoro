@@ -29,8 +29,12 @@ function resolveComplexTile(ct: ComplexTile, tilePos: Point, trc: TileResolution
   switch (ct.t) {
     case 'simple':
       return ct.tile;
-    case 'timed':
-      return trc.time % 2 && !(vequal(trc.playerPos, tilePos)) ? 'box' : 'empty';
+    case 'timed': {
+      const len = ct.on_for + ct.off_for;
+      const wantsBox = (trc.time + ct.phase) % len < ct.on_for;
+      const playerIsHere = vequal(trc.playerPos, tilePos);
+      return wantsBox && !playerIsHere ? 'box' : 'empty';
+    }
   }
 }
 
