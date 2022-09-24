@@ -63,7 +63,8 @@ function renderTimedBlockEditor(ttf: TimedTileFields, dispatch: Dispatch): JSX.E
     <label>
       Off for: <input type="text" value={ttf.off_for}
         onChange={e => dispatch({ t: 'setPanelStateField', key: 'off_for', value: e.target.value })} />
-    </label>
+    </label><br />
+    <button onClick={e => dispatch({ t: 'saveModifyPanel' })}>Apply</button>
   </span>;
 }
 

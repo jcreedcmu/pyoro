@@ -1,11 +1,12 @@
 import { produce } from 'immer';
 import { bindings } from './bindings';
 import { editTiles, tools } from "./constants";
+import { putComplexTile } from './layer';
 import { logger } from './logger';
-import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
+import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile, _putTileInInitOverlay } from "./model";
 import { Point } from "./point";
 import { State, TimedTileFields, ToolState } from "./state";
-import { Move, Tile, Tool } from "./types";
+import { ComplexTile, Move, Tile, Tool } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
 
@@ -32,7 +33,9 @@ export type Action =
   | { t: 'doCommand', command: Command }
   | { t: 'doMove', move: Move }
   | { t: 'setCurrentToolState', toolState: ToolState }
-  | PanelStateFieldTypes[keyof TimedTileFields];
+  | PanelStateFieldTypes[keyof TimedTileFields]
+  | { t: 'saveModifyPanel' }
+  ;
 
 export type Dispatch = (a: Action) => void;
 
@@ -163,6 +166,19 @@ export function reduce(s: State, a: Action): Result {
         if (s.iface.toolState.panelState.t == 'timed') {
           s.iface.toolState.panelState[a.key] = a.value;
         }
+      }
+    }));
+    case 'saveModifyPanel': return pure(produce(s, s => {
+      const ts = s.iface.toolState;
+      if (ts.t == 'modify_tool' && ts.modifyCell !== null
+        && ts.panelState.t == 'timed') {
+        const ct: ComplexTile = {
+          t: 'timed',
+          phase: parseInt(ts.panelState.phase),
+          off_for: parseInt(ts.panelState.off_for),
+          on_for: parseInt(ts.panelState.on_for),
+        };
+        putComplexTile(s.game.initOverlay, ts.modifyCell, ct);
       }
     }));
   }
