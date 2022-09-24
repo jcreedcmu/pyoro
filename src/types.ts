@@ -11,9 +11,12 @@ export type Item =
   | 'coin'
   ;
 
+export type TimedBlockComplexTile =
+  { t: 'timed', phase: 0, on_for: number, off_for: number };
+
 export type ComplexTile =
   | { t: 'simple', tile: Tile }
-  | { t: 'timed', phase: 0, on_for: number, off_for: number }
+  | TimedBlockComplexTile
   ;
 
 export type Tile =

@@ -1,17 +1,17 @@
+import * as CSS from 'csstype';
 import * as React from 'react';
 import { FRAME_DURATION_MS } from './constants';
 import { DragHandler } from './drag-handler';
 import { keyFromCode } from './key';
-import { bootstrapComplexLayer } from './layer';
 import { logger } from './logger';
-import { getOverlayForSave } from './model';
+import { complexTileOfState, getOverlayForSave } from './model';
 import { Dispatch, Effect, reduce } from './reduce';
 import { init_state, State, ToolState } from './state';
+import { TimedBlockComplexTile } from './types';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
-import * as CSS from 'csstype';
 
 type CanvasProps = {
   main: State,
@@ -49,6 +49,47 @@ function cursorOfToolState(toolState: ToolState): CSS.Property.Cursor {
     case 'modify_tool': return 'url(/assets/modify-tool.png) 16 16, auto';
   }
 }
+
+function renderTimedBlockEditor(ct: TimedBlockComplexTile, dispatch: Dispatch): JSX.Element {
+  return <span>
+    <label>
+      Phase: <input type="text" value={ct.phase}
+        onChange={e => dispatch({ t: 'setPhase', value: parseInt(e.target.value) })} />
+    </label><br />
+    <label>
+      On for: <input type="text" value={ct.on_for}
+        onChange={e => dispatch({ t: 'setOnFor', value: parseInt(e.target.value) })} />
+    </label><br />
+    <label>
+      Off for: <input type="text" value={ct.off_for}
+        onChange={e => dispatch({ t: 'setOffFor', value: parseInt(e.target.value) })} />
+    </label>
+  </span>;
+}
+
+function renderModifyPanel(state: State, dispatch: Dispatch): JSX.Element | null {
+  const toolState = state.iface.toolState;
+  if (toolState.t == 'modify_tool' && toolState.modifyCell !== null) {
+    const style: React.CSSProperties = {
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      bottom: 0,
+      backgroundColor: '#ddd',
+      width: '300px',
+    };
+    let content: JSX.Element = <span>No properties to edit</span>;
+    const ct = complexTileOfState(state, toolState.modifyCell);
+    if (ct.t == 'timed') {
+      content = renderTimedBlockEditor(ct, dispatch);
+    }
+    return <div style={style}>{content}</div>;
+  }
+  else {
+    return null;
+  }
+}
+
 export function App(props: {}): JSX.Element {
   function render(ci: CanvasInfo, props: CanvasProps) {
     const { d, size: { x, y } } = ci;
@@ -121,6 +162,11 @@ export function App(props: {}): JSX.Element {
     ? <DragHandler dispatch={dispatch} />
     : undefined;
 
-  const cursor = cursorOfToolState(state.iface.toolState);
-  return <div><canvas style={{ cursor }} ref={cref} />{dragHandler}</div>;
+  const canvasCursor = cursorOfToolState(state.iface.toolState);
+  const modifyPanel = renderModifyPanel(state, dispatch);
+  return <div>
+    <canvas style={{ cursor: canvasCursor }} ref={cref} />
+    {dragHandler}
+    {modifyPanel}
+  </div>;
 }

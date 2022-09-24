@@ -28,7 +28,10 @@ export type Action =
   | { t: 'nextFrame' }
   | { t: 'doCommand', command: Command }
   | { t: 'doMove', move: Move }
-  | { t: 'setCurrentToolState', toolState: ToolState };
+  | { t: 'setCurrentToolState', toolState: ToolState }
+  | { t: 'setPhase', value: number }
+  | { t: 'setOnFor', value: number }
+  | { t: 'setOffFor', value: number };
 
 export type Dispatch = (a: Action) => void;
 
@@ -154,5 +157,8 @@ export function reduce(s: State, a: Action): Result {
       return pure(produce(s, s => {
         s.iface.toolState = a.toolState;
       }));
+    case 'setPhase': return pure(s);
+    case 'setOnFor': return pure(s);
+    case 'setOffFor': return pure(s);
   }
 }
