@@ -6,11 +6,12 @@ import { bootstrapComplexLayer } from './layer';
 import { logger } from './logger';
 import { getOverlayForSave } from './model';
 import { Dispatch, Effect, reduce } from './reduce';
-import { init_state, State } from './state';
+import { init_state, State, ToolState } from './state';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
+import * as CSS from 'csstype';
 
 type CanvasProps = {
   main: State,
@@ -41,6 +42,13 @@ function passthrough(k: string): boolean {
   return k == 'C-r';
 }
 
+function cursorOfToolState(toolState: ToolState): CSS.Property.Cursor {
+  switch (toolState.t) {
+    case 'hand_tool': return 'grab';
+    case 'pencil_tool': return 'cell';
+    case 'modify_tool': return 'url(/assets/modify-tool.png) 16 16, auto';
+  }
+}
 export function App(props: {}): JSX.Element {
   function render(ci: CanvasInfo, props: CanvasProps) {
     const { d, size: { x, y } } = ci;
@@ -113,5 +121,6 @@ export function App(props: {}): JSX.Element {
     ? <DragHandler dispatch={dispatch} />
     : undefined;
 
-  return <div><canvas ref={cref} />{dragHandler}</div>;
+  const cursor = cursorOfToolState(state.iface.toolState);
+  return <div><canvas style={{ cursor }} ref={cref} />{dragHandler}</div>;
 }
