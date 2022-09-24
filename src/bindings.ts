@@ -33,8 +33,8 @@ export const commandBindings: Dict<Command> = {
 }
 
 export const miscBindings: Dict<Action> = {
-  'h': { t: 'setCurrentTool', tool: 'hand_tool' },
-  'n': { t: 'setCurrentTool', tool: 'pencil_tool' },
+  'h': { t: 'setCurrentToolState', toolState: { t: 'hand_tool' } },
+  'n': { t: 'setCurrentToolState', toolState: { t: 'pencil_tool' } },
 }
 
 export const bindings: Dict<Action> = {

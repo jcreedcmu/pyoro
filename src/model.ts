@@ -3,8 +3,8 @@ import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration 
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
 import { ComplexLayer, complexTileOfStack, isEmptyTile, LayerStack, putComplexTile, putTileInComplexLayer, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
-import { GameState, IfaceState, Player, State } from "./state";
-import { ComplexTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile } from './types';
+import { GameState, IfaceState, Player, State, ToolState } from "./state";
+import { ComplexTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
 import { max } from './util';
 import { WidgetPoint } from './view';
 
@@ -397,7 +397,8 @@ function determineTileToPut(s: State, worldPoint: Point): ComplexTile {
 }
 
 export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Point): State {
-  switch (tools[s.iface.currentToolIx]) {
+  const toolState = s.iface.toolState;
+  switch (toolState.t) {
     case 'pencil_tool':
       const tileToPut = determineTileToPut(s, worldPoint);
       return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
@@ -405,7 +406,7 @@ export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Po
       return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint, initViewPort: s.iface.viewPort } });
     case 'modify_tool':
       return produce(s, s => {
-        s.iface.modifyCell = worldPoint;
+        s.iface.toolState = { t: 'modify_tool', modifyCell: worldPoint };
       });
   }
 }
@@ -434,6 +435,14 @@ export function handle_world_drag(s: State, rawPoint: Point, widgetPoint: Widget
   }
 }
 
+function initialToolState(t: Tool): ToolState {
+  switch (t) {
+    case 'pencil_tool': return { t: 'pencil_tool' };
+    case 'hand_tool': return { t: 'hand_tool' };
+    case 'modify_tool': return { t: 'modify_tool', modifyCell: null };
+  }
+}
+
 export function handle_toolbar_mousedown(s: State, p: Point): State {
   if (p.y == 0) {
     return produce(s, s => {
@@ -444,7 +453,7 @@ export function handle_toolbar_mousedown(s: State, p: Point): State {
   else if (p.y == 1) {
     return produce(s, s => {
       if (p.x < tools.length && p.x >= 0)
-        s.iface.currentToolIx = p.x;
+        s.iface.toolState = initialToolState(tools[p.x]);
     });
   }
   else {

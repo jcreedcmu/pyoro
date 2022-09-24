@@ -4,7 +4,7 @@ import { editTiles, tools } from "./constants";
 import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
-import { State } from "./state";
+import { State, ToolState } from "./state";
 import { Move, Tile, Tool } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
@@ -28,7 +28,7 @@ export type Action =
   | { t: 'nextFrame' }
   | { t: 'doCommand', command: Command }
   | { t: 'doMove', move: Move }
-  | { t: 'setCurrentTool', tool: Tool };
+  | { t: 'setCurrentToolState', toolState: ToolState };
 
 export type Dispatch = (a: Action) => void;
 
@@ -150,15 +150,9 @@ export function reduce(s: State, a: Action): Result {
       return reduceCommand(s, a.command);
     case 'doMove':
       return reduceMove(s, a.move);
-    case 'setCurrentTool':
+    case 'setCurrentToolState':
       return pure(produce(s, s => {
-        const ix = tools.findIndex(x => x == a.tool);
-        if (ix !== -1) {
-          s.iface.currentToolIx = ix;
-        }
-        else {
-          console.error(`invalid tool ${a.tool}`);
-        }
+        s.iface.toolState = a.toolState;
       }));
   }
 }

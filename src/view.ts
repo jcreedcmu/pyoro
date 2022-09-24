@@ -51,8 +51,9 @@ function drawScaled(fv: FView, state: State): void {
   d.clip();
   drawField(fv, state);
 
-  if (state.iface.modifyCell !== null) {
-    drawWorldTileSelection(fv, vsub(state.iface.modifyCell, state.iface.viewPort));
+  const ts = state.iface.toolState;
+  if (ts.t == 'modify_tool' && ts.modifyCell !== null) {
+    drawWorldTileSelection(fv, vsub(ts.modifyCell, state.iface.viewPort));
   }
   d.restore();
 
@@ -133,7 +134,7 @@ function drawEditorStuff(fv: FView, state: State): void {
 
   // toolbar
   tools.forEach((t, ix) => {
-    raw_draw_sprite(fv, ix == state.iface.currentToolIx ? `${t}_active` : `${t}_inactive`,
+    raw_draw_sprite(fv, t == state.iface.toolState.t ? `${t}_active` : `${t}_inactive`,
       { x: ix * TILE_SIZE * SCALE, y: TILE_SIZE * SCALE });
   });
 

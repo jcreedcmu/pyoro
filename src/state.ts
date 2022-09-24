@@ -26,9 +26,8 @@ export type MouseState =
 
 export type IfaceState = {
   keysDown: Record<string, boolean>,
-  modifyCell: Point | null,
   editTileIx: number,
-  currentToolIx: number,
+  toolState: ToolState,
   editTileRotation: number,
   viewPort: Point,
   blackout: number,
@@ -63,6 +62,11 @@ export const init_player: Player = {
 
 const emptyOverlay: ComplexLayer = { tiles: {} };
 
+export type ToolState =
+  | { t: 'hand_tool' }
+  | { t: 'pencil_tool' }
+  | { t: 'modify_tool', modifyCell: Point | null };
+
 export const init_state: State = {
   game: {
     player: init_player,
@@ -78,11 +82,10 @@ export const init_state: State = {
     viewPort: { x: -13, y: -9 },
     blackout: 0,
     editTileIx: 0,
-    currentToolIx: 0,
+    toolState: { t: 'pencil_tool' },
     editTileRotation: 0,
     mouse: { t: 'up' },
     vd: null,
-    modifyCell: null,
   },
   anim: null,
 };
