@@ -62,10 +62,20 @@ export const init_player: Player = {
 
 const emptyOverlay: ComplexLayer = { tiles: {} };
 
+
+// In the interface, not in the model
+export type TimedTileFields = { phase: string, on_for: string, off_for: string };
+
+export type ModifyPanelState =
+  | { t: 'none' }
+  | { t: 'timed' } & TimedTileFields
+  ;
+
 export type ToolState =
   | { t: 'hand_tool' }
   | { t: 'pencil_tool' }
-  | { t: 'modify_tool', modifyCell: Point | null };
+  | { t: 'modify_tool', modifyCell: Point | null, panelState: ModifyPanelState }
+  ;
 
 export const init_state: State = {
   game: {

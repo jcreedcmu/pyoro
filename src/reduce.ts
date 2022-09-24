@@ -4,7 +4,7 @@ import { editTiles, tools } from "./constants";
 import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile } from "./model";
 import { Point } from "./point";
-import { State, ToolState } from "./state";
+import { State, TimedTileFields, ToolState } from "./state";
 import { Move, Tile, Tool } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
@@ -15,6 +15,9 @@ export type Command =
   | 'saveOverlay'
   | 'rotateEditTile'
   | 'debug';
+
+
+type PanelStateFieldTypes = { [P in keyof TimedTileFields]: { t: 'setPanelStateField', key: P, value: TimedTileFields[P] } };
 
 export type Action =
   | { t: 'keyUp', key: string, code: string, name: string }
@@ -29,9 +32,7 @@ export type Action =
   | { t: 'doCommand', command: Command }
   | { t: 'doMove', move: Move }
   | { t: 'setCurrentToolState', toolState: ToolState }
-  | { t: 'setPhase', value: number }
-  | { t: 'setOnFor', value: number }
-  | { t: 'setOffFor', value: number };
+  | PanelStateFieldTypes[keyof TimedTileFields];
 
 export type Dispatch = (a: Action) => void;
 
@@ -157,8 +158,12 @@ export function reduce(s: State, a: Action): Result {
       return pure(produce(s, s => {
         s.iface.toolState = a.toolState;
       }));
-    case 'setPhase': return pure(s);
-    case 'setOnFor': return pure(s);
-    case 'setOffFor': return pure(s);
+    case 'setPanelStateField': return pure(produce(s, s => {
+      if (s.iface.toolState.t == 'modify_tool') {
+        if (s.iface.toolState.panelState.t == 'timed') {
+          s.iface.toolState.panelState[a.key] = a.value;
+        }
+      }
+    }));
   }
 }

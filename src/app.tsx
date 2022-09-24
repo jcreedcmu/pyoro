@@ -6,7 +6,7 @@ import { keyFromCode } from './key';
 import { logger } from './logger';
 import { complexTileOfState, getOverlayForSave } from './model';
 import { Dispatch, Effect, reduce } from './reduce';
-import { init_state, State, ToolState } from './state';
+import { init_state, ModifyPanelState, State, TimedTileFields, ToolState } from './state';
 import { TimedBlockComplexTile } from './types';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
@@ -50,19 +50,19 @@ function cursorOfToolState(toolState: ToolState): CSS.Property.Cursor {
   }
 }
 
-function renderTimedBlockEditor(ct: TimedBlockComplexTile, dispatch: Dispatch): JSX.Element {
+function renderTimedBlockEditor(ttf: TimedTileFields, dispatch: Dispatch): JSX.Element {
   return <span>
     <label>
-      Phase: <input type="text" value={ct.phase}
-        onChange={e => dispatch({ t: 'setPhase', value: parseInt(e.target.value) })} />
+      Phase: <input type="text" value={ttf.phase}
+        onChange={e => dispatch({ t: 'setPanelStateField', key: 'phase', value: e.target.value })} />
     </label><br />
     <label>
-      On for: <input type="text" value={ct.on_for}
-        onChange={e => dispatch({ t: 'setOnFor', value: parseInt(e.target.value) })} />
+      On for: <input type="text" value={ttf.on_for}
+        onChange={e => dispatch({ t: 'setPanelStateField', key: 'on_for', value: e.target.value })} />
     </label><br />
     <label>
-      Off for: <input type="text" value={ct.off_for}
-        onChange={e => dispatch({ t: 'setOffFor', value: parseInt(e.target.value) })} />
+      Off for: <input type="text" value={ttf.off_for}
+        onChange={e => dispatch({ t: 'setPanelStateField', key: 'off_for', value: e.target.value })} />
     </label>
   </span>;
 }
@@ -79,9 +79,9 @@ function renderModifyPanel(state: State, dispatch: Dispatch): JSX.Element | null
       width: '300px',
     };
     let content: JSX.Element = <span>No properties to edit</span>;
-    const ct = complexTileOfState(state, toolState.modifyCell);
-    if (ct.t == 'timed') {
-      content = renderTimedBlockEditor(ct, dispatch);
+    const ps = toolState.panelState;
+    if (ps.t == 'timed') {
+      content = renderTimedBlockEditor(ps, dispatch);
     }
     return <div style={style}>{content}</div>;
   }
