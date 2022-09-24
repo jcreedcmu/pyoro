@@ -101,18 +101,19 @@ export function App(props: {}): JSX.Element {
     }
   }
 
-  function handleKeyDown(e: KeyboardEvent) {
-    const name = keyFromCode(e);
+  function handleKeyDown(e: React.KeyboardEvent) {
+    console.log('keydown');
+    const name = keyFromCode(e.nativeEvent);
     logger('keys', 'keydown: [keycode, key, code, name]', e.keyCode, e.key, e.code, name);
-    if (!passthrough(name)) {
+    if (!passthrough(name) && !(state.iface.toolState.t == 'modify_tool')) {
       e.stopPropagation();
       e.preventDefault();
     }
     dispatch({ t: 'keyDown', key: e.key, code: e.code, name: name });
   }
 
-  function handleKeyUp(e: KeyboardEvent) {
-    const k = keyFromCode(e);
+  function handleKeyUp(e: React.KeyboardEvent) {
+    const k = keyFromCode(e.nativeEvent);
     logger('keys', 'keyup: [keycode, key, code, name]', e.keyCode, e.key, e.code, k);
     dispatch({ t: 'keyUp', key: e.key, code: e.code, name: k });
   }
@@ -132,6 +133,7 @@ export function App(props: {}): JSX.Element {
     { main: state, spriteImg: spriteImg }, render,
     [state, spriteImg, state.iface.vd],
     ci => {
+      ci.c.focus();
       dispatch({ t: 'resize', vd: resizeView(ci.c) });
     }
   );
@@ -145,14 +147,10 @@ export function App(props: {}): JSX.Element {
   // Event handlers
   React.useEffect(() => {
     logger('chatty', 'installing global event handlers');
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
     document.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('resize', handleResize);
     return () => {
       logger('chatty', 'uninstalling global event handlers');
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
       document.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('resize', handleResize);
     }
@@ -165,7 +163,11 @@ export function App(props: {}): JSX.Element {
   const canvasCursor = cursorOfToolState(state.iface.toolState);
   const modifyPanel = renderModifyPanel(state, dispatch);
   return <div>
-    <canvas style={{ cursor: canvasCursor }} ref={cref} />
+    <canvas style={{ cursor: canvasCursor }}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
+      ref={cref} />
     {dragHandler}
     {modifyPanel}
   </div>;
