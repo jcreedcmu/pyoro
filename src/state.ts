@@ -26,6 +26,7 @@ export type MouseState =
 
 export type IfaceState = {
   keysDown: Record<string, boolean>,
+  modifyCell: Point | null,
   editTileIx: number,
   currentToolIx: number,
   editTileRotation: number,
@@ -81,6 +82,7 @@ export const init_state: State = {
     editTileRotation: 0,
     mouse: { t: 'up' },
     vd: null,
+    modifyCell: null,
   },
   anim: null,
 };

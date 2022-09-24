@@ -64,6 +64,7 @@ export type PlayerSprite =
 export type Tool =
   | 'hand_tool'
   | 'pencil_tool'
+  | 'modify_tool'
   ;
 
 export type ToolTile =

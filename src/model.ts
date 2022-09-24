@@ -403,6 +403,10 @@ export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Po
       return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
     case 'hand_tool':
       return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint, initViewPort: s.iface.viewPort } });
+    case 'modify_tool':
+      return produce(s, s => {
+        s.iface.modifyCell = worldPoint;
+      });
   }
 }
 

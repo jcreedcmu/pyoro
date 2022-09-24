@@ -6,7 +6,7 @@ import { DEBUG } from './logger';
 import { editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE, tools } from './constants';
 import { getItem, getTile, PointMap, putItem } from './layer';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
-import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale } from './point';
+import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
 import { State } from './state';
 import { Item, Point, Sprite, Tool, ToolTile } from './types';
 import * as u from './util';
@@ -50,6 +50,10 @@ function drawScaled(fv: FView, state: State): void {
     NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
   d.clip();
   drawField(fv, state);
+
+  if (state.iface.modifyCell !== null) {
+    drawWorldTileSelection(fv, vsub(state.iface.modifyCell, state.iface.viewPort));
+  }
   d.restore();
 
   drawEditorStuff(fv, state);
@@ -105,11 +109,22 @@ function drawField(fv: FView, state: State): void {
     state.game.player.flipState == 'left');
 }
 
-function drawSelection(d: CanvasRenderingContext2D, p: Point): void {
+function drawInventorySelection(d: CanvasRenderingContext2D, p: Point): void {
   d.fillStyle = rgba(0, 192, 192, 0.7);
   d.beginPath();
   d.rect(p.x * TILE_SIZE * SCALE, p.y * TILE_SIZE * SCALE, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
   d.rect((p.x * TILE_SIZE + 1) * SCALE, (p.y * TILE_SIZE + 1) * SCALE, (TILE_SIZE - 2) * SCALE, (TILE_SIZE - 2) * SCALE);
+  d.fill('evenodd');
+}
+
+function drawWorldTileSelection(fv: FView, p: Point): void {
+  const { d } = fv;
+  d.fillStyle = rgba(0, 192, 192, 0.7);
+  const sp = worldTilePosition(fv, p);
+  console.log(sp);
+  d.beginPath();
+  d.rect(sp.x, sp.y, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
+  d.rect(sp.x + SCALE, sp.y + SCALE, (TILE_SIZE - 2) * SCALE, (TILE_SIZE - 2) * SCALE);
   d.fill('evenodd');
 }
 
@@ -133,7 +148,7 @@ function drawEditorStuff(fv: FView, state: State): void {
   });
 
   // selected tile & selected tool
-  drawSelection(d, { x: state.iface.editTileIx, y: 0 });
+  drawInventorySelection(d, { x: state.iface.editTileIx, y: 0 });
 
   if (state.iface.blackout) {
     const c = u.rgbOfColor(guiData.stage_color);
@@ -201,12 +216,16 @@ function raw_draw_sprite(fv: FView, sprite_id: Sprite, spos: Point, flip?: boole
   d.restore();
 }
 
+function worldTilePosition(fv: FView, wpos: Point): Point {
+  return vm2(fv.vd.origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE);
+}
+
 // wpos: position in window, in tiles. (0,0) is top left of viewport
 function draw_sprite(fv: FView, sprite_id: Sprite, wpos: Point, flip?: boolean): void {
   const { vd: { origin } } = fv;
   if (wpos.x < - 1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
     return;
-  raw_draw_sprite(fv, sprite_id, vm2(origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE), flip);
+  raw_draw_sprite(fv, sprite_id, worldTilePosition(fv, wpos), flip);
 }
 
 export function drawView(fv: FView, state: State): void {

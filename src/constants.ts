@@ -33,6 +33,8 @@ export const sprites: { [k in Sprite]: Point } = {
   hand_tool_active: { x: 10, y: 1 },
   pencil_tool_inactive: { x: 11, y: 0 },
   pencil_tool_active: { x: 11, y: 1 },
+  modify_tool_inactive: { x: 12, y: 0 },
+  modify_tool_active: { x: 12, y: 1 },
   button_on: { x: 5, y: 5 },
   button_off: { x: 5, y: 6 },
   timed_wall: { x: 9, y: 2 },
@@ -40,7 +42,8 @@ export const sprites: { [k in Sprite]: Point } = {
 
 export const tools: Tool[] = [
   'pencil_tool',
-  'hand_tool'
+  'hand_tool',
+  'modify_tool',
 ]
 
 export const editTiles: Tile[] =
