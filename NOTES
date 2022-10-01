@@ -18,3 +18,6 @@ Interesting corner cases:
 Diagonal-up pushing of a button
 Diagonal-crossing of a block
 Skimming just behind a phased transient block
+
+impetus bug: shouldn't be able to jump just after clearing solid
+ground over into empty space.
