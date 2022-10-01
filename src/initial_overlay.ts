@@ -545,8 +545,8 @@ export const initOverlay: ComplexLayer = {
     "4,2": {
       "t": "timed",
       "phase": 0,
-      "on_for": 1,
-      "off_for": 1
+      "off_for": 5,
+      "on_for": 1
     },
     "4,4": {
       "t": "simple",
@@ -615,6 +615,18 @@ export const initOverlay: ComplexLayer = {
       "phase": 3,
       "off_for": 3,
       "on_for": 1
+    },
+    "11,-1": {
+      "t": "simple",
+      "tile": "box"
+    },
+    "12,-1": {
+      "t": "simple",
+      "tile": "box"
+    },
+    "12,-2": {
+      "t": "simple",
+      "tile": "teal_fruit"
     }
   }
 };

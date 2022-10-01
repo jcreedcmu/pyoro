@@ -10,3 +10,11 @@ mechanics:
    dash
    gravity reverse
    walls that only horizontally block
+
+=== 2022.10.01 META: (:id 8e07867b-5617-4e73-8c25-8e3cd930fb47)
+
+Interesting corner cases:
+
+Diagonal-up pushing of a button
+Diagonal-crossing of a block
+Skimming just behind a phased transient block
