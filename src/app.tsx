@@ -44,6 +44,7 @@ function passthrough(k: string): boolean {
 
 function cursorOfToolState(toolState: ToolState): CSS.Property.Cursor {
   switch (toolState.t) {
+    case 'play_tool': return 'pointer';
     case 'hand_tool': return 'grab';
     case 'pencil_tool': return 'cell';
     case 'modify_tool': return 'url(/assets/modify-tool.png) 16 16, auto';

@@ -72,6 +72,7 @@ export type ModifyPanelState =
   ;
 
 export type ToolState =
+  | { t: 'play_tool' }
   | { t: 'hand_tool' }
   | { t: 'pencil_tool' }
   | { t: 'modify_tool', modifyCell: Point | null, panelState: ModifyPanelState }

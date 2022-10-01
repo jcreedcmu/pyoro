@@ -35,12 +35,15 @@ export const sprites: { [k in Sprite]: Point } = {
   pencil_tool_active: { x: 11, y: 1 },
   modify_tool_inactive: { x: 12, y: 0 },
   modify_tool_active: { x: 12, y: 1 },
+  play_tool_inactive: { x: 13, y: 0 },
+  play_tool_active: { x: 13, y: 1 },
   button_on: { x: 5, y: 5 },
   button_off: { x: 5, y: 6 },
   timed_wall: { x: 9, y: 2 },
 };
 
 export const tools: Tool[] = [
+  'play_tool',
   'pencil_tool',
   'hand_tool',
   'modify_tool',

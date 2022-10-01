@@ -93,7 +93,7 @@ function drawField(fv: FView, state: State): void {
     for (let x = 0; x < NUM_TILES.x + 1; x++) {
       const p = { x, y };
       const realp = vplus(p, vint(vp));
-      const viewIntent = state.iface.toolState.t == 'modify_tool';
+      const viewIntent = state.iface.toolState.t != 'play_tool';
       let tile = tileOfState(state, realp, viewIntent);
       if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state))
         tile = 'empty';
