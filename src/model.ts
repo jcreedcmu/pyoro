@@ -173,17 +173,17 @@ function get_flip_state(move: MotiveMove): Facing | null {
   }
 }
 
-export function tileOfState(s: State, p: Point): Tile {
-  return tileOfGameState(s.game, p);
+export function tileOfState(s: State, p: Point, viewIntent?: boolean): Tile {
+  return tileOfGameState(s.game, p, viewIntent);
 }
 
 export function complexTileOfState(s: State, p: Point): ComplexTile {
   return complexTileOfGameState(s.game, p);
 }
 
-export function tileOfGameState(s: GameState, p: Point): Tile {
+export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): Tile {
   const { player, trc } = boardOfState(s);
-  return tileOfStack(trc.layerStack, p, trc);
+  return tileOfStack(trc.layerStack, p, trc, viewIntent);
 }
 
 export function complexTileOfGameState(s: GameState, p: Point): ComplexTile {

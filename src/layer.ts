@@ -25,11 +25,14 @@ export type TileResolutionContext = {
   layerStack: LayerStack,
 }
 
-function resolveComplexTile(ct: ComplexTile, tilePos: Point, trc: TileResolutionContext): Tile {
+function resolveComplexTile(ct: ComplexTile, tilePos: Point, trc: TileResolutionContext, viewIntent?: boolean): Tile {
   switch (ct.t) {
     case 'simple':
       return ct.tile;
     case 'timed': {
+      if (viewIntent) {
+        return 'timed_wall';
+      }
       const len = ct.on_for + ct.off_for;
       const wantsBox = (trc.time + ct.phase) % len < ct.on_for;
       const playerIsHere = vequal(trc.playerPos, tilePos);
@@ -63,9 +66,9 @@ export function putTile(l: Layer, p: Point, t: Tile): void {
   putItem(l, p, t);
 }
 
-export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext): Tile {
+export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext, viewIntent?: boolean): Tile {
   const ct = complexTileOfStack(ls, p);
-  return resolveComplexTile(ct, p, trc);
+  return resolveComplexTile(ct, p, trc, viewIntent);
 }
 
 export function complexTileOfStack(ls: LayerStack, p: Point): ComplexTile {

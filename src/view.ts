@@ -1,14 +1,13 @@
-import produce from 'immer';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { App } from './app';
-import { DEBUG } from './logger';
 import { editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE, tools } from './constants';
-import { getItem, getTile, PointMap, putItem } from './layer';
+import { getItem, PointMap, putItem } from './layer';
+import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
 import { State } from './state';
-import { Item, Point, Sprite, Tool, ToolTile } from './types';
+import { Item, Point, Sprite } from './types';
 import * as u from './util';
 import { rgba } from './util';
 
@@ -94,7 +93,8 @@ function drawField(fv: FView, state: State): void {
     for (let x = 0; x < NUM_TILES.x + 1; x++) {
       const p = { x, y };
       const realp = vplus(p, vint(vp));
-      let tile = tileOfState(state, realp);
+      const viewIntent = state.iface.toolState.t == 'modify_tool';
+      let tile = tileOfState(state, realp, viewIntent);
       if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state))
         tile = 'empty';
       draw_sprite(fv, tile, vminus(p, vfpart(vp)));
