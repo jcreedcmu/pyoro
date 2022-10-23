@@ -73,6 +73,12 @@ function drawScaled(fv: FView, state: State): void {
     d.textBaseline = 'top';
     d.fillText(`time: ${state.game.time}`, fv.vd.origin.x + 3, fv.vd.origin.y + 3);
   }
+  if (DEBUG.impetus) {
+    d.fillStyle = 'black';
+    d.font = '10px sans-serif';
+    d.textBaseline = 'top';
+    d.fillText(`impetus: ${state.game.player.impetus}`, fv.vd.origin.x + 3, fv.vd.origin.y + 13);
+  }
 }
 
 function drawField(fv: FView, state: State): void {

@@ -8,6 +8,7 @@ export const DEBUG = {
   networkRequest: false,
   error: true,
   gameTime: true,
+  impetus: true,
 };
 
 export function logger(level: keyof (typeof DEBUG), ...args: any[]) {

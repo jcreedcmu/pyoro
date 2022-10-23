@@ -228,6 +228,19 @@ function forceBlock(s: GameState, pos: Point, tile: Tile): Animation[] {
   }
 }
 
+function isJump(move: Move): boolean {
+  switch (move) {
+    case 'up': return true;
+    case 'down': return false;
+    case 'left': return false;
+    case 'right': return false;
+    case 'up-left': return true;
+    case 'up-right': return true;
+    case 'reset': return false;
+    case 'recenter': return false;
+  }
+}
+
 // The animations we return here are concurrent
 export function animateMoveGame(s: GameState, move: Move): Animation[] {
   const forcedBlocks: Point[] = []
@@ -263,7 +276,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   let impetus = player.impetus;
 
-  if (stableBefore)
+  if (stableBefore && isJump(move))
     impetus = genImpetus(tileBefore) + (s.inventory.teal_fruit ?? 0);
   else if (result.impetus != null)
     impetus = result.impetus;

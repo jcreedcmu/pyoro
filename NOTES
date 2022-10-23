@@ -21,3 +21,8 @@ Skimming just behind a phased transient block
 
 impetus bug: shouldn't be able to jump just after clearing solid
 ground over into empty space.
+
+=== 2022.10.23 META: (:id bb10c225-f265-4737-9b70-5c3955676228)
+
+further information about above impetus bug: it only happens if I have
+>0 impetus before "jumping off the cliff" horizontally. Fixed now.
