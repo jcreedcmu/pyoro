@@ -403,7 +403,7 @@ function defaultComplexTileToPut(tile: Tile): ComplexTile {
   if (tile == 'timed_wall')
     return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
   else if (tile == 'buttoned_wall') {
-    return { t: 'buttoned', button_source: { x: 0, y: 0 } };
+    return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
   }
   else
     return { t: 'simple', tile: tile };

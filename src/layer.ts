@@ -42,7 +42,8 @@ function resolveComplexTile(ct: ComplexTile, tilePos: Point, trc: TileResolution
       if (viewIntent) {
         return 'buttoned_wall';
       }
-      return 'box'; // FIXME
+      else
+        return tileOfStack(trc.layerStack, ct.button_source, trc, viewIntent) == 'button_on' ? 'box' : 'empty';
     }
   }
 }
