@@ -6,7 +6,7 @@ import { keyFromCode } from './key';
 import { logger } from './logger';
 import { complexTileOfState, getOverlayForSave } from './model';
 import { Dispatch, Effect, reduce } from './reduce';
-import { init_state, ModifyPanelState, State, TimedTileFields, ToolState } from './state';
+import { ButtonedTileFields, init_state, ModifyPanelState, State, TimedTileFields, ToolState } from './state';
 import { TimedBlockComplexTile } from './types';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
@@ -64,6 +64,20 @@ function renderTimedBlockEditor(ttf: TimedTileFields, dispatch: Dispatch): JSX.E
     <label>
       Off for: <input type="text" value={ttf.off_for}
         onChange={e => dispatch({ t: 'setPanelStateField', key: 'off_for', value: e.target.value })} />
+    </label><br />
+    <button onClick={e => dispatch({ t: 'saveModifyPanel' })}>Apply</button>
+  </span>;
+}
+
+function renderButtonedBlockEditor(ttf: ButtonedTileFields, dispatch: Dispatch): JSX.Element {
+  return <span>
+    <label>
+      Phase: <input type="text" value={ttf.x}
+        onChange={e => dispatch({ t: 'setPanelStateField', key: 'x', value: e.target.value })} />
+    </label><br />
+    <label>
+      On for: <input type="text" value={ttf.y}
+        onChange={e => dispatch({ t: 'setPanelStateField', key: 'y', value: e.target.value })} />
     </label><br />
     <button onClick={e => dispatch({ t: 'saveModifyPanel' })}>Apply</button>
   </span>;

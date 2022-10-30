@@ -5,7 +5,7 @@ import { putComplexTile } from './layer';
 import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile, _putTileInInitOverlay } from "./model";
 import { Point } from "./point";
-import { State, TimedTileFields, ToolState } from "./state";
+import { ButtonedTileFields, State, TimedTileFields, ToolState } from "./state";
 import { ComplexTile, Move, Tile, Tool } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
@@ -18,7 +18,9 @@ export type Command =
   | 'debug';
 
 
-type PanelStateFieldTypes = { [P in keyof TimedTileFields]: { t: 'setPanelStateField', key: P, value: TimedTileFields[P] } };
+type PanelStateFieldTypes =
+  { [P in keyof TimedTileFields]: { t: 'setPanelStateField', key: P, value: TimedTileFields[P] } }
+  & { [P in keyof ButtonedTileFields]: { t: 'setPanelStateField', key: P, value: ButtonedTileFields[P] } };
 
 export type Action =
   | { t: 'keyUp', key: string, code: string, name: string }
@@ -34,6 +36,7 @@ export type Action =
   | { t: 'doMove', move: Move }
   | { t: 'setCurrentToolState', toolState: ToolState }
   | PanelStateFieldTypes[keyof TimedTileFields]
+  | PanelStateFieldTypes[keyof ButtonedTileFields]
   | { t: 'saveModifyPanel' }
   ;
 
@@ -164,7 +167,10 @@ export function reduce(s: State, a: Action): Result {
     case 'setPanelStateField': return pure(produce(s, s => {
       if (s.iface.toolState.t == 'modify_tool') {
         if (s.iface.toolState.panelState.t == 'timed') {
-          s.iface.toolState.panelState[a.key] = a.value;
+          (s.iface.toolState.panelState as any)[a.key] = a.value; // FIXME
+        }
+        if (s.iface.toolState.panelState.t == 'buttoned') {
+          (s.iface.toolState.panelState as any)[a.key] = a.value; // FIXME
         }
       }
     }));

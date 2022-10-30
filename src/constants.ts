@@ -40,6 +40,7 @@ export const sprites: { [k in Sprite]: Point } = {
   button_on: { x: 5, y: 5 },
   button_off: { x: 5, y: 6 },
   timed_wall: { x: 9, y: 2 },
+  buttoned_wall: { x: 9, y: 3 },
 };
 
 export const tools: Tool[] = [
@@ -64,6 +65,7 @@ export const editTiles: Tile[] =
     'button_on',
     'button_off',
     'timed_wall',
+    'buttoned_wall',
   ];
 
 export function rotateTile(tile: Tile, amount: number): Tile {

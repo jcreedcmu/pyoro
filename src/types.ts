@@ -14,9 +14,13 @@ export type Item =
 export type TimedBlockComplexTile =
   { t: 'timed', phase: number, on_for: number, off_for: number };
 
+export type ButtonedBlockComplexTile =
+  { t: 'buttoned', button_source: Point };
+
 export type ComplexTile =
   | { t: 'simple', tile: Tile }
   | TimedBlockComplexTile
+  | ButtonedBlockComplexTile
   ;
 
 export type Tile =
@@ -36,6 +40,7 @@ export type Tile =
   | 'button_on'
   | 'button_off'
   | 'timed_wall'
+  | 'buttoned_wall'
   | Item
   ;
 export type MotiveMove =

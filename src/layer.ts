@@ -38,6 +38,12 @@ function resolveComplexTile(ct: ComplexTile, tilePos: Point, trc: TileResolution
       const playerIsHere = vequal(trc.playerPos, tilePos);
       return wantsBox && !playerIsHere ? 'box' : 'empty';
     }
+    case 'buttoned': {
+      if (viewIntent) {
+        return 'buttoned_wall';
+      }
+      return 'box'; // FIXME
+    }
   }
 }
 

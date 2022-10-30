@@ -65,10 +65,12 @@ const emptyOverlay: ComplexLayer = { tiles: {} };
 
 // In the interface, not in the model
 export type TimedTileFields = { phase: string, on_for: string, off_for: string };
+export type ButtonedTileFields = { x: string, y: string };
 
 export type ModifyPanelState =
   | { t: 'none' }
   | { t: 'timed' } & TimedTileFields
+  | { t: 'buttoned' } & ButtonedTileFields
   ;
 
 export type ToolState =

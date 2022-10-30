@@ -389,16 +389,22 @@ export function animator_for_move(s: State, move: Move): Animator {
   }
 }
 
+// Just used for editing purposes, whether clicking on the "same" tile
+// should erase instead of overwriting.
 function similarTiles(ct1: ComplexTile, ct2: ComplexTile): boolean {
   switch (ct1.t) {
     case 'simple': return ct2.t == 'simple' && ct2.tile == ct1.tile;
     case 'timed': return ct2.t == 'timed';
+    case 'buttoned': return ct2.t == 'buttoned';
   }
 }
 
 function defaultComplexTileToPut(tile: Tile): ComplexTile {
   if (tile == 'timed_wall')
     return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
+  else if (tile == 'buttoned_wall') {
+    return { t: 'buttoned', button_source: { x: 0, y: 0 } };
+  }
   else
     return { t: 'simple', tile: tile };
 }
@@ -419,6 +425,11 @@ export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPane
       on_for: ct.on_for + '',
       phase: ct.phase + '',
     };
+    case 'buttoned': return {
+      t: 'buttoned',
+      x: ct.button_source.x + '',
+      y: ct.button_source.y + '',
+    }
   }
 }
 
