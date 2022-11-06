@@ -176,15 +176,26 @@ export function reduce(s: State, a: Action): Result {
     }));
     case 'saveModifyPanel': return pure(produce(s, s => {
       const ts = s.iface.toolState;
-      if (ts.t == 'modify_tool' && ts.modifyCell !== null
-        && ts.panelState.t == 'timed') {
-        const ct: ComplexTile = {
-          t: 'timed',
-          phase: parseInt(ts.panelState.phase),
-          off_for: parseInt(ts.panelState.off_for),
-          on_for: parseInt(ts.panelState.on_for),
-        };
-        putComplexTile(s.game.initOverlay, ts.modifyCell, ct);
+      if (ts.t == 'modify_tool' && ts.modifyCell !== null) {
+        if (ts.panelState.t == 'timed') {
+          const ct: ComplexTile = {
+            t: 'timed',
+            phase: parseInt(ts.panelState.phase),
+            off_for: parseInt(ts.panelState.off_for),
+            on_for: parseInt(ts.panelState.on_for),
+          };
+          putComplexTile(s.game.initOverlay, ts.modifyCell, ct);
+        }
+        else if (ts.panelState.t == 'buttoned') {
+          const ct: ComplexTile = {
+            t: 'buttoned',
+            button_source: {
+              x: parseInt(ts.panelState.x),
+              y: parseInt(ts.panelState.y)
+            },
+          };
+          putComplexTile(s.game.initOverlay, ts.modifyCell, ct);
+        }
       }
     }));
   }

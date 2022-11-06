@@ -72,11 +72,11 @@ function renderTimedBlockEditor(ttf: TimedTileFields, dispatch: Dispatch): JSX.E
 function renderButtonedBlockEditor(ttf: ButtonedTileFields, dispatch: Dispatch): JSX.Element {
   return <span>
     <label>
-      Phase: <input type="text" value={ttf.x}
+      X-coord <input type="text" value={ttf.x}
         onChange={e => dispatch({ t: 'setPanelStateField', key: 'x', value: e.target.value })} />
     </label><br />
     <label>
-      On for: <input type="text" value={ttf.y}
+      Y-coord <input type="text" value={ttf.y}
         onChange={e => dispatch({ t: 'setPanelStateField', key: 'y', value: e.target.value })} />
     </label><br />
     <button onClick={e => dispatch({ t: 'saveModifyPanel' })}>Apply</button>
@@ -98,6 +98,9 @@ function renderModifyPanel(state: State, dispatch: Dispatch): JSX.Element | null
     const ps = toolState.panelState;
     if (ps.t == 'timed') {
       content = renderTimedBlockEditor(ps, dispatch);
+    }
+    else if (ps.t == 'buttoned') {
+      content = renderButtonedBlockEditor(ps, dispatch);
     }
     return <div style={style}>{content}</div>;
   }

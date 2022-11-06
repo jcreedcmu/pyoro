@@ -627,6 +627,20 @@ export const initOverlay: ComplexLayer = {
     "12,-2": {
       "t": "simple",
       "tile": "teal_fruit"
+    },
+    "4,-5": {
+      "t": "buttoned",
+      "button_source": {
+        "x": -1,
+        "y": 0
+      }
+    },
+    "6,-5": {
+      "t": "buttoned",
+      "button_source": {
+        "x": 4,
+        "y": 0
+      }
     }
   }
 };
