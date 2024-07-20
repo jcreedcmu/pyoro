@@ -5,9 +5,9 @@ check:
 	npx tsc --watch
 
 build:
-	node build-client.js
+	node build-client.mjs
 watch:
-	node build-client.js watch
+	node build-client.mjs watch
 
 test:
 	npm test
