@@ -1,7 +1,7 @@
 serve:
 	node server.js
 
-tsc:
+check:
 	npx tsc --watch
 
 build:
