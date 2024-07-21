@@ -1,4 +1,3 @@
-import * as assert from 'assert';
 import produce from 'immer';
 import { FULL_IMPETUS } from '../src/constants';
 import { bootstrapComplexLayer, Layer } from '../src/layer';
@@ -34,10 +33,10 @@ describe('State', () => {
     let m = basicState(basicLayer());
     m = executeMove(m, 'up');
     const player = m.player;
-    assert.equal(player.animState, "player_rise");
-    assert.equal(player.flipState, 'right');
-    assert.deepEqual(player.pos, { x: 0, y: -1 });
-    assert.equal(player.impetus, FULL_IMPETUS - 1);
+    expect(player.animState).toBe("player_rise");
+    expect(player.flipState).toBe('right');
+    expect(player.pos).toEqual({ x: 0, y: -1 });
+    expect(player.impetus).toBe(FULL_IMPETUS - 1);
   });
 
   it('should prevent jumping straight up into boxes', () => {
@@ -47,10 +46,10 @@ describe('State', () => {
     m = executeMove(m, 'up');
 
     const player = m.player;
-    assert.equal(player.animState, 'player');
-    assert.equal(player.flipState, 'right');
-    assert.deepEqual(player.pos, { x: 0, y: 0 });
-    assert.equal(player.impetus, FULL_IMPETUS);
+    expect(player.animState).toBe('player');
+    expect(player.flipState).toBe('right');
+    expect(player.pos).toEqual({ x: 0, y: 0 });
+    expect(player.impetus).toBe(FULL_IMPETUS);
   });
 
   it('should allow running over small gaps', () => {
@@ -60,18 +59,18 @@ describe('State', () => {
     m = executeMove(m, 'left');
     {
       const player = m.player;
-      assert.equal(player.animState, "player_fall");
-      assert.equal(player.flipState, 'left');
-      assert.deepEqual(player.pos, { x: -1, y: 0 });
-      assert.equal(player.impetus, 0);
+      expect(player.animState).toBe("player_fall");
+      expect(player.flipState).toBe('left');
+      expect(player.pos).toEqual({ x: -1, y: 0 });
+      expect(player.impetus).toBe(0);
     }
     m = executeMove(m, 'left');
     {
       const player = m.player;
-      assert.equal(player.animState, "player");
-      assert.equal(player.flipState, 'left');
-      assert.deepEqual(player.pos, { x: -2, y: 0 });
-      assert.equal(player.impetus, FULL_IMPETUS);
+      expect(player.animState).toBe("player");
+      expect(player.flipState).toBe('left');
+      expect(player.pos).toEqual({ x: -2, y: 0 });
+      expect(player.impetus).toBe(FULL_IMPETUS);
     }
   });
 
@@ -83,28 +82,28 @@ describe('State', () => {
     m = executeMove(m, 'up');
     {
       const player = m.player;
-      assert.equal(player.animState, "player_rise");
-      assert.equal(player.flipState, 'right');
-      assert.deepEqual(player.pos, { x: 0, y: -1 });
-      assert.equal(player.impetus, FULL_IMPETUS - 1);
+      expect(player.animState).toBe("player_rise");
+      expect(player.flipState).toBe('right');
+      expect(player.pos).toEqual({ x: 0, y: -1 });
+      expect(player.impetus).toBe(FULL_IMPETUS - 1);
     }
     m = executeMove(m, 'up');
 
     {
       const player = m.player;
-      assert.equal(player.animState, "player_rise");
-      assert.equal(player.flipState, 'right');
-      assert.deepEqual(player.pos, { x: 0, y: -2 });
-      assert.equal(player.impetus, FULL_IMPETUS - 2);
+      expect(player.animState).toBe("player_rise");
+      expect(player.flipState).toBe('right');
+      expect(player.pos).toEqual({ x: 0, y: -2 });
+      expect(player.impetus).toBe(FULL_IMPETUS - 2);
     }
     m = executeMove(m, 'up-left');
 
     {
       const player = m.player;
-      assert.equal(player.animState, "player_fall");
-      assert.equal(player.flipState, 'left');
-      assert.deepEqual(player.pos, { x: 0, y: -1 });
-      assert.equal(player.impetus, 0);
+      expect(player.animState).toBe("player_fall");
+      expect(player.flipState).toBe('left');
+      expect(player.pos).toEqual({ x: 0, y: -1 });
+      expect(player.impetus).toBe(0);
     }
   });
 
@@ -115,10 +114,10 @@ describe('State', () => {
     m = executeMove(m, 'up-left');
 
     const player = m.player;
-    assert.equal(player.animState, "player_fall");
-    assert.equal(player.flipState, 'left');
-    assert.deepEqual(player.pos, { x: -1, y: 0 });
-    assert.equal(player.impetus, 0);
+    expect(player.animState).toBe("player_fall");
+    expect(player.flipState).toBe('left');
+    expect(player.pos).toEqual({ x: -1, y: 0 });
+    expect(player.impetus).toBe(0);
 
   });
 
@@ -130,7 +129,7 @@ describe('State', () => {
     for (let i = 0; i < FULL_IMPETUS; i++)
       m = executeMove(m, 'up');
 
-    assert.equal(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS }), 'empty');
+    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS })).toBe('empty');
   });
 
   it('should not breaking ice bricks if there is not enough impetus', () => {
@@ -141,7 +140,7 @@ describe('State', () => {
     for (let i = 0; i < FULL_IMPETUS + 1; i++)
       m = executeMove(m, 'up');
 
-    assert.equal(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 }), 'fragile_box');
+    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 })).toBe('fragile_box');
   });
 
 });
@@ -150,9 +149,9 @@ describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
     let s = basicState(basicLayer());
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, { t: 'simple', tile: 'empty' }); // delete the existing box
-    assert.deepEqual(getOverlayForSave(s), bootstrapComplexLayer({ tiles: {} }));
+    expect(getOverlayForSave(s)).toEqual(bootstrapComplexLayer({ tiles: {} }));
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, { t: 'simple', tile: 'box' }); // add some box
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, { t: 'simple', tile: 'empty' }); // add another spurious empty
-    assert.deepEqual(getOverlayForSave(s), bootstrapComplexLayer({ tiles: { '0,2': 'box' } }));
+    expect(getOverlayForSave(s)).toEqual(bootstrapComplexLayer({ tiles: { '0,2': 'box' } }));
   });
 });
