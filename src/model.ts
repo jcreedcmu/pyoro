@@ -276,7 +276,8 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   let impetus = player.impetus;
 
-  if (stableBefore && isJump(move))
+  const jumpSucceeded = result.dpos.y < 0;
+  if (stableBefore && isJump(move) && jumpSucceeded)
     impetus = genImpetus(tileBefore) + (s.inventory.teal_fruit ?? 0);
   else if (result.impetus != null)
     impetus = result.impetus;
