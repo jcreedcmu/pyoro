@@ -1,5 +1,6 @@
 zplat
 =====
+[![run tests](https://github.com/jcreedcmu/zplat/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/jcreedcmu/zplat/actions/workflows/run-tests.yml)
 
 This is an old game idea I've been tinkering with from time to time.
 The premise is: puzzle-platformer, but time is discrete, so there's
