@@ -1,31 +1,54 @@
+/** A string-keyed dictionary whose values are `T` */
 export type Dict<T> = { [k: string]: T };
+
+/** A point in a 2d space. */
 export type Point = { x: number, y: number };
+
+/** A color in the RGB colorspace, where the components are in [0,255]. */
 export type Color = { r: number, g: number, b: number };
-export type BadRect = { p: Point, w: number, h: number };
+
+/** A rectangle given by its offset and size. */
 export type Rect = { p: Point, sz: Point };
-export type Ctx = CanvasRenderingContext2D;
 
-
+/** An object in the game world that can be picked up. */
 export type Item =
   | 'teal_fruit'
   | 'coin'
   ;
 
+/**
+ * A tile that cycles through being present and absent.
+ */
 export type TimedBlockComplexTile =
   { t: 'timed', phase: number, on_for: number, off_for: number };
 
+/**
+ * A tile whose presence is conditional on a button being pushed.
+ */
 export type ButtonedBlockComplexTile =
   { t: 'buttoned', button_source: Point };
 
+/**
+ * A `ComplexTile` represents an "intension" that can resolve to an
+ * actual tile via {@link layer.getTileOfComplexLayer}. This means the
+ * tile's effective realization, its "extension", changes dynamically
+ * due to the passage of time, or due to other changes in the level.
+ */
 export type ComplexTile =
   | { t: 'simple', tile: Tile }
   | TimedBlockComplexTile
   | ButtonedBlockComplexTile
   ;
 
+/**
+ * A simple tile whose "physics" is known.
+ */
 export type Tile =
+  /** A plain box */
   | 'box'
+  /** A box with grass on it */
   | 'box3'
+  /** A box that disappears if you walk on it */
   | 'fragile_box'
   | 'empty'
   | 'broken_box'
@@ -43,6 +66,9 @@ export type Tile =
   | 'buttoned_wall'
   | Item
   ;
+
+/** A player move that entails an intention to move in a certain
+ * physical direction. */
 export type MotiveMove =
   | 'up'
   | 'down'
@@ -51,15 +77,23 @@ export type MotiveMove =
   | 'up-left'
   | 'up-right'
   ;
+
+/** A more general move than {@link MotiveMove} which includes
+ * resetting the level or other UI actions. */
 export type Move =
   | MotiveMove
   | 'reset'
   | 'recenter'
   ;
+
+/** A direction the player can be facing. */
 export type Facing =
   | 'left'
   | 'right'
   ;
+
+/** What state the player is in, in terms of which player sprite should
+ * be drawn. */
 export type PlayerSprite =
   | 'player'
   | 'player_fall'
@@ -69,6 +103,7 @@ export type PlayerSprite =
   | 'player_crouch'
   ;
 
+/** Level editor tool choice. */
 export type Tool =
   | 'play_tool'
   | 'hand_tool'
@@ -76,11 +111,13 @@ export type Tool =
   | 'modify_tool'
   ;
 
+/** A state of a tool button in the editor UI. */
 export type ToolTile =
   | `${Tool}_inactive`
   | `${Tool}_active`
   ;
 
+/** Any entity that maps onto a particular place in the sprite sheet. */
 export type Sprite =
   | Tile
   | PlayerSprite

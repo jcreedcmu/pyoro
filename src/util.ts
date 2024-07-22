@@ -1,4 +1,4 @@
-import { Point, Color, BadRect, Rect, Dict } from './types';
+import { Point, Color, Rect, Dict } from './types';
 
 export function int(x: number): number {
   return Math.floor(x);
