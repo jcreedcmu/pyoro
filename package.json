@@ -8,12 +8,14 @@
   },
   "devDependencies": {
     "esbuild": "^0.23.0",
+    "typedoc": "^0.26.5",
     "typescript": "^5.5.3"
   },
   "scripts": {
     "test": "jest --watch",
     "test-ci": "jest",
-    "start": "node server.js"
+    "start": "node server.js",
+    "docs": "typedoc src/*.ts --watch"
   },
   "repository": {
     "type": "git",

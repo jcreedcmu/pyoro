@@ -27,6 +27,9 @@ export type ViewData = {
   origin: Point,
 };
 
+/**
+ * Initializes the react renderer
+ */
 export function initView() {
   const root = ReactDOM.createRoot(document.getElementById('render-root')!);
   root.render(React.createElement(App, {}));

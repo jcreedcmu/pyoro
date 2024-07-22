@@ -4,7 +4,11 @@ import { DEBUG } from './logger';
 import { initView } from './view';
 
 window.addEventListener('load', onload);
-async function onload() {
+
+/**
+ * Main initialization function
+ */
+export async function onload() {
   await run();
 
   if (DEBUG.datgui) {
@@ -22,6 +26,9 @@ async function onload() {
   }
 }
 
+/**
+ * Run the application
+ */
 async function run(): Promise<void> {
   initView();
 }

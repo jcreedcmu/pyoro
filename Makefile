@@ -9,7 +9,11 @@ build:
 watch:
 	node build-client.mjs watch
 
+.PHONY: test
 test:
 	npm test
 
-.PHONY: test
+
+.PHONY: docs
+docs:
+	npm run docs

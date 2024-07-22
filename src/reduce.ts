@@ -18,7 +18,10 @@ export type Command =
   | 'debug';
 
 
-type PanelStateFieldTypes =
+/**
+ * The type of fields in panel state
+ */
+export type PanelStateFieldTypes =
   { [P in keyof TimedTileFields]: { t: 'setPanelStateField', key: P, value: TimedTileFields[P] } }
   & { [P in keyof ButtonedTileFields]: { t: 'setPanelStateField', key: P, value: ButtonedTileFields[P] } };
 
@@ -47,7 +50,7 @@ export type Effect =
   | { t: 'saveOverlay' }
   ;
 
-type Result = effectful.Result<State, Effect>;
+export type Result = effectful.Result<State, Effect>;
 
 export function pure(state: State): Result {
   return { state };

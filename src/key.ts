@@ -1,4 +1,4 @@
-type NameTable = { [k: number]: string };
+export type NameTable = { [k: number]: string };
 
 export const table: NameTable = {
   188: ',',
