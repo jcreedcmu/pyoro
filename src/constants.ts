@@ -78,6 +78,9 @@ export const editTiles: Tile[] =
     'button_off',
     'timed_wall',
     'buttoned_wall',
+    'bus_button_red_on',
+    'bus_button_green_on',
+    'bus_button_blue_on',
   ];
 
 export function rotateTile(tile: Tile, amount: number): Tile {
