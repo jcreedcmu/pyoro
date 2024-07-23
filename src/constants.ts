@@ -81,6 +81,12 @@ export const editTiles: Tile[] =
     'bus_button_red_on',
     'bus_button_green_on',
     'bus_button_blue_on',
+    'bus_block_red_on',
+    'bus_block_green_on',
+    'bus_block_blue_on',
+    'bus_block_red_off',
+    'bus_block_green_off',
+    'bus_block_blue_off',
   ];
 
 export function rotateTile(tile: Tile, amount: number): Tile {
