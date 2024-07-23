@@ -41,6 +41,18 @@ export const sprites: { [k in Sprite]: Point } = {
   button_off: { x: 5, y: 6 },
   timed_wall: { x: 9, y: 2 },
   buttoned_wall: { x: 9, y: 3 },
+  bus_button_red_off: { x: 10, y: 5 },
+  bus_button_green_off: { x: 11, y: 5 },
+  bus_button_blue_off: { x: 12, y: 5 },
+  bus_button_red_on: { x: 10, y: 6 },
+  bus_button_green_on: { x: 11, y: 6 },
+  bus_button_blue_on: { x: 12, y: 6 },
+  bus_block_red_off: { x: 10, y: 3 },
+  bus_block_green_off: { x: 11, y: 3 },
+  bus_block_blue_off: { x: 12, y: 3 },
+  bus_block_red_on: { x: 10, y: 4 },
+  bus_block_green_on: { x: 11, y: 4 },
+  bus_block_blue_on: { x: 12, y: 4 },
 };
 
 export const tools: Tool[] = [

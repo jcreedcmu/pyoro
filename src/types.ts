@@ -28,11 +28,13 @@ export type TimedBlockComplexTile =
 export type ButtonedBlockComplexTile =
   { t: 'buttoned', button_source: Point };
 
+export type Bus = 'red' | 'green' | 'blue';
+
 /**
  * A tile whose presence is conditional on a bus being active
  */
 export type BusControlledComplexTile =
-  { t: 'bus_controlled', bus: string };
+  { t: 'bus_controlled', bus: Bus };
 
 /**
  * A `ComplexTile` represents an "intension" that can resolve to an
@@ -71,6 +73,10 @@ export type Tile =
   | 'button_off'
   | 'timed_wall'
   | 'buttoned_wall'
+  | `bus_block_${Bus}_on`
+  | `bus_block_${Bus}_off`
+  | `bus_button_${Bus}_on`
+  | `bus_button_${Bus}_off`
   | Item
   ;
 
