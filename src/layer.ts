@@ -20,15 +20,27 @@ export type LayerStack =
   | { t: 'overlay', top: ComplexLayer, rest: LayerStack };
 
 export type TileResolutionContext = {
+  // XXX need bus state here
   playerPos: Point,
   time: number,
   layerStack: LayerStack,
 }
 
-function resolveComplexTile(ct: ComplexTile, tilePos: Point, trc: TileResolutionContext, viewIntent?: boolean): Tile {
+function busActive(trc: TileResolutionContext, bus: string, viewIntent: boolean): boolean {
+  return true;
+}
+
+function resolveComplexTile(
+  ct: ComplexTile,
+  tilePos: Point,
+  trc: TileResolutionContext,
+  viewIntent?: boolean,
+): Tile {
   switch (ct.t) {
     case 'simple':
       return ct.tile;
+    case 'bus_controlled':
+      return busActive(trc, ct.bus, viewIntent ?? false) ? 'box' : 'empty';
     case 'timed': {
       if (viewIntent) {
         return 'timed_wall';

@@ -397,6 +397,7 @@ function similarTiles(ct1: ComplexTile, ct2: ComplexTile): boolean {
     case 'simple': return ct2.t == 'simple' && ct2.tile == ct1.tile;
     case 'timed': return ct2.t == 'timed';
     case 'buttoned': return ct2.t == 'buttoned';
+    case 'bus_controlled': return ct2.t == 'bus_controlled';
   }
 }
 
@@ -420,6 +421,7 @@ export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPane
   const ct = complexTileOfState(s, worldPoint);
   switch (ct.t) {
     case 'simple': return { t: 'none' };
+    case 'bus_controlled': return { t: 'none' }; // XXX should have bus selection in state
     case 'timed': return {
       t: 'timed',
       off_for: ct.off_for + '',

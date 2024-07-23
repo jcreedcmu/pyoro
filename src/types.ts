@@ -29,6 +29,12 @@ export type ButtonedBlockComplexTile =
   { t: 'buttoned', button_source: Point };
 
 /**
+ * A tile whose presence is conditional on a bus being active
+ */
+export type BusControlledComplexTile =
+  { t: 'bus_controlled', bus: string };
+
+/**
  * A `ComplexTile` represents an "intension" that can resolve to an
  * actual tile via {@link layer.getTileOfComplexLayer}. This means the
  * tile's effective realization, its "extension", changes dynamically
@@ -38,6 +44,7 @@ export type ComplexTile =
   | { t: 'simple', tile: Tile }
   | TimedBlockComplexTile
   | ButtonedBlockComplexTile
+  | BusControlledComplexTile
   ;
 
 /**
