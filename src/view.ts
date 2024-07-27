@@ -88,7 +88,36 @@ function spriteLocOfTile(tile: ComplexTile): Point {
   switch (tile.t) {
     case 'simple': switch (tile.tile) {
       case 'box': return { x: 1, y: 4 };
-      default: return sprites[tile.tile]; // XXX
+      case 'fragile_box': return { x: 2, y: 6 };
+      case 'broken_box': return { x: 4, y: 3 };
+      case 'box3': return { x: 3, y: 3 };
+      case 'empty': return { x: 0, y: 0 };
+      case 'up_box': return { x: 6, y: 6 };
+      case 'spike_up': return { x: 0, y: 3 };
+      case 'spike_right': return { x: 2, y: 3 };
+      case 'spike_left': return { x: 2, y: 4 };
+      case 'spike_down': return { x: 2, y: 5 };
+      case 'save_point': return { x: 2, y: 2 };
+      case 'teal_fruit': return { x: 3, y: 5 };
+      case 'grip_wall': return { x: 3, y: 0 };
+      case 'coin': return { x: 3, y: 4 };
+      case 'coin_wall': return { x: 4, y: 5 };
+      case 'button_on': return { x: 5, y: 5 };
+      case 'button_off': return { x: 5, y: 6 };
+      case 'timed_wall': return { x: 9, y: 2 };
+      case 'buttoned_wall': return { x: 9, y: 3 };
+      case 'bus_button_red_off': return { x: 10, y: 5 };
+      case 'bus_button_green_off': return { x: 11, y: 5 };
+      case 'bus_button_blue_off': return { x: 12, y: 5 };
+      case 'bus_button_red_on': return { x: 10, y: 6 };
+      case 'bus_button_green_on': return { x: 11, y: 6 };
+      case 'bus_button_blue_on': return { x: 12, y: 6 };
+      case 'bus_block_red_off': return { x: 10, y: 3 };
+      case 'bus_block_green_off': return { x: 11, y: 3 };
+      case 'bus_block_blue_off': return { x: 12, y: 3 };
+      case 'bus_block_red_on': return { x: 10, y: 4 };
+      case 'bus_block_green_on': return { x: 11, y: 4 };
+      case 'bus_block_blue_on': return { x: 12, y: 4 };
     }
   }
 
