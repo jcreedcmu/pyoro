@@ -1,16 +1,12 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { complexOfSimple, complexTileEq, DynamicLayer, dynamicOfComplex, dynamicOfSimple, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
+import { complexTileEq, DynamicLayer, dynamicOfComplex, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
-import { ComplexTile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
+import { ComplexTile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tool } from './types';
 import { max } from './util';
 import { WidgetPoint } from './view';
-
-function isLit(x: ComplexTile, y: Tile): boolean {
-  return complexTileEq(x, complexOfSimple(y));
-}
 
 function getItem(x: ComplexTile): Item | undefined {
   if (x.t == 'item')

@@ -2,12 +2,12 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { App } from './app';
 import { editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { complexOfSimple, emptyTile, getItem, PointMap, putItem } from './layer';
+import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
 import { State } from './state';
-import { ComplexTile, Item, PlayerSprite, Point, Sprite, ToolTile } from './types';
+import { ComplexTile, Item, PlayerSprite, Point, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
 
@@ -107,20 +107,18 @@ function spriteLocOfTile(tile: ComplexTile): Point {
     case 'button_off': return { x: 5, y: 6 };
     case 'timed_wall': return { x: 9, y: 2 };
     case 'buttoned_wall': return { x: 9, y: 3 };
-    case 'simple': switch (tile.tile) {
-      case 'bus_button_red_off': return { x: 10, y: 5 };
-      case 'bus_button_green_off': return { x: 11, y: 5 };
-      case 'bus_button_blue_off': return { x: 12, y: 5 };
-      case 'bus_button_red_on': return { x: 10, y: 6 };
-      case 'bus_button_green_on': return { x: 11, y: 6 };
-      case 'bus_button_blue_on': return { x: 12, y: 6 };
-      case 'bus_block_red_off': return { x: 10, y: 3 };
-      case 'bus_block_green_off': return { x: 11, y: 3 };
-      case 'bus_block_blue_off': return { x: 12, y: 3 };
-      case 'bus_block_red_on': return { x: 10, y: 4 };
-      case 'bus_block_green_on': return { x: 11, y: 4 };
-      case 'bus_block_blue_on': return { x: 12, y: 4 };
-    }
+    case 'bus_button_red_off': return { x: 10, y: 5 };
+    case 'bus_button_green_off': return { x: 11, y: 5 };
+    case 'bus_button_blue_off': return { x: 12, y: 5 };
+    case 'bus_button_red_on': return { x: 10, y: 6 };
+    case 'bus_button_green_on': return { x: 11, y: 6 };
+    case 'bus_button_blue_on': return { x: 12, y: 6 };
+    case 'bus_block_red_off': return { x: 10, y: 3 };
+    case 'bus_block_green_off': return { x: 11, y: 3 };
+    case 'bus_block_blue_off': return { x: 12, y: 3 };
+    case 'bus_block_red_on': return { x: 10, y: 4 };
+    case 'bus_block_green_on': return { x: 11, y: 4 };
+    case 'bus_block_blue_on': return { x: 12, y: 4 };
   }
 
 }

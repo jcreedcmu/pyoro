@@ -1,8 +1,8 @@
 import { FULL_IMPETUS } from '../src/constants';
-import { bootstrapDynamicLayer, boxTile, complexOfSimple, dynamicOfComplex, dynamicOfSimple, emptyTile, mapPointMap, PointMap } from '../src/layer';
+import { boxTile, dynamicOfComplex, emptyTile, mapPointMap, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMoveGame, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
 import { GameState, init_player } from '../src/state';
-import { ComplexTile, Move, Tile } from '../src/types';
+import { ComplexTile, Move } from '../src/types';
 
 function complexLayer(): PointMap<ComplexTile> {
   return {

@@ -50,11 +50,10 @@ export type DynamicTile =
   ;
 
 /**
- * A `ComplexTile` may be structured.
- * (whereas a simple `Tile` is just a subtype of string)
+ * A tile whose physics and rendering are known.
+ * XXX rename to Tile, check code for other occurrences of 'complex'
  */
 export type ComplexTile =
-  | { t: 'simple', tile: Tile } // XXX this branch is deprecated
   /** A plain box */
   | { t: 'box' }
   /** A box with grass on it */
@@ -76,18 +75,12 @@ export type ComplexTile =
   | { t: 'button_off' }
   | { t: 'timed_wall' }
   | { t: 'buttoned_wall' }
+  | { t: `bus_block_${Bus}_on` }
+  | { t: `bus_block_${Bus}_off` }
+  | { t: `bus_button_${Bus}_on` }
+  | { t: `bus_button_${Bus}_off` }
   ;
 
-/**
- * A simple tile whose "physics" is known.
- * XXX deprecate in favor of ComplexTile
- */
-export type Tile =
-  | `bus_block_${Bus}_on`
-  | `bus_block_${Bus}_off`
-  | `bus_button_${Bus}_on`
-  | `bus_button_${Bus}_off`
-  ;
 
 /** A player move that entails an intention to move in a certain
  * physical direction. */
@@ -140,8 +133,8 @@ export type ToolTile =
   ;
 
 /** Any entity that maps onto a particular place in the sprite sheet. */
+/* XXX deprecated? */
 export type Sprite =
-  | Tile
   | PlayerSprite
   | ToolTile
   ;

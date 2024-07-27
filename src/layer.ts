@@ -1,5 +1,5 @@
 import { vequal } from './point';
-import { DynamicTile, Dict, Point, Tile, ComplexTile } from './types';
+import { ComplexTile, Dict, DynamicTile, Point } from './types';
 import { mapValues } from './util';
 
 export type PointMap<T> = { tiles: Dict<T> };
@@ -66,7 +66,6 @@ function resolveDynamicTile(
 
 export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
   switch (t1.t) {
-    case 'simple': return t2.t == 'simple' && t1.tile == t2.tile;
     case 'box': return t2.t == 'box';
     case 'box3': return t2.t == 'box3';
     case 'fragile_box': return t2.t == 'fragile_box';
@@ -85,6 +84,22 @@ export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
     case 'button_off': return t2.t == 'button_off';
     case 'timed_wall': return t2.t == 'timed_wall';
     case 'buttoned_wall': return t2.t == 'buttoned_wall';
+    // XXX this giant cross product is horrible, fix it
+    case 'bus_block_red_on': return t2.t == 'bus_block_red_on';
+    case 'bus_block_red_off': return t2.t == 'bus_block_red_off';
+    case 'bus_button_red_on': return t2.t == 'bus_button_red_on';
+    case 'bus_button_red_off': return t2.t == 'bus_button_red_off';
+
+    case 'bus_block_green_on': return t2.t == 'bus_block_green_on';
+    case 'bus_block_green_off': return t2.t == 'bus_block_green_off';
+    case 'bus_button_green_on': return t2.t == 'bus_button_green_on';
+    case 'bus_button_green_off': return t2.t == 'bus_button_green_off';
+
+    case 'bus_block_blue_on': return t2.t == 'bus_block_blue_on';
+    case 'bus_block_blue_off': return t2.t == 'bus_block_blue_off';
+    case 'bus_button_blue_on': return t2.t == 'bus_button_blue_on';
+    case 'bus_button_blue_off': return t2.t == 'bus_button_blue_off';
+
   }
 }
 
@@ -105,18 +120,8 @@ export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext
   return resolveDynamicTile(ct, p, trc, viewIntent);
 }
 
-export function dynamicOfSimple(tile: Tile): DynamicTile {
-  return { t: 'static', tile: { t: 'simple', tile } };
-}
-
 export function dynamicOfComplex(tile: ComplexTile): DynamicTile {
   return { t: 'static', tile };
-}
-
-// XXX rename this to 'mkTile' or something
-// XXX or maybe it's just deprecated?
-export function complexOfSimple(tile: Tile): ComplexTile {
-  return { t: 'simple', tile };
 }
 
 export function dynamicTileOfStack(ls: LayerStack, p: Point): DynamicTile {
@@ -133,8 +138,4 @@ export function mapPointMap<T, U>(pointMap: PointMap<T>, f: (x: T) => U): PointM
   return {
     tiles: mapValues(pointMap.tiles, f)
   };
-}
-
-export function bootstrapDynamicLayer(layer: PointMap<Tile>): DynamicLayer {
-  return mapPointMap(layer, dynamicOfSimple);
 }
