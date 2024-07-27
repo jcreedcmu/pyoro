@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { bindings } from './bindings';
 import { editTiles, tools } from "./constants";
-import { putDynamicTile } from './layer';
+import { complexOfSimple, putDynamicTile } from './layer';
 import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile, _putTileInInitOverlay } from "./model";
 import { Point } from "./point";
@@ -117,7 +117,8 @@ export function reduce(s: State, a: Action): Result {
     case 'keyUp':
       return pure(produce(s, s => { delete s.iface.keysDown[a.code]; }));
     case 'setState': return pure(a.s);
-    case 'putTile': return pure(_putTile(s, a.p, a.tile));
+    // XXX action should have ComplexTile
+    case 'putTile': return pure(_putTile(s, a.p, complexOfSimple(a.tile)));
     case 'resize':
       return pure(produce(s, s => { s.iface.vd = a.vd; }));
     case 'nextFrame': {

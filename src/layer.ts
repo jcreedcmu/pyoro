@@ -71,9 +71,8 @@ export function isEmptyTile(ct: DynamicTile): boolean {
   return ct.t == 'static' && ct.tile.t == 'simple' && ct.tile.tile == 'empty';
 }
 
-// XXX take ComplexTile
-export function putTileInDynamicLayer(l: DynamicLayer, p: Point, t: Tile): void {
-  putItem(l, p, dynamicOfSimple(t));
+export function putTileInDynamicLayer(l: DynamicLayer, p: Point, t: ComplexTile): void {
+  putItem(l, p, dynamicOfComplex(t));
 }
 
 export function putDynamicTile(l: DynamicLayer, p: Point, t: DynamicTile): void {
@@ -87,6 +86,10 @@ export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext
 
 export function dynamicOfSimple(tile: Tile): DynamicTile {
   return { t: 'static', tile: { t: 'simple', tile } };
+}
+
+export function dynamicOfComplex(tile: ComplexTile): DynamicTile {
+  return { t: 'static', tile };
 }
 
 export function complexOfSimple(tile: Tile): ComplexTile {

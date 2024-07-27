@@ -121,7 +121,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ViewPortAnimation': return state;
     case 'MeltAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, t > 0.5 ? 'empty' : 'broken_box');
+        putTileInDynamicLayer(s.overlay, a.pos, complexOfSimple(t > 0.5 ? 'empty' : 'broken_box'));
       });
     case 'ResetAnimation':
       return produce(state, s => {
@@ -144,11 +144,11 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ItemGetAnimation':
       return produce(state, s => {
         s.inventory[a.item] = (s.inventory[a.item] ?? 0) + 1;
-        putTileInDynamicLayer(s.overlay, a.pos, 'empty');
+        putTileInDynamicLayer(s.overlay, a.pos, complexOfSimple('empty'));
       });
     case 'SpendCoinAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, 'empty');
+        putTileInDynamicLayer(s.overlay, a.pos, complexOfSimple('empty'));
         if (s.inventory.coin == undefined || s.inventory.coin == 0) {
           throw new Error("Trying to spend coins we don't have");
         }
@@ -156,7 +156,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       });
     case 'ButtonToggleAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, complexTileEq(tileOfGameState(s, a.pos), complexOfSimple('button_on')) ? 'button_off' : 'button_on');
+        putTileInDynamicLayer(s.overlay, a.pos, complexOfSimple(complexTileEq(tileOfGameState(s, a.pos), complexOfSimple('button_on')) ? 'button_off' : 'button_on'));
       });
   }
 }
