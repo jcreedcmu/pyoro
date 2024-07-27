@@ -62,13 +62,6 @@ function isDeadlyComplex(x: ComplexTile): boolean {
   return isSpikeComplex(x);
 }
 
-// Deprecate
-function genImpetus(x: Tile): number {
-  if (openTile(x)) return 0;
-  if (x == "up_box") return FULL_IMPETUS;
-  return 1;
-}
-
 function genImpetusComplex(x: ComplexTile): number {
   if (openTileComplex(x)) return 0;
   if (complexTileEq(x, complexOfSimple("up_box"))) return FULL_IMPETUS;
@@ -246,22 +239,26 @@ export function _putTileInInitOverlay(s: State, p: Point, t: DynamicTile): State
   });
 }
 
-function forceBlock(s: GameState, pos: Point, tile: Tile): Animation[] {
-  switch (tile) {
-    case 'fragile_box':
-      return [{ t: 'MeltAnimation', pos }];
-    case 'coin_wall':
-      if ((s.inventory.coin ?? 0) >= 1) {
-        return [{ t: 'SpendCoinAnimation', pos }];
+function forceBlock(s: GameState, pos: Point, tile: ComplexTile): Animation[] {
+  switch (tile.t) {
+    case 'simple':
+      switch (tile.tile) {
+        case 'fragile_box':
+          return [{ t: 'MeltAnimation', pos }];
+        case 'coin_wall':
+          if ((s.inventory.coin ?? 0) >= 1) {
+            return [{ t: 'SpendCoinAnimation', pos }];
+          }
+          else {
+            return [];
+          }
+        case 'button_on':
+        case 'button_off': // fallthrough intentional
+          return [{ t: 'ButtonToggleAnimation', pos }];
+        default:
+          return [];
       }
-      else {
-        return [];
-      }
-    case 'button_on':
-    case 'button_off': // fallthrough intentional
-      return [{ t: 'ButtonToggleAnimation', pos }];
-    default:
-      return [];
+      break;
   }
 }
 
@@ -296,8 +293,8 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   }
 
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
-  const tileBefore = tileOfGameState(s, belowBefore).tile; // XXX use complexTile
-  const supportedBefore = !openTile(tileBefore);
+  const tileBefore = tileOfGameState(s, belowBefore);
+  const supportedBefore = !openTileComplex(tileBefore);
   if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
@@ -308,14 +305,14 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   forcedBlocks.forEach(fb => {
     const pos = vplus(player.pos, fb);
-    anims.push(...forceBlock(s, pos, tileOfGameState(s, pos).tile)); // XXX use complexTile
+    anims.push(...forceBlock(s, pos, tileOfGameState(s, pos)));
   });
 
   let impetus = player.impetus;
 
   const jumpSucceeded = result.dpos.y < 0;
   if (stableBefore && isJump(move) && jumpSucceeded)
-    impetus = genImpetus(tileBefore) + (s.inventory.teal_fruit ?? 0);
+    impetus = genImpetusComplex(tileBefore) + (s.inventory.teal_fruit ?? 0);
   else if (result.impetus != null)
     impetus = result.impetus;
 
