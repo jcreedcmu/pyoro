@@ -1,9 +1,10 @@
 import { FULL_IMPETUS } from '../src/constants';
-import { bootstrapDynamicLayer, complexOfSimple, dynamicOfSimple, PointMap } from '../src/layer';
+import { bootstrapDynamicLayer, boxTile, complexOfSimple, dynamicOfComplex, dynamicOfSimple, emptyTile, mapPointMap, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMoveGame, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
 import { GameState, init_player } from '../src/state';
-import { Move, Tile } from '../src/types';
+import { ComplexTile, Move, Tile } from '../src/types';
 
+// XXX Deprecate
 function basicLayer(): PointMap<Tile> {
   return {
     'tiles':
@@ -11,12 +12,31 @@ function basicLayer(): PointMap<Tile> {
   }
 };
 
+function complexLayer(): PointMap<ComplexTile> {
+  return {
+    'tiles':
+      { '0,1': complexOfSimple('up_box') }
+  }
+};
+
+// XXX Deprecate
 function basicState(layer: PointMap<Tile>): GameState {
   return {
     initOverlay: bootstrapDynamicLayer(layer),
     inventory: { teal_fruit: undefined, },
     lastSave: { x: 0, y: 0 },
     overlay: bootstrapDynamicLayer(layer),
+    player: init_player,
+    time: 0,
+  };
+}
+
+function complexState(layer: PointMap<ComplexTile>): GameState {
+  return {
+    initOverlay: mapPointMap(layer, dynamicOfComplex),
+    inventory: { teal_fruit: undefined, },
+    lastSave: { x: 0, y: 0 },
+    overlay: mapPointMap(layer, dynamicOfComplex),
     player: init_player,
     time: 0,
   };
@@ -29,7 +49,7 @@ function executeMove(s: GameState, move: Move): GameState {
 describe('State', () => {
   it('should allow jumping up', () => {
 
-    let m = basicState(basicLayer());
+    let m = complexState(complexLayer());
     m = executeMove(m, 'up');
     const player = m.player;
     expect(player.animState).toBe("player_rise");
@@ -39,9 +59,9 @@ describe('State', () => {
   });
 
   it('should prevent jumping straight up into boxes', () => {
-    const layer = basicLayer();
-    layer.tiles['0,-1'] = 'box';
-    let m = basicState(layer);
+    const layer = complexLayer();
+    layer.tiles['0,-1'] = boxTile();
+    let m = complexState(layer);
     m = executeMove(m, 'up');
 
     const player = m.player;
@@ -74,10 +94,10 @@ describe('State', () => {
   });
 
   it('should disallow narrow diagonal moves', () => {
-    const layer = basicLayer();
-    layer.tiles['-1,-2'] = 'box';
-    layer.tiles['0,-3'] = 'box';
-    let m = basicState(layer);
+    const layer = complexLayer();
+    layer.tiles['-1,-2'] = boxTile();
+    layer.tiles['0,-3'] = boxTile();
+    let m = complexState(layer);
     m = executeMove(m, 'up');
     {
       const player = m.player;
@@ -107,9 +127,9 @@ describe('State', () => {
   });
 
   it('should disallow horizontally constrained diagonal moves', () => {
-    const layer = basicLayer();
-    layer.tiles['0,-1'] = 'box';
-    let m = basicState(layer);
+    const layer = complexLayer();
+    layer.tiles['0,-1'] = boxTile();
+    let m = complexState(layer);
     m = executeMove(m, 'up-left');
 
     const player = m.player;
@@ -147,10 +167,10 @@ describe('State', () => {
 describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
     let s = basicState(basicLayer());
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfSimple('empty')); // delete the existing box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfComplex(emptyTile())); // delete the existing box
     expect(getOverlayForSave(s)).toEqual({ tiles: {} });
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfSimple('box')); // add some box
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfSimple('empty')); // add another spurious empty
-    expect(getOverlayForSave(s)).toEqual(bootstrapDynamicLayer({ tiles: { '0,2': 'box' } }));
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfComplex(boxTile())); // add some box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfComplex(emptyTile())); // add another spurious empty
+    expect(getOverlayForSave(s)).toEqual({ tiles: { '0,2': dynamicOfComplex(boxTile()) } });
   });
 });

@@ -29,6 +29,9 @@ function busActive(trc: TileResolutionContext, bus: string, viewIntent: boolean)
   return true;
 }
 
+export function boxTile(): ComplexTile { return { t: 'box' }; }
+export function emptyTile(): ComplexTile { return { t: 'simple', tile: 'empty' }; }
+
 function resolveDynamicTile(
   ct: DynamicTile,
   tilePos: Point,
@@ -39,7 +42,7 @@ function resolveDynamicTile(
     case 'static':
       return ct.tile;
     case 'bus_controlled':
-      return complexOfSimple(busActive(trc, ct.bus, viewIntent ?? false) ? 'box' : 'empty');
+      return busActive(trc, ct.bus, viewIntent ?? false) ? boxTile() : emptyTile();
     case 'timed': {
       if (viewIntent) {
         return complexOfSimple('timed_wall');
@@ -47,7 +50,7 @@ function resolveDynamicTile(
       const len = ct.on_for + ct.off_for;
       const wantsBox = (trc.time + ct.phase) % len < ct.on_for;
       const playerIsHere = vequal(trc.playerPos, tilePos);
-      return complexOfSimple(wantsBox && !playerIsHere ? 'box' : 'empty');
+      return wantsBox && !playerIsHere ? boxTile() : emptyTile();
     }
     case 'buttoned': {
       if (viewIntent) {
@@ -55,7 +58,7 @@ function resolveDynamicTile(
       }
       else {
         const is_button_on = complexTileEq(tileOfStack(trc.layerStack, ct.button_source, trc, viewIntent), complexOfSimple('button_on'));
-        return complexOfSimple(is_button_on ? 'box' : 'empty');
+        return is_button_on ? boxTile() : emptyTile();
       }
     }
   }
@@ -64,6 +67,7 @@ function resolveDynamicTile(
 export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
   switch (t1.t) {
     case 'simple': return t2.t == 'simple' && t1.tile == t2.tile;
+    case 'box': return t2.t == 'box';
   }
 }
 

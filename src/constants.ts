@@ -17,7 +17,7 @@ export const tools: Tool[] = [
 // XXX ComplexTile
 export const editTiles: Tile[] =
   [
-    'box',
+    //    'box', // XXX ComplexTile
     'grip_wall',
     'box3',
     'up_box',

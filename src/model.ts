@@ -8,8 +8,15 @@ import { ComplexTile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite
 import { max } from './util';
 import { WidgetPoint } from './view';
 
+function isLit(x: ComplexTile, y: Tile): boolean {
+  return complexTileEq(x, complexOfSimple(y));
+}
+
 function getItem(x: ComplexTile): Item | undefined {
-  if (x.tile == 'teal_fruit' || x.tile == 'coin') return x.tile;
+  if (isLit(x, 'teal_fruit'))
+    return 'teal_fruit';
+  if (isLit(x, 'coin'))
+    return 'coin';
 }
 
 function isItem(x: ComplexTile): boolean {
@@ -17,15 +24,15 @@ function isItem(x: ComplexTile): boolean {
 }
 
 function isOpen(x: ComplexTile): boolean {
-  return x.tile == 'empty' || x.tile == 'save_point' || isItem(x) || isSpike(x);
+  return isLit(x, 'empty') || isLit(x, 'save_point') || isItem(x) || isSpike(x);
 }
 
 function isGrabbable(x: ComplexTile): boolean {
-  return x.tile == 'grip_wall';
+  return x.t == 'simple' && x.tile == 'grip_wall';
 }
 
 function isSpike(x: ComplexTile): boolean {
-  return x.tile == 'spike_up' || x.tile == 'spike_left' || x.tile == 'spike_right' || x.tile == 'spike_down';
+  return x.t == 'simple' && (x.tile == 'spike_up' || x.tile == 'spike_left' || x.tile == 'spike_right' || x.tile == 'spike_down');
 }
 
 function isDeadly(x: ComplexTile): boolean {
@@ -205,6 +212,7 @@ export function _putTileInInitOverlay(s: State, p: Point, t: DynamicTile): State
 
 function forceBlock(s: GameState, pos: Point, tile: ComplexTile): Animation[] {
   switch (tile.t) {
+    case 'box': return [];
     case 'simple':
       switch (tile.tile) {
         case 'fragile_box':

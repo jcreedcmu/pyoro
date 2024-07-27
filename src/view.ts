@@ -86,8 +86,8 @@ function drawScaled(fv: FView, state: State): void {
 
 function spriteLocOfTile(tile: ComplexTile): Point {
   switch (tile.t) {
+    case 'box': return { x: 1, y: 4 };
     case 'simple': switch (tile.tile) {
-      case 'box': return { x: 1, y: 4 };
       case 'fragile_box': return { x: 2, y: 6 };
       case 'broken_box': return { x: 4, y: 3 };
       case 'box3': return { x: 3, y: 3 };
