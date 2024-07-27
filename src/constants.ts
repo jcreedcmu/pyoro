@@ -15,7 +15,6 @@ export const tools: Tool[] = [
   'modify_tool',
 ]
 
-// XXX ComplexTile
 export const editTiles: ComplexTile[] =
   [
     boxTile(),
