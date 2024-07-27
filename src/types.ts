@@ -43,7 +43,7 @@ export type BusControlledDynamicTile =
  * due to the passage of time, or due to other changes in the level.
  */
 export type DynamicTile =
-  | { t: 'static', tile: ComplexTile }
+  | { t: 'static', tile: Tile }
   | TimedBlockDynamicTile
   | ButtonedBlockDynamicTile
   | BusControlledDynamicTile
@@ -51,9 +51,8 @@ export type DynamicTile =
 
 /**
  * A tile whose physics and rendering are known.
- * XXX rename to Tile, check code for other occurrences of 'complex'
  */
-export type ComplexTile =
+export type Tile =
   /** A plain box */
   | { t: 'box' }
   /** A box with grass on it */

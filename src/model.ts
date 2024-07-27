@@ -1,46 +1,46 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { complexTileEq, DynamicLayer, dynamicOfComplex, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext } from './layer';
+import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
-import { ComplexTile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tool } from './types';
+import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tool } from './types';
 import { max } from './util';
 import { WidgetPoint } from './view';
 
-function getItem(x: ComplexTile): Item | undefined {
+function getItem(x: Tile): Item | undefined {
   if (x.t == 'item')
     return x.item;
   else
     return undefined;
 }
 
-function isItem(x: ComplexTile): boolean {
+function isItem(x: Tile): boolean {
   return getItem(x) !== undefined;
 }
 
-function isOpen(x: ComplexTile): boolean {
-  return complexTileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x);
+function isOpen(x: Tile): boolean {
+  return tileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x);
 }
 
-function isGrabbable(x: ComplexTile): boolean {
+function isGrabbable(x: Tile): boolean {
   return x.t == 'grip_wall';
 }
 
-function isSpike(x: ComplexTile): boolean {
-  return (complexTileEq(x, { t: 'spike_up' })
-    || complexTileEq(x, { t: 'spike_left' })
-    || complexTileEq(x, { t: 'spike_right' })
-    || complexTileEq(x, { t: 'spike_down' }));
+function isSpike(x: Tile): boolean {
+  return (tileEq(x, { t: 'spike_up' })
+    || tileEq(x, { t: 'spike_left' })
+    || tileEq(x, { t: 'spike_right' })
+    || tileEq(x, { t: 'spike_down' }));
 }
 
-function isDeadly(x: ComplexTile): boolean {
+function isDeadly(x: Tile): boolean {
   return isSpike(x);
 }
 
-function genImpetus(x: ComplexTile): number {
+function genImpetus(x: Tile): number {
   if (isOpen(x)) return 0;
-  if (complexTileEq(x, { t: 'up_box' })) return FULL_IMPETUS;
+  if (tileEq(x, { t: 'up_box' })) return FULL_IMPETUS;
   return 1;
 }
 
@@ -179,7 +179,7 @@ function get_flip_state(move: MotiveMove): Facing | null {
   }
 }
 
-export function tileOfState(s: State, p: Point, viewIntent?: boolean): ComplexTile {
+export function tileOfState(s: State, p: Point, viewIntent?: boolean): Tile {
   return tileOfGameState(s.game, p, viewIntent);
 }
 
@@ -187,7 +187,7 @@ export function dynamicTileOfState(s: State, p: Point): DynamicTile {
   return dynamicTileOfGameState(s.game, p);
 }
 
-export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): ComplexTile {
+export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): Tile {
   const { player, trc } = boardOfState(s);
   return tileOfStack(trc.layerStack, p, trc, viewIntent);
 }
@@ -209,7 +209,7 @@ export function _putTileInInitOverlay(s: State, p: Point, t: DynamicTile): State
   });
 }
 
-function forceBlock(s: GameState, pos: Point, tile: ComplexTile): Animation[] {
+function forceBlock(s: GameState, pos: Point, tile: Tile): Animation[] {
   switch (tile.t) {
     case 'fragile_box':
       return [{ t: 'MeltAnimation', pos }];
@@ -318,7 +318,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });
 
-  if (complexTileEq(tileAfter, { t: 'save_point' }))
+  if (tileEq(tileAfter, { t: 'save_point' }))
     anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
 
   const item = getItem(tileAfter);
@@ -400,18 +400,18 @@ function similarTiles(ct1: DynamicTile, ct2: DynamicTile): boolean {
   }
 }
 
-function defaultDynamicTileToPut(tile: ComplexTile): DynamicTile {
+function defaultDynamicTileToPut(tile: Tile): DynamicTile {
   switch (tile.t) {
     case 'timed_wall': return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
     case 'buttoned_wall': return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
-    default: return dynamicOfComplex(tile);
+    default: return dynamicOfTile(tile);
   }
 }
 
 function determineTileToPut(s: State, worldPoint: Point): DynamicTile {
   const newTile = defaultDynamicTileToPut(rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation));
 
-  return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? dynamicOfComplex(emptyTile()) : newTile;
+  return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? dynamicOfTile(emptyTile()) : newTile;
 }
 
 export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPanelState {

@@ -1,22 +1,22 @@
 import { FULL_IMPETUS } from '../src/constants';
-import { boxTile, dynamicOfComplex, emptyTile, mapPointMap, PointMap } from '../src/layer';
+import { boxTile, dynamicOfTile, emptyTile, mapPointMap, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMoveGame, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
 import { GameState, init_player } from '../src/state';
-import { ComplexTile, Move } from '../src/types';
+import { Tile, Move } from '../src/types';
 
-function complexLayer(): PointMap<ComplexTile> {
+function complexLayer(): PointMap<Tile> {
   return {
     'tiles':
       { '0,1': { t: 'up_box' } }
   }
 };
 
-function complexState(layer: PointMap<ComplexTile>): GameState {
+function complexState(layer: PointMap<Tile>): GameState {
   return {
-    initOverlay: mapPointMap(layer, dynamicOfComplex),
+    initOverlay: mapPointMap(layer, dynamicOfTile),
     inventory: { teal_fruit: undefined, },
     lastSave: { x: 0, y: 0 },
-    overlay: mapPointMap(layer, dynamicOfComplex),
+    overlay: mapPointMap(layer, dynamicOfTile),
     player: init_player,
     time: 0,
   };
@@ -147,10 +147,10 @@ describe('State', () => {
 describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
     let s = complexState(complexLayer());
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfComplex(emptyTile())); // delete the existing box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfTile(emptyTile())); // delete the existing box
     expect(getOverlayForSave(s)).toEqual({ tiles: {} });
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfComplex(boxTile())); // add some box
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfComplex(emptyTile())); // add another spurious empty
-    expect(getOverlayForSave(s)).toEqual({ tiles: { '0,2': dynamicOfComplex(boxTile()) } });
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfTile(boxTile())); // add some box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfTile(emptyTile())); // add another spurious empty
+    expect(getOverlayForSave(s)).toEqual({ tiles: { '0,2': dynamicOfTile(boxTile()) } });
   });
 });

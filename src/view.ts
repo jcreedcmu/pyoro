@@ -7,7 +7,7 @@ import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
 import { State } from './state';
-import { ComplexTile, Item, PlayerSprite, Point, ToolTile } from './types';
+import { Tile, Item, PlayerSprite, Point, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
 
@@ -84,7 +84,7 @@ function drawScaled(fv: FView, state: State): void {
   }
 }
 
-function spriteLocOfTile(tile: ComplexTile): Point {
+function spriteLocOfTile(tile: Tile): Point {
   switch (tile.t) {
     case 'box': return { x: 1, y: 4 };
     case 'box3': return { x: 3, y: 3 };

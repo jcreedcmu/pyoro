@@ -1,5 +1,5 @@
 import { boxTile } from './layer';
-import { ComplexTile, Tool } from './types';
+import { Tile, Tool } from './types';
 
 export const FULL_IMPETUS = 4;
 export const NUM_TILES = { x: 24, y: 18 };
@@ -15,7 +15,7 @@ export const tools: Tool[] = [
   'modify_tool',
 ]
 
-export const editTiles: ComplexTile[] =
+export const editTiles: Tile[] =
   [
     boxTile(),
     { t: 'grip_wall' },
@@ -42,10 +42,10 @@ export const editTiles: ComplexTile[] =
     { t: 'bus_block_blue_off' },
   ];
 
-// XXX should look for a rotation trait in spike complex tile or something
-export function rotateTile(tile: ComplexTile, amount: number): ComplexTile {
+// XXX should look for a rotation trait in spike tile or something
+export function rotateTile(tile: Tile, amount: number): Tile {
   const dirs = ['spike_up', 'spike_right', 'spike_down', 'spike_left'] as const;
-  const spikes: ComplexTile[] = dirs.map(x => ({ t: x }));
+  const spikes: Tile[] = dirs.map(x => ({ t: x }));
   switch (tile.t) {
     case 'spike_up': return spikes[amount];
     default: return tile;

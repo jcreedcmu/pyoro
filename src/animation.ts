@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { complexTileEq, emptyTile, putTileInDynamicLayer } from './layer';
+import { tileEq, emptyTile, putTileInDynamicLayer } from './layer';
 import { tileOfGameState } from './model';
 import { int, lerp, vm2, vplus, vscale } from './point';
 import { GameState, IfaceState, init_state, State } from './state';
@@ -156,7 +156,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       });
     case 'ButtonToggleAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, complexTileEq(tileOfGameState(s, a.pos), { t: 'button_on' }) ? { t: 'button_off' } : { t: 'button_on' });
+        putTileInDynamicLayer(s.overlay, a.pos, tileEq(tileOfGameState(s, a.pos), { t: 'button_on' }) ? { t: 'button_off' } : { t: 'button_on' });
       });
   }
 }

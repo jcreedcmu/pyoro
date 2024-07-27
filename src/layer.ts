@@ -1,5 +1,5 @@
 import { vequal } from './point';
-import { ComplexTile, Dict, DynamicTile, Point } from './types';
+import { Tile, Dict, DynamicTile, Point } from './types';
 import { mapValues } from './util';
 
 export type PointMap<T> = { tiles: Dict<T> };
@@ -29,15 +29,15 @@ function busActive(trc: TileResolutionContext, bus: string, viewIntent: boolean)
   return true;
 }
 
-export function boxTile(): ComplexTile { return { t: 'box' }; }
-export function emptyTile(): ComplexTile { return { t: 'empty' }; }
+export function boxTile(): Tile { return { t: 'box' }; }
+export function emptyTile(): Tile { return { t: 'empty' }; }
 
 function resolveDynamicTile(
   ct: DynamicTile,
   tilePos: Point,
   trc: TileResolutionContext,
   viewIntent?: boolean,
-): ComplexTile {
+): Tile {
   switch (ct.t) {
     case 'static':
       return ct.tile;
@@ -57,14 +57,14 @@ function resolveDynamicTile(
         return { t: 'buttoned_wall' };
       }
       else {
-        const is_button_on = complexTileEq(tileOfStack(trc.layerStack, ct.button_source, trc, viewIntent), { t: 'button_on' });
+        const is_button_on = tileEq(tileOfStack(trc.layerStack, ct.button_source, trc, viewIntent), { t: 'button_on' });
         return is_button_on ? boxTile() : emptyTile();
       }
     }
   }
 }
 
-export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
+export function tileEq(t1: Tile, t2: Tile): boolean {
   switch (t1.t) {
     case 'box': return t2.t == 'box';
     case 'box3': return t2.t == 'box3';
@@ -107,26 +107,26 @@ export function isEmptyTile(ct: DynamicTile): boolean {
   return ct.t == 'static' && ct.tile.t == 'empty';
 }
 
-export function putTileInDynamicLayer(l: DynamicLayer, p: Point, t: ComplexTile): void {
-  putItem(l, p, dynamicOfComplex(t));
+export function putTileInDynamicLayer(l: DynamicLayer, p: Point, t: Tile): void {
+  putItem(l, p, dynamicOfTile(t));
 }
 
 export function putDynamicTile(l: DynamicLayer, p: Point, t: DynamicTile): void {
   putItem(l, p, t);
 }
 
-export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext, viewIntent?: boolean): ComplexTile {
+export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext, viewIntent?: boolean): Tile {
   const ct = dynamicTileOfStack(ls, p);
   return resolveDynamicTile(ct, p, trc, viewIntent);
 }
 
-export function dynamicOfComplex(tile: ComplexTile): DynamicTile {
+export function dynamicOfTile(tile: Tile): DynamicTile {
   return { t: 'static', tile };
 }
 
 export function dynamicTileOfStack(ls: LayerStack, p: Point): DynamicTile {
   switch (ls.t) {
-    case 'base': return getItem(ls.layer, p) ?? dynamicOfComplex(emptyTile());
+    case 'base': return getItem(ls.layer, p) ?? dynamicOfTile(emptyTile());
     case 'overlay': {
       const top = getItem(ls.top, p);
       return top == undefined ? dynamicTileOfStack(ls.rest, p) : top;
