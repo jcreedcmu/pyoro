@@ -7,8 +7,7 @@ export const SCALE = 2;
 
 export const FRAME_DURATION_MS = 30;
 
-export const sprites: { [k in Sprite]: Point } = {
-  box: { x: 1, y: 4 },
+export const sprites = {
   fragile_box: { x: 2, y: 6 },
   broken_box: { x: 4, y: 3 },
   box3: { x: 3, y: 3 },

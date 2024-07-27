@@ -85,8 +85,13 @@ function drawScaled(fv: FView, state: State): void {
 }
 
 function spriteLocOfTile(tile: ComplexTile): Point {
-  // XXX should do this differently
-  return sprites[tile.tile];
+  switch (tile.t) {
+    case 'simple': switch (tile.tile) {
+      case 'box': return { x: 1, y: 4 };
+      default: return sprites[tile.tile]; // XXX
+    }
+  }
+
 }
 
 function spriteLocOfPlayer(s: PlayerSprite): Point {
