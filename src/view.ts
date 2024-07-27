@@ -124,8 +124,14 @@ function spriteLocOfTile(tile: ComplexTile): Point {
 }
 
 function spriteLocOfPlayer(s: PlayerSprite): Point {
-  // XXX should do this differently
-  return sprites[s];
+  switch (s) {
+    case 'player': return { x: 1, y: 2 };
+    case 'player_dead': return { x: 2, y: 0 };
+    case 'player_fall': return { x: 1, y: 0 };
+    case 'player_rise': return { x: 1, y: 1 };
+    case 'player_wall': return { x: 2, y: 1 };
+    case 'player_crouch': return { x: 3, y: 6 };
+  }
 }
 
 function spriteLocOfTool(s: ToolTile): Point {

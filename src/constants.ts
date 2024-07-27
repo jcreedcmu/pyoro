@@ -8,12 +8,6 @@ export const SCALE = 2;
 export const FRAME_DURATION_MS = 30;
 
 export const sprites = {
-  player: { x: 1, y: 2 },
-  player_dead: { x: 2, y: 0 },
-  player_fall: { x: 1, y: 0 },
-  player_rise: { x: 1, y: 1 },
-  player_wall: { x: 2, y: 1 },
-  player_crouch: { x: 3, y: 6 },
   hand_tool_inactive: { x: 10, y: 0 },
   hand_tool_active: { x: 10, y: 1 },
   pencil_tool_inactive: { x: 11, y: 0 },
