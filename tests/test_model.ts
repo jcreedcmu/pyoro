@@ -1,5 +1,5 @@
 import { FULL_IMPETUS } from '../src/constants';
-import { bootstrapDynamicLayer, dynamicOfSimple, PointMap } from '../src/layer';
+import { bootstrapDynamicLayer, complexOfSimple, dynamicOfSimple, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMoveGame, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
 import { GameState, init_player } from '../src/state';
 import { Move, Tile } from '../src/types';
@@ -128,7 +128,7 @@ describe('State', () => {
     for (let i = 0; i < FULL_IMPETUS; i++)
       m = executeMove(m, 'up');
 
-    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS })).toBe('empty');
+    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS })).toEqual(complexOfSimple('empty'));
   });
 
   it('should not breaking ice bricks if there is not enough impetus', () => {
@@ -139,7 +139,7 @@ describe('State', () => {
     for (let i = 0; i < FULL_IMPETUS + 1; i++)
       m = executeMove(m, 'up');
 
-    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 })).toBe('fragile_box');
+    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 })).toEqual(complexOfSimple('fragile_box'));
   });
 
 });

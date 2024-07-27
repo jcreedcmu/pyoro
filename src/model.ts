@@ -48,8 +48,13 @@ function isSpikeComplex(x: ComplexTile): boolean {
   return x.tile == 'spike_up' || x.tile == 'spike_left' || x.tile == 'spike_right' || x.tile == 'spike_down';
 }
 
+// XXX Deprecate
 function isDeadly(x: Tile): boolean {
   return isSpike(x);
+}
+
+function isDeadlyComplex(x: ComplexTile): boolean {
+  return isSpikeComplex(x);
 }
 
 function genImpetus(x: Tile): number {
@@ -193,18 +198,18 @@ function get_flip_state(move: MotiveMove): Facing | null {
   }
 }
 
+// XXX Return ComplexTile
 export function tileOfState(s: State, p: Point, viewIntent?: boolean): Tile {
-  return tileOfGameState(s.game, p, viewIntent);
+  return tileOfGameState(s.game, p, viewIntent).tile;
 }
 
 export function dynamicTileOfState(s: State, p: Point): DynamicTile {
   return dynamicTileOfGameState(s.game, p);
 }
 
-// XXX Return ComplexTile
-export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): Tile {
+export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): ComplexTile {
   const { player, trc } = boardOfState(s);
-  return tileOfStack(trc.layerStack, p, trc, viewIntent).tile;
+  return tileOfStack(trc.layerStack, p, trc, viewIntent);
 }
 
 export function dynamicTileOfGameState(s: GameState, p: Point): DynamicTile {
@@ -280,7 +285,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   }
 
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
-  const tileBefore = tileOfGameState(s, belowBefore);
+  const tileBefore = tileOfGameState(s, belowBefore).tile; // XXX use complexTile
   const supportedBefore = !openTile(tileBefore);
   if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
@@ -292,7 +297,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   forcedBlocks.forEach(fb => {
     const pos = vplus(player.pos, fb);
-    anims.push(...forceBlock(s, pos, tileOfGameState(s, pos)));
+    anims.push(...forceBlock(s, pos, tileOfGameState(s, pos).tile)); // XXX use complexTile
   });
 
   let impetus = player.impetus;
@@ -313,8 +318,8 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   // predicting the next state of time-oscillating blocks.
   const nextTimeS = produce(s, s => { s.time++ });
 
-  const tileAfter = tileOfGameState(s, nextPos);
-  const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
+  const tileAfter = tileOfGameState(s, nextPos).tile; // XXX use complextile
+  const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 })).tile; // XXX use complextile
   const supportedAfter = !openTile(suppTileAfter);
   const dead = isDeadly(tileAfter);
 
