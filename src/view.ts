@@ -217,8 +217,7 @@ function drawEditorStuff(fv: FView, state: State): void {
   // tiles for pencil tool
   editTiles.forEach((et, ix) => {
     const t = rotateTile(et, state.iface.editTileRotation);
-    // XXX ComplexTile
-    raw_draw_sprite(fv, spriteLocOfTile(complexOfSimple(t)), { x: ix * TILE_SIZE * SCALE, y: 0 });
+    raw_draw_sprite(fv, spriteLocOfTile(t), { x: ix * TILE_SIZE * SCALE, y: 0 });
   });
 
   // selected tile & selected tool

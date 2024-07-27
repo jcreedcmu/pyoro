@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { complexOfSimple, complexTileEq, DynamicLayer, dynamicOfSimple, dynamicTileOfStack, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
+import { complexOfSimple, complexTileEq, DynamicLayer, dynamicOfComplex, dynamicOfSimple, dynamicTileOfStack, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { ComplexTile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
@@ -407,14 +407,15 @@ function similarTiles(ct1: DynamicTile, ct2: DynamicTile): boolean {
   }
 }
 
-function defaultDynamicTileToPut(tile: Tile): DynamicTile {
-  if (tile == 'timed_wall')
-    return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
-  else if (tile == 'buttoned_wall') {
-    return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
+function defaultDynamicTileToPut(tile: ComplexTile): DynamicTile {
+  switch (tile.t) {
+    case 'box': return dynamicOfComplex(tile);
+    case 'simple': switch (tile.tile) {
+      case 'timed_wall': return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
+      case 'buttoned_wall': return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
+      default: return dynamicOfComplex(tile);
+    }
   }
-  else
-    return dynamicOfSimple(tile);
 }
 
 function determineTileToPut(s: State, worldPoint: Point): DynamicTile {

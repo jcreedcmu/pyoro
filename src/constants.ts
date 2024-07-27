@@ -1,4 +1,5 @@
-import { Sprite, Point, Tile, Tool } from './types';
+import { boxTile, complexOfSimple } from './layer';
+import { Sprite, Point, Tile, Tool, ComplexTile } from './types';
 
 export const FULL_IMPETUS = 4;
 export const NUM_TILES = { x: 24, y: 18 };
@@ -15,39 +16,41 @@ export const tools: Tool[] = [
 ]
 
 // XXX ComplexTile
-export const editTiles: Tile[] =
+export const editTiles: ComplexTile[] =
   [
-    //    'box', // XXX ComplexTile
-    'grip_wall',
-    'box3',
-    'up_box',
-    'fragile_box',
-    'spike_up',
-    'save_point',
-    'teal_fruit',
-    'coin',
-    'coin_wall',
-    'button_on',
-    'button_off',
-    'timed_wall',
-    'buttoned_wall',
-    'bus_button_red_on',
-    'bus_button_green_on',
-    'bus_button_blue_on',
-    'bus_block_red_on',
-    'bus_block_green_on',
-    'bus_block_blue_on',
-    'bus_block_red_off',
-    'bus_block_green_off',
-    'bus_block_blue_off',
+    boxTile(),
+    complexOfSimple('grip_wall'),
+    complexOfSimple('box3'),
+    complexOfSimple('up_box'),
+    complexOfSimple('fragile_box'),
+    complexOfSimple('spike_up'),
+    complexOfSimple('save_point'),
+    complexOfSimple('teal_fruit'),
+    complexOfSimple('coin'),
+    complexOfSimple('coin_wall'),
+    complexOfSimple('button_on'),
+    complexOfSimple('button_off'),
+    complexOfSimple('timed_wall'),
+    complexOfSimple('buttoned_wall'),
+    complexOfSimple('bus_button_red_on'),
+    complexOfSimple('bus_button_green_on'),
+    complexOfSimple('bus_button_blue_on'),
+    complexOfSimple('bus_block_red_on'),
+    complexOfSimple('bus_block_green_on'),
+    complexOfSimple('bus_block_blue_on'),
+    complexOfSimple('bus_block_red_off'),
+    complexOfSimple('bus_block_green_off'),
+    complexOfSimple('bus_block_blue_off'),
   ];
 
-// XXX use ComplexTile
-export function rotateTile(tile: Tile, amount: number): Tile {
+export function rotateTile(tile: ComplexTile, amount: number): ComplexTile {
   const spikes: Tile[] = ['spike_up', 'spike_right', 'spike_down', 'spike_left'];
-  switch (tile) {
-    case 'spike_up': return spikes[amount];
-    default: return tile;
+  switch (tile.t) {
+    case 'box': return tile;
+    case 'simple': switch (tile.tile) {
+      case 'spike_up': return complexOfSimple(spikes[amount]);
+      default: return tile;
+    }
   }
 }
 
