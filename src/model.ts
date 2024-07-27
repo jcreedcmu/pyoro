@@ -8,26 +8,16 @@ import { ComplexTile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite
 import { max } from './util';
 import { WidgetPoint } from './view';
 
-// XXX Deprecate
-function getItem(x: Tile): Item | undefined {
-  if (x == 'teal_fruit' || x == 'coin') return x;
-}
-
-function getItemComplex(x: ComplexTile): Item | undefined {
+function getItem(x: ComplexTile): Item | undefined {
   if (x.tile == 'teal_fruit' || x.tile == 'coin') return x.tile;
 }
 
-// XXX Deprecate
-function isItem(x: Tile): boolean {
+function isItem(x: ComplexTile): boolean {
   return getItem(x) !== undefined;
 }
 
-function isItemComplex(x: ComplexTile): boolean {
-  return getItem(x.tile) !== undefined;
-}
-
 function isOpen(x: ComplexTile): boolean {
-  return x.tile == 'empty' || x.tile == 'save_point' || isItemComplex(x) || isSpike(x);
+  return x.tile == 'empty' || x.tile == 'save_point' || isItem(x) || isSpike(x);
 }
 
 function isGrabbable(x: ComplexTile): boolean {
@@ -336,7 +326,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   if (complexTileEq(tileAfter, complexOfSimple('save_point')))
     anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
 
-  const item = getItemComplex(tileAfter);
+  const item = getItem(tileAfter);
   if (item !== undefined)
     anims.push({ t: 'ItemGetAnimation', pos: nextPos, item });
 
