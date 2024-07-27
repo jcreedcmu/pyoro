@@ -26,21 +26,11 @@ function isItemComplex(x: ComplexTile): boolean {
   return getItem(x.tile) !== undefined;
 }
 
-// XXX Deprecate
-function openTile(x: Tile): boolean {
-  return x == 'empty' || x == 'save_point' || isItem(x) || isSpike(complexOfSimple(x));
-}
-
-function openTileComplex(x: ComplexTile): boolean {
+function isOpen(x: ComplexTile): boolean {
   return x.tile == 'empty' || x.tile == 'save_point' || isItemComplex(x) || isSpike(x);
 }
 
-// XXX Deprecate
-function isGrabbable(x: Tile): boolean {
-  return x == 'grip_wall';
-}
-
-function isGrabbableComplex(x: ComplexTile): boolean {
+function isGrabbable(x: ComplexTile): boolean {
   return x.tile == 'grip_wall';
 }
 
@@ -53,7 +43,7 @@ function isDeadly(x: ComplexTile): boolean {
 }
 
 function genImpetus(x: ComplexTile): number {
-  if (openTileComplex(x)) return 0;
+  if (isOpen(x)) return 0;
   if (complexTileEq(x, complexOfSimple("up_box"))) return FULL_IMPETUS;
   return 1;
 }
@@ -70,12 +60,12 @@ type Motion = {
 
 function ropen(b: Board, x: number, y: number): boolean {
   const { player, trc } = b;
-  return openTileComplex(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
+  return isOpen(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
 }
 
 function rgrabbable(b: Board, x: number, y: number): boolean {
   const { player, trc } = b;
-  return isGrabbableComplex(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
+  return isGrabbable(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
 }
 
 function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
@@ -284,7 +274,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
   const tileBefore = tileOfGameState(s, belowBefore);
-  const supportedBefore = !openTileComplex(tileBefore);
+  const supportedBefore = !isOpen(tileBefore);
   if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
@@ -318,7 +308,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   const tileAfter = tileOfGameState(s, nextPos);
   const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
-  const supportedAfter = !openTileComplex(suppTileAfter);
+  const supportedAfter = !isOpen(suppTileAfter);
   const dead = isDeadly(tileAfter);
 
   if (result.posture != 'attachWall') {
