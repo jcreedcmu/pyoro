@@ -6,7 +6,7 @@ import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, _putTile, _putTileInInitOverlay } from "./model";
 import { Point } from "./point";
 import { ButtonedTileFields, State, TimedTileFields, ToolState } from "./state";
-import { DynamicTile, Move, Tile, Tool } from "./types";
+import { ComplexTile, DynamicTile, Move, Tile, Tool } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
 
@@ -29,7 +29,6 @@ export type Action =
   | { t: 'keyUp', key: string, code: string, name: string }
   | { t: 'keyDown', key: string, code: string, name: string }
   | { t: 'setState', s: State }
-  | { t: 'putTile', p: Point, tile: Tile }
   | { t: 'mouseDown', point: Point }
   | { t: 'mouseUp' }
   | { t: 'mouseMove', point: Point }
@@ -117,8 +116,6 @@ export function reduce(s: State, a: Action): Result {
     case 'keyUp':
       return pure(produce(s, s => { delete s.iface.keysDown[a.code]; }));
     case 'setState': return pure(a.s);
-    // XXX action should have ComplexTile
-    case 'putTile': return pure(_putTile(s, a.p, complexOfSimple(a.tile)));
     case 'resize':
       return pure(produce(s, s => { s.iface.vd = a.vd; }));
     case 'nextFrame': {

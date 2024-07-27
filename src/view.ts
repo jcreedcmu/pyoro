@@ -106,6 +106,7 @@ function drawField(fv: FView, state: State): void {
       let tile = tileOfState(state, realp, viewIntent);
       if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state))
         tile = complexOfSimple('empty');
+      // XXX should use complextile
       draw_sprite(fv, tile.tile, vminus(p, vfpart(vp)));
     }
   }
