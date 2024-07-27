@@ -63,12 +63,6 @@ export function isEmptyTile(ct: DynamicTile): boolean {
   return ct.t == 'static' && ct.tile.t == 'simple' && ct.tile.tile == 'empty';
 }
 
-// XXX this should return ComplexTile
-export function getTileOfDynamicLayer(l: DynamicLayer, p: Point, trc: TileResolutionContext): Tile | undefined {
-  const item = getItem(l, p);
-  return item == undefined ? undefined : resolveDynamicTile(item, p, trc).tile;
-}
-
 export function putTileInDynamicLayer(l: DynamicLayer, p: Point, t: Tile): void {
   putItem(l, p, dynamicOfSimple(t));
 }
