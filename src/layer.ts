@@ -53,9 +53,17 @@ function resolveDynamicTile(
       if (viewIntent) {
         return complexOfSimple('buttoned_wall');
       }
-      else
-        return complexOfSimple(tileOfStack(trc.layerStack, ct.button_source, trc, viewIntent) == 'button_on' ? 'box' : 'empty');
+      else {
+        const is_button_on = complexTileEq(tileOfStack(trc.layerStack, ct.button_source, trc, viewIntent), complexOfSimple('button_on'));
+        return complexOfSimple(is_button_on ? 'box' : 'empty');
+      }
     }
+  }
+}
+
+export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
+  switch (t1.t) {
+    case 'simple': return t2.t == 'simple' && t1.tile == t2.tile;
   }
 }
 
@@ -71,10 +79,9 @@ export function putDynamicTile(l: DynamicLayer, p: Point, t: DynamicTile): void 
   putItem(l, p, t);
 }
 
-// XXX this should return ComplexTile
-export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext, viewIntent?: boolean): Tile {
+export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext, viewIntent?: boolean): ComplexTile {
   const ct = dynamicTileOfStack(ls, p);
-  return resolveDynamicTile(ct, p, trc, viewIntent).tile;
+  return resolveDynamicTile(ct, p, trc, viewIntent);
 }
 
 export function dynamicOfSimple(tile: Tile): DynamicTile {

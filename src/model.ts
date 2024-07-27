@@ -4,7 +4,7 @@ import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools
 import { DynamicLayer, dynamicOfSimple, dynamicTileOfStack, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
-import { DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
+import { ComplexTile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
 import { max } from './util';
 import { WidgetPoint } from './view';
 
@@ -12,20 +12,40 @@ function getItem(x: Tile): Item | undefined {
   if (x == 'teal_fruit' || x == 'coin') return x;
 }
 
+// XXX Deprecate
 function isItem(x: Tile): boolean {
   return getItem(x) !== undefined;
 }
 
+function isItemComplex(x: ComplexTile): boolean {
+  return getItem(x.tile) !== undefined;
+}
+
+// XXX Deprecate
 function openTile(x: Tile): boolean {
   return x == 'empty' || x == 'save_point' || isItem(x) || isSpike(x);
 }
 
+function openComplexTile(x: ComplexTile): boolean {
+  return x.tile == 'empty' || x.tile == 'save_point' || isItemComplex(x) || isSpikeComplex(x);
+}
+
+// XXX Deprecate
 function isGrabbable(x: Tile): boolean {
   return x == 'grip_wall';
 }
 
+function isGrabbableComplex(x: ComplexTile): boolean {
+  return x.tile == 'grip_wall';
+}
+
+// XXX Deprecate
 function isSpike(x: Tile): boolean {
   return x == 'spike_up' || x == 'spike_left' || x == 'spike_right' || x == 'spike_down';
+}
+
+function isSpikeComplex(x: ComplexTile): boolean {
+  return x.tile == 'spike_up' || x.tile == 'spike_left' || x.tile == 'spike_right' || x.tile == 'spike_down';
 }
 
 function isDeadly(x: Tile): boolean {
@@ -50,12 +70,12 @@ type Motion = {
 
 function ropen(b: Board, x: number, y: number): boolean {
   const { player, trc } = b;
-  return openTile(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
+  return openComplexTile(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
 }
 
 function rgrabbable(b: Board, x: number, y: number): boolean {
   const { player, trc } = b;
-  return isGrabbable(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
+  return isGrabbableComplex(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
 }
 
 function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
@@ -181,9 +201,10 @@ export function dynamicTileOfState(s: State, p: Point): DynamicTile {
   return dynamicTileOfGameState(s.game, p);
 }
 
+// XXX Return ComplexTile
 export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): Tile {
   const { player, trc } = boardOfState(s);
-  return tileOfStack(trc.layerStack, p, trc, viewIntent);
+  return tileOfStack(trc.layerStack, p, trc, viewIntent).tile;
 }
 
 export function dynamicTileOfGameState(s: GameState, p: Point): DynamicTile {
