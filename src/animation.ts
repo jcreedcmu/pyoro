@@ -4,13 +4,13 @@ import { complexOfSimple, complexTileEq, putTileInDynamicLayer } from './layer';
 import { tileOfGameState } from './model';
 import { int, lerp, vm2, vplus, vscale } from './point';
 import { GameState, IfaceState, init_state, State } from './state';
-import { Facing, Item, Point, Sprite } from './types';
+import { Facing, Item, PlayerSprite, Point, Sprite } from './types';
 
 export type Animation =
   {
     t: 'PlayerAnimation',
     pos: Point,
-    animState: Sprite,
+    animState: PlayerSprite,
     impetus: number,
     flipState: Facing,
     dead: boolean

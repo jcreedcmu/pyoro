@@ -7,7 +7,7 @@ import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
 import { State } from './state';
-import { ComplexTile, Item, Point, Sprite } from './types';
+import { ComplexTile, Item, PlayerSprite, Point, Sprite, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
 
@@ -84,8 +84,19 @@ function drawScaled(fv: FView, state: State): void {
   }
 }
 
-function spriteOfTile(tile: ComplexTile): Sprite {
-  return tile.tile;
+function spriteLocOfTile(tile: ComplexTile): Point {
+  // XXX should do this differently
+  return sprites[tile.tile];
+}
+
+function spriteLocOfPlayer(s: PlayerSprite): Point {
+  // XXX should do this differently
+  return sprites[s];
+}
+
+function spriteLocOfTool(s: ToolTile): Point {
+  // XXX should do this differently
+  return sprites[s];
 }
 
 function drawField(fv: FView, state: State): void {
@@ -110,15 +121,15 @@ function drawField(fv: FView, state: State): void {
       let tile = tileOfState(state, realp, viewIntent);
       if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state))
         tile = complexOfSimple('empty');
-      draw_sprite(fv, spriteOfTile(tile), vminus(p, vfpart(vp)));
+      draw_sprite(fv, spriteLocOfTile(tile), vminus(p, vfpart(vp)));
     }
   }
 
-  const playerSprite = state.game.player.dead ? 'player_dead' : state.game.player.animState;
+  const playerSprite: PlayerSprite = state.game.player.dead ? 'player_dead' : state.game.player.animState;
 
   const player = state.game.player;
   const effectivePos = player.posOffset == undefined ? player.pos : vplus(player.pos, player.posOffset);
-  draw_sprite(fv, playerSprite,
+  draw_sprite(fv, spriteLocOfPlayer(playerSprite),
     vminus(effectivePos, vp),
     state.game.player.flipState == 'left');
 }
@@ -147,7 +158,7 @@ function drawEditorStuff(fv: FView, state: State): void {
 
   // toolbar
   tools.forEach((t, ix) => {
-    raw_draw_sprite(fv, t == state.iface.toolState.t ? `${t}_active` : `${t}_inactive`,
+    raw_draw_sprite(fv, spriteLocOfTool(t == state.iface.toolState.t ? `${t}_active` : `${t}_inactive`),
       { x: ix * TILE_SIZE * SCALE, y: TILE_SIZE * SCALE });
   });
 
@@ -158,7 +169,8 @@ function drawEditorStuff(fv: FView, state: State): void {
   // tiles for pencil tool
   editTiles.forEach((et, ix) => {
     const t = rotateTile(et, state.iface.editTileRotation);
-    raw_draw_sprite(fv, t, { x: ix * TILE_SIZE * SCALE, y: 0 });
+    // XXX ComplexTile
+    raw_draw_sprite(fv, spriteLocOfTile(complexOfSimple(t)), { x: ix * TILE_SIZE * SCALE, y: 0 });
   });
 
   // selected tile & selected tool
@@ -185,7 +197,7 @@ function drawInventory(fv: FView, state: State): void {
 
   function drawInventoryItem(item: Item, count: number, p: Point) {
     const ipos = vplus(start, vscale(p, TILE_SIZE * SCALE));
-    raw_draw_sprite(fv, item, ipos);
+    raw_draw_sprite(fv, spriteLocOfTile(complexOfSimple(item)), ipos);
 
     // XXX temporary debugging count display, should do nice pixel font or something.
     if (count > 1) {
@@ -211,9 +223,8 @@ function drawInventory(fv: FView, state: State): void {
 }
 
 // spos: position in window, in pixels. (0,0) is top left of window
-function raw_draw_sprite(fv: FView, sprite_id: Sprite, spos: Point, flip?: boolean): void {
-  const sprite_loc = sprites[sprite_id];
-
+// sprite_loc: position in sprite sheet, in tiles.
+function raw_draw_sprite(fv: FView, sprite_loc: Point, spos: Point, flip?: boolean): void {
   const d = fv.d;
   d.save();
   d.translate(spos.x, spos.y);
@@ -235,12 +246,12 @@ function worldTilePosition(fv: FView, wpos: Point): Point {
 }
 
 // wpos: position in window, in tiles. (0,0) is top left of viewport
-
-function draw_sprite(fv: FView, sprite_id: Sprite, wpos: Point, flip?: boolean): void {
+// sprite_loc: position in sprite sheet, in tiles.
+function draw_sprite(fv: FView, sprite_loc: Point, wpos: Point, flip?: boolean): void {
   const { vd: { origin } } = fv;
   if (wpos.x < - 1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
     return;
-  raw_draw_sprite(fv, sprite_id, worldTilePosition(fv, wpos), flip);
+  raw_draw_sprite(fv, sprite_loc, worldTilePosition(fv, wpos), flip);
 }
 
 export function drawView(fv: FView, state: State): void {

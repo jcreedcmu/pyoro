@@ -89,6 +89,7 @@ export const editTiles: Tile[] =
     'bus_block_blue_off',
   ];
 
+// XXX use ComplexTile
 export function rotateTile(tile: Tile, amount: number): Tile {
   const spikes: Tile[] = ['spike_up', 'spike_right', 'spike_down', 'spike_left'];
   switch (tile) {

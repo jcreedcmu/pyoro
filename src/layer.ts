@@ -92,6 +92,7 @@ export function dynamicOfComplex(tile: ComplexTile): DynamicTile {
   return { t: 'static', tile };
 }
 
+// XXX rename this to 'mkTile' or something
 export function complexOfSimple(tile: Tile): ComplexTile {
   return { t: 'simple', tile };
 }

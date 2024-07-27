@@ -2,12 +2,12 @@ import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
 import { DynamicLayer } from './layer';
-import { DynamicTile, Facing, Item, Point, Sprite } from './types';
+import { DynamicTile, Facing, Item, PlayerSprite, Point, Sprite } from './types';
 import { ViewData } from './view';
 
 export type Player = {
   dead: boolean,
-  animState: Sprite,
+  animState: PlayerSprite,
   flipState: Facing,
   pos: Point,
   posOffset?: Point, // undefined in all non-animated GameStates
