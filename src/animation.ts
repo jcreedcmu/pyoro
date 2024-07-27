@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { getTile, putTile, putTileInDynamicLayer } from './layer';
+import { getTile, putTileInDynamicLayer } from './layer';
 import { GameState, IfaceState, init_state, State } from './state';
 import { Facing, Point, Sprite, Item } from './types';
 import { vm2, vplus, vscale, int, lerp } from './point';

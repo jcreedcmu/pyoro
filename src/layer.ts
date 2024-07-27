@@ -81,10 +81,6 @@ export function putDynamicTile(l: DynamicLayer, p: Point, t: DynamicTile): void 
   putItem(l, p, t);
 }
 
-export function putTile(l: Layer, p: Point, t: Tile): void {
-  putItem(l, p, t);
-}
-
 export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext, viewIntent?: boolean): Tile {
   const ct = dynamicTileOfStack(ls, p);
   return resolveDynamicTile(ct, p, trc, viewIntent);
