@@ -1,6 +1,6 @@
 import produce from 'immer';
 import { FULL_IMPETUS } from '../src/constants';
-import { bootstrapDynamicLayer, Layer } from '../src/layer';
+import { bootstrapDynamicLayer, dynamicOfSimple, Layer } from '../src/layer';
 import { animateMoveGame, getOverlayForSave, renderGameAnims, tileOfGameState, _putTile, _putTileInGameStateInitOverlay, _putTileInInitOverlay } from '../src/model';
 import { GameState, init_player, init_state } from '../src/state';
 import { Move } from '../src/types';
@@ -148,10 +148,10 @@ describe('State', () => {
 describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
     let s = basicState(basicLayer());
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, { t: 'static', tile: 'empty' }); // delete the existing box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfSimple('empty')); // delete the existing box
     expect(getOverlayForSave(s)).toEqual(bootstrapDynamicLayer({ tiles: {} }));
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, { t: 'static', tile: 'box' }); // add some box
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, { t: 'static', tile: 'empty' }); // add another spurious empty
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfSimple('box')); // add some box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfSimple('empty')); // add another spurious empty
     expect(getOverlayForSave(s)).toEqual(bootstrapDynamicLayer({ tiles: { '0,2': 'box' } }));
   });
 });

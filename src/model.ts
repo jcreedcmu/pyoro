@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { DynamicLayer, dynamicTileOfStack, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
+import { DynamicLayer, dynamicOfSimple, dynamicTileOfStack, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
@@ -408,13 +408,13 @@ function defaultDynamicTileToPut(tile: Tile): DynamicTile {
     return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
   }
   else
-    return { t: 'static', tile: tile };
+    return dynamicOfSimple(tile);
 }
 
 function determineTileToPut(s: State, worldPoint: Point): DynamicTile {
   const newTile = defaultDynamicTileToPut(rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation));
 
-  return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? { t: 'static', tile: 'empty' } : newTile;
+  return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? dynamicOfSimple('empty') : newTile;
 }
 
 export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPanelState {
