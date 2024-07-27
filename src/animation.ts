@@ -1,10 +1,10 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { getTile, putTileInDynamicLayer } from './layer';
+import { putTileInDynamicLayer } from './layer';
+import { tileOfGameState } from './model';
+import { int, lerp, vm2, vplus, vscale } from './point';
 import { GameState, IfaceState, init_state, State } from './state';
-import { Facing, Point, Sprite, Item } from './types';
-import { vm2, vplus, vscale, int, lerp } from './point';
-import { tileOfGameState, tileOfState } from './model';
+import { Facing, Item, Point, Sprite } from './types';
 
 export type Animation =
   {

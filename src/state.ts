@@ -1,8 +1,8 @@
 import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
-import { DynamicLayer, Layer } from './layer';
-import { DynamicTile, Facing, Item, Point, Sprite, Tile } from './types';
+import { DynamicLayer } from './layer';
+import { DynamicTile, Facing, Item, Point, Sprite } from './types';
 import { ViewData } from './view';
 
 export type Player = {

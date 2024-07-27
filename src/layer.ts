@@ -4,7 +4,6 @@ import { mapValues } from './util';
 
 export type PointMap<T> = { tiles: Dict<T> };
 
-export type Layer = PointMap<Tile>;
 export type DynamicLayer = PointMap<DynamicTile>;
 
 export function getItem<T>(l: PointMap<T>, p: Point): T | undefined {
@@ -64,10 +63,6 @@ export function isEmptyTile(ct: DynamicTile): boolean {
   return ct.t == 'static' && ct.tile.t == 'simple' && ct.tile.tile == 'empty';
 }
 
-export function getTile(l: Layer, p: Point): Tile | undefined {
-  return getItem(l, p);
-}
-
 export function getTileOfDynamicLayer(l: DynamicLayer, p: Point, trc: TileResolutionContext): Tile | undefined {
   const item = getItem(l, p);
   return item == undefined ? undefined : resolveDynamicTile(item, p, trc);
@@ -106,6 +101,6 @@ export function mapPointMap<T, U>(pointMap: PointMap<T>, f: (x: T) => U): PointM
   };
 }
 
-export function bootstrapDynamicLayer(layer: Layer): DynamicLayer {
+export function bootstrapDynamicLayer(layer: PointMap<Tile>): DynamicLayer {
   return mapPointMap(layer, dynamicOfSimple);
 }
