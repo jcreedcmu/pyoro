@@ -50,6 +50,15 @@ export type DynamicTile =
   ;
 
 /**
+ * A `ComplexTile` may be structured.
+ * (whereas a simple `Tile` is just a subtype of string)
+ */
+export type ComplexTile =
+  | { t: 'simple', tile: Tile }
+  /* Add more here eventually */
+  ;
+
+/**
  * A simple tile whose "physics" is known.
  */
 export type Tile =
