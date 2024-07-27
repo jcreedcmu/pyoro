@@ -26,7 +26,7 @@ function openTile(x: Tile): boolean {
   return x == 'empty' || x == 'save_point' || isItem(x) || isSpike(x);
 }
 
-function openComplexTile(x: ComplexTile): boolean {
+function openTileComplex(x: ComplexTile): boolean {
   return x.tile == 'empty' || x.tile == 'save_point' || isItemComplex(x) || isSpikeComplex(x);
 }
 
@@ -75,7 +75,7 @@ type Motion = {
 
 function ropen(b: Board, x: number, y: number): boolean {
   const { player, trc } = b;
-  return openComplexTile(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
+  return openTileComplex(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
 }
 
 function rgrabbable(b: Board, x: number, y: number): boolean {
@@ -317,14 +317,14 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   // predicting the next state of time-oscillating blocks.
   const nextTimeS = produce(s, s => { s.time++ });
 
-  const tileAfter = tileOfGameState(s, nextPos).tile; // XXX use complextile
-  const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 })).tile; // XXX use complextile
-  const supportedAfter = !openTile(suppTileAfter);
+  const tileAfter = tileOfGameState(s, nextPos).tile; // XXX use Complextile
+  const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
+  const supportedAfter = !openTileComplex(suppTileAfter);
   const dead = isDeadly(tileAfter);
 
   if (result.posture != 'attachWall') {
     if (supportedAfter) {
-      impetus = genImpetus(suppTileAfter);
+      impetus = genImpetus(suppTileAfter.tile); // XXX use ComplexTile
     }
     else {
       if (impetus)
