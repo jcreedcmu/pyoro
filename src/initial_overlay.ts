@@ -20,7 +20,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-3,-2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "save_point" }
+      "tile": { "t": "save_point" }
     },
     "-4,3": {
       "t": "static",
@@ -132,7 +132,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-8,3": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "grip_wall" }
+      "tile": { "t": "grip_wall" }
     },
     "-8,4": {
       "t": "static",
@@ -240,7 +240,7 @@ export const initOverlay: DynamicLayer = {
     },
     "3,3": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "button_off" }
+      "tile": { "t": "button_off" }
     },
     "-2,0": {
       "t": "static",
@@ -252,7 +252,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-1,0": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "button_on" }
+      "tile": { "t": "button_on" }
     },
     "-12,3": {
       "t": "static",
@@ -336,7 +336,7 @@ export const initOverlay: DynamicLayer = {
     },
     "1,-2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "grip_wall" }
+      "tile": { "t": "grip_wall" }
     },
     "17,5": {
       "t": "static",
@@ -400,27 +400,27 @@ export const initOverlay: DynamicLayer = {
     },
     "18,1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin_wall" }
+      "tile": { "t": "coin_wall" }
     },
     "19,1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin_wall" }
+      "tile": { "t": "coin_wall" }
     },
     "20,1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin_wall" }
+      "tile": { "t": "coin_wall" }
     },
     "21,1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin_wall" }
+      "tile": { "t": "coin_wall" }
     },
     "22,1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin_wall" }
+      "tile": { "t": "coin_wall" }
     },
     "23,1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin_wall" }
+      "tile": { "t": "coin_wall" }
     },
     "23,3": {
       "t": "static",
@@ -570,7 +570,7 @@ export const initOverlay: DynamicLayer = {
     },
     "4,0": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "button_off" }
+      "tile": { "t": "button_off" }
     },
     "3,0": {
       "t": "static",

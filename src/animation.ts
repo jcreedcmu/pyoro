@@ -156,7 +156,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       });
     case 'ButtonToggleAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, complexOfSimple(complexTileEq(tileOfGameState(s, a.pos), complexOfSimple('button_on')) ? 'button_off' : 'button_on'));
+        putTileInDynamicLayer(s.overlay, a.pos, complexTileEq(tileOfGameState(s, a.pos), { t: 'button_on' }) ? { t: 'button_off' } : { t: 'button_on' });
       });
   }
 }

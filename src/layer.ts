@@ -45,7 +45,7 @@ function resolveDynamicTile(
       return busActive(trc, ct.bus, viewIntent ?? false) ? boxTile() : emptyTile();
     case 'timed': {
       if (viewIntent) {
-        return complexOfSimple('timed_wall');
+        return { t: 'timed_wall' };
       }
       const len = ct.on_for + ct.off_for;
       const wantsBox = (trc.time + ct.phase) % len < ct.on_for;
@@ -54,10 +54,10 @@ function resolveDynamicTile(
     }
     case 'buttoned': {
       if (viewIntent) {
-        return complexOfSimple('buttoned_wall');
+        return { t: 'buttoned_wall' };
       }
       else {
-        const is_button_on = complexTileEq(tileOfStack(trc.layerStack, ct.button_source, trc, viewIntent), complexOfSimple('button_on'));
+        const is_button_on = complexTileEq(tileOfStack(trc.layerStack, ct.button_source, trc, viewIntent), { t: 'button_on' });
         return is_button_on ? boxTile() : emptyTile();
       }
     }
@@ -78,6 +78,13 @@ export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
     case 'spike_right': return t2.t == 'spike_right';
     case 'spike_down': return t2.t == 'spike_down';
     case 'item': return t2.t == 'item' && t1.item == t2.item;
+    case 'save_point': return t2.t == 'save_point';
+    case 'grip_wall': return t2.t == 'grip_wall';
+    case 'coin_wall': return t2.t == 'coin_wall';
+    case 'button_on': return t2.t == 'button_on';
+    case 'button_off': return t2.t == 'button_off';
+    case 'timed_wall': return t2.t == 'timed_wall';
+    case 'buttoned_wall': return t2.t == 'buttoned_wall';
   }
 }
 
@@ -107,6 +114,7 @@ export function dynamicOfComplex(tile: ComplexTile): DynamicTile {
 }
 
 // XXX rename this to 'mkTile' or something
+// XXX or maybe it's just deprecated?
 export function complexOfSimple(tile: Tile): ComplexTile {
   return { t: 'simple', tile };
 }

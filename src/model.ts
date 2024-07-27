@@ -24,11 +24,11 @@ function isItem(x: ComplexTile): boolean {
 }
 
 function isOpen(x: ComplexTile): boolean {
-  return complexTileEq(x, emptyTile()) || isLit(x, 'save_point') || isItem(x) || isSpike(x);
+  return complexTileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x);
 }
 
 function isGrabbable(x: ComplexTile): boolean {
-  return x.t == 'simple' && x.tile == 'grip_wall';
+  return x.t == 'grip_wall';
 }
 
 function isSpike(x: ComplexTile): boolean {
@@ -217,21 +217,16 @@ function forceBlock(s: GameState, pos: Point, tile: ComplexTile): Animation[] {
   switch (tile.t) {
     case 'fragile_box':
       return [{ t: 'MeltAnimation', pos }];
-    case 'simple':
-      switch (tile.tile) {
-        case 'coin_wall':
-          if ((s.inventory.coin ?? 0) >= 1) {
-            return [{ t: 'SpendCoinAnimation', pos }];
-          }
-          else {
-            return [];
-          }
-        case 'button_on':
-        case 'button_off': // fallthrough intentional
-          return [{ t: 'ButtonToggleAnimation', pos }];
-        default:
-          return [];
+    case 'coin_wall':
+      if ((s.inventory.coin ?? 0) >= 1) {
+        return [{ t: 'SpendCoinAnimation', pos }];
       }
+      else {
+        return [];
+      }
+    case 'button_on':
+    case 'button_off': // fallthrough intentional
+      return [{ t: 'ButtonToggleAnimation', pos }];
     default: return [];
   }
 }
@@ -327,7 +322,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });
 
-  if (complexTileEq(tileAfter, complexOfSimple('save_point')))
+  if (complexTileEq(tileAfter, { t: 'save_point' }))
     anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
 
   const item = getItem(tileAfter);
@@ -411,11 +406,8 @@ function similarTiles(ct1: DynamicTile, ct2: DynamicTile): boolean {
 
 function defaultDynamicTileToPut(tile: ComplexTile): DynamicTile {
   switch (tile.t) {
-    case 'simple': switch (tile.tile) {
-      case 'timed_wall': return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
-      case 'buttoned_wall': return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
-      default: return dynamicOfComplex(tile);
-    }
+    case 'timed_wall': return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
+    case 'buttoned_wall': return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
     default: return dynamicOfComplex(tile);
   }
 }

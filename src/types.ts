@@ -69,6 +69,13 @@ export type ComplexTile =
   | { t: 'spike_right' }
   | { t: 'spike_down' }
   | { t: 'item', item: Item }
+  | { t: 'save_point' }
+  | { t: 'grip_wall' }
+  | { t: 'coin_wall' }
+  | { t: 'button_on' }
+  | { t: 'button_off' }
+  | { t: 'timed_wall' }
+  | { t: 'buttoned_wall' }
   ;
 
 /**
@@ -76,13 +83,6 @@ export type ComplexTile =
  * XXX deprecate in favor of ComplexTile
  */
 export type Tile =
-  | 'save_point'
-  | 'grip_wall'
-  | 'coin_wall'
-  | 'button_on'
-  | 'button_off'
-  | 'timed_wall'
-  | 'buttoned_wall'
   | `bus_block_${Bus}_on`
   | `bus_block_${Bus}_off`
   | `bus_button_${Bus}_on`

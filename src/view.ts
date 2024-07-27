@@ -100,14 +100,14 @@ function spriteLocOfTile(tile: ComplexTile): Point {
       case 'teal_fruit': return { x: 3, y: 5 };
       case 'coin': return { x: 3, y: 4 };
     }
+    case 'save_point': return { x: 2, y: 2 };
+    case 'grip_wall': return { x: 3, y: 0 };
+    case 'coin_wall': return { x: 4, y: 5 };
+    case 'button_on': return { x: 5, y: 5 };
+    case 'button_off': return { x: 5, y: 6 };
+    case 'timed_wall': return { x: 9, y: 2 };
+    case 'buttoned_wall': return { x: 9, y: 3 };
     case 'simple': switch (tile.tile) {
-      case 'save_point': return { x: 2, y: 2 };
-      case 'grip_wall': return { x: 3, y: 0 };
-      case 'coin_wall': return { x: 4, y: 5 };
-      case 'button_on': return { x: 5, y: 5 };
-      case 'button_off': return { x: 5, y: 6 };
-      case 'timed_wall': return { x: 9, y: 2 };
-      case 'buttoned_wall': return { x: 9, y: 3 };
       case 'bus_button_red_off': return { x: 10, y: 5 };
       case 'bus_button_green_off': return { x: 11, y: 5 };
       case 'bus_button_blue_off': return { x: 12, y: 5 };
