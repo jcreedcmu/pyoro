@@ -71,6 +71,12 @@ export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
     case 'box3': return t2.t == 'box3';
     case 'fragile_box': return t2.t == 'fragile_box';
     case 'empty': return t2.t == 'empty';
+    case 'broken_box': return t2.t == 'broken_box';
+    case 'up_box': return t2.t == 'up_box';
+    case 'spike_up': return t2.t == 'spike_up';
+    case 'spike_left': return t2.t == 'spike_left';
+    case 'spike_right': return t2.t == 'spike_right';
+    case 'spike_down': return t2.t == 'spike_down';
   }
 }
 

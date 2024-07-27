@@ -4,32 +4,12 @@ import { _putTileInGameStateInitOverlay, animateMoveGame, getOverlayForSave, ren
 import { GameState, init_player } from '../src/state';
 import { ComplexTile, Move, Tile } from '../src/types';
 
-// XXX Deprecate
-function basicLayer(): PointMap<Tile> {
-  return {
-    'tiles':
-      { '0,1': 'up_box' }
-  }
-};
-
 function complexLayer(): PointMap<ComplexTile> {
   return {
     'tiles':
-      { '0,1': complexOfSimple('up_box') }
+      { '0,1': { t: 'up_box' } }
   }
 };
-
-// XXX Deprecate
-function basicState(layer: PointMap<Tile>): GameState {
-  return {
-    initOverlay: bootstrapDynamicLayer(layer),
-    inventory: { teal_fruit: undefined, },
-    lastSave: { x: 0, y: 0 },
-    overlay: bootstrapDynamicLayer(layer),
-    player: init_player,
-    time: 0,
-  };
-}
 
 function complexState(layer: PointMap<ComplexTile>): GameState {
   return {
@@ -72,9 +52,9 @@ describe('State', () => {
   });
 
   it('should allow running over small gaps', () => {
-    const layer = basicLayer();
-    layer.tiles['-2,1'] = 'up_box';
-    let m = basicState(layer);
+    const layer = complexLayer();
+    layer.tiles['-2,1'] = { t: 'up_box' };
+    let m = complexState(layer);
     m = executeMove(m, 'left');
     {
       const player = m.player;
@@ -166,7 +146,7 @@ describe('State', () => {
 
 describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
-    let s = basicState(basicLayer());
+    let s = complexState(complexLayer());
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfComplex(emptyTile())); // delete the existing box
     expect(getOverlayForSave(s)).toEqual({ tiles: {} });
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfComplex(boxTile())); // add some box

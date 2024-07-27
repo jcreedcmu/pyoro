@@ -4,7 +4,7 @@ export const initOverlay: DynamicLayer = {
   "tiles": {
     "0,1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "-1,1": {
       "t": "static",
@@ -24,7 +24,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-4,3": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "-1,2": {
       "t": "static",
@@ -36,7 +36,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-6,1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "spike_up" }
+      "tile": { "t": "spike_up" }
     },
     "-5,2": {
       "t": "static",
@@ -64,7 +64,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-8,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "spike_up" }
+      "tile": { "t": "spike_up" }
     },
     "-6,2": {
       "t": "static",
@@ -92,7 +92,7 @@ export const initOverlay: DynamicLayer = {
     },
     "6,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "spike_left" }
+      "tile": { "t": "spike_left" }
     },
     "7,2": {
       "t": "static",
@@ -148,15 +148,15 @@ export const initOverlay: DynamicLayer = {
     },
     "-8,10": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "-9,11": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "-5,0": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "spike_up" }
+      "tile": { "t": "spike_up" }
     },
     "-16,10": {
       "t": "static",
@@ -164,7 +164,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-17,9": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "spike_up" }
+      "tile": { "t": "spike_up" }
     },
     "-17,10": {
       "t": "static",
@@ -184,11 +184,11 @@ export const initOverlay: DynamicLayer = {
     },
     "-18,18": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "spike_up" }
+      "tile": { "t": "spike_up" }
     },
     "-15,21": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "-7,4": {
       "t": "static",
@@ -256,7 +256,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-12,3": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "-11,3": {
       "t": "static",
@@ -264,7 +264,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-12,-1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "-11,-1": {
       "t": "static",
@@ -316,7 +316,7 @@ export const initOverlay: DynamicLayer = {
     },
     "2,6": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "3,6": {
       "t": "static",
@@ -332,7 +332,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-10,3": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "spike_right" }
+      "tile": { "t": "spike_right" }
     },
     "1,-2": {
       "t": "static",
@@ -344,7 +344,7 @@ export const initOverlay: DynamicLayer = {
     },
     "16,5": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "15,5": {
       "t": "static",
@@ -436,7 +436,7 @@ export const initOverlay: DynamicLayer = {
     },
     "24,5": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "25,5": {
       "t": "static",
@@ -562,7 +562,7 @@ export const initOverlay: DynamicLayer = {
     },
     "8,4": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "up_box" }
+      "tile": { "t": "up_box" }
     },
     "7,4": {
       "t": "static",
@@ -574,11 +574,11 @@ export const initOverlay: DynamicLayer = {
     },
     "3,0": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "spike_down" }
+      "tile": { "t": "spike_down" }
     },
     "5,0": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "spike_down" }
+      "tile": { "t": "spike_down" }
     },
     "3,-1": {
       "t": "static",

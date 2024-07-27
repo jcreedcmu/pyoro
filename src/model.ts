@@ -32,7 +32,10 @@ function isGrabbable(x: ComplexTile): boolean {
 }
 
 function isSpike(x: ComplexTile): boolean {
-  return x.t == 'simple' && (x.tile == 'spike_up' || x.tile == 'spike_left' || x.tile == 'spike_right' || x.tile == 'spike_down');
+  return (complexTileEq(x, { t: 'spike_up' })
+    || complexTileEq(x, { t: 'spike_left' })
+    || complexTileEq(x, { t: 'spike_right' })
+    || complexTileEq(x, { t: 'spike_down' }));
 }
 
 function isDeadly(x: ComplexTile): boolean {
@@ -41,7 +44,7 @@ function isDeadly(x: ComplexTile): boolean {
 
 function genImpetus(x: ComplexTile): number {
   if (isOpen(x)) return 0;
-  if (complexTileEq(x, complexOfSimple("up_box"))) return FULL_IMPETUS;
+  if (complexTileEq(x, { t: 'up_box' })) return FULL_IMPETUS;
   return 1;
 }
 

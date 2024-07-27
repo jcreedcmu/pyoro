@@ -121,7 +121,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ViewPortAnimation': return state;
     case 'MeltAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, t > 0.5 ? emptyTile() : complexOfSimple('broken_box'));
+        putTileInDynamicLayer(s.overlay, a.pos, t > 0.5 ? emptyTile() : { t: 'broken_box' });
       });
     case 'ResetAnimation':
       return produce(state, s => {

@@ -20,9 +20,9 @@ export const editTiles: ComplexTile[] =
     boxTile(),
     complexOfSimple('grip_wall'),
     { t: 'box3' },
-    complexOfSimple('up_box'),
+    { t: 'up_box' },
     { t: 'fragile_box' },
-    complexOfSimple('spike_up'),
+    { t: 'spike_up' },
     complexOfSimple('save_point'),
     complexOfSimple('teal_fruit'),
     complexOfSimple('coin'),
@@ -42,13 +42,12 @@ export const editTiles: ComplexTile[] =
     complexOfSimple('bus_block_blue_off'),
   ];
 
+// XXX should look for a rotation trait in spike complex tile or something
 export function rotateTile(tile: ComplexTile, amount: number): ComplexTile {
-  const spikes: Tile[] = ['spike_up', 'spike_right', 'spike_down', 'spike_left'];
+  const dirs = ['spike_up', 'spike_right', 'spike_down', 'spike_left'] as const;
+  const spikes: ComplexTile[] = dirs.map(x => ({ t: x }));
   switch (tile.t) {
-    case 'simple': switch (tile.tile) {
-      case 'spike_up': return complexOfSimple(spikes[amount]);
-      default: return tile;
-    }
+    case 'spike_up': return spikes[amount];
     default: return tile;
   }
 }

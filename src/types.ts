@@ -62,6 +62,12 @@ export type ComplexTile =
   /** A box that disappears if you walk on it */
   | { t: 'fragile_box' }
   | { t: 'empty' }
+  | { t: 'broken_box' }
+  | { t: 'up_box' }
+  | { t: 'spike_up' }
+  | { t: 'spike_left' }
+  | { t: 'spike_right' }
+  | { t: 'spike_down' }
   ;
 
 /**
@@ -69,12 +75,7 @@ export type ComplexTile =
  */
 export type Tile =
 
-  | 'broken_box'
-  | 'up_box'
-  | 'spike_up'
-  | 'spike_left'
-  | 'spike_right'
-  | 'spike_down'
+
   | 'save_point'
   | 'grip_wall'
   | 'coin_wall'

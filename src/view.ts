@@ -90,13 +90,13 @@ function spriteLocOfTile(tile: ComplexTile): Point {
     case 'box3': return { x: 3, y: 3 };
     case 'fragile_box': return { x: 2, y: 6 };
     case 'empty': return { x: 0, y: 0 };
+    case 'broken_box': return { x: 4, y: 3 };
+    case 'up_box': return { x: 6, y: 6 };
+    case 'spike_up': return { x: 0, y: 3 };
+    case 'spike_right': return { x: 2, y: 3 };
+    case 'spike_left': return { x: 2, y: 4 };
+    case 'spike_down': return { x: 2, y: 5 };
     case 'simple': switch (tile.tile) {
-      case 'broken_box': return { x: 4, y: 3 };
-      case 'up_box': return { x: 6, y: 6 };
-      case 'spike_up': return { x: 0, y: 3 };
-      case 'spike_right': return { x: 2, y: 3 };
-      case 'spike_left': return { x: 2, y: 4 };
-      case 'spike_down': return { x: 2, y: 5 };
       case 'save_point': return { x: 2, y: 2 };
       case 'teal_fruit': return { x: 3, y: 5 };
       case 'grip_wall': return { x: 3, y: 0 };
