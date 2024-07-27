@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { App } from './app';
-import { editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE, tools } from './constants';
+import { editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
 import { complexOfSimple, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
@@ -135,8 +135,16 @@ function spriteLocOfPlayer(s: PlayerSprite): Point {
 }
 
 function spriteLocOfTool(s: ToolTile): Point {
-  // XXX should do this differently
-  return sprites[s];
+  switch (s) {
+    case 'hand_tool_inactive': return { x: 10, y: 0 };
+    case 'hand_tool_active': return { x: 10, y: 1 };
+    case 'pencil_tool_inactive': return { x: 11, y: 0 };
+    case 'pencil_tool_active': return { x: 11, y: 1 };
+    case 'modify_tool_inactive': return { x: 12, y: 0 };
+    case 'modify_tool_active': return { x: 12, y: 1 };
+    case 'play_tool_inactive': return { x: 13, y: 0 };
+    case 'play_tool_active': return { x: 13, y: 1 };
+  }
 }
 
 function drawField(fv: FView, state: State): void {

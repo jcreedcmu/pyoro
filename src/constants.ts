@@ -7,17 +7,6 @@ export const SCALE = 2;
 
 export const FRAME_DURATION_MS = 30;
 
-export const sprites = {
-  hand_tool_inactive: { x: 10, y: 0 },
-  hand_tool_active: { x: 10, y: 1 },
-  pencil_tool_inactive: { x: 11, y: 0 },
-  pencil_tool_active: { x: 11, y: 1 },
-  modify_tool_inactive: { x: 12, y: 0 },
-  modify_tool_active: { x: 12, y: 1 },
-  play_tool_inactive: { x: 13, y: 0 },
-  play_tool_active: { x: 13, y: 1 },
-};
-
 export const tools: Tool[] = [
   'play_tool',
   'pencil_tool',
@@ -25,6 +14,7 @@ export const tools: Tool[] = [
   'modify_tool',
 ]
 
+// XXX ComplexTile
 export const editTiles: Tile[] =
   [
     'box',
