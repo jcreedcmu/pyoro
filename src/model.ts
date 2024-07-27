@@ -191,12 +191,6 @@ export function dynamicTileOfGameState(s: GameState, p: Point): DynamicTile {
   return dynamicTileOfStack(trc.layerStack, p);
 }
 
-export function _putTile(s: State, p: Point, t: ComplexTile): State {
-  return produce(s, s => {
-    putTileInDynamicLayer(s.game.overlay, p, t);
-  });
-}
-
 export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: DynamicTile): GameState {
   return produce(s, s => {
     putDynamicTile(s.initOverlay, p, t);
