@@ -62,9 +62,16 @@ function isDeadlyComplex(x: ComplexTile): boolean {
   return isSpikeComplex(x);
 }
 
+// Deprecate
 function genImpetus(x: Tile): number {
-  if (x == "empty") return 0;
+  if (openTile(x)) return 0;
   if (x == "up_box") return FULL_IMPETUS;
+  return 1;
+}
+
+function genImpetusComplex(x: ComplexTile): number {
+  if (openTileComplex(x)) return 0;
+  if (complexTileEq(x, complexOfSimple("up_box"))) return FULL_IMPETUS;
   return 1;
 }
 
@@ -329,7 +336,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   if (result.posture != 'attachWall') {
     if (supportedAfter) {
-      impetus = genImpetus(suppTileAfter.tile); // XXX use ComplexTile
+      impetus = genImpetusComplex(suppTileAfter);
     }
     else {
       if (impetus)
