@@ -68,6 +68,7 @@ export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
   switch (t1.t) {
     case 'simple': return t2.t == 'simple' && t1.tile == t2.tile;
     case 'box': return t2.t == 'box';
+    case 'box3': return t2.t == 'box3';
   }
 }
 

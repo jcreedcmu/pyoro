@@ -19,7 +19,7 @@ export const editTiles: ComplexTile[] =
   [
     boxTile(),
     complexOfSimple('grip_wall'),
-    complexOfSimple('box3'),
+    { t: 'box3' },
     complexOfSimple('up_box'),
     complexOfSimple('fragile_box'),
     complexOfSimple('spike_up'),
@@ -45,11 +45,11 @@ export const editTiles: ComplexTile[] =
 export function rotateTile(tile: ComplexTile, amount: number): ComplexTile {
   const spikes: Tile[] = ['spike_up', 'spike_right', 'spike_down', 'spike_left'];
   switch (tile.t) {
-    case 'box': return tile;
     case 'simple': switch (tile.tile) {
       case 'spike_up': return complexOfSimple(spikes[amount]);
       default: return tile;
     }
+    default: return tile;
   }
 }
 

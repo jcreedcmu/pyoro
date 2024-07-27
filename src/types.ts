@@ -56,6 +56,8 @@ export type DynamicTile =
 export type ComplexTile =
   /** A plain box */
   | { t: 'box' }
+  /** A box with grass on it */
+  | { t: 'box3' }
   | { t: 'simple', tile: Tile }
   /* Add more here eventually */
   ;
@@ -64,8 +66,7 @@ export type ComplexTile =
  * A simple tile whose "physics" is known.
  */
 export type Tile =
-  /** A box with grass on it */
-  | 'box3'
+
   /** A box that disappears if you walk on it */
   | 'fragile_box'
   | 'empty'

@@ -16,7 +16,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-3,-1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "-3,-2": {
       "t": "static",
@@ -32,7 +32,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-5,1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "-6,1": {
       "t": "static",
@@ -68,7 +68,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-6,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "0,2": {
       "t": "static",
@@ -76,11 +76,11 @@ export const initOverlay: DynamicLayer = {
     },
     "-2,-1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "-1,-1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "1,2": {
       "t": "static",
@@ -88,7 +88,7 @@ export const initOverlay: DynamicLayer = {
     },
     "3,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "6,2": {
       "t": "static",
@@ -96,31 +96,31 @@ export const initOverlay: DynamicLayer = {
     },
     "7,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "5,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "9,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "11,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "13,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "15,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "17,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "-7,3": {
       "t": "static",
@@ -168,7 +168,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-17,10": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "-18,19": {
       "t": "static",
@@ -582,15 +582,15 @@ export const initOverlay: DynamicLayer = {
     },
     "3,-1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "4,-1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "5,-1": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "box3" }
+      "tile": { "t": "box3" }
     },
     "6,-1": {
       "t": "timed",
