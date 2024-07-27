@@ -1,6 +1,6 @@
-import { ComplexLayer } from './layer';
+import { DynamicLayer } from './layer';
 
-export const initOverlay: ComplexLayer = {
+export const initOverlay: DynamicLayer = {
   "tiles": {
     "0,1": {
       "t": "simple",

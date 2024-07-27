@@ -1,11 +1,11 @@
 import { vequal } from './point';
-import { ComplexTile, Dict, Point, Tile } from './types';
+import { DynamicTile, Dict, Point, Tile } from './types';
 import { mapValues } from './util';
 
 export type PointMap<T> = { tiles: Dict<T> };
 
 export type Layer = PointMap<Tile>;
-export type ComplexLayer = PointMap<ComplexTile>;
+export type DynamicLayer = PointMap<DynamicTile>;
 
 export function getItem<T>(l: PointMap<T>, p: Point): T | undefined {
   return l.tiles[p.x + ',' + p.y];
@@ -16,8 +16,8 @@ export function putItem<T>(l: PointMap<T>, p: Point, v: T): void {
 }
 
 export type LayerStack =
-  | { t: 'base', layer: ComplexLayer }
-  | { t: 'overlay', top: ComplexLayer, rest: LayerStack };
+  | { t: 'base', layer: DynamicLayer }
+  | { t: 'overlay', top: DynamicLayer, rest: LayerStack };
 
 export type TileResolutionContext = {
   // XXX need bus state here
@@ -30,8 +30,8 @@ function busActive(trc: TileResolutionContext, bus: string, viewIntent: boolean)
   return true;
 }
 
-function resolveComplexTile(
-  ct: ComplexTile,
+function resolveDynamicTile(
+  ct: DynamicTile,
   tilePos: Point,
   trc: TileResolutionContext,
   viewIntent?: boolean,
@@ -60,7 +60,7 @@ function resolveComplexTile(
   }
 }
 
-export function isEmptyTile(ct: ComplexTile): boolean {
+export function isEmptyTile(ct: DynamicTile): boolean {
   return ct.t == 'simple' && ct.tile == 'empty';
 }
 
@@ -68,16 +68,16 @@ export function getTile(l: Layer, p: Point): Tile | undefined {
   return getItem(l, p);
 }
 
-export function getTileOfComplexLayer(l: ComplexLayer, p: Point, trc: TileResolutionContext): Tile | undefined {
+export function getTileOfDynamicLayer(l: DynamicLayer, p: Point, trc: TileResolutionContext): Tile | undefined {
   const item = getItem(l, p);
-  return item == undefined ? undefined : resolveComplexTile(item, p, trc);
+  return item == undefined ? undefined : resolveDynamicTile(item, p, trc);
 }
 
-export function putTileInComplexLayer(l: ComplexLayer, p: Point, t: Tile): void {
+export function putTileInDynamicLayer(l: DynamicLayer, p: Point, t: Tile): void {
   putItem(l, p, { t: 'simple', tile: t });
 }
 
-export function putComplexTile(l: ComplexLayer, p: Point, t: ComplexTile): void {
+export function putDynamicTile(l: DynamicLayer, p: Point, t: DynamicTile): void {
   putItem(l, p, t);
 }
 
@@ -86,16 +86,16 @@ export function putTile(l: Layer, p: Point, t: Tile): void {
 }
 
 export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext, viewIntent?: boolean): Tile {
-  const ct = complexTileOfStack(ls, p);
-  return resolveComplexTile(ct, p, trc, viewIntent);
+  const ct = dynamicTileOfStack(ls, p);
+  return resolveDynamicTile(ct, p, trc, viewIntent);
 }
 
-export function complexTileOfStack(ls: LayerStack, p: Point): ComplexTile {
+export function dynamicTileOfStack(ls: LayerStack, p: Point): DynamicTile {
   switch (ls.t) {
     case 'base': return getItem(ls.layer, p) ?? { t: 'simple', tile: 'empty' };
     case 'overlay': {
       const top = getItem(ls.top, p);
-      return top == undefined ? complexTileOfStack(ls.rest, p) : top;
+      return top == undefined ? dynamicTileOfStack(ls.rest, p) : top;
     }
   }
 }
@@ -106,6 +106,6 @@ export function mapPointMap<T, U>(pointMap: PointMap<T>, f: (x: T) => U): PointM
   };
 }
 
-export function bootstrapComplexLayer(layer: Layer): ComplexLayer {
+export function bootstrapDynamicLayer(layer: Layer): DynamicLayer {
   return mapPointMap(layer, x => ({ t: 'simple', tile: x }));
 }

@@ -19,13 +19,13 @@ export type Item =
 /**
  * A tile that cycles through being present and absent.
  */
-export type TimedBlockComplexTile =
+export type TimedBlockDynamicTile =
   { t: 'timed', phase: number, on_for: number, off_for: number };
 
 /**
  * A tile whose presence is conditional on a button being pushed.
  */
-export type ButtonedBlockComplexTile =
+export type ButtonedBlockDynamicTile =
   { t: 'buttoned', button_source: Point };
 
 export type Bus = 'red' | 'green' | 'blue';
@@ -33,20 +33,20 @@ export type Bus = 'red' | 'green' | 'blue';
 /**
  * A tile whose presence is conditional on a bus being active
  */
-export type BusControlledComplexTile =
+export type BusControlledDynamicTile =
   { t: 'bus_controlled', bus: Bus };
 
 /**
- * A `ComplexTile` represents an "intension" that can resolve to an
- * actual tile via {@link layer.getTileOfComplexLayer}. This means the
+ * A `DynamicTile` represents an "intension" that can resolve to an
+ * actual tile via {@link layer.getTileOfDynamicLayer}. This means the
  * tile's effective realization, its "extension", changes dynamically
  * due to the passage of time, or due to other changes in the level.
  */
-export type ComplexTile =
+export type DynamicTile =
   | { t: 'simple', tile: Tile }
-  | TimedBlockComplexTile
-  | ButtonedBlockComplexTile
-  | BusControlledComplexTile
+  | TimedBlockDynamicTile
+  | ButtonedBlockDynamicTile
+  | BusControlledDynamicTile
   ;
 
 /**

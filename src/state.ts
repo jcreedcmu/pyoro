@@ -1,8 +1,8 @@
 import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
-import { ComplexLayer, Layer } from './layer';
-import { ComplexTile, Facing, Item, Point, Sprite, Tile } from './types';
+import { DynamicLayer, Layer } from './layer';
+import { DynamicTile, Facing, Item, Point, Sprite, Tile } from './types';
 import { ViewData } from './view';
 
 export type Player = {
@@ -21,7 +21,7 @@ export type AnimState = {
 
 export type MouseState =
   | { t: 'up' }
-  | { t: 'tileDrag', tile: ComplexTile }
+  | { t: 'tileDrag', tile: DynamicTile }
   | { t: 'panDrag', init: Point, initViewPort: Point }
 
 export type IfaceState = {
@@ -39,8 +39,8 @@ export type Inventory = Partial<Record<Item, number>>;
 
 export type GameState = {
   player: Player,
-  initOverlay: ComplexLayer,
-  overlay: ComplexLayer,
+  initOverlay: DynamicLayer,
+  overlay: DynamicLayer,
   inventory: Inventory,
   lastSave: Point,
   time: number,
@@ -60,7 +60,7 @@ export const init_player: Player = {
   impetus: FULL_IMPETUS,
 };
 
-const emptyOverlay: ComplexLayer = { tiles: {} };
+const emptyOverlay: DynamicLayer = { tiles: {} };
 
 
 // In the interface, not in the model

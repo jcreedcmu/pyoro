@@ -1,10 +1,10 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { ComplexLayer, complexTileOfStack, isEmptyTile, LayerStack, putComplexTile, putTileInComplexLayer, tileOfStack, TileResolutionContext } from './layer';
+import { DynamicLayer, dynamicTileOfStack, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
-import { ComplexTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
+import { DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
 import { max } from './util';
 import { WidgetPoint } from './view';
 
@@ -177,8 +177,8 @@ export function tileOfState(s: State, p: Point, viewIntent?: boolean): Tile {
   return tileOfGameState(s.game, p, viewIntent);
 }
 
-export function complexTileOfState(s: State, p: Point): ComplexTile {
-  return complexTileOfGameState(s.game, p);
+export function dynamicTileOfState(s: State, p: Point): DynamicTile {
+  return dynamicTileOfGameState(s.game, p);
 }
 
 export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): Tile {
@@ -186,24 +186,24 @@ export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): T
   return tileOfStack(trc.layerStack, p, trc, viewIntent);
 }
 
-export function complexTileOfGameState(s: GameState, p: Point): ComplexTile {
+export function dynamicTileOfGameState(s: GameState, p: Point): DynamicTile {
   const { player, trc } = boardOfState(s);
-  return complexTileOfStack(trc.layerStack, p);
+  return dynamicTileOfStack(trc.layerStack, p);
 }
 
 export function _putTile(s: State, p: Point, t: Tile): State {
   return produce(s, s => {
-    putTileInComplexLayer(s.game.overlay, p, t);
+    putTileInDynamicLayer(s.game.overlay, p, t);
   });
 }
 
-export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: ComplexTile): GameState {
+export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: DynamicTile): GameState {
   return produce(s, s => {
-    putComplexTile(s.initOverlay, p, t);
+    putDynamicTile(s.initOverlay, p, t);
   });
 }
 
-export function _putTileInInitOverlay(s: State, p: Point, t: ComplexTile): State {
+export function _putTileInInitOverlay(s: State, p: Point, t: DynamicTile): State {
   return produce(s, s => {
     s.game = _putTileInGameStateInitOverlay(s.game, p, t);
   });
@@ -392,7 +392,7 @@ export function animator_for_move(s: State, move: Move): Animator {
 
 // Just used for editing purposes, whether clicking on the "same" tile
 // should erase instead of overwriting.
-function similarTiles(ct1: ComplexTile, ct2: ComplexTile): boolean {
+function similarTiles(ct1: DynamicTile, ct2: DynamicTile): boolean {
   switch (ct1.t) {
     case 'simple': return ct2.t == 'simple' && ct2.tile == ct1.tile;
     case 'timed': return ct2.t == 'timed';
@@ -401,7 +401,7 @@ function similarTiles(ct1: ComplexTile, ct2: ComplexTile): boolean {
   }
 }
 
-function defaultComplexTileToPut(tile: Tile): ComplexTile {
+function defaultDynamicTileToPut(tile: Tile): DynamicTile {
   if (tile == 'timed_wall')
     return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
   else if (tile == 'buttoned_wall') {
@@ -411,14 +411,14 @@ function defaultComplexTileToPut(tile: Tile): ComplexTile {
     return { t: 'simple', tile: tile };
 }
 
-function determineTileToPut(s: State, worldPoint: Point): ComplexTile {
-  const newTile = defaultComplexTileToPut(rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation));
+function determineTileToPut(s: State, worldPoint: Point): DynamicTile {
+  const newTile = defaultDynamicTileToPut(rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation));
 
-  return similarTiles(complexTileOfState(s, worldPoint), newTile) ? { t: 'simple', tile: 'empty' } : newTile;
+  return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? { t: 'simple', tile: 'empty' } : newTile;
 }
 
 export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPanelState {
-  const ct = complexTileOfState(s, worldPoint);
+  const ct = dynamicTileOfState(s, worldPoint);
   switch (ct.t) {
     case 'simple': return { t: 'none' };
     case 'bus_controlled': return { t: 'none' }; // XXX should have bus selection in state
@@ -508,8 +508,8 @@ export function show_empty_tile_override(s: State): boolean {
   return !s.iface.keysDown['KeyN']; // XXX Debugging
 }
 
-export function getOverlayForSave(s: GameState): ComplexLayer {
-  const layer: ComplexLayer = { tiles: {} };
+export function getOverlayForSave(s: GameState): DynamicLayer {
+  const layer: DynamicLayer = { tiles: {} };
   for (const [k, v] of Object.entries(s.initOverlay.tiles)) {
     if (!isEmptyTile(v))
       layer.tiles[k] = v;
