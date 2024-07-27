@@ -77,6 +77,7 @@ export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
     case 'spike_left': return t2.t == 'spike_left';
     case 'spike_right': return t2.t == 'spike_right';
     case 'spike_down': return t2.t == 'spike_down';
+    case 'item': return t2.t == 'item' && t1.item == t2.item;
   }
 }
 

@@ -96,11 +96,13 @@ function spriteLocOfTile(tile: ComplexTile): Point {
     case 'spike_right': return { x: 2, y: 3 };
     case 'spike_left': return { x: 2, y: 4 };
     case 'spike_down': return { x: 2, y: 5 };
+    case 'item': switch (tile.item) {
+      case 'teal_fruit': return { x: 3, y: 5 };
+      case 'coin': return { x: 3, y: 4 };
+    }
     case 'simple': switch (tile.tile) {
       case 'save_point': return { x: 2, y: 2 };
-      case 'teal_fruit': return { x: 3, y: 5 };
       case 'grip_wall': return { x: 3, y: 0 };
-      case 'coin': return { x: 3, y: 4 };
       case 'coin_wall': return { x: 4, y: 5 };
       case 'button_on': return { x: 5, y: 5 };
       case 'button_off': return { x: 5, y: 6 };
@@ -244,7 +246,7 @@ function drawInventory(fv: FView, state: State): void {
 
   function drawInventoryItem(item: Item, count: number, p: Point) {
     const ipos = vplus(start, vscale(p, TILE_SIZE * SCALE));
-    raw_draw_sprite(fv, spriteLocOfTile(complexOfSimple(item)), ipos);
+    raw_draw_sprite(fv, spriteLocOfTile({ t: 'item', item }), ipos);
 
     // XXX temporary debugging count display, should do nice pixel font or something.
     if (count > 1) {

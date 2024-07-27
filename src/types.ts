@@ -68,14 +68,14 @@ export type ComplexTile =
   | { t: 'spike_left' }
   | { t: 'spike_right' }
   | { t: 'spike_down' }
+  | { t: 'item', item: Item }
   ;
 
 /**
  * A simple tile whose "physics" is known.
+ * XXX deprecate in favor of ComplexTile
  */
 export type Tile =
-
-
   | 'save_point'
   | 'grip_wall'
   | 'coin_wall'
@@ -87,7 +87,6 @@ export type Tile =
   | `bus_block_${Bus}_off`
   | `bus_button_${Bus}_on`
   | `bus_button_${Bus}_off`
-  | Item
   ;
 
 /** A player move that entails an intention to move in a certain

@@ -13,10 +13,10 @@ function isLit(x: ComplexTile, y: Tile): boolean {
 }
 
 function getItem(x: ComplexTile): Item | undefined {
-  if (isLit(x, 'teal_fruit'))
-    return 'teal_fruit';
-  if (isLit(x, 'coin'))
-    return 'coin';
+  if (x.t == 'item')
+    return x.item;
+  else
+    return undefined;
 }
 
 function isItem(x: ComplexTile): boolean {

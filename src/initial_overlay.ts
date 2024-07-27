@@ -328,7 +328,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-12,2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "teal_fruit" }
+      "tile": { "t": "item", "item": "teal_fruit" }
     },
     "-10,3": {
       "t": "static",
@@ -516,31 +516,31 @@ export const initOverlay: DynamicLayer = {
     },
     "27,4": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "teal_fruit" }
+      "tile": { "t": "item", "item": "teal_fruit" }
     },
     "0,5": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin" }
+      "tile": { "t": "item", "item": "coin" }
     },
     "-1,5": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin" }
+      "tile": { "t": "item", "item": "coin" }
     },
     "-2,5": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin" }
+      "tile": { "t": "item", "item": "coin" }
     },
     "-3,5": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin" }
+      "tile": { "t": "item", "item": "coin" }
     },
     "-4,5": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin" }
+      "tile": { "t": "item", "item": "coin" }
     },
     "-5,5": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "coin" }
+      "tile": { "t": "item", "item": "coin" }
     },
     "4,2": {
       "t": "timed",
@@ -626,7 +626,7 @@ export const initOverlay: DynamicLayer = {
     },
     "12,-2": {
       "t": "static",
-      "tile": { "t": "simple", "tile": "teal_fruit" }
+      "tile": { "t": "item", "item": "teal_fruit" }
     },
     "4,-5": {
       "t": "buttoned",
