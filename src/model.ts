@@ -394,7 +394,7 @@ export function animator_for_move(s: State, move: Move): Animator {
 // should erase instead of overwriting.
 function similarTiles(ct1: DynamicTile, ct2: DynamicTile): boolean {
   switch (ct1.t) {
-    case 'simple': return ct2.t == 'simple' && ct2.tile == ct1.tile;
+    case 'static': return ct2.t == 'static' && ct2.tile == ct1.tile;
     case 'timed': return ct2.t == 'timed';
     case 'buttoned': return ct2.t == 'buttoned';
     case 'bus_controlled': return ct2.t == 'bus_controlled';
@@ -408,19 +408,19 @@ function defaultDynamicTileToPut(tile: Tile): DynamicTile {
     return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
   }
   else
-    return { t: 'simple', tile: tile };
+    return { t: 'static', tile: tile };
 }
 
 function determineTileToPut(s: State, worldPoint: Point): DynamicTile {
   const newTile = defaultDynamicTileToPut(rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation));
 
-  return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? { t: 'simple', tile: 'empty' } : newTile;
+  return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? { t: 'static', tile: 'empty' } : newTile;
 }
 
 export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPanelState {
   const ct = dynamicTileOfState(s, worldPoint);
   switch (ct.t) {
-    case 'simple': return { t: 'none' };
+    case 'static': return { t: 'none' };
     case 'bus_controlled': return { t: 'none' }; // XXX should have bus selection in state
     case 'timed': return {
       t: 'timed',

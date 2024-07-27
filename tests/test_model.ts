@@ -148,10 +148,10 @@ describe('State', () => {
 describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
     let s = basicState(basicLayer());
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, { t: 'simple', tile: 'empty' }); // delete the existing box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, { t: 'static', tile: 'empty' }); // delete the existing box
     expect(getOverlayForSave(s)).toEqual(bootstrapDynamicLayer({ tiles: {} }));
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, { t: 'simple', tile: 'box' }); // add some box
-    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, { t: 'simple', tile: 'empty' }); // add another spurious empty
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, { t: 'static', tile: 'box' }); // add some box
+    s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, { t: 'static', tile: 'empty' }); // add another spurious empty
     expect(getOverlayForSave(s)).toEqual(bootstrapDynamicLayer({ tiles: { '0,2': 'box' } }));
   });
 });

@@ -37,7 +37,7 @@ function resolveDynamicTile(
   viewIntent?: boolean,
 ): Tile {
   switch (ct.t) {
-    case 'simple':
+    case 'static':
       return ct.tile;
     case 'bus_controlled':
       return busActive(trc, ct.bus, viewIntent ?? false) ? 'box' : 'empty';
@@ -61,7 +61,7 @@ function resolveDynamicTile(
 }
 
 export function isEmptyTile(ct: DynamicTile): boolean {
-  return ct.t == 'simple' && ct.tile == 'empty';
+  return ct.t == 'static' && ct.tile == 'empty';
 }
 
 export function getTile(l: Layer, p: Point): Tile | undefined {
@@ -74,7 +74,7 @@ export function getTileOfDynamicLayer(l: DynamicLayer, p: Point, trc: TileResolu
 }
 
 export function putTileInDynamicLayer(l: DynamicLayer, p: Point, t: Tile): void {
-  putItem(l, p, { t: 'simple', tile: t });
+  putItem(l, p, { t: 'static', tile: t });
 }
 
 export function putDynamicTile(l: DynamicLayer, p: Point, t: DynamicTile): void {
@@ -92,7 +92,7 @@ export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext
 
 export function dynamicTileOfStack(ls: LayerStack, p: Point): DynamicTile {
   switch (ls.t) {
-    case 'base': return getItem(ls.layer, p) ?? { t: 'simple', tile: 'empty' };
+    case 'base': return getItem(ls.layer, p) ?? { t: 'static', tile: 'empty' };
     case 'overlay': {
       const top = getItem(ls.top, p);
       return top == undefined ? dynamicTileOfStack(ls.rest, p) : top;
@@ -107,5 +107,5 @@ export function mapPointMap<T, U>(pointMap: PointMap<T>, f: (x: T) => U): PointM
 }
 
 export function bootstrapDynamicLayer(layer: Layer): DynamicLayer {
-  return mapPointMap(layer, x => ({ t: 'simple', tile: x }));
+  return mapPointMap(layer, x => ({ t: 'static', tile: x }));
 }

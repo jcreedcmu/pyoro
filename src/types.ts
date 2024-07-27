@@ -43,7 +43,7 @@ export type BusControlledDynamicTile =
  * due to the passage of time, or due to other changes in the level.
  */
 export type DynamicTile =
-  | { t: 'simple', tile: Tile }
+  | { t: 'static', tile: Tile }
   | TimedBlockDynamicTile
   | ButtonedBlockDynamicTile
   | BusControlledDynamicTile
