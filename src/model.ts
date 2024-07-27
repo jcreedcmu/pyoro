@@ -198,9 +198,8 @@ function get_flip_state(move: MotiveMove): Facing | null {
   }
 }
 
-// XXX Return ComplexTile
-export function tileOfState(s: State, p: Point, viewIntent?: boolean): Tile {
-  return tileOfGameState(s.game, p, viewIntent).tile;
+export function tileOfState(s: State, p: Point, viewIntent?: boolean): ComplexTile {
+  return tileOfGameState(s.game, p, viewIntent);
 }
 
 export function dynamicTileOfState(s: State, p: Point): DynamicTile {

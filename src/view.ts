@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { App } from './app';
 import { editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, sprites, TILE_SIZE, tools } from './constants';
-import { getItem, PointMap, putItem } from './layer';
+import { complexOfSimple, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
@@ -105,8 +105,8 @@ function drawField(fv: FView, state: State): void {
       const viewIntent = state.iface.toolState.t != 'play_tool';
       let tile = tileOfState(state, realp, viewIntent);
       if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state))
-        tile = 'empty';
-      draw_sprite(fv, tile, vminus(p, vfpart(vp)));
+        tile = complexOfSimple('empty');
+      draw_sprite(fv, tile.tile, vminus(p, vfpart(vp)));
     }
   }
 
@@ -231,6 +231,7 @@ function worldTilePosition(fv: FView, wpos: Point): Point {
 }
 
 // wpos: position in window, in tiles. (0,0) is top left of viewport
+// XXX should take ComplexTile maybe?
 function draw_sprite(fv: FView, sprite_id: Sprite, wpos: Point, flip?: boolean): void {
   const { vd: { origin } } = fv;
   if (wpos.x < - 1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
