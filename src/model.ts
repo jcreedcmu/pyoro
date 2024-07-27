@@ -28,11 +28,11 @@ function isItemComplex(x: ComplexTile): boolean {
 
 // XXX Deprecate
 function openTile(x: Tile): boolean {
-  return x == 'empty' || x == 'save_point' || isItem(x) || isSpike(x);
+  return x == 'empty' || x == 'save_point' || isItem(x) || isSpike(complexOfSimple(x));
 }
 
 function openTileComplex(x: ComplexTile): boolean {
-  return x.tile == 'empty' || x.tile == 'save_point' || isItemComplex(x) || isSpikeComplex(x);
+  return x.tile == 'empty' || x.tile == 'save_point' || isItemComplex(x) || isSpike(x);
 }
 
 // XXX Deprecate
@@ -44,25 +44,15 @@ function isGrabbableComplex(x: ComplexTile): boolean {
   return x.tile == 'grip_wall';
 }
 
-// XXX Deprecate
-function isSpike(x: Tile): boolean {
-  return x == 'spike_up' || x == 'spike_left' || x == 'spike_right' || x == 'spike_down';
-}
-
-function isSpikeComplex(x: ComplexTile): boolean {
+function isSpike(x: ComplexTile): boolean {
   return x.tile == 'spike_up' || x.tile == 'spike_left' || x.tile == 'spike_right' || x.tile == 'spike_down';
 }
 
-// XXX Deprecate
-function isDeadly(x: Tile): boolean {
+function isDeadly(x: ComplexTile): boolean {
   return isSpike(x);
 }
 
-function isDeadlyComplex(x: ComplexTile): boolean {
-  return isSpikeComplex(x);
-}
-
-function genImpetusComplex(x: ComplexTile): number {
+function genImpetus(x: ComplexTile): number {
   if (openTileComplex(x)) return 0;
   if (complexTileEq(x, complexOfSimple("up_box"))) return FULL_IMPETUS;
   return 1;
@@ -312,7 +302,7 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   const jumpSucceeded = result.dpos.y < 0;
   if (stableBefore && isJump(move) && jumpSucceeded)
-    impetus = genImpetusComplex(tileBefore) + (s.inventory.teal_fruit ?? 0);
+    impetus = genImpetus(tileBefore) + (s.inventory.teal_fruit ?? 0);
   else if (result.impetus != null)
     impetus = result.impetus;
 
@@ -329,11 +319,11 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   const tileAfter = tileOfGameState(s, nextPos);
   const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
   const supportedAfter = !openTileComplex(suppTileAfter);
-  const dead = isDeadlyComplex(tileAfter);
+  const dead = isDeadly(tileAfter);
 
   if (result.posture != 'attachWall') {
     if (supportedAfter) {
-      impetus = genImpetusComplex(suppTileAfter);
+      impetus = genImpetus(suppTileAfter);
     }
     else {
       if (impetus)
