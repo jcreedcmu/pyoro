@@ -1,15 +1,20 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { DynamicLayer, dynamicOfSimple, dynamicTileOfStack, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
+import { complexOfSimple, complexTileEq, DynamicLayer, dynamicOfSimple, dynamicTileOfStack, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { ComplexTile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
 import { max } from './util';
 import { WidgetPoint } from './view';
 
+// XXX Deprecate
 function getItem(x: Tile): Item | undefined {
   if (x == 'teal_fruit' || x == 'coin') return x;
+}
+
+function getItemComplex(x: ComplexTile): Item | undefined {
+  if (x.tile == 'teal_fruit' || x.tile == 'coin') return x.tile;
 }
 
 // XXX Deprecate
@@ -317,10 +322,10 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   // predicting the next state of time-oscillating blocks.
   const nextTimeS = produce(s, s => { s.time++ });
 
-  const tileAfter = tileOfGameState(s, nextPos).tile; // XXX use Complextile
+  const tileAfter = tileOfGameState(s, nextPos);
   const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
   const supportedAfter = !openTileComplex(suppTileAfter);
-  const dead = isDeadly(tileAfter);
+  const dead = isDeadlyComplex(tileAfter);
 
   if (result.posture != 'attachWall') {
     if (supportedAfter) {
@@ -344,10 +349,10 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
 
   anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });
 
-  if (tileAfter == 'save_point')
+  if (complexTileEq(tileAfter, complexOfSimple('save_point')))
     anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
 
-  const item = getItem(tileAfter);
+  const item = getItemComplex(tileAfter);
   if (item !== undefined)
     anims.push({ t: 'ItemGetAnimation', pos: nextPos, item });
 
