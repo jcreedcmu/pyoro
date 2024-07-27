@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { complexOfSimple, complexTileEq, DynamicLayer, dynamicOfComplex, dynamicOfSimple, dynamicTileOfStack, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
+import { complexOfSimple, complexTileEq, DynamicLayer, dynamicOfComplex, dynamicOfSimple, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, putTileInDynamicLayer, tileOfStack, TileResolutionContext } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { ComplexTile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tile, Tool } from './types';
@@ -24,7 +24,7 @@ function isItem(x: ComplexTile): boolean {
 }
 
 function isOpen(x: ComplexTile): boolean {
-  return isLit(x, 'empty') || isLit(x, 'save_point') || isItem(x) || isSpike(x);
+  return complexTileEq(x, emptyTile()) || isLit(x, 'save_point') || isItem(x) || isSpike(x);
 }
 
 function isGrabbable(x: ComplexTile): boolean {
@@ -212,10 +212,10 @@ export function _putTileInInitOverlay(s: State, p: Point, t: DynamicTile): State
 
 function forceBlock(s: GameState, pos: Point, tile: ComplexTile): Animation[] {
   switch (tile.t) {
+    case 'fragile_box':
+      return [{ t: 'MeltAnimation', pos }];
     case 'simple':
       switch (tile.tile) {
-        case 'fragile_box':
-          return [{ t: 'MeltAnimation', pos }];
         case 'coin_wall':
           if ((s.inventory.coin ?? 0) >= 1) {
             return [{ t: 'SpendCoinAnimation', pos }];
@@ -420,7 +420,7 @@ function defaultDynamicTileToPut(tile: ComplexTile): DynamicTile {
 function determineTileToPut(s: State, worldPoint: Point): DynamicTile {
   const newTile = defaultDynamicTileToPut(rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation));
 
-  return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? dynamicOfSimple('empty') : newTile;
+  return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? dynamicOfComplex(emptyTile()) : newTile;
 }
 
 export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPanelState {

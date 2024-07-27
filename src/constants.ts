@@ -21,7 +21,7 @@ export const editTiles: ComplexTile[] =
     complexOfSimple('grip_wall'),
     { t: 'box3' },
     complexOfSimple('up_box'),
-    complexOfSimple('fragile_box'),
+    { t: 'fragile_box' },
     complexOfSimple('spike_up'),
     complexOfSimple('save_point'),
     complexOfSimple('teal_fruit'),

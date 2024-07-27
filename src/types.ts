@@ -54,12 +54,14 @@ export type DynamicTile =
  * (whereas a simple `Tile` is just a subtype of string)
  */
 export type ComplexTile =
+  | { t: 'simple', tile: Tile } // XXX this branch is deprecated
   /** A plain box */
   | { t: 'box' }
   /** A box with grass on it */
   | { t: 'box3' }
-  | { t: 'simple', tile: Tile }
-  /* Add more here eventually */
+  /** A box that disappears if you walk on it */
+  | { t: 'fragile_box' }
+  | { t: 'empty' }
   ;
 
 /**
@@ -67,9 +69,6 @@ export type ComplexTile =
  */
 export type Tile =
 
-  /** A box that disappears if you walk on it */
-  | 'fragile_box'
-  | 'empty'
   | 'broken_box'
   | 'up_box'
   | 'spike_up'

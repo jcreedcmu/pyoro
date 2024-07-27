@@ -141,25 +141,25 @@ describe('State', () => {
   });
 
   it('should allow jumping and breaking ice bricks if there is enough impetus', () => {
-    const layer = basicLayer();
-    layer.tiles['0,' + (-FULL_IMPETUS)] = 'fragile_box';
-    let m = basicState(layer);
+    const layer = complexLayer();
+    layer.tiles['0,' + (-FULL_IMPETUS)] = { t: 'fragile_box' };
+    let m = complexState(layer);
 
     for (let i = 0; i < FULL_IMPETUS; i++)
       m = executeMove(m, 'up');
 
-    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS })).toEqual(complexOfSimple('empty'));
+    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS })).toEqual(emptyTile());
   });
 
   it('should not breaking ice bricks if there is not enough impetus', () => {
-    const layer = basicLayer();
-    layer.tiles['0,' + (-FULL_IMPETUS - 1)] = 'fragile_box';
-    let m = basicState(layer);
+    const layer = complexLayer();
+    layer.tiles['0,' + (-FULL_IMPETUS - 1)] = { t: 'fragile_box' };
+    let m = complexState(layer);
 
     for (let i = 0; i < FULL_IMPETUS + 1; i++)
       m = executeMove(m, 'up');
 
-    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 })).toEqual(complexOfSimple('fragile_box'));
+    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 })).toEqual({ t: 'fragile_box' });
   });
 
 });

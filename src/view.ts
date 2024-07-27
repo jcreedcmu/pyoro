@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { App } from './app';
 import { editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { complexOfSimple, getItem, PointMap, putItem } from './layer';
+import { complexOfSimple, emptyTile, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
@@ -88,10 +88,10 @@ function spriteLocOfTile(tile: ComplexTile): Point {
   switch (tile.t) {
     case 'box': return { x: 1, y: 4 };
     case 'box3': return { x: 3, y: 3 };
+    case 'fragile_box': return { x: 2, y: 6 };
+    case 'empty': return { x: 0, y: 0 };
     case 'simple': switch (tile.tile) {
-      case 'fragile_box': return { x: 2, y: 6 };
       case 'broken_box': return { x: 4, y: 3 };
-      case 'empty': return { x: 0, y: 0 };
       case 'up_box': return { x: 6, y: 6 };
       case 'spike_up': return { x: 0, y: 3 };
       case 'spike_right': return { x: 2, y: 3 };
@@ -168,7 +168,7 @@ function drawField(fv: FView, state: State): void {
       const viewIntent = state.iface.toolState.t != 'play_tool';
       let tile = tileOfState(state, realp, viewIntent);
       if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state))
-        tile = complexOfSimple('empty');
+        tile = emptyTile();
       draw_sprite(fv, spriteLocOfTile(tile), vminus(p, vfpart(vp)));
     }
   }

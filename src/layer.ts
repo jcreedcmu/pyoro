@@ -30,7 +30,7 @@ function busActive(trc: TileResolutionContext, bus: string, viewIntent: boolean)
 }
 
 export function boxTile(): ComplexTile { return { t: 'box' }; }
-export function emptyTile(): ComplexTile { return { t: 'simple', tile: 'empty' }; }
+export function emptyTile(): ComplexTile { return { t: 'empty' }; }
 
 function resolveDynamicTile(
   ct: DynamicTile,
@@ -69,11 +69,13 @@ export function complexTileEq(t1: ComplexTile, t2: ComplexTile): boolean {
     case 'simple': return t2.t == 'simple' && t1.tile == t2.tile;
     case 'box': return t2.t == 'box';
     case 'box3': return t2.t == 'box3';
+    case 'fragile_box': return t2.t == 'fragile_box';
+    case 'empty': return t2.t == 'empty';
   }
 }
 
 export function isEmptyTile(ct: DynamicTile): boolean {
-  return ct.t == 'static' && ct.tile.t == 'simple' && ct.tile.tile == 'empty';
+  return ct.t == 'static' && ct.tile.t == 'empty';
 }
 
 export function putTileInDynamicLayer(l: DynamicLayer, p: Point, t: ComplexTile): void {
@@ -104,7 +106,7 @@ export function complexOfSimple(tile: Tile): ComplexTile {
 
 export function dynamicTileOfStack(ls: LayerStack, p: Point): DynamicTile {
   switch (ls.t) {
-    case 'base': return getItem(ls.layer, p) ?? dynamicOfSimple('empty');
+    case 'base': return getItem(ls.layer, p) ?? dynamicOfComplex(emptyTile());
     case 'overlay': {
       const top = getItem(ls.top, p);
       return top == undefined ? dynamicTileOfStack(ls.rest, p) : top;

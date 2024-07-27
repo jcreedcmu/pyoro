@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { complexOfSimple, complexTileEq, putTileInDynamicLayer } from './layer';
+import { complexOfSimple, complexTileEq, emptyTile, putTileInDynamicLayer } from './layer';
 import { tileOfGameState } from './model';
 import { int, lerp, vm2, vplus, vscale } from './point';
 import { GameState, IfaceState, init_state, State } from './state';
@@ -121,7 +121,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ViewPortAnimation': return state;
     case 'MeltAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, complexOfSimple(t > 0.5 ? 'empty' : 'broken_box'));
+        putTileInDynamicLayer(s.overlay, a.pos, t > 0.5 ? emptyTile() : complexOfSimple('broken_box'));
       });
     case 'ResetAnimation':
       return produce(state, s => {
@@ -144,11 +144,11 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ItemGetAnimation':
       return produce(state, s => {
         s.inventory[a.item] = (s.inventory[a.item] ?? 0) + 1;
-        putTileInDynamicLayer(s.overlay, a.pos, complexOfSimple('empty'));
+        putTileInDynamicLayer(s.overlay, a.pos, emptyTile());
       });
     case 'SpendCoinAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, complexOfSimple('empty'));
+        putTileInDynamicLayer(s.overlay, a.pos, emptyTile());
         if (s.inventory.coin == undefined || s.inventory.coin == 0) {
           throw new Error("Trying to spend coins we don't have");
         }
