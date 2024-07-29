@@ -74,11 +74,13 @@ export const emptyOverlay: DynamicLayer = { tiles: {} };
 // In the interface, not in the model
 export type TimedTileFields = { phase: string, on_for: string, off_for: string };
 export type ButtonedTileFields = { x: string, y: string };
+export type DoorTileFields = { destinationLevel: string };
 
 export type ModifyPanelState =
   | { t: 'none' }
   | { t: 'timed' } & TimedTileFields
   | { t: 'buttoned' } & ButtonedTileFields
+  | { t: 'door' } & DoorTileFields
   ;
 
 export type ToolState =

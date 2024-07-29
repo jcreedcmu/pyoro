@@ -417,6 +417,7 @@ function similarTiles(ct1: DynamicTile, ct2: DynamicTile): boolean {
     case 'buttoned': return ct2.t == 'buttoned';
     case 'bus_button': return ct2.t == 'bus_button' && ct1.bus == ct2.bus;
     case 'bus_block': return ct2.t == 'bus_block' && ct1.bus == ct2.bus;
+    case 'door': return ct2.t == 'door';
   }
 }
 
@@ -452,6 +453,10 @@ export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPane
       t: 'buttoned',
       x: ct.button_source.x + '',
       y: ct.button_source.y + '',
+    }
+    case 'door': return {
+      t: 'door',
+      destinationLevel: ct.destinationLevel,
     }
   }
 }

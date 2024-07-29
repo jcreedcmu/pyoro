@@ -39,6 +39,13 @@ export type BusControlledDynamicTile =
   ;
 
 /**
+ * A tile that links to another level
+ */
+export type DoorDynamicTile =
+  | { t: 'door', destinationLevel: string }
+  ;
+
+/**
  * A `DynamicTile` represents an "intension" that can resolve to an
  * actual tile via {@link layer.getTileOfDynamicLayer}. This means the
  * tile's effective realization, its "extension", changes dynamically
@@ -49,6 +56,7 @@ export type DynamicTile =
   | TimedBlockDynamicTile
   | ButtonedBlockDynamicTile
   | BusControlledDynamicTile
+  | DoorDynamicTile
   ;
 
 export type Direction =
@@ -80,9 +88,9 @@ export type Tile =
   | { t: 'button_off' }
   | { t: 'timed_wall' }
   | { t: 'buttoned_wall' }
-  | { t: `bus_block`, bus: Bus, on: boolean }
-  | { t: `bus_button`, bus: Bus, on: boolean }
-  | { t: 'door' }
+  | { t: 'bus_block', bus: Bus, on: boolean }
+  | { t: 'bus_button', bus: Bus, on: boolean }
+  | { t: 'door', destinationLevel: string }
   ;
 
 

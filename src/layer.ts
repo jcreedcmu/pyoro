@@ -63,6 +63,7 @@ function resolveDynamicTile(
         return is_button_on ? boxTile() : emptyTile();
       }
     }
+    case 'door': return { t: 'door', destinationLevel: ct.destinationLevel };
   }
 }
 
