@@ -3,6 +3,7 @@ import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
 import { DynamicLayer } from './layer';
 import { Bus, DynamicTile, Facing, Item, PlayerSprite, Point, Sprite } from './types';
+import { mapValues } from './util';
 import { ViewData } from './view';
 
 export type Player = {
@@ -45,7 +46,8 @@ export type Level = {
 // XXX may want to move other stuff into level state
 export type GameState = {
   player: Player,
-  level: Level,
+  levels: Record<string, Level>,
+  currentLevel: string,
   inventory: Inventory,
   lastSave: Point,
   time: number,
@@ -94,7 +96,8 @@ export const init_level: Level = {
 export const init_state: State = {
   game: {
     player: init_player,
-    level: init_level,
+    levels: mapValues(initOverlay, initOverlay => ({ initOverlay, overlay: emptyOverlay })),
+    currentLevel: 'start',
     inventory: {
     },
     lastSave: { x: 0, y: 0 },
