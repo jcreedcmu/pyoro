@@ -388,12 +388,22 @@ export function animator_for_move(s: State, move: Move): Animator {
 
 // Just used for editing purposes, whether clicking on the "same" tile
 // should erase instead of overwriting.
+function similarStaticTiles(ct1: Tile, ct2: Tile): boolean {
+  switch (ct1.t) {
+    case 'spike': return ct2.t == 'spike';
+    default: return ct1.t == ct2.t;
+  }
+}
+
+// Just used for editing purposes, whether clicking on the "same" tile
+// should erase instead of overwriting.
 function similarTiles(ct1: DynamicTile, ct2: DynamicTile): boolean {
   switch (ct1.t) {
-    case 'static': return ct2.t == 'static' && ct2.tile == ct1.tile;
+    case 'static': return ct2.t == 'static' && similarStaticTiles(ct1.tile, ct2.tile);
     case 'timed': return ct2.t == 'timed';
     case 'buttoned': return ct2.t == 'buttoned';
-    case 'bus_controlled': return ct2.t == 'bus_controlled';
+    case 'bus_button': return ct2.t == 'bus_button' && ct1.bus == ct2.bus;
+    case 'bus_block': return ct2.t == 'bus_block' && ct1.bus == ct2.bus;
   }
 }
 
@@ -401,6 +411,8 @@ function defaultDynamicTileToPut(tile: Tile): DynamicTile {
   switch (tile.t) {
     case 'timed_wall': return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
     case 'buttoned_wall': return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
+    case 'bus_block': return { t: 'bus_block', bus: tile.bus };
+    case 'bus_button': return { t: 'bus_button', bus: tile.bus };
     default: return dynamicOfTile(tile);
   }
 }
@@ -415,7 +427,8 @@ export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPane
   const ct = dynamicTileOfState(s, worldPoint);
   switch (ct.t) {
     case 'static': return { t: 'none' };
-    case 'bus_controlled': return { t: 'none' }; // XXX should have bus selection in state
+    case 'bus_button': return { t: 'none' };
+    case 'bus_block': return { t: 'none' };
     case 'timed': return {
       t: 'timed',
       off_for: ct.off_for + '',

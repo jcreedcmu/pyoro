@@ -34,7 +34,9 @@ export type Bus = 'red' | 'green' | 'blue';
  * A tile whose presence is conditional on a bus being active
  */
 export type BusControlledDynamicTile =
-  { t: 'bus_controlled', bus: Bus };
+  | { t: 'bus_button', bus: Bus }
+  | { t: 'bus_block', bus: Bus }
+  ;
 
 /**
  * A `DynamicTile` represents an "intension" that can resolve to an
@@ -55,6 +57,7 @@ export type Direction =
   | 'right'
   | 'down'
   ;
+
 /**
  * A tile whose physics and rendering are known.
  */

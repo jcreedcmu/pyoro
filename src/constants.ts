@@ -33,7 +33,11 @@ export const editTiles: Tile[] =
     { t: 'timed_wall' },
     { t: 'buttoned_wall' },
     { t: 'bus_button', bus: 'red', on: true },
-
+    { t: 'bus_button', bus: 'green', on: true },
+    { t: 'bus_button', bus: 'blue', on: true },
+    { t: 'bus_block', bus: 'red', on: true },
+    { t: 'bus_block', bus: 'green', on: true },
+    { t: 'bus_block', bus: 'blue', on: true },
   ];
 
 function numberOfDirection(direction: Direction): number {
