@@ -957,6 +957,135 @@ export const initOverlay: DynamicLayer = {
         "x": 4,
         "y": 0
       }
+    },
+    "-13,-3": {
+      "t": "bus_block",
+      "bus": "red"
+    },
+    "-15,-5": {
+      "t": "static",
+      "tile": {
+        "t": "grip_wall"
+      }
+    },
+    "-12,-6": {
+      "t": "static",
+      "tile": {
+        "t": "grip_wall"
+      }
+    },
+    "-15,-7": {
+      "t": "static",
+      "tile": {
+        "t": "grip_wall"
+      }
+    },
+    "-13,-9": {
+      "t": "static",
+      "tile": {
+        "t": "grip_wall"
+      }
+    },
+    "-12,-11": {
+      "t": "static",
+      "tile": {
+        "t": "grip_wall"
+      }
+    },
+    "-10,-11": {
+      "t": "bus_block",
+      "bus": "blue"
+    },
+    "-8,-11": {
+      "t": "bus_block",
+      "bus": "blue"
+    },
+    "-6,-11": {
+      "t": "bus_block",
+      "bus": "blue"
+    },
+    "-14,-11": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
+    },
+    "-15,-11": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
+    },
+    "-16,-11": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
+    },
+    "-17,-12": {
+      "t": "bus_button",
+      "bus": "blue"
+    },
+    "-17,-11": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
+    },
+    "-17,-13": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
+    },
+    "-16,-13": {
+      "t": "bus_block",
+      "bus": "red"
+    },
+    "-15,-13": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
+    },
+    "-14,-13": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
+    },
+    "-4,-11": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
+    },
+    "-3,-12": {
+      "t": "bus_button",
+      "bus": "red"
+    },
+    "-3,-11": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
+    },
+    "-17,-14": {
+      "t": "static",
+      "tile": {
+        "t": "item",
+        "item": "coin"
+      }
+    },
+    "-10,-2": {
+      "t": "bus_button",
+      "bus": "red"
+    },
+    "-10,-1": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
     }
   }
 };
