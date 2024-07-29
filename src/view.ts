@@ -168,7 +168,8 @@ function drawField(fv: FView, state: State): void {
       const realp = vplus(p, vint(vp));
       const viewIntent = state.iface.toolState.t != 'play_tool';
       let tile = tileOfState(state, realp, viewIntent);
-      if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state))
+      // For now, only do empty-tile overriding if the erstwhile tile is a save_point.
+      if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state) && tile.t == 'save_point')
         tile = emptyTile();
       draw_sprite(fv, spriteLocOfTile(tile), vminus(p, vfpart(vp)));
     }
