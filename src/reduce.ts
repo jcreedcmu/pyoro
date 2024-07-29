@@ -5,7 +5,7 @@ import { putDynamicTile } from './layer';
 import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims } from "./model";
 import { Point } from "./point";
-import { ButtonedTileFields, State, TimedTileFields, ToolState } from "./state";
+import { ButtonedTileFields, DoorTileFields, State, TimedTileFields, ToolState } from "./state";
 import { DynamicTile, Move } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
@@ -24,7 +24,9 @@ export type Command =
  */
 export type PanelStateFieldTypes =
   { [P in keyof TimedTileFields]: { t: 'setPanelStateField', key: P, value: TimedTileFields[P] } }
-  & { [P in keyof ButtonedTileFields]: { t: 'setPanelStateField', key: P, value: ButtonedTileFields[P] } };
+  & { [P in keyof ButtonedTileFields]: { t: 'setPanelStateField', key: P, value: ButtonedTileFields[P] } }
+  & { [P in keyof DoorTileFields]: { t: 'setPanelStateField', key: P, value: DoorTileFields[P] } }
+  ;
 
 export type Action =
   | { t: 'keyUp', key: string, code: string, name: string }
@@ -40,6 +42,7 @@ export type Action =
   | { t: 'setCurrentToolState', toolState: ToolState }
   | PanelStateFieldTypes[keyof TimedTileFields]
   | PanelStateFieldTypes[keyof ButtonedTileFields]
+  | PanelStateFieldTypes[keyof DoorTileFields]
   | { t: 'saveModifyPanel' }
   | { t: 'setCurrentLevel', name: string }
   ;
@@ -175,6 +178,9 @@ export function reduce(s: State, a: Action): Result {
         if (s.iface.toolState.panelState.t == 'buttoned') {
           (s.iface.toolState.panelState as any)[a.key] = a.value; // FIXME
         }
+        if (s.iface.toolState.panelState.t == 'door') {
+          (s.iface.toolState.panelState as any)[a.key] = a.value; // FIXME
+        }
       }
     }));
     case 'saveModifyPanel': return pure(produce(s, s => {
@@ -196,6 +202,13 @@ export function reduce(s: State, a: Action): Result {
               x: parseInt(ts.panelState.x),
               y: parseInt(ts.panelState.y)
             },
+          };
+          putDynamicTile(getInitOverlay(s.game), ts.modifyCell, ct);
+        }
+        else if (ts.panelState.t == 'door') {
+          const ct: DynamicTile = {
+            t: 'door',
+            destinationLevel: ts.panelState.destinationLevel,
           };
           putDynamicTile(getInitOverlay(s.game), ts.modifyCell, ct);
         }

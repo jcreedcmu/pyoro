@@ -6,7 +6,7 @@ import { keyFromCode } from './key';
 import { logger } from './logger';
 import { dynamicTileOfState, getOverlayForSave } from './model';
 import { Dispatch, Effect, reduce } from './reduce';
-import { ButtonedTileFields, init_state, ModifyPanelState, State, TimedTileFields, ToolState } from './state';
+import { ButtonedTileFields, DoorTileFields, init_state, ModifyPanelState, State, TimedTileFields, ToolState } from './state';
 import { TimedBlockDynamicTile } from './types';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
@@ -83,6 +83,16 @@ function renderButtonedBlockEditor(ttf: ButtonedTileFields, dispatch: Dispatch):
   </span>;
 }
 
+function renderDoorEditor(ttf: DoorTileFields, dispatch: Dispatch): JSX.Element {
+  return <span>
+    <label>
+      Destination <input type="text" value={ttf.destinationLevel}
+        onChange={e => dispatch({ t: 'setPanelStateField', key: 'destinationLevel', value: e.target.value })} />
+    </label><br />
+    <button onClick={e => dispatch({ t: 'saveModifyPanel' })}>Apply</button>
+  </span>;
+}
+
 function renderModifyPanel(state: State, dispatch: Dispatch): JSX.Element | null {
   const toolState = state.iface.toolState;
   if (toolState.t == 'modify_tool' && toolState.modifyCell !== null) {
@@ -101,6 +111,9 @@ function renderModifyPanel(state: State, dispatch: Dispatch): JSX.Element | null
     }
     else if (ps.t == 'buttoned') {
       content = renderButtonedBlockEditor(ps, dispatch);
+    }
+    else if (ps.t == 'door') {
+      content = renderDoorEditor(ps, dispatch);
     }
     return <div style={style}>{content}</div>;
   }

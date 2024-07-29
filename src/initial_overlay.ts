@@ -1093,6 +1093,10 @@ export const initOverlay: Record<string, DynamicLayer> = {
         "tile": {
           "t": "box"
         }
+      },
+      "-1,-2": {
+        "t": "door",
+        "destinationLevel": "boxes"
       }
     }
   },
@@ -1498,6 +1502,10 @@ export const initOverlay: Record<string, DynamicLayer> = {
         "tile": {
           "t": "box"
         }
+      },
+      "-1,0": {
+        "t": "door",
+        "destinationLevel": "start"
       }
     }
   }

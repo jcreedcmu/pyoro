@@ -195,7 +195,6 @@ function drawWorldTileSelection(fv: FView, p: Point): void {
   const { d } = fv;
   d.fillStyle = rgba(0, 192, 192, 0.7);
   const sp = worldTilePosition(fv, p);
-  console.log(sp);
   d.beginPath();
   d.rect(sp.x, sp.y, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
   d.rect(sp.x + SCALE, sp.y + SCALE, (TILE_SIZE - 2) * SCALE, (TILE_SIZE - 2) * SCALE);
