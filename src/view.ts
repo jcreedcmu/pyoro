@@ -119,6 +119,7 @@ function spriteLocOfTile(tile: Tile): Point {
       case 'green': return tile.on ? { x: 11, y: 4 } : { x: 11, y: 3 };
       case 'blue': return tile.on ? { x: 12, y: 4 } : { x: 12, y: 3 };
     }
+    case 'door': return { x: 8, y: 6 };
   }
 
 }

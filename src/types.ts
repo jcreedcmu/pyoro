@@ -82,6 +82,7 @@ export type Tile =
   | { t: 'buttoned_wall' }
   | { t: `bus_block`, bus: Bus, on: boolean }
   | { t: `bus_button`, bus: Bus, on: boolean }
+  | { t: 'door' }
   ;
 
 
