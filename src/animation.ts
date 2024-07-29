@@ -5,6 +5,7 @@ import { tileOfGameState } from './model';
 import { int, lerp, vm2, vplus, vscale } from './point';
 import { GameState, IfaceState, init_state, State } from './state';
 import { Bus, Facing, Item, PlayerSprite, Point } from './types';
+import { getOverlay, setOverlay } from './game-state-access';
 
 export type Animation =
   {
@@ -124,19 +125,26 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ViewPortAnimation': return state;
     case 'MeltAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, t > 0.5 ? emptyTile() : { t: 'broken_box' });
+        putTileInDynamicLayer(getOverlay(s), a.pos, t > 0.5 ? emptyTile() : { t: 'broken_box' });
       });
     case 'ResetAnimation':
+      if (fr < DEATH_FADE_OUT)
+        return state;
+      // XXX Need to more carefully consider what state really changes
+      // when reset Specifically bus state is not reset right now, and
+      // maybe only the current level should be reset? While
+      // preserving "monotonic progress changes" whatever those might
+      // be? My point of reference for that concept is how Isles of
+      // Sea and Sky handles unlockables.
+      state = setOverlay(state, { tiles: {} });
+
       return produce(state, s => {
-        if (fr >= DEATH_FADE_OUT) {
-          s.overlay = { tiles: {} };
-          s.inventory = {};
-          const last_save = s.lastSave;
-          s.player = produce(init_state.game.player, p => {
-            p.pos = last_save;
-          });
-          s.time = 0;
-        }
+        s.inventory = {};
+        const last_save = s.lastSave;
+        s.player = produce(init_state.game.player, p => {
+          p.pos = last_save;
+        });
+        s.time = 0;
       });
     case 'SavePointChangeAnimation':
       return produce(state, s => {
@@ -147,11 +155,11 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ItemGetAnimation':
       return produce(state, s => {
         s.inventory[a.item] = (s.inventory[a.item] ?? 0) + 1;
-        putTileInDynamicLayer(s.overlay, a.pos, emptyTile());
+        putTileInDynamicLayer(getOverlay(s), a.pos, emptyTile());
       });
     case 'SpendCoinAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, emptyTile());
+        putTileInDynamicLayer(getOverlay(s), a.pos, emptyTile());
         if (s.inventory.coin == undefined || s.inventory.coin == 0) {
           throw new Error("Trying to spend coins we don't have");
         }
@@ -159,7 +167,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       });
     case 'ButtonToggleAnimation':
       return produce(state, s => {
-        putTileInDynamicLayer(s.overlay, a.pos, tileEq(tileOfGameState(s, a.pos), { t: 'button_on' }) ? { t: 'button_off' } : { t: 'button_on' });
+        putTileInDynamicLayer(getOverlay(s), a.pos, tileEq(tileOfGameState(s, a.pos), { t: 'button_on' }) ? { t: 'button_off' } : { t: 'button_on' });
       });
     case 'BusButtonToggleAnimation':
       return produce(state, s => {

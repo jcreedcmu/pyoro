@@ -9,6 +9,7 @@ import { ButtonedTileFields, State, TimedTileFields, ToolState } from "./state";
 import { DynamicTile, Move } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
+import { getInitOverlay } from "./game-state-access";
 
 export type Command =
   | 'prevEditTile'
@@ -185,7 +186,7 @@ export function reduce(s: State, a: Action): Result {
             off_for: parseInt(ts.panelState.off_for),
             on_for: parseInt(ts.panelState.on_for),
           };
-          putDynamicTile(s.game.initOverlay, ts.modifyCell, ct);
+          putDynamicTile(getInitOverlay(s.game), ts.modifyCell, ct);
         }
         else if (ts.panelState.t == 'buttoned') {
           const ct: DynamicTile = {
@@ -195,7 +196,7 @@ export function reduce(s: State, a: Action): Result {
               y: parseInt(ts.panelState.y)
             },
           };
-          putDynamicTile(s.game.initOverlay, ts.modifyCell, ct);
+          putDynamicTile(getInitOverlay(s.game), ts.modifyCell, ct);
         }
       }
     }));

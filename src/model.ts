@@ -7,6 +7,7 @@ import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } fro
 import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tool } from './types';
 import { max } from './util';
 import { WidgetPoint } from './view';
+import { getInitOverlay, getOverlay } from './game-state-access';
 
 function getItem(x: Tile): Item | undefined {
   if (x.t == 'item')
@@ -138,8 +139,8 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
 function layerStackOfState(s: GameState): LayerStack {
   return {
     t: 'overlay',
-    top: s.overlay,
-    rest: { t: 'base', layer: s.initOverlay }
+    top: getOverlay(s),
+    rest: { t: 'base', layer: getInitOverlay(s) }
   };
 }
 
@@ -202,7 +203,7 @@ export function dynamicTileOfGameState(s: GameState, p: Point): DynamicTile {
 
 export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: DynamicTile): GameState {
   return produce(s, s => {
-    putDynamicTile(s.initOverlay, p, t);
+    putDynamicTile(getInitOverlay(s), p, t);
   });
 }
 
@@ -525,7 +526,7 @@ export function show_empty_tile_override(s: State): boolean {
 
 export function getOverlayForSave(s: GameState): DynamicLayer {
   const layer: DynamicLayer = { tiles: {} };
-  for (const [k, v] of Object.entries(s.initOverlay.tiles)) {
+  for (const [k, v] of Object.entries(getInitOverlay(s).tiles)) {
     if (!isEmptyTile(v))
       layer.tiles[k] = v;
   }

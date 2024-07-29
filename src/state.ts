@@ -37,10 +37,15 @@ export type IfaceState = {
 
 export type Inventory = Partial<Record<Item, number>>;
 
-export type GameState = {
-  player: Player,
+export type Level = {
   initOverlay: DynamicLayer,
   overlay: DynamicLayer,
+}
+
+// XXX may want to move other stuff into level state
+export type GameState = {
+  player: Player,
+  level: Level,
   inventory: Inventory,
   lastSave: Point,
   time: number,
@@ -81,11 +86,15 @@ export type ToolState =
   | { t: 'modify_tool', modifyCell: Point | null, panelState: ModifyPanelState }
   ;
 
+export const init_level: Level = {
+  initOverlay: initOverlay,
+  overlay: emptyOverlay,
+};
+
 export const init_state: State = {
   game: {
     player: init_player,
-    initOverlay: initOverlay,
-    overlay: emptyOverlay,
+    level: init_level,
     inventory: {
     },
     lastSave: { x: 0, y: 0 },

@@ -13,10 +13,12 @@ function complexLayer(): PointMap<Tile> {
 
 function complexState(layer: PointMap<Tile>): GameState {
   return {
-    initOverlay: mapPointMap(layer, dynamicOfTile),
+    level: {
+      initOverlay: mapPointMap(layer, dynamicOfTile),
+      overlay: mapPointMap(layer, dynamicOfTile),
+    },
     inventory: { teal_fruit: undefined, },
     lastSave: { x: 0, y: 0 },
-    overlay: mapPointMap(layer, dynamicOfTile),
     player: init_player,
     time: 0,
     busState: { red: false, green: false, blue: false },
