@@ -6,12 +6,10 @@ This is an old game idea I've been tinkering with from time to time.
 The premise is: puzzle-platformer, but time is discrete, so there's
 no need to have good twitch skills.
 
-## Notes
+## Interesting Corner Cases
 
-### 2022.10.01
+Should probably turn these into puzzle ideas.
 
-Interesting corner cases:
-
-Diagonal-up pushing of a button
-Diagonal-crossing of a block
-Skimming just behind a phased transient block
+- Diagonal-up pushing of a button
+- Diagonal-crossing of a block
+- Skimming just behind a phased transient block
