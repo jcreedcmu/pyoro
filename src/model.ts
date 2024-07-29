@@ -19,8 +19,13 @@ function isItem(x: Tile): boolean {
   return getItem(x) !== undefined;
 }
 
+function isOpenBusBlock(x: Tile): boolean {
+  return x.t == 'bus_block' && x.on == false;
+}
+
 function isOpen(x: Tile): boolean {
-  return tileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x);
+  return tileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x)
+    || isOpenBusBlock(x);
 }
 
 function isGrabbable(x: Tile): boolean {
