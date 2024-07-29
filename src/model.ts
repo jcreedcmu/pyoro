@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext } from './layer';
+import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext, pointMapEntries } from './layer';
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tool } from './types';
@@ -265,6 +265,23 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   // XXX so is this, in a way
   if (move == 'recenter') {
     return [];
+  }
+
+  const tileAt = tileOfGameState(s, player.pos);
+  if (move == 'down' && tileAt.t == 'door') {
+    const newLevel = tileAt.destinationLevel;
+    const oldLevel = s.currentLevel;
+    const destTiles = pointMapEntries(s.levels[newLevel].initOverlay);
+    const reciprocalDoor = destTiles.find(({ loc, value }) => value.t == 'door' && value.destinationLevel == oldLevel);
+    let newPosition;
+    if (reciprocalDoor == undefined) {
+      console.error(`couldn't find reciprocal door`);
+      newPosition = { x: 0, y: 0 };
+    }
+    else {
+      newPosition = reciprocalDoor.loc;
+    }
+    return [{ t: 'ChangeLevelAnimation', newLevel, oldLevel, newPosition }];
   }
 
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });

@@ -126,3 +126,11 @@ export function mapPointMap<T, U>(pointMap: PointMap<T>, f: (x: T) => U): PointM
     tiles: mapValues(pointMap.tiles, f)
   };
 }
+
+export type PointMapEntry<T> = { loc: Point, value: T };
+export function pointMapEntries<T>(pointMap: PointMap<T>): PointMapEntry<T>[] {
+  return Object.entries(pointMap.tiles).map(([k, v]) => {
+    const [x, y] = k.split(',').map(x => parseInt(x));
+    return { loc: { x, y }, value: v };
+  });
+}
