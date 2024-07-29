@@ -87,7 +87,7 @@ export type ToolState =
   ;
 
 export const init_level: Level = {
-  initOverlay: initOverlay,
+  initOverlay: initOverlay.start,
   overlay: emptyOverlay,
 };
 
