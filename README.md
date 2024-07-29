@@ -1,10 +1,12 @@
-zplat
-=====
+Mount Pyoro
+===========
 [![run tests](https://github.com/jcreedcmu/zplat/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/jcreedcmu/zplat/actions/workflows/run-tests.yml)
 
 This is an old game idea I've been tinkering with from time to time.
 The premise is: puzzle-platformer, but time is discrete, so there's
 no need to have good twitch skills.
+
+Present influences on my mind include Celeste, Isles of Sea and Sky.
 
 ## Interesting Corner Cases
 
