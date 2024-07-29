@@ -5,7 +5,7 @@ import { tileOfGameState } from './model';
 import { int, lerp, vm2, vplus, vscale } from './point';
 import { GameState, IfaceState, init_state, State } from './state';
 import { Bus, Facing, Item, PlayerSprite, Point } from './types';
-import { getOverlay, setOverlay } from './game-state-access';
+import { getOverlay, setCurrentLevel, setOverlay } from './game-state-access';
 
 export type Animation =
   {
@@ -25,6 +25,7 @@ export type Animation =
   | { t: 'SpendCoinAnimation', pos: Point }
   | { t: 'ButtonToggleAnimation', pos: Point }
   | { t: 'BusButtonToggleAnimation', bus: Bus }
+  | { t: 'ChangeLevelAnimation', oldLevel: string, newLevel: string, newPosition: Point }
   ;
 
 
@@ -55,7 +56,13 @@ export function centeredViewPort(pos: Point): Point {
 const DEATH_FADE_OUT = 2;
 const DEATH_HOLD = 0;
 const DEATH_FADE_IN = 2;
-const DEATH = DEATH_FADE_OUT + DEATH_HOLD + DEATH_FADE_IN;
+const DEATH_FRAMES = DEATH_FADE_OUT + DEATH_HOLD + DEATH_FADE_IN;
+
+const CHANGE_ROOM_FADE_OUT = 2;
+const CHANGE_ROOM_HOLD = 0;
+const CHANGE_ROOM_FADE_IN = 2;
+const CHANGE_ROOM_FRAMES = CHANGE_ROOM_FADE_OUT + CHANGE_ROOM_HOLD + CHANGE_ROOM_FADE_IN;
+
 
 export function applyIfaceAnimation(a: Animation, state: State, frc: number | 'complete'): IfaceState {
   const dur = duration(a);
@@ -80,7 +87,7 @@ export function applyIfaceAnimation(a: Animation, state: State, frc: number | 'c
           s.blackout = 1;
         }
         else {
-          s.blackout = (DEATH - fr) / DEATH_FADE_OUT;
+          s.blackout = (DEATH_FRAMES - fr) / DEATH_FADE_OUT;
         }
         if (fr >= DEATH_FADE_OUT) {
           s.viewPort = centeredViewPort(game.lastSave);
@@ -96,6 +103,20 @@ export function applyIfaceAnimation(a: Animation, state: State, frc: number | 'c
     case 'SpendCoinAnimation': return iface;
     case 'ButtonToggleAnimation': return iface;
     case 'BusButtonToggleAnimation': return iface;
+    case 'ChangeLevelAnimation': return produce(iface, s => {
+      if (fr <= CHANGE_ROOM_FADE_OUT) {
+        s.blackout = fr / CHANGE_ROOM_FADE_OUT;
+      }
+      else if (fr <= CHANGE_ROOM_FADE_OUT + CHANGE_ROOM_HOLD) {
+        s.blackout = 1;
+      }
+      else {
+        s.blackout = (CHANGE_ROOM_FRAMES - fr) / CHANGE_ROOM_FADE_OUT;
+      }
+      if (fr >= CHANGE_ROOM_FADE_OUT) {
+        s.viewPort = centeredViewPort(a.newPosition);
+      }
+    });
   }
 }
 
@@ -173,6 +194,12 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       return produce(state, s => {
         s.busState[a.bus] = !s.busState[a.bus];
       });
+    case 'ChangeLevelAnimation':
+      if (fr < CHANGE_ROOM_FADE_OUT)
+        return state;
+      return produce(setCurrentLevel(state, a.newLevel), s => {
+        s.player.pos = a.newPosition;
+      });
   }
 }
 
@@ -183,12 +210,13 @@ export function duration(a: Animation): number {
     case 'PlayerAnimation': return 2;
     case 'ViewPortAnimation': return 2;
     case 'MeltAnimation': return 2;
-    case 'ResetAnimation': return DEATH;
+    case 'ResetAnimation': return DEATH_FRAMES;
     case 'SavePointChangeAnimation': return 2;
     case 'RecenterAnimation': return 4;
     case 'ItemGetAnimation': return 2;
     case 'SpendCoinAnimation': return 1;
     case 'ButtonToggleAnimation': return 1;
     case 'BusButtonToggleAnimation': return 1;
+    case 'ChangeLevelAnimation': return CHANGE_ROOM_FRAMES;
   }
 }
