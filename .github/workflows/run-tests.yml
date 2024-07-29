@@ -1,4 +1,4 @@
-name: Zplat Tests
+name: Pyoro Tests
 
 on:
   push:
