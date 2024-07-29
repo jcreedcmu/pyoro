@@ -2,7 +2,7 @@ import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
 import { DynamicLayer } from './layer';
-import { DynamicTile, Facing, Item, PlayerSprite, Point, Sprite } from './types';
+import { Bus, DynamicTile, Facing, Item, PlayerSprite, Point, Sprite } from './types';
 import { ViewData } from './view';
 
 export type Player = {
@@ -44,6 +44,7 @@ export type GameState = {
   inventory: Inventory,
   lastSave: Point,
   time: number,
+  busState: Record<Bus, boolean>,
 }
 
 export type State = {
@@ -89,6 +90,11 @@ export const init_state: State = {
     },
     lastSave: { x: 0, y: 0 },
     time: 0,
+    busState: {
+      red: false,
+      green: false,
+      blue: false,
+    }
   },
   iface: {
     keysDown: {},

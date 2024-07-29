@@ -1,5 +1,5 @@
 import { vequal } from './point';
-import { Tile, Dict, DynamicTile, Point } from './types';
+import { Tile, Dict, DynamicTile, Point, Bus } from './types';
 import { mapValues } from './util';
 
 export type PointMap<T> = { tiles: Dict<T> };
@@ -19,15 +19,14 @@ export type LayerStack =
   | { t: 'overlay', top: DynamicLayer, rest: LayerStack };
 
 export type TileResolutionContext = {
-  // XXX need bus state here
+  busState: Record<Bus, boolean>;
   playerPos: Point,
   time: number,
   layerStack: LayerStack,
 }
 
-function busActive(trc: TileResolutionContext, bus: string, viewIntent: boolean): boolean {
-  // XXX extract from resolution context
-  return true;
+function busActive(trc: TileResolutionContext, bus: Bus, viewIntent: boolean): boolean {
+  return viewIntent ? true : trc.busState[bus];
 }
 
 export function boxTile(): Tile { return { t: 'box' }; }

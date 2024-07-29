@@ -19,6 +19,7 @@ function complexState(layer: PointMap<Tile>): GameState {
     overlay: mapPointMap(layer, dynamicOfTile),
     player: init_player,
     time: 0,
+    busState: { red: false, green: false, blue: false },
   };
 }
 

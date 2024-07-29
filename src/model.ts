@@ -142,6 +142,7 @@ function boardOfState(s: GameState): Board {
   return {
     player: s.player,
     trc: {
+      busState: s.busState,
       layerStack: layerStackOfState(s),
       time: s.time,
       playerPos: s.player.pos
