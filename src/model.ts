@@ -250,6 +250,27 @@ function isJump(move: Move): boolean {
   }
 }
 
+function getDoorPassAnim(s: GameState, move: Move): Animation[] | undefined {
+  const tileAt = tileOfGameState(s, s.player.pos);
+  if (move == 'down' && tileAt.t == 'door') {
+    const newLevel = tileAt.destinationLevel;
+    const oldLevel = s.currentLevel;
+    const destTiles = pointMapEntries(s.levels[newLevel].initOverlay);
+    const reciprocalDoor = destTiles.find(({ loc, value }) => value.t == 'door' && value.destinationLevel == oldLevel);
+    let newPosition;
+    if (reciprocalDoor == undefined) {
+      console.error(`couldn't find reciprocal door`);
+      newPosition = { x: 0, y: 0 };
+    }
+    else {
+      newPosition = reciprocalDoor.loc;
+    }
+    return [{ t: 'ChangeLevelAnimation', newLevel, oldLevel, newPosition }];
+  }
+  else
+    return undefined;
+}
+
 // The animations we return here are concurrent
 export function animateMoveGame(s: GameState, move: Move): Animation[] {
   const forcedBlocks: Point[] = []
@@ -267,22 +288,10 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
     return [];
   }
 
-  const tileAt = tileOfGameState(s, player.pos);
-  if (move == 'down' && tileAt.t == 'door') {
-    const newLevel = tileAt.destinationLevel;
-    const oldLevel = s.currentLevel;
-    const destTiles = pointMapEntries(s.levels[newLevel].initOverlay);
-    const reciprocalDoor = destTiles.find(({ loc, value }) => value.t == 'door' && value.destinationLevel == oldLevel);
-    let newPosition;
-    if (reciprocalDoor == undefined) {
-      console.error(`couldn't find reciprocal door`);
-      newPosition = { x: 0, y: 0 };
-    }
-    else {
-      newPosition = reciprocalDoor.loc;
-    }
-    return [{ t: 'ChangeLevelAnimation', newLevel, oldLevel, newPosition }];
-  }
+  // XXX so is this! this is horrible, should figure out how to fix.
+  const doorPassAnim = getDoorPassAnim(s, move);
+  if (doorPassAnim != undefined)
+    return doorPassAnim;
 
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
   const tileBefore = tileOfGameState(s, belowBefore);
@@ -364,6 +373,11 @@ export function animateMoveIface(s: State, move: Move, nextPos: Point | undefine
   if (move == 'recenter') {
     return [{ t: 'RecenterAnimation' }];
   }
+
+  // XXX duplicated in animateMoveGame, see above
+  const doorPassAnim = getDoorPassAnim(s.game, move);
+  if (doorPassAnim != undefined)
+    return doorPassAnim;
 
   const anims: Animation[] = [];
   if (nextPos !== undefined) {
