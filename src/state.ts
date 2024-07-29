@@ -68,7 +68,7 @@ export const init_player: Player = {
   impetus: FULL_IMPETUS,
 };
 
-const emptyOverlay: DynamicLayer = { tiles: {} };
+export const emptyOverlay: DynamicLayer = { tiles: {} };
 
 
 // In the interface, not in the model
