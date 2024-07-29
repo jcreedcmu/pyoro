@@ -1,5 +1,5 @@
 import { boxTile } from './layer';
-import { Direction, Tile, Tool } from './types';
+import { Direction, Tile, Tool, Bus } from './types';
 import { mod } from './util';
 
 export const FULL_IMPETUS = 4;
@@ -32,15 +32,8 @@ export const editTiles: Tile[] =
     { t: 'button_off' },
     { t: 'timed_wall' },
     { t: 'buttoned_wall' },
-    { t: 'bus_button_red_on' },
-    { t: 'bus_button_green_on' },
-    { t: 'bus_button_blue_on' },
-    { t: 'bus_block_red_on' },
-    { t: 'bus_block_green_on' },
-    { t: 'bus_block_blue_on' },
-    { t: 'bus_block_red_off' },
-    { t: 'bus_block_green_off' },
-    { t: 'bus_block_blue_off' },
+    { t: 'bus_button', bus: 'red', on: true },
+
   ];
 
 function numberOfDirection(direction: Direction): number {

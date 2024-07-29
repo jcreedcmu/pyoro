@@ -109,18 +109,16 @@ function spriteLocOfTile(tile: Tile): Point {
     case 'button_off': return { x: 5, y: 6 };
     case 'timed_wall': return { x: 9, y: 2 };
     case 'buttoned_wall': return { x: 9, y: 3 };
-    case 'bus_button_red_off': return { x: 10, y: 5 };
-    case 'bus_button_green_off': return { x: 11, y: 5 };
-    case 'bus_button_blue_off': return { x: 12, y: 5 };
-    case 'bus_button_red_on': return { x: 10, y: 6 };
-    case 'bus_button_green_on': return { x: 11, y: 6 };
-    case 'bus_button_blue_on': return { x: 12, y: 6 };
-    case 'bus_block_red_off': return { x: 10, y: 3 };
-    case 'bus_block_green_off': return { x: 11, y: 3 };
-    case 'bus_block_blue_off': return { x: 12, y: 3 };
-    case 'bus_block_red_on': return { x: 10, y: 4 };
-    case 'bus_block_green_on': return { x: 11, y: 4 };
-    case 'bus_block_blue_on': return { x: 12, y: 4 };
+    case 'bus_button': switch (tile.bus) {
+      case 'red': return tile.on ? { x: 10, y: 6 } : { x: 10, y: 5 };
+      case 'green': return tile.on ? { x: 11, y: 6 } : { x: 11, y: 5 };
+      case 'blue': return tile.on ? { x: 12, y: 6 } : { x: 12, y: 5 };
+    }
+    case 'bus_block': switch (tile.bus) {
+      case 'red': return tile.on ? { x: 10, y: 4 } : { x: 10, y: 3 };
+      case 'green': return tile.on ? { x: 11, y: 4 } : { x: 11, y: 3 };
+      case 'blue': return tile.on ? { x: 12, y: 4 } : { x: 12, y: 3 };
+    }
   }
 
 }

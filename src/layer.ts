@@ -81,22 +81,8 @@ export function tileEq(t1: Tile, t2: Tile): boolean {
     case 'button_off': return t2.t == 'button_off';
     case 'timed_wall': return t2.t == 'timed_wall';
     case 'buttoned_wall': return t2.t == 'buttoned_wall';
-    // XXX this giant cross product is horrible, fix it
-    case 'bus_block_red_on': return t2.t == 'bus_block_red_on';
-    case 'bus_block_red_off': return t2.t == 'bus_block_red_off';
-    case 'bus_button_red_on': return t2.t == 'bus_button_red_on';
-    case 'bus_button_red_off': return t2.t == 'bus_button_red_off';
-
-    case 'bus_block_green_on': return t2.t == 'bus_block_green_on';
-    case 'bus_block_green_off': return t2.t == 'bus_block_green_off';
-    case 'bus_button_green_on': return t2.t == 'bus_button_green_on';
-    case 'bus_button_green_off': return t2.t == 'bus_button_green_off';
-
-    case 'bus_block_blue_on': return t2.t == 'bus_block_blue_on';
-    case 'bus_block_blue_off': return t2.t == 'bus_block_blue_off';
-    case 'bus_button_blue_on': return t2.t == 'bus_button_blue_on';
-    case 'bus_button_blue_off': return t2.t == 'bus_button_blue_off';
-
+    case 'bus_block': return t2.t == 'bus_block' && t1.bus == t2.bus && t1.on == t2.on;
+    case 'bus_button': return t2.t == 'bus_button' && t1.bus == t2.bus && t1.on == t2.on;
   }
 }
 
