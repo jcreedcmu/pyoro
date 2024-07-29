@@ -1,5 +1,5 @@
 {
-  "name": "zplat",
+  "name": "pyoro",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -19,15 +19,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/jcreed/zplat.git"
+    "url": "https://github.com/jcreedcmu/pyoro.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://bitbucket.org/jcreed/zplat/issues"
+    "url": "https://github.com/jcreedcmu/pyoro/issues"
   },
-  "homepage": "https://bitbucket.org/jcreed/zplat#readme",
+  "homepage": "https://github.com/jcreedcmu/pyoro",
   "dependencies": {
     "@types/dat.gui": "^0.7.7",
     "@types/jest": "^29.5.12",
