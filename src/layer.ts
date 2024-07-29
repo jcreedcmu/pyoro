@@ -72,10 +72,7 @@ export function tileEq(t1: Tile, t2: Tile): boolean {
     case 'empty': return t2.t == 'empty';
     case 'broken_box': return t2.t == 'broken_box';
     case 'up_box': return t2.t == 'up_box';
-    case 'spike_up': return t2.t == 'spike_up';
-    case 'spike_left': return t2.t == 'spike_left';
-    case 'spike_right': return t2.t == 'spike_right';
-    case 'spike_down': return t2.t == 'spike_down';
+    case 'spike': return t2.t == 'spike' && t1.direction == t2.direction;
     case 'item': return t2.t == 'item' && t1.item == t2.item;
     case 'save_point': return t2.t == 'save_point';
     case 'grip_wall': return t2.t == 'grip_wall';

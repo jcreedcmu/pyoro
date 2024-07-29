@@ -28,10 +28,7 @@ function isGrabbable(x: Tile): boolean {
 }
 
 function isSpike(x: Tile): boolean {
-  return (tileEq(x, { t: 'spike_up' })
-    || tileEq(x, { t: 'spike_left' })
-    || tileEq(x, { t: 'spike_right' })
-    || tileEq(x, { t: 'spike_down' }));
+  return x.t == 'spike';
 }
 
 function isDeadly(x: Tile): boolean {

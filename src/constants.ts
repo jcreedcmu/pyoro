@@ -1,5 +1,6 @@
 import { boxTile } from './layer';
-import { Tile, Tool } from './types';
+import { Direction, Tile, Tool } from './types';
+import { mod } from './util';
 
 export const FULL_IMPETUS = 4;
 export const NUM_TILES = { x: 24, y: 18 };
@@ -22,7 +23,7 @@ export const editTiles: Tile[] =
     { t: 'box3' },
     { t: 'up_box' },
     { t: 'fragile_box' },
-    { t: 'spike_up' },
+    { t: 'spike', direction: 'left' },
     { t: 'save_point' },
     { t: 'item', item: 'teal_fruit' },
     { t: 'item', item: 'coin' },
@@ -42,12 +43,36 @@ export const editTiles: Tile[] =
     { t: 'bus_block_blue_off' },
   ];
 
-// XXX should look for a rotation trait in spike tile or something
+function numberOfDirection(direction: Direction): number {
+  switch (direction) {
+    case 'up': return 0;
+    case 'right': return 1;
+    case 'down': return 2;
+    case 'left': return 3;
+  }
+}
+
+function directionOfNumber(direction: number): Direction {
+  switch (mod(direction, 4)) {
+    case 0: return 'up';
+    case 1: return 'right';
+    case 2: return 'down';
+    case 3: return 'left';
+    default:
+      console.error(`unexpected direction number ${direction}`);
+      return 'up';
+  }
+}
+
+function rotateDirection(direction: Direction, amount: number): Direction {
+  return directionOfNumber((numberOfDirection(direction) + amount));
+}
+
 export function rotateTile(tile: Tile, amount: number): Tile {
-  const dirs = ['spike_up', 'spike_right', 'spike_down', 'spike_left'] as const;
-  const spikes: Tile[] = dirs.map(x => ({ t: x }));
   switch (tile.t) {
-    case 'spike_up': return spikes[amount];
+    case 'spike': return {
+      t: 'spike', direction: rotateDirection(tile.direction, amount)
+    }
     default: return tile;
   }
 }

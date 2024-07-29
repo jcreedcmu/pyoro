@@ -49,6 +49,12 @@ export type DynamicTile =
   | BusControlledDynamicTile
   ;
 
+export type Direction =
+  | 'up'
+  | 'left'
+  | 'right'
+  | 'down'
+  ;
 /**
  * A tile whose physics and rendering are known.
  */
@@ -62,10 +68,7 @@ export type Tile =
   | { t: 'empty' }
   | { t: 'broken_box' }
   | { t: 'up_box' }
-  | { t: 'spike_up' }
-  | { t: 'spike_left' }
-  | { t: 'spike_right' }
-  | { t: 'spike_down' }
+  | { t: 'spike', direction: Direction }
   | { t: 'item', item: Item }
   | { t: 'save_point' }
   | { t: 'grip_wall' }

@@ -36,7 +36,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-6,1": {
       "t": "static",
-      "tile": { "t": "spike_up" }
+      "tile": { "t": "spike", "direction": "up" }
     },
     "-5,2": {
       "t": "static",
@@ -64,7 +64,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-8,2": {
       "t": "static",
-      "tile": { "t": "spike_up" }
+      "tile": { "t": "spike", "direction": "up" }
     },
     "-6,2": {
       "t": "static",
@@ -92,7 +92,7 @@ export const initOverlay: DynamicLayer = {
     },
     "6,2": {
       "t": "static",
-      "tile": { "t": "spike_left" }
+      "tile": { "t": "spike", "direction": "left" }
     },
     "7,2": {
       "t": "static",
@@ -156,7 +156,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-5,0": {
       "t": "static",
-      "tile": { "t": "spike_up" }
+      "tile": { "t": "spike", "direction": "up" }
     },
     "-16,10": {
       "t": "static",
@@ -164,7 +164,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-17,9": {
       "t": "static",
-      "tile": { "t": "spike_up" }
+      "tile": { "t": "spike", "direction": "up" }
     },
     "-17,10": {
       "t": "static",
@@ -184,7 +184,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-18,18": {
       "t": "static",
-      "tile": { "t": "spike_up" }
+      "tile": { "t": "spike", "direction": "up" }
     },
     "-15,21": {
       "t": "static",
@@ -332,7 +332,7 @@ export const initOverlay: DynamicLayer = {
     },
     "-10,3": {
       "t": "static",
-      "tile": { "t": "spike_right" }
+      "tile": { "t": "spike", "direction": "right" }
     },
     "1,-2": {
       "t": "static",
@@ -574,11 +574,11 @@ export const initOverlay: DynamicLayer = {
     },
     "3,0": {
       "t": "static",
-      "tile": { "t": "spike_down" }
+      "tile": { "t": "spike", "direction": "down" }
     },
     "5,0": {
       "t": "static",
-      "tile": { "t": "spike_down" }
+      "tile": { "t": "spike", "direction": "down" }
     },
     "3,-1": {
       "t": "static",

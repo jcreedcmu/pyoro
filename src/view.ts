@@ -92,10 +92,12 @@ function spriteLocOfTile(tile: Tile): Point {
     case 'empty': return { x: 0, y: 0 };
     case 'broken_box': return { x: 4, y: 3 };
     case 'up_box': return { x: 6, y: 6 };
-    case 'spike_up': return { x: 0, y: 3 };
-    case 'spike_right': return { x: 2, y: 3 };
-    case 'spike_left': return { x: 2, y: 4 };
-    case 'spike_down': return { x: 2, y: 5 };
+    case 'spike': switch (tile.direction) {
+      case 'up': return { x: 0, y: 3 };
+      case 'right': return { x: 2, y: 3 };
+      case 'left': return { x: 2, y: 4 };
+      case 'down': return { x: 2, y: 5 };
+    }
     case 'item': switch (tile.item) {
       case 'teal_fruit': return { x: 3, y: 5 };
       case 'coin': return { x: 3, y: 4 };
