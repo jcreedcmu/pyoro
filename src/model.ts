@@ -218,8 +218,10 @@ function forceBlock(s: GameState, pos: Point, tile: Tile): Animation[] {
       else {
         return [];
       }
-    case 'button_on':
-    case 'button_off': // fallthrough intentional
+    case 'bus_button':
+      return [{ t: 'BusButtonToggleAnimation', bus: tile.bus }];
+    case 'button_on': // fallthrough intentional
+    case 'button_off':
       return [{ t: 'ButtonToggleAnimation', pos }];
     default: return [];
   }
