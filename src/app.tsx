@@ -121,7 +121,6 @@ export function App(props: {}): JSX.Element {
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    console.log('keydown');
     const name = keyFromCode(e.nativeEvent);
     logger('keys', 'keydown: [keycode, key, code, name]', e.keyCode, e.key, e.code, name);
     if (!passthrough(name) && !(state.iface.toolState.t == 'modify_tool')) {
