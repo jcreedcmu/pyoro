@@ -199,6 +199,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         return state;
       return produce(setCurrentLevel(state, a.newLevel), s => {
         s.player.pos = a.newPosition;
+        s.lastSave = a.newPosition;
       });
   }
 }
