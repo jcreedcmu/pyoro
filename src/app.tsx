@@ -179,6 +179,11 @@ export function App(props: {}): JSX.Element {
     ? <DragHandler dispatch={dispatch} />
     : undefined;
 
+  const levelPicker = <div className="level-picker">
+    <b>{state.game.currentLevel}</b>
+    <input></input>
+  </div>;
+
   const canvasCursor = cursorOfToolState(state.iface.toolState);
   const modifyPanel = renderModifyPanel(state, dispatch);
   return <div>
@@ -189,5 +194,6 @@ export function App(props: {}): JSX.Element {
       ref={cref} />
     {dragHandler}
     {modifyPanel}
+    {levelPicker}
   </div>;
 }
