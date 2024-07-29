@@ -1086,6 +1086,12 @@ export const initOverlay: DynamicLayer = {
       "tile": {
         "t": "box"
       }
+    },
+    "-14,-14": {
+      "t": "static",
+      "tile": {
+        "t": "box"
+      }
     }
   }
 };
