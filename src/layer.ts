@@ -25,8 +25,8 @@ export type TileResolutionContext = {
   layerStack: LayerStack,
 }
 
-function busActive(trc: TileResolutionContext, bus: Bus, viewIntent: boolean): boolean {
-  return viewIntent ? true : trc.busState[bus];
+function busActive(trc: TileResolutionContext, bus: Bus): boolean {
+  return trc.busState[bus];
 }
 
 export function boxTile(): Tile { return { t: 'box' }; }
@@ -42,9 +42,9 @@ function resolveDynamicTile(
     case 'static':
       return ct.tile;
     case 'bus_block':
-      return { t: 'bus_block', bus: ct.bus, on: busActive(trc, ct.bus, viewIntent ?? false) };
+      return { t: 'bus_block', bus: ct.bus, on: busActive(trc, ct.bus) };
     case 'bus_button':
-      return { t: 'bus_button', bus: ct.bus, on: busActive(trc, ct.bus, viewIntent ?? false) };
+      return { t: 'bus_button', bus: ct.bus, on: busActive(trc, ct.bus) };
     case 'timed': {
       if (viewIntent) {
         return { t: 'timed_wall' };
