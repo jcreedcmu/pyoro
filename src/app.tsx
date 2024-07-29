@@ -181,7 +181,11 @@ export function App(props: {}): JSX.Element {
 
   const levelPicker = <div className="level-picker">
     <b>{state.game.currentLevel}</b>
-    <input></input>
+    <input onKeyDown={(e) => {
+      if (e.code == 'Enter') {
+        dispatch({ t: 'setCurrentLevel', name: e.currentTarget.value });
+      }
+    }} ></input>
   </div>;
 
   const canvasCursor = cursorOfToolState(state.iface.toolState);

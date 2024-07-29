@@ -1095,5 +1095,410 @@ export const initOverlay: Record<string, DynamicLayer> = {
         }
       }
     }
+  },
+  "boxes": {
+    "tiles": {
+      "0,1": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "-1,1": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "0,2": {
+        "t": "static",
+        "tile": {
+          "t": "coin_wall"
+        }
+      },
+      "1,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,3": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "0,3": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "-1,3": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "-7,1": {
+        "t": "static",
+        "tile": {
+          "t": "grip_wall"
+        }
+      },
+      "-10,0": {
+        "t": "static",
+        "tile": {
+          "t": "grip_wall"
+        }
+      },
+      "-7,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "-11,-2": {
+        "t": "static",
+        "tile": {
+          "t": "grip_wall"
+        }
+      },
+      "-5,1": {
+        "t": "static",
+        "tile": {
+          "t": "grip_wall"
+        }
+      },
+      "-2,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-3,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-4,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-5,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-6,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-7,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-8,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-9,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-10,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-11,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "-11,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-10,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-9,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-8,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-7,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-6,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-5,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-4,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-3,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-2,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-1,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "0,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-7,-2": {
+        "t": "static",
+        "tile": {
+          "t": "item",
+          "item": "coin"
+        }
+      },
+      "2,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "4,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "6,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "2,3": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "3,2": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "4,1": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "4,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "4,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,1": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "6,1": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "6,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "6,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,1": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "4,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "1,0": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,-2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,-3": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "-9,-3": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "-6,-2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-6,-3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      }
+    }
   }
 };

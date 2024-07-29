@@ -17,8 +17,8 @@ export function setOverlay(state: GameState, overlay: DynamicLayer): GameState {
 export function setCurrentLevel(state: GameState, levelName: string): GameState {
   return produce(state, s => {
     if (state.levels[levelName] == undefined) {
-      s.levels[state.currentLevel] = { initOverlay: emptyOverlay, overlay: emptyOverlay };
+      s.levels[levelName] = { initOverlay: emptyOverlay, overlay: emptyOverlay };
     }
-    state.currentLevel = levelName;
+    s.currentLevel = levelName;
   });
 }

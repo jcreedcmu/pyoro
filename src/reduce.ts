@@ -9,7 +9,7 @@ import { ButtonedTileFields, State, TimedTileFields, ToolState } from "./state";
 import { DynamicTile, Move } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
-import { getInitOverlay } from "./game-state-access";
+import { getInitOverlay, setCurrentLevel } from "./game-state-access";
 
 export type Command =
   | 'prevEditTile'
@@ -41,6 +41,7 @@ export type Action =
   | PanelStateFieldTypes[keyof TimedTileFields]
   | PanelStateFieldTypes[keyof ButtonedTileFields]
   | { t: 'saveModifyPanel' }
+  | { t: 'setCurrentLevel', name: string }
   ;
 
 export type Dispatch = (a: Action) => void;
@@ -200,5 +201,10 @@ export function reduce(s: State, a: Action): Result {
         }
       }
     }));
+    case 'setCurrentLevel':
+      const newGameState = setCurrentLevel(s.game, a.name);
+      return pure(produce(s, s => {
+        s.game = newGameState;
+      }));
   }
 }
