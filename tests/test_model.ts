@@ -154,9 +154,9 @@ describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
     let s = complexState(complexLayer());
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfTile(emptyTile())); // delete the existing box
-    expect(getOverlayForSave(s)).toEqual({ tiles: {} });
+    expect(getOverlayForSave(s)).toEqual({ start: { tiles: {} } });
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfTile(boxTile())); // add some box
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfTile(emptyTile())); // add another spurious empty
-    expect(getOverlayForSave(s)).toEqual({ tiles: { '0,2': dynamicOfTile(boxTile()) } });
+    expect(getOverlayForSave(s)).toEqual({ start: { tiles: { '0,2': dynamicOfTile(boxTile()) } } });
   });
 });

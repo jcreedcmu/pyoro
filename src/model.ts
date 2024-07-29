@@ -5,7 +5,7 @@ import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isE
 import { vmn, vplus } from './point';
 import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tool } from './types';
-import { max } from './util';
+import { mapValues, max } from './util';
 import { WidgetPoint } from './view';
 import { getInitOverlay, getOverlay } from './game-state-access';
 
@@ -524,11 +524,13 @@ export function show_empty_tile_override(s: State): boolean {
   return !s.iface.keysDown['KeyN']; // XXX Debugging
 }
 
-export function getOverlayForSave(s: GameState): DynamicLayer {
-  const layer: DynamicLayer = { tiles: {} };
-  for (const [k, v] of Object.entries(getInitOverlay(s).tiles)) {
-    if (!isEmptyTile(v))
-      layer.tiles[k] = v;
-  }
-  return layer;
+export function getOverlayForSave(s: GameState): Record<string, DynamicLayer> {
+  return mapValues(s.levels, level => {
+    const layer: DynamicLayer = { tiles: {} };
+    for (const [k, v] of Object.entries(level.initOverlay.tiles)) {
+      if (!isEmptyTile(v))
+        layer.tiles[k] = v;
+    }
+    return layer;
+  });
 }
