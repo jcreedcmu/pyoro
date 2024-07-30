@@ -2,7 +2,7 @@ import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
 import { DynamicLayer } from './layer';
-import { Bus, DynamicTile, Facing, Item, PlayerSprite, Point, Sprite } from './types';
+import { Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Point } from './types';
 import { mapValues } from './util';
 import { ViewData } from './view';
 
@@ -27,6 +27,7 @@ export type MouseState =
 
 export type IfaceState = {
   keysDown: Record<string, boolean>,
+  bufferedMoves: Move[],
   editTileIx: number,
   toolState: ToolState,
   editTileRotation: number,
@@ -111,6 +112,7 @@ export const init_state: State = {
     }
   },
   iface: {
+    bufferedMoves: [],
     keysDown: {},
     viewPort: { x: -13, y: -9 },
     blackout: 0,

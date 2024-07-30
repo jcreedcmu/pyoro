@@ -21,6 +21,7 @@ type CanvasProps = {
 function doEffect(state: State, dispatch: Dispatch, e: Effect) {
   switch (e.t) {
     case 'scheduleFrame':
+      console.log('schedulingFrame');
       setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
       break;
     case 'saveOverlay':
@@ -198,6 +199,7 @@ export function App(props: {}): JSX.Element {
         dispatch({ t: 'setCurrentLevel', name: e.currentTarget.value });
       }
     }} ></input>
+    <em>{JSON.stringify(state.iface.bufferedMoves)}</em>
   </div>;
 
   const canvasCursor = cursorOfToolState(state.iface.toolState);

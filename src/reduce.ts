@@ -87,7 +87,6 @@ export function reduceCommand(s: State, cmd: Command): Result {
 }
 
 function reduceMove(s: State, move: Move): Result {
-  // XXX should instead buffer moves?
   if (s.anim == null) {
     return {
       state: produce(s, s => {
@@ -100,13 +99,19 @@ function reduceMove(s: State, move: Move): Result {
     };
   }
   else {
-    return pure(s);
+    return {
+      state: produce(s, s => {
+        s.iface.bufferedMoves.push(move);
+      }),
+      effects: [{ t: 'scheduleFrame' }]
+    }
   }
 }
 
 export function reduce(s: State, a: Action): Result {
   switch (a.t) {
     case 'keyDown': {
+      console.log(`key down ${JSON.stringify(a)}`);
       const name = a.name;
       const action = bindings[name];
       const ss = produce(s, s => { s.iface.keysDown[a.code] = true; });
@@ -127,7 +132,24 @@ export function reduce(s: State, a: Action): Result {
       const effects: Effect[] = [];
       const ams = s.anim;
       if (ams == null) {
-        throw new Error('Tried to advance frame without active animation');
+        if (s.iface.bufferedMoves.length == 0) {
+          console.error('Tried to advance frame without active animation or buffered moves');
+          return { state: s };
+        }
+        else {
+          const move = s.iface.bufferedMoves[0];
+          console.log(`replaying buffered move ${move}`);
+          const stateAfterShift = produce(s, s => { s.iface.bufferedMoves.shift(); });
+          const result = reduceMove(stateAfterShift, move);
+          // If this is the only buffered move, no need to schedule more frames
+          if (s.iface.bufferedMoves.length <= 1)
+            return result;
+          // Otherwise, schedule more
+          return {
+            state: result.state,
+            effects: [...(result.effects ?? []), { t: 'scheduleFrame' }],
+          }
+        }
       }
       if (ams.animator.dur == ams.frame + 1) {
         const nextState = {
