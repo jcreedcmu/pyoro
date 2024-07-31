@@ -1097,6 +1097,10 @@ export const initOverlay: Record<string, DynamicLayer> = {
       "-1,-2": {
         "t": "door",
         "destinationLevel": "boxes"
+      },
+      "3,-2": {
+        "t": "door",
+        "destinationLevel": "boxes2"
       }
     }
   },
@@ -1506,6 +1510,471 @@ export const initOverlay: Record<string, DynamicLayer> = {
       "-1,0": {
         "t": "door",
         "destinationLevel": "start"
+      }
+    }
+  },
+  "boxes2": {
+    "tiles": {
+      "0,1": {
+        "t": "static",
+        "tile": {
+          "t": "up_box"
+        }
+      },
+      "0,0": {
+        "t": "door",
+        "destinationLevel": "start"
+      },
+      "5,-3": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "5,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "4,-1": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "left"
+        }
+      },
+      "5,-2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,-1": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "7,-3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "down"
+        }
+      },
+      "5,0": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,-4": {
+        "t": "static",
+        "tile": {
+          "t": "grip_wall"
+        }
+      },
+      "7,0": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "6,0": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,-5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "8,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,-6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,-7": {
+        "t": "static",
+        "tile": {
+          "t": "grip_wall"
+        }
+      },
+      "5,-8": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "9,1": {
+        "t": "static",
+        "tile": {
+          "t": "up_box"
+        }
+      },
+      "9,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "10,-5": {
+        "t": "static",
+        "tile": {
+          "t": "grip_wall"
+        }
+      },
+      "8,-8": {
+        "t": "static",
+        "tile": {
+          "t": "grip_wall"
+        }
+      },
+      "8,-5": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "right"
+        }
+      },
+      "9,-6": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "down"
+        }
+      },
+      "9,-7": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,-7": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "left"
+        }
+      },
+      "8,-7": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "6,-9": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "right"
+        }
+      },
+      "5,-9": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "9,-8": {
+        "t": "static",
+        "tile": {
+          "t": "up_box"
+        }
+      },
+      "6,-1": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "7,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "6,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "4,-12": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,-12": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,-11": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,-10": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,-9": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "4,-9": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-2,0": {
+        "t": "static",
+        "tile": {
+          "t": "coin_wall"
+        }
+      },
+      "-1,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-2,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-3,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-4,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-4,0": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-4,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-3,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-2,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-3,0": {
+        "t": "static",
+        "tile": {
+          "t": "item",
+          "item": "teal_fruit"
+        }
+      },
+      "3,-13": {
+        "t": "static",
+        "tile": {
+          "t": "item",
+          "item": "coin"
+        }
+      },
+      "5,1": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "4,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "3,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "2,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "1,3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "0,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "0,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "0,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "2,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "4,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,-4": {
+        "t": "static",
+        "tile": {
+          "t": "grip_wall"
+        }
+      },
+      "12,-5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "11,-3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "right"
+        }
+      },
+      "11,-6": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "down"
+        }
+      },
+      "11,-7": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "10,-3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "12,-7": {
+        "t": "bus_button",
+        "bus": "red"
+      },
+      "13,-5": {
+        "t": "bus_block",
+        "bus": "red"
+      },
+      "14,-5": {
+        "t": "bus_block",
+        "bus": "red"
+      },
+      "15,-5": {
+        "t": "bus_block",
+        "bus": "red"
+      },
+      "16,-5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "16,-6": {
+        "t": "door",
+        "destinationLevel": "boxes3"
       }
     }
   }
