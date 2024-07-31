@@ -312,8 +312,8 @@ export function drawView(fv: FView, state: State): void {
   const ams = state.anim;
   if (ams !== null) {
     effectiveState = {
-      iface: renderIfaceAnims(ams.animator.animsIface, ams.frame, state),
-      game: renderGameAnims(ams.animator.animsGame, ams.frame, state.game),
+      iface: renderIfaceAnims(ams.animator.anims, ams.frame, state),
+      game: renderGameAnims(ams.animator.anims, ams.frame, state.game),
       anim: state.anim, // Hmm, it's not 100% clear to me why I need this to be non-null
     };
   }

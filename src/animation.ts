@@ -38,11 +38,7 @@ export type Animation =
 export type Animator = {
   dur: number, // duration in frames
 
-  // There is an intrinsic asymmetry here in that I want to allow
-  // animsIface to depend on game state, but animsGame should not
-  // depend on interface state.
-  animsGame: Animation[],
-  animsIface: Animation[],
+  anims: Animation[],
 }
 
 export type Time = {

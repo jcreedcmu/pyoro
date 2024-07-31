@@ -1,6 +1,6 @@
 import { FULL_IMPETUS } from '../src/constants';
 import { boxTile, dynamicOfTile, emptyTile, mapPointMap, PointMap } from '../src/layer';
-import { _putTileInGameStateInitOverlay, animateMoveGame, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
+import { _putTileInGameStateInitOverlay, animateMove, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
 import { GameState, init_player } from '../src/state';
 import { Tile, Move } from '../src/types';
 
@@ -29,7 +29,7 @@ function complexState(layer: PointMap<Tile>): GameState {
 }
 
 function executeMove(s: GameState, move: Move): GameState {
-  return renderGameAnims(animateMoveGame(s, move), 'complete', s);
+  return renderGameAnims(animateMove(s, move), 'complete', s);
 }
 
 describe('State', () => {
@@ -148,6 +148,13 @@ describe('State', () => {
     expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 })).toEqual({ t: 'fragile_box' });
   });
 
+  it('should allow recentering', () => {
+    const layer = complexLayer();
+    let m = complexState(layer);
+    console.log(m);
+    m = executeMove(m, 'recenter');
+    m = executeMove(m, 'left');
+  });
 });
 
 describe('getOverlayForSave', () => {

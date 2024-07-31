@@ -151,8 +151,8 @@ export function reduce(s: State, a: Action): Result {
       }
       if (ams.animator.dur == ams.frame + 1) {
         const nextState = {
-          iface: renderIfaceAnims(ams.animator.animsIface, 'complete', s),
-          game: renderGameAnims(ams.animator.animsGame, 'complete', s.game),
+          iface: renderIfaceAnims(ams.animator.anims, 'complete', s),
+          game: renderGameAnims(ams.animator.anims, 'complete', s.game),
           anim: null,
         }
         return { state: nextState, effects: effects };

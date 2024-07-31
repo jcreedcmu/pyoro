@@ -272,23 +272,20 @@ function getDoorPassAnim(s: GameState, move: Move): Animation[] | undefined {
 }
 
 // The animations we return here are concurrent
-export function animateMoveGame(s: GameState, move: Move): Animation[] {
+export function animateMove(s: GameState, move: Move): Animation[] {
   const forcedBlocks: Point[] = []
   const anims: Animation[] = [];
 
   const player = s.player;
 
-  // ugh XXX this is duplicated across animateMoveGame and animateMoveIface
   if (player.dead || move == 'reset') {
     return [{ t: 'ResetAnimation' }];
   }
 
-  // XXX so is this, in a way
   if (move == 'recenter') {
-    return [];
+    return [{ t: 'RecenterAnimation' }];
   }
 
-  // XXX so is this! this is horrible, should figure out how to fix.
   const doorPassAnim = getDoorPassAnim(s, move);
   if (doorPassAnim != undefined)
     return doorPassAnim;
@@ -364,21 +361,8 @@ export function animateMoveGame(s: GameState, move: Move): Animation[] {
   return anims;
 }
 
-export function animateMoveIface(s: State, move: Move, nextPos: Point | undefined): Animation[] {
+export function animateViewPort(s: State, move: Move, nextPos: Point | undefined): Animation[] {
   const iface = s.iface;
-  if (s.game.player.dead || move == 'reset') {
-    return [{ t: 'ResetAnimation' }];
-  }
-
-  if (move == 'recenter') {
-    return [{ t: 'RecenterAnimation' }];
-  }
-
-  // XXX duplicated in animateMoveGame, see above
-  const doorPassAnim = getDoorPassAnim(s.game, move);
-  if (doorPassAnim != undefined)
-    return doorPassAnim;
-
   const anims: Animation[] = [];
   if (nextPos !== undefined) {
     if (nextPos.x - iface.viewPort.x >= NUM_TILES.x - 1)
@@ -418,15 +402,14 @@ export function renderIfaceAnims(anims: Animation[], fr: number | 'complete', s:
 }
 
 export function animator_for_move(s: State, move: Move): Animator {
-  const animsGame = animateMoveGame(s.game, move);
+  const animsGame = animateMove(s.game, move);
   const nextPos = animsGame.map(hasNextPos).find(x => x !== undefined);
-  const animsIface = animateMoveIface(s, move, nextPos);
-  const dur = max([...animsGame.map(a => duration(a)), ...animsIface.map(a => duration(a))]);
+  const animsViewport = animateViewPort(s, move, nextPos);
+  const dur = max([...animsGame.map(a => duration(a)), ...animsViewport.map(a => duration(a))]);
 
   return {
     dur,
-    animsGame,
-    animsIface,
+    anims: [...animsGame, ...animsViewport],
   }
 }
 
