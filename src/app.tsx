@@ -21,7 +21,6 @@ type CanvasProps = {
 function doEffect(state: State, dispatch: Dispatch, e: Effect) {
   switch (e.t) {
     case 'scheduleFrame':
-      console.log('schedulingFrame');
       setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
       break;
     case 'saveOverlay':

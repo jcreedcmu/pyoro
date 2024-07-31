@@ -111,7 +111,6 @@ function reduceMove(s: State, move: Move): Result {
 export function reduce(s: State, a: Action): Result {
   switch (a.t) {
     case 'keyDown': {
-      console.log(`key down ${JSON.stringify(a)}`);
       const name = a.name;
       const action = bindings[name];
       const ss = produce(s, s => { s.iface.keysDown[a.code] = true; });
@@ -138,7 +137,6 @@ export function reduce(s: State, a: Action): Result {
         }
         else {
           const move = s.iface.bufferedMoves[0];
-          console.log(`replaying buffered move ${move}`);
           const stateAfterShift = produce(s, s => { s.iface.bufferedMoves.shift(); });
           const result = reduceMove(stateAfterShift, move);
           // If this is the only buffered move, no need to schedule more frames
