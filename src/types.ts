@@ -45,6 +45,15 @@ export type DoorDynamicTile =
   | { t: 'door', destinationLevel: string }
   ;
 
+export type BlockMotion = 'up' | 'down';
+
+/**
+ * A tile that is only passable when player motion is a certain direction
+ */
+export type MotionDynamicTile =
+  | { t: 'motion', direction: BlockMotion }
+  ;
+
 /**
  * A `DynamicTile` represents an "intension" that can resolve to an
  * actual tile via {@link layer.getTileOfDynamicLayer}. This means the
@@ -57,6 +66,7 @@ export type DynamicTile =
   | ButtonedBlockDynamicTile
   | BusControlledDynamicTile
   | DoorDynamicTile
+  | MotionDynamicTile
   ;
 
 export type Direction =
@@ -90,6 +100,7 @@ export type Tile =
   | { t: 'buttoned_wall' }
   | { t: 'bus_block', bus: Bus, on: boolean }
   | { t: 'bus_button', bus: Bus, on: boolean }
+  | { t: 'motion_block', direction: BlockMotion, on: boolean }
   | { t: 'door', destinationLevel: string }
   ;
 

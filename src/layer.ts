@@ -33,24 +33,24 @@ export function boxTile(): Tile { return { t: 'box' }; }
 export function emptyTile(): Tile { return { t: 'empty' }; }
 
 function resolveDynamicTile(
-  ct: DynamicTile,
+  tile: DynamicTile,
   tilePos: Point,
   trc: TileResolutionContext,
   viewIntent?: boolean,
 ): Tile {
-  switch (ct.t) {
+  switch (tile.t) {
     case 'static':
-      return ct.tile;
+      return tile.tile;
     case 'bus_block':
-      return { t: 'bus_block', bus: ct.bus, on: busActive(trc, ct.bus) };
+      return { t: 'bus_block', bus: tile.bus, on: busActive(trc, tile.bus) };
     case 'bus_button':
-      return { t: 'bus_button', bus: ct.bus, on: busActive(trc, ct.bus) };
+      return { t: 'bus_button', bus: tile.bus, on: busActive(trc, tile.bus) };
     case 'timed': {
       if (viewIntent) {
         return { t: 'timed_wall' };
       }
-      const len = ct.on_for + ct.off_for;
-      const wantsBox = (trc.time + ct.phase) % len < ct.on_for;
+      const len = tile.on_for + tile.off_for;
+      const wantsBox = (trc.time + tile.phase) % len < tile.on_for;
       const playerIsHere = vequal(trc.playerPos, tilePos);
       return wantsBox && !playerIsHere ? boxTile() : emptyTile();
     }
@@ -59,11 +59,15 @@ function resolveDynamicTile(
         return { t: 'buttoned_wall' };
       }
       else {
-        const is_button_on = tileEq(tileOfStack(trc.layerStack, ct.button_source, trc, viewIntent), { t: 'button_on' });
+        const is_button_on = tileEq(tileOfStack(trc.layerStack, tile.button_source, trc, viewIntent), { t: 'button_on' });
         return is_button_on ? boxTile() : emptyTile();
       }
     }
-    case 'door': return { t: 'door', destinationLevel: ct.destinationLevel };
+    case 'door': return { t: 'door', destinationLevel: tile.destinationLevel };
+    case 'motion': switch (tile.direction) {
+      case 'up': return { t: 'motion_block', direction: 'up', on: trc.playerPos.y % 2 == 0 };
+      case 'down': return { t: 'motion_block', direction: 'down', on: trc.playerPos.x % 2 == 0 };
+    }
   }
 }
 
@@ -87,6 +91,7 @@ export function tileEq(t1: Tile, t2: Tile): boolean {
     case 'bus_block': return t2.t == 'bus_block' && t1.bus == t2.bus && t1.on == t2.on;
     case 'bus_button': return t2.t == 'bus_button' && t1.bus == t2.bus && t1.on == t2.on;
     case 'door': return t2.t == 'door';
+    case 'motion_block': return t2.t == 'motion_block' && t1.direction == t2.direction && t1.on == t2.on;
   }
 }
 

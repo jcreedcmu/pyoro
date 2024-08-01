@@ -24,13 +24,17 @@ function isOpenBusBlock(x: Tile): boolean {
   return x.t == 'bus_block' && x.on == false;
 }
 
+function isOpenMotionBlock(x: Tile): boolean {
+  return x.t == 'motion_block' && x.on == false;
+}
+
 function isDoor(x: Tile): boolean {
   return x.t == 'door';
 }
 
 function isOpen(x: Tile): boolean {
   return tileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x)
-    || isOpenBusBlock(x) || isDoor(x);
+    || isOpenBusBlock(x) || isOpenMotionBlock(x) || isDoor(x);
 }
 
 function isGrabbable(x: Tile): boolean {
@@ -432,6 +436,7 @@ function similarTiles(ct1: DynamicTile, ct2: DynamicTile): boolean {
     case 'bus_button': return ct2.t == 'bus_button' && ct1.bus == ct2.bus;
     case 'bus_block': return ct2.t == 'bus_block' && ct1.bus == ct2.bus;
     case 'door': return ct2.t == 'door';
+    case 'motion': return ct2.t == 'motion' && ct1.direction == ct2.direction;
   }
 }
 
@@ -442,6 +447,7 @@ function defaultDynamicTileToPut(tile: Tile): DynamicTile {
     case 'bus_block': return { t: 'bus_block', bus: tile.bus };
     case 'bus_button': return { t: 'bus_button', bus: tile.bus };
     case 'door': return { t: 'door', destinationLevel: tile.destinationLevel };
+    case 'motion_block': return { t: 'motion', direction: tile.direction };
     default: return dynamicOfTile(tile);
   }
 }
@@ -458,6 +464,7 @@ export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPane
     case 'static': return { t: 'none' };
     case 'bus_button': return { t: 'none' };
     case 'bus_block': return { t: 'none' };
+    case 'motion': return { t: 'none' };
     case 'timed': return {
       t: 'timed',
       off_for: ct.off_for + '',

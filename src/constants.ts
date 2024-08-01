@@ -39,6 +39,8 @@ export const editTiles: Tile[] =
     { t: 'bus_block', bus: 'green', on: true },
     { t: 'bus_block', bus: 'blue', on: true },
     { t: 'door', destinationLevel: 'start' },
+    { t: 'motion_block', direction: 'up', on: true },
+    { t: 'motion_block', direction: 'down', on: true },
   ];
 
 function numberOfDirection(direction: Direction): number {
