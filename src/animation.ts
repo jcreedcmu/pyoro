@@ -129,6 +129,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         s.player = {
           dead: dead && t >= 0.75,
           pos: s.player.pos,
+          prevPos: s.player.prevPos,
           posOffset: vplus(vscale(s.player.pos, -t), vscale(pos, t)),
           animState: animState,
           flipState: flipState,
@@ -137,6 +138,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         if (t == 1) {
           s.time++;
           s.player.pos = pos;
+          s.player.prevPos = state.player.pos;
           s.player.posOffset = undefined;
         }
       });

@@ -159,7 +159,8 @@ function boardOfState(s: GameState): Board {
       busState: s.busState,
       layerStack: layerStackOfState(s),
       time: s.time,
-      playerPos: s.player.pos
+      playerPos: s.player.pos,
+      playerPrevPos: s.player.prevPos,
     }
   };
 }

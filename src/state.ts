@@ -11,6 +11,7 @@ export type Player = {
   animState: PlayerSprite,
   flipState: Facing,
   pos: Point,
+  prevPos: Point,
   posOffset?: Point, // undefined in all non-animated GameStates
   impetus: number,
 };
@@ -64,6 +65,7 @@ export type State = {
 export const init_player: Player = {
   dead: false,
   pos: { x: 0, y: 0 },
+  prevPos: { x: 0, y: 0 },
   animState: 'player',
   flipState: 'right',
   impetus: FULL_IMPETUS,

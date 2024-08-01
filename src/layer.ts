@@ -21,6 +21,7 @@ export type LayerStack =
 export type TileResolutionContext = {
   busState: Record<Bus, boolean>;
   playerPos: Point,
+  playerPrevPos: Point,
   time: number,
   layerStack: LayerStack,
 }
@@ -64,10 +65,12 @@ function resolveDynamicTile(
       }
     }
     case 'door': return { t: 'door', destinationLevel: tile.destinationLevel };
-    case 'motion': switch (tile.direction) {
-      case 'up': return { t: 'motion_block', direction: 'up', on: trc.playerPos.y % 2 == 0 };
-      case 'down': return { t: 'motion_block', direction: 'down', on: trc.playerPos.x % 2 == 0 };
-    }
+    case 'motion':
+      const vertMotion = trc.playerPos.y - trc.playerPrevPos.y;
+      switch (tile.direction) {
+        case 'up': return { t: 'motion_block', direction: 'up', on: vertMotion <= 0 };
+        case 'down': return { t: 'motion_block', direction: 'down', on: vertMotion >= 0 };
+      }
   }
 }
 
