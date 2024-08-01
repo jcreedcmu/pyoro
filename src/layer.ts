@@ -67,9 +67,10 @@ function resolveDynamicTile(
     case 'door': return { t: 'door', destinationLevel: tile.destinationLevel };
     case 'motion':
       const vertMotion = trc.playerPos.y - trc.playerPrevPos.y;
+      const noPlayer = !vequal(trc.playerPos, tilePos);
       switch (tile.direction) {
-        case 'up': return { t: 'motion_block', direction: 'up', on: vertMotion <= 0 };
-        case 'down': return { t: 'motion_block', direction: 'down', on: vertMotion >= 0 };
+        case 'up': return { t: 'motion_block', direction: 'up', on: noPlayer && vertMotion <= 0 };
+        case 'down': return { t: 'motion_block', direction: 'down', on: noPlayer && vertMotion >= 0 };
       }
   }
 }
