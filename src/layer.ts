@@ -1,4 +1,4 @@
-import { vequal } from './point';
+import { vequal, vsub } from './point';
 import { Tile, Dict, DynamicTile, Point, Bus } from './types';
 import { mapValues } from './util';
 
@@ -66,11 +66,14 @@ function resolveDynamicTile(
     }
     case 'door': return { t: 'door', destinationLevel: tile.destinationLevel };
     case 'motion':
-      const vertMotion = trc.playerPos.y - trc.playerPrevPos.y;
+      const motion = vsub(trc.playerPos, trc.playerPrevPos);
       const noPlayer = !vequal(trc.playerPos, tilePos);
       switch (tile.direction) {
-        case 'up': return { t: 'motion_block', direction: 'up', on: noPlayer && vertMotion <= 0 };
-        case 'down': return { t: 'motion_block', direction: 'down', on: noPlayer && vertMotion >= 0 };
+        case 'up': return { t: 'motion_block', direction: 'up', on: noPlayer && motion.y >= 0 };
+        case 'down': return { t: 'motion_block', direction: 'down', on: noPlayer && motion.y <= 0 };
+        case 'left': return { t: 'motion_block', direction: 'left', on: noPlayer && motion.x >= 0 };
+        case 'right': return { t: 'motion_block', direction: 'right', on: noPlayer && motion.x <= 0 };
+
       }
   }
 }

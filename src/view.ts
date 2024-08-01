@@ -97,11 +97,11 @@ function spriteLocOfTile(tile: Tile): Point {
       case 'right': return { x: 2, y: 3 };
       case 'left': return { x: 2, y: 4 };
       case 'down': return { x: 2, y: 5 };
-    }
+    } break;
     case 'item': switch (tile.item) {
       case 'teal_fruit': return { x: 3, y: 5 };
       case 'coin': return { x: 3, y: 4 };
-    }
+    } break;
     case 'save_point': return { x: 2, y: 2 };
     case 'grip_wall': return { x: 3, y: 0 };
     case 'coin_wall': return { x: 4, y: 5 };
@@ -113,16 +113,18 @@ function spriteLocOfTile(tile: Tile): Point {
       case 'red': return tile.on ? { x: 10, y: 6 } : { x: 10, y: 5 };
       case 'green': return tile.on ? { x: 11, y: 6 } : { x: 11, y: 5 };
       case 'blue': return tile.on ? { x: 12, y: 6 } : { x: 12, y: 5 };
-    }
+    } break;
     case 'bus_block': switch (tile.bus) {
       case 'red': return tile.on ? { x: 10, y: 4 } : { x: 10, y: 3 };
       case 'green': return tile.on ? { x: 11, y: 4 } : { x: 11, y: 3 };
       case 'blue': return tile.on ? { x: 12, y: 4 } : { x: 12, y: 3 };
-    }
+    } break;
     case 'motion_block': switch (tile.direction) {
       case 'up': return tile.on ? { x: 14, y: 4 } : { x: 14, y: 3 };
       case 'down': return tile.on ? { x: 13, y: 4 } : { x: 13, y: 3 };
-    }
+      case 'left': return tile.on ? { x: 15, y: 4 } : { x: 15, y: 3 };
+      case 'right': return tile.on ? { x: 16, y: 4 } : { x: 16, y: 3 };
+    } break;
     case 'door': return { x: 8, y: 6 };
   }
 

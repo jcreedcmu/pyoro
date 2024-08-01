@@ -45,7 +45,7 @@ export type DoorDynamicTile =
   | { t: 'door', destinationLevel: string }
   ;
 
-export type BlockMotion = 'up' | 'down';
+export type BlockMotion = 'up' | 'down' | 'left' | 'right';
 
 /**
  * A tile that is only passable when player motion is a certain direction
