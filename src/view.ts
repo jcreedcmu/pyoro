@@ -138,6 +138,7 @@ function spriteLocOfPlayer(s: PlayerSprite): Point {
     case 'player_rise': return { x: 1, y: 1 };
     case 'player_wall': return { x: 2, y: 1 };
     case 'player_crouch': return { x: 3, y: 6 };
+    case 'player_run': return { x: 3, y: 2 };
   }
 }
 

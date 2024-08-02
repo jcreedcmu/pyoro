@@ -139,6 +139,7 @@ export type PlayerSprite =
   | 'player_wall'
   | 'player_dead'
   | 'player_crouch'
+  | 'player_run'
   ;
 
 /** Level editor tool choice. */
