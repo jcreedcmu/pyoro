@@ -9,6 +9,7 @@ export const DEBUG = {
   error: true,
   gameTime: true,
   impetus: true,
+  combo: true,
 };
 
 export function logger(level: keyof (typeof DEBUG), ...args: any[]) {

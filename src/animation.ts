@@ -1,8 +1,8 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
 import { tileEq, emptyTile, putTileInDynamicLayer } from './layer';
-import { tileOfGameState } from './model';
-import { int, lerp, vm2, vplus, vscale } from './point';
+import { computeCombo, tileOfGameState } from './model';
+import { int, lerp, vm2, vplus, vscale, vsub } from './point';
 import { GameState, IfaceState, init_state, State } from './state';
 import { Bus, Facing, Item, PlayerSprite, Point } from './types';
 import { getOverlay, setCurrentLevel, setOverlay } from './game-state-access';
@@ -117,6 +117,7 @@ export function applyIfaceAnimation(a: Animation, state: State, frc: number | 'c
   }
 }
 
+
 export function applyGameAnimation(a: Animation, state: GameState, frc: number | 'complete'): GameState {
   const dur = duration(a);
   const fr = frc == 'complete' ? dur : frc;
@@ -130,6 +131,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
           dead: dead && t >= 0.75,
           pos: s.player.pos,
           prevPos: s.player.prevPos,
+          combo: s.player.combo,
           posOffset: vplus(vscale(s.player.pos, -t), vscale(pos, t)),
           animState: animState,
           flipState: flipState,
@@ -139,6 +141,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
           s.time++;
           s.player.pos = pos;
           s.player.prevPos = state.player.pos;
+          s.player.combo = computeCombo(state.player.combo, vsub(pos, state.player.pos));
           s.player.posOffset = undefined;
         }
       });

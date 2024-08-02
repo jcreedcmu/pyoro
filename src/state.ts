@@ -6,11 +6,15 @@ import { Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Point } from './typ
 import { mapValues } from './util';
 import { ViewData } from './view';
 
+
+export type Combo = undefined | { t: 'combo', dir: Point, rep: number };
+
 export type Player = {
   dead: boolean,
   animState: PlayerSprite,
   flipState: Facing,
   pos: Point,
+  combo: Combo,
   prevPos: Point,
   posOffset?: Point, // undefined in all non-animated GameStates
   impetus: number,
@@ -65,6 +69,7 @@ export type State = {
 export const init_player: Player = {
   dead: false,
   pos: { x: 0, y: 0 },
+  combo: undefined,
   prevPos: { x: 0, y: 0 },
   animState: 'player',
   flipState: 'right',

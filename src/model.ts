@@ -2,8 +2,8 @@ import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
 import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext, pointMapEntries } from './layer';
-import { vmn, vplus } from './point';
-import { GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
+import { vequal, vmn, vplus } from './point';
+import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tool } from './types';
 import { mapValues, max } from './util';
 import { WidgetPoint } from './view';
@@ -565,4 +565,16 @@ export function getOverlayForSave(s: GameState): Record<string, DynamicLayer> {
     }
     return layer;
   });
+}
+
+export function computeCombo(c: Combo, motion: Point): Combo {
+  if (c == undefined) {
+    return { t: 'combo', dir: motion, rep: 1 };
+  }
+  if (vequal(c.dir, motion)) {
+    return { t: 'combo', dir: motion, rep: c.rep + 1 };
+  }
+  else {
+    return { t: 'combo', dir: motion, rep: 1 };
+  }
 }

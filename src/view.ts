@@ -6,7 +6,7 @@ import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
-import { State } from './state';
+import { Combo, State } from './state';
 import { Tile, Item, PlayerSprite, Point, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
@@ -26,6 +26,14 @@ export type ViewData = {
   wsize: Point,
   origin: Point,
 };
+
+/**
+ * Returns combo data in human readable form
+ */
+export function stringOfCombo(c: Combo): string {
+  if (c == undefined) return 'none';
+  return `(${c.dir.x}, ${c.dir.y}) x ${c.rep}`;
+}
 
 /**
  * Initializes the react renderer
@@ -70,18 +78,24 @@ function drawScaled(fv: FView, state: State): void {
     d.fillRect(200, 131, 100, 0.5);
   }
 
+  const debugLines: string[] = [];
+
   if (DEBUG.gameTime) {
-    d.fillStyle = 'black';
-    d.font = '10px sans-serif';
-    d.textBaseline = 'top';
-    d.fillText(`time: ${state.game.time}`, fv.vd.origin.x + 3, fv.vd.origin.y + 3);
+    debugLines.push(`time: ${state.game.time}`);
   }
   if (DEBUG.impetus) {
-    d.fillStyle = 'black';
+    debugLines.push(`impetus: ${state.game.player.impetus}`);
+  }
+  if (DEBUG.combo) {
+    debugLines.push(`combo: ${stringOfCombo(state.game.player.combo)}`);
+  }
+
+  debugLines.forEach((line, i) => {
+    d.fillStyle = 'white';
     d.font = '10px sans-serif';
     d.textBaseline = 'top';
-    d.fillText(`impetus: ${state.game.player.impetus}`, fv.vd.origin.x + 3, fv.vd.origin.y + 13);
-  }
+    d.fillText(line, fv.vd.origin.x + 3, fv.vd.origin.y - (i + 1) * 15);
+  });
 }
 
 function spriteLocOfTile(tile: Tile): Point {
