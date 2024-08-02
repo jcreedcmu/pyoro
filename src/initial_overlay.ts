@@ -1985,6 +1985,90 @@ export const initOverlay: Record<string, DynamicLayer> = {
       "16,-6": {
         "t": "door",
         "destinationLevel": "boxes3"
+      },
+      "13,-7": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "14,-7": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "15,-7": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "16,-7": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "17,-7": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "17,-6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "17,-5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "11,-8": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "12,-8": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "13,-8": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "14,-8": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "15,-8": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "16,-8": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "17,-8": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
       }
     }
   },
@@ -2391,6 +2475,50 @@ export const initOverlay: Record<string, DynamicLayer> = {
         "tile": {
           "t": "coin_wall"
         }
+      }
+    }
+  },
+  "boxes3": {
+    "tiles": {
+      "2,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "0,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-1,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-2,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-3,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-3,0": {
+        "t": "door",
+        "destinationLevel": "boxes2"
       }
     }
   }
