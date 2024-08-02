@@ -170,6 +170,7 @@ function spriteLocOfTool(s: ToolTile): Point {
 }
 
 function drawField(fv: FView, state: State): void {
+  const player = state.game.player;
   const { d } = fv;
   const vp = state.iface.viewPort;
 
@@ -196,13 +197,14 @@ function drawField(fv: FView, state: State): void {
     }
   }
 
-  const playerSprite: PlayerSprite = state.game.player.dead ? 'player_dead' : state.game.player.animState;
+  const basePlayerSprite: PlayerSprite = player.dead ? 'player_dead' : player.animState;
+  const playerSprite: PlayerSprite = (basePlayerSprite == 'player' &&
+    player.combo != undefined && player.combo.dir.x != 0 && player.combo.rep > 3) ? 'player_run' : basePlayerSprite;
 
-  const player = state.game.player;
   const effectivePos = player.posOffset == undefined ? player.pos : vplus(player.pos, player.posOffset);
   draw_sprite(fv, spriteLocOfPlayer(playerSprite),
     vminus(effectivePos, vp),
-    state.game.player.flipState == 'left');
+    player.flipState == 'left');
 }
 
 function drawInventorySelection(d: CanvasRenderingContext2D, p: Point): void {
