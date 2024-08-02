@@ -1101,6 +1101,16 @@ export const initOverlay: Record<string, DynamicLayer> = {
       "3,-2": {
         "t": "door",
         "destinationLevel": "boxes2"
+      },
+      "3,1": {
+        "t": "static",
+        "tile": {
+          "t": "side_breakable"
+        }
+      },
+      "-9,5": {
+        "t": "door",
+        "destinationLevel": "sideblock"
       }
     }
   },
@@ -1975,6 +1985,412 @@ export const initOverlay: Record<string, DynamicLayer> = {
       "16,-6": {
         "t": "door",
         "destinationLevel": "boxes3"
+      }
+    }
+  },
+  "sideblock": {
+    "tiles": {
+      "6,2": {
+        "t": "static",
+        "tile": {
+          "t": "side_breakable"
+        }
+      },
+      "3,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "2,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "6,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "4,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "8,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "8,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "10,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "10,3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "10,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "10,5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "6,5": {
+        "t": "static",
+        "tile": {
+          "t": "side_breakable"
+        }
+      },
+      "5,5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "4,5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "8,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "6,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "5,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "10,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "9,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "4,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "3,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "2,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "0,6": {
+        "t": "static",
+        "tile": {
+          "t": "up_box"
+        }
+      },
+      "-1,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-1,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-2,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-3,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-4,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-4,5": {
+        "t": "static",
+        "tile": {
+          "t": "item",
+          "item": "coin"
+        }
+      },
+      "-4,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-3,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-2,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-3,5": {
+        "t": "static",
+        "tile": {
+          "t": "side_breakable"
+        }
+      },
+      "-5,4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-5,5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "-5,6": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "2,5": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "1,5": {
+        "t": "bus_block",
+        "bus": "red"
+      },
+      "-5,3": {
+        "t": "bus_button",
+        "bus": "red"
+      },
+      "10,-5": {
+        "t": "door",
+        "destinationLevel": "start"
+      },
+      "10,-4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "9,-3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "8,-4": {
+        "t": "bus_block",
+        "bus": "red"
+      },
+      "11,-5": {
+        "t": "bus_button",
+        "bus": "red"
+      },
+      "11,-4": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "11,-6": {
+        "t": "static",
+        "tile": {
+          "t": "box3"
+        }
+      },
+      "8,-3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "8,-2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "9,-2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "11,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "12,0": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "13,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "14,-2": {
+        "t": "static",
+        "tile": {
+          "t": "up_box"
+        }
+      },
+      "11,2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "12,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "13,0": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "14,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,-2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "7,-3": {
+        "t": "static",
+        "tile": {
+          "t": "spike",
+          "direction": "up"
+        }
+      },
+      "13,-2": {
+        "t": "static",
+        "tile": {
+          "t": "coin_wall"
+        }
       }
     }
   }

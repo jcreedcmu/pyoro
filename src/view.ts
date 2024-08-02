@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { App } from './app';
-import { editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
+import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
@@ -140,6 +140,7 @@ function spriteLocOfTile(tile: Tile): Point {
       case 'right': return tile.on ? { x: 16, y: 4 } : { x: 16, y: 3 };
     } break;
     case 'door': return { x: 8, y: 6 };
+    case 'side_breakable': return { x: 7, y: 6 };
   }
 
 }
@@ -199,7 +200,7 @@ function drawField(fv: FView, state: State): void {
 
   const basePlayerSprite: PlayerSprite = player.dead ? 'player_dead' : player.animState;
   const playerSprite: PlayerSprite = (basePlayerSprite == 'player' &&
-    player.combo != undefined && player.combo.dir.x != 0 && player.combo.rep > 3) ? 'player_run' : basePlayerSprite;
+    player.combo != undefined && player.combo.dir.x != 0 && player.combo.rep >= COMBO_THRESHOLD) ? 'player_run' : basePlayerSprite;
 
   const effectivePos = player.posOffset == undefined ? player.pos : vplus(player.pos, player.posOffset);
   draw_sprite(fv, spriteLocOfPlayer(playerSprite),

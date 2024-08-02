@@ -3,6 +3,7 @@ import { Direction, Tile, Tool, Bus } from './types';
 import { mod } from './util';
 
 export const FULL_IMPETUS = 4;
+export const COMBO_THRESHOLD = 3;
 export const NUM_TILES = { x: 24, y: 18 };
 export const TILE_SIZE = 16;
 export const SCALE = 2;
@@ -43,6 +44,7 @@ export const editTiles: Tile[] =
     { t: 'motion_block', direction: 'down', on: true },
     { t: 'motion_block', direction: 'left', on: true },
     { t: 'motion_block', direction: 'right', on: true },
+    { t: 'side_breakable' },
   ];
 
 function numberOfDirection(direction: Direction): number {

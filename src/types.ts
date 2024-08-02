@@ -102,6 +102,7 @@ export type Tile =
   | { t: 'bus_button', bus: Bus, on: boolean }
   | { t: 'motion_block', direction: BlockMotion, on: boolean }
   | { t: 'door', destinationLevel: string }
+  | { t: 'side_breakable' }
   ;
 
 

@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
-import { editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
+import { COMBO_THRESHOLD, editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
 import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext, pointMapEntries } from './layer';
 import { vequal, vmn, vplus } from './point';
 import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
@@ -226,6 +226,8 @@ function forceBlock(s: GameState, pos: Point, tile: Tile): Animation[] {
   switch (tile.t) {
     case 'fragile_box':
       return [{ t: 'MeltAnimation', pos }];
+    case 'side_breakable':
+      return [{ t: 'MeltAnimation', pos }];
     case 'coin_wall':
       if ((s.inventory.coin ?? 0) >= 1) {
         return [{ t: 'SpendCoinAnimation', pos }];
@@ -276,6 +278,18 @@ function getDoorPassAnim(s: GameState, move: Move): Animation[] | undefined {
     return undefined;
 }
 
+// forceLocation is *relative* to the player.
+function isBlockForceSuccess(player: Player, forceLocation: Point, forceTile: Tile): boolean {
+  if (forceTile.t == 'side_breakable') {
+    return player.combo != undefined
+      && forceLocation.x != 0 && forceLocation.y == 0 // force is horizontal
+      && player.combo.dir.x != 0 && player.combo.dir.y == 0 // motion is horizontal
+      && player.combo.rep >= COMBO_THRESHOLD;
+  }
+  // By default, all forces work
+  return true;
+}
+
 // The animations we return here are concurrent
 export function animateMove(s: GameState, move: Move): Animation[] {
   const forcedBlocks: Point[] = []
@@ -304,11 +318,14 @@ export function animateMove(s: GameState, move: Move): Animation[] {
   const result = get_motion(boardOfState(s), move);
   const flipState = get_flip_state(move) || player.flipState;
 
-  if (result.forced != null) forcedBlocks.push(result.forced);
+  if (result.forced != null) {
+    forcedBlocks.push(result.forced);
+  }
 
   forcedBlocks.forEach(fb => {
     const pos = vplus(player.pos, fb);
-    anims.push(...forceBlock(s, pos, tileOfGameState(s, pos)));
+    if (isBlockForceSuccess(player, fb, tileOfGameState(s, pos)))
+      anims.push(...forceBlock(s, pos, tileOfGameState(s, pos)));
   });
 
   let impetus = player.impetus;
