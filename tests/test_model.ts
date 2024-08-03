@@ -1,8 +1,9 @@
 import { FULL_IMPETUS } from '../src/constants';
+import { initOverlay } from '../src/initial_overlay';
 import { boxTile, dynamicOfTile, emptyTile, mapPointMap, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMove, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
-import { GameState, init_player } from '../src/state';
-import { Tile, Move } from '../src/types';
+import { emptyOverlay, GameState, init_player } from '../src/state';
+import { Tile, Move, DynamicTile } from '../src/types';
 
 function complexLayer(): PointMap<Tile> {
   return {
@@ -28,6 +29,23 @@ function complexState(layer: PointMap<Tile>): GameState {
   };
 }
 
+function dynamicState(layer: PointMap<DynamicTile>): GameState {
+  return {
+    levels: {
+      start: {
+        initOverlay: layer,
+        overlay: emptyOverlay,
+      }
+    },
+    currentLevel: 'start',
+    inventory: { teal_fruit: undefined, },
+    lastSave: { x: 0, y: 0 },
+    player: init_player,
+    time: 0,
+    busState: { red: false, green: false, blue: false },
+  };
+}
+
 function executeMove(s: GameState, move: Move): GameState {
   return renderGameAnims(animateMove(s, move), 'complete', s);
 }
@@ -35,7 +53,7 @@ function executeMove(s: GameState, move: Move): GameState {
 describe('State', () => {
   it('should allow jumping up', () => {
 
-    let m = complexState(complexLayer());
+    let m = dynamicState(initOverlay['_test1']);
     m = executeMove(m, 'up');
     const player = m.player;
     expect(player.animState).toBe("player_rise");
@@ -45,9 +63,7 @@ describe('State', () => {
   });
 
   it('should prevent jumping straight up into boxes', () => {
-    const layer = complexLayer();
-    layer.tiles['0,-1'] = boxTile();
-    let m = complexState(layer);
+    let m = dynamicState(initOverlay['_test2']);
     m = executeMove(m, 'up');
 
     const player = m.player;
@@ -58,9 +74,7 @@ describe('State', () => {
   });
 
   it('should allow running over small gaps', () => {
-    const layer = complexLayer();
-    layer.tiles['-2,1'] = { t: 'up_box' };
-    let m = complexState(layer);
+    let m = dynamicState(initOverlay['_test3']);
     m = executeMove(m, 'left');
     {
       const player = m.player;
@@ -75,7 +89,7 @@ describe('State', () => {
       expect(player.animState).toBe("player");
       expect(player.flipState).toBe('left');
       expect(player.pos).toEqual({ x: -2, y: 0 });
-      expect(player.impetus).toBe(FULL_IMPETUS);
+      expect(player.impetus).toBe(1);
     }
   });
 

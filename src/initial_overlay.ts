@@ -2521,5 +2521,47 @@ export const initOverlay: Record<string, DynamicLayer> = {
         "destinationLevel": "boxes2"
       }
     }
+  },
+  "_test1": {
+    "tiles": {
+      "0,1": {
+        "t": "static",
+        "tile": {
+          "t": "up_box"
+        }
+      }
+    }
+  },
+  "_test2": {
+    "tiles": {
+      "0,1": {
+        "t": "static",
+        "tile": {
+          "t": "up_box"
+        }
+      },
+      "0,-1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      }
+    }
+  },
+  "_test3": {
+    "tiles": {
+      "0,1": {
+        "t": "static",
+        "tile": {
+          "t": "up_box"
+        }
+      },
+      "-2,1": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      }
+    }
   }
 };
