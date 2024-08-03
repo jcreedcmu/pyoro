@@ -180,24 +180,11 @@ export function reduce(s: State, a: Action): State {
       const wpoint = wpoint_of_vd(vd, a.point, s);
       return handle_world_drag(s, a.point, wpoint);
     }
-
-    default: // XXX deprecated
-      const res = reduceResult(s, a);
-      return produce(res.state, s => {
-        s.effects = [...res.state.effects, ...(res.effects ?? [])];
-      });
-  }
-}
-
-export function reduceResult(s: State, a: Action): Result {
-  switch (a.t) {
-
-
     case 'setCurrentToolState':
-      return pure(produce(s, s => {
+      return produce(s, s => {
         s.iface.toolState = a.toolState;
-      }));
-    case 'setPanelStateField': return pure(produce(s, s => {
+      });
+    case 'setPanelStateField': return produce(s, s => {
       if (s.iface.toolState.t == 'modify_tool') {
         if (s.iface.toolState.panelState.t == 'timed') {
           (s.iface.toolState.panelState as any)[a.key] = a.value; // FIXME
@@ -209,8 +196,8 @@ export function reduceResult(s: State, a: Action): Result {
           (s.iface.toolState.panelState as any)[a.key] = a.value; // FIXME
         }
       }
-    }));
-    case 'saveModifyPanel': return pure(produce(s, s => {
+    });
+    case 'saveModifyPanel': return produce(s, s => {
       const ts = s.iface.toolState;
       if (ts.t == 'modify_tool' && ts.modifyCell !== null) {
         if (ts.panelState.t == 'timed') {
@@ -240,12 +227,26 @@ export function reduceResult(s: State, a: Action): Result {
           putDynamicTile(getInitOverlay(s.game), ts.modifyCell, ct);
         }
       }
-    }));
+    });
     case 'setCurrentLevel':
       const newGameState = setCurrentLevel(s.game, a.name);
-      return pure(produce(s, s => {
+      return produce(s, s => {
         s.game = newGameState;
-      }));
+      });
+
+    default: // XXX deprecated
+      const res = reduceResult(s, a);
+      return produce(res.state, s => {
+        s.effects = [...res.state.effects, ...(res.effects ?? [])];
+      });
+  }
+}
+
+export function reduceResult(s: State, a: Action): Result {
+  switch (a.t) {
+
+
+
     default: throw new Error(`invariant violation`);
   }
 }
