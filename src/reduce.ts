@@ -108,14 +108,21 @@ function reduceMove(s: State, move: Move): Result {
   }
 }
 
-export function reduce(s: State, a: Action): Result {
+export function reduce(s: State, a: Action): State {
+  const res = reduceResult(s, a);
+  return produce(res.state, s => {
+    s.effects = res.effects ?? [];
+  });
+}
+
+export function reduceResult(s: State, a: Action): Result {
   switch (a.t) {
     case 'keyDown': {
       const name = a.name;
       const action = bindings[name];
       const ss = produce(s, s => { s.iface.keysDown[a.code] = true; });
       if (action) {
-        return reduce(ss, action);
+        return reduceResult(ss, action);
       }
       else {
         logger('chatty', `unbound key ${name} pressed`);

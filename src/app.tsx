@@ -10,6 +10,7 @@ import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
 import { doEffect } from './effect';
+import { extractEffects } from './extract-effects';
 
 type CanvasProps = {
   main: State,
@@ -137,7 +138,7 @@ export function App(props: {}): JSX.Element {
 
   // State
   const [spriteImg, setSpriteImg] = React.useState(null as (null | HTMLImageElement));
-  const [state, dispatch] = useEffectfulReducer(init_state, reduce, doEffect);
+  const [state, dispatch] = useEffectfulReducer(init_state, extractEffects(reduce), doEffect);
   const [cref, mc] = useCanvas(
     { main: state, spriteImg: spriteImg }, render,
     [state, spriteImg, state.iface.vd],
