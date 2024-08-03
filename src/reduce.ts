@@ -121,7 +121,41 @@ export function reduce(s: State, a: Action): State {
       return reduceCommand(s, a.command);
     case 'doMove':
       return reduceMove(s, a.move);
+    case 'nextFrame': {
+      const ams = s.anim;
+      if (ams == null) {
+        if (s.iface.bufferedMoves.length == 0) {
+          console.error('Tried to advance frame without active animation or buffered moves');
+          return s;
+        }
+        else {
+          const move = s.iface.bufferedMoves[0];
+          const stateAfterShift = produce(s, s => { s.iface.bufferedMoves.shift(); });
+          const resultState = reduceMove(stateAfterShift, move);
 
+          // If this is the only buffered move, no need to schedule more frames
+          if (s.iface.bufferedMoves.length <= 1)
+            return resultState;
+          // Otherwise, schedule more
+          return produce(resultState, s => { s.effects.push({ t: 'scheduleFrame' }) });
+        }
+      }
+      if (ams.animator.dur == ams.frame + 1) {
+        const nextState = {
+          iface: renderIfaceAnims(ams.animator.anims, 'complete', s),
+          game: renderGameAnims(ams.animator.anims, 'complete', s.game),
+          anim: null,
+          effects: [],
+        }
+        return nextState;
+      }
+      else {
+        return produce(s, s => {
+          s.anim!.frame++;
+          s.effects.push({ t: 'scheduleFrame' });
+        });
+      }
+    }
     default: // XXX deprecated
       const res = reduceResult(s, a);
       return produce(res.state, s => {
@@ -137,49 +171,7 @@ export function reduceResult(s: State, a: Action): Result {
     case 'setState': return pure(a.s);
     case 'resize':
       return pure(produce(s, s => { s.iface.vd = a.vd; }));
-    case 'nextFrame': {
-      const ams = s.anim;
-      if (ams == null) {
-        if (s.iface.bufferedMoves.length == 0) {
-          console.error('Tried to advance frame without active animation or buffered moves');
-          return { state: s };
-        }
-        else {
-          const move = s.iface.bufferedMoves[0];
-          const stateAfterShift = produce(s, s => { s.iface.bufferedMoves.shift(); });
-          const resultState = reduceMove(stateAfterShift, move);
-          const result = {
-            state: resultState,
-            effects: [],
-          };
-          // If this is the only buffered move, no need to schedule more frames
-          if (s.iface.bufferedMoves.length <= 1)
-            return result;
-          // Otherwise, schedule more
-          return {
-            state: produce(result.state, s => { s.effects.push({ t: 'scheduleFrame' }) }),
-            effects: [],
-          }
-        }
-      }
-      if (ams.animator.dur == ams.frame + 1) {
-        const nextState = {
-          iface: renderIfaceAnims(ams.animator.anims, 'complete', s),
-          game: renderGameAnims(ams.animator.anims, 'complete', s.game),
-          anim: null,
-          effects: [],
-        }
-        return { state: nextState, effects: [] };
-      }
-      else {
-        return {
-          state: produce(s, s => {
-            s.anim!.frame++;
-            s.effects.push({ t: 'scheduleFrame' });
-          }), effects: []
-        };
-      }
-    }
+
     case 'mouseDown': {
       const vd = s.iface.vd;
       if (vd == null)
