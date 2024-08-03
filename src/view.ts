@@ -339,6 +339,7 @@ export function drawView(fv: FView, state: State): void {
       iface: renderIfaceAnims(ams.animator.anims, ams.frame, state),
       game: renderGameAnims(ams.animator.anims, ams.frame, state.game),
       anim: state.anim, // Hmm, it's not 100% clear to me why I need this to be non-null
+      effects: [],
     };
   }
   drawScaled(fv, effectiveState);

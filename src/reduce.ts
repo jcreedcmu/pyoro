@@ -154,6 +154,7 @@ export function reduce(s: State, a: Action): Result {
           iface: renderIfaceAnims(ams.animator.anims, 'complete', s),
           game: renderGameAnims(ams.animator.anims, 'complete', s.game),
           anim: null,
+          effects: [],
         }
         return { state: nextState, effects: effects };
       }

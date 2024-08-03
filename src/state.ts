@@ -2,6 +2,7 @@ import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { initOverlay } from './initial_overlay';
 import { DynamicLayer } from './layer';
+import { Effect } from './reduce';
 import { Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Point } from './types';
 import { mapValues } from './util';
 import { ViewData } from './view';
@@ -64,6 +65,7 @@ export type State = {
   game: GameState,
   iface: IfaceState,
   anim: AnimState | null,
+  effects: Effect[],
 };
 
 export const init_player: Player = {
@@ -104,6 +106,7 @@ export const init_level: Level = {
 };
 
 export const init_state: State = {
+  effects: [],
   game: {
     player: init_player,
     levels: mapValues(initOverlay, initOverlay => ({ initOverlay, overlay: emptyOverlay })),

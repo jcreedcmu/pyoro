@@ -1,13 +1,10 @@
 import * as CSS from 'csstype';
 import * as React from 'react';
-import { FRAME_DURATION_MS } from './constants';
 import { DragHandler } from './drag-handler';
 import { keyFromCode } from './key';
 import { logger } from './logger';
-import { dynamicTileOfState, getOverlayForSave } from './model';
-import { Dispatch, Effect, reduce } from './reduce';
-import { ButtonedTileFields, DoorTileFields, init_state, ModifyPanelState, State, TimedTileFields, ToolState } from './state';
-import { TimedBlockDynamicTile } from './types';
+import { Dispatch, reduce } from './reduce';
+import { ButtonedTileFields, DoorTileFields, init_state, State, TimedTileFields, ToolState } from './state';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
@@ -17,26 +14,6 @@ type CanvasProps = {
   main: State,
   spriteImg: HTMLImageElement | null
 };
-
-function doEffect(state: State, dispatch: Dispatch, e: Effect) {
-  switch (e.t) {
-    case 'scheduleFrame':
-      setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
-      break;
-    case 'saveOverlay':
-      const req = new Request('/save', {
-        method: 'POST',
-        body: JSON.stringify(getOverlayForSave(state.game)),
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      fetch(req).then(r => r.json())
-        .then(x => logger('networkRequest', x))
-        .catch(console.error);
-      break;
-  }
-}
 
 function passthrough(k: string): boolean {
   return k == 'C-r';
