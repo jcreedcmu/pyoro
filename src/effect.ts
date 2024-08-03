@@ -4,7 +4,7 @@ import { getOverlayForSave } from './model';
 import { Dispatch, Effect } from './reduce';
 import { State } from './state';
 
-function doEffect(state: State, dispatch: Dispatch, e: Effect) {
+export function doEffect(state: State, dispatch: Dispatch, e: Effect) {
   switch (e.t) {
     case 'scheduleFrame':
       setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);

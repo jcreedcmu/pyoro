@@ -9,6 +9,7 @@ import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
+import { doEffect } from './effect';
 
 type CanvasProps = {
   main: State,
