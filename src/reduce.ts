@@ -156,6 +156,12 @@ export function reduce(s: State, a: Action): State {
         });
       }
     }
+    case 'keyUp':
+      return produce(s, s => { delete s.iface.keysDown[a.code]; });
+    case 'setState': return a.s;
+    case 'resize':
+      return produce(s, s => { s.iface.vd = a.vd; });
+
     default: // XXX deprecated
       const res = reduceResult(s, a);
       return produce(res.state, s => {
@@ -166,11 +172,6 @@ export function reduce(s: State, a: Action): State {
 
 export function reduceResult(s: State, a: Action): Result {
   switch (a.t) {
-    case 'keyUp':
-      return pure(produce(s, s => { delete s.iface.keysDown[a.code]; }));
-    case 'setState': return pure(a.s);
-    case 'resize':
-      return pure(produce(s, s => { s.iface.vd = a.vd; }));
 
     case 'mouseDown': {
       const vd = s.iface.vd;
