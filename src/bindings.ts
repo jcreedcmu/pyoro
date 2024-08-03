@@ -1,4 +1,5 @@
-import { Action, Command } from "./reduce";
+import { Command } from "./reduce";
+import { Action } from './action';
 import { Dict, Move } from "./types";
 import { mapValues } from "./util";
 

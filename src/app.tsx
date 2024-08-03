@@ -1,16 +1,17 @@
 import * as CSS from 'csstype';
 import * as React from 'react';
+import { Dispatch } from './action';
 import { DragHandler } from './drag-handler';
+import { doEffect } from './effect';
+import { extractEffects } from './extract-effects';
 import { keyFromCode } from './key';
 import { logger } from './logger';
-import { Dispatch, reduce } from './reduce';
+import { reduce } from './reduce';
 import { ButtonedTileFields, DoorTileFields, init_state, State, TimedTileFields, ToolState } from './state';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
-import { doEffect } from './effect';
-import { extractEffects } from './extract-effects';
 
 type CanvasProps = {
   main: State,

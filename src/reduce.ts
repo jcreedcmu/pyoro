@@ -1,16 +1,14 @@
 import { produce } from 'immer';
+import { Action } from './action';
 import { bindings } from './bindings';
-import { editTiles } from "./constants";
+import { editTiles } from './constants';
+import { getInitOverlay, setCurrentLevel } from './game-state-access';
 import { putDynamicTile } from './layer';
 import { logger } from './logger';
-import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims } from "./model";
-import { Point } from "./point";
-import { ButtonedTileFields, DoorTileFields, State, TimedTileFields, ToolState } from "./state";
-import { DynamicTile, Move } from "./types";
-import * as effectful from "./use-effectful-reducer";
-import { ViewData, wpoint_of_vd } from "./view";
-import { getInitOverlay, setCurrentLevel } from "./game-state-access";
-import { Effect } from './effect';
+import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims } from './model';
+import { ButtonedTileFields, DoorTileFields, State, TimedTileFields } from './state';
+import { DynamicTile, Move } from './types';
+import { wpoint_of_vd } from './view';
 
 export type Command =
   | 'prevEditTile'
@@ -28,28 +26,6 @@ export type PanelStateFieldTypes =
   & { [P in keyof ButtonedTileFields]: { t: 'setPanelStateField', key: P, value: ButtonedTileFields[P] } }
   & { [P in keyof DoorTileFields]: { t: 'setPanelStateField', key: P, value: DoorTileFields[P] } }
   ;
-
-// XXX move to action.ts
-export type Action =
-  | { t: 'keyUp', key: string, code: string, name: string }
-  | { t: 'keyDown', key: string, code: string, name: string }
-  | { t: 'setState', s: State }
-  | { t: 'mouseDown', point: Point }
-  | { t: 'mouseUp' }
-  | { t: 'mouseMove', point: Point }
-  | { t: 'resize', vd: ViewData }
-  | { t: 'nextFrame' }
-  | { t: 'doCommand', command: Command }
-  | { t: 'doMove', move: Move }
-  | { t: 'setCurrentToolState', toolState: ToolState }
-  | PanelStateFieldTypes[keyof TimedTileFields]
-  | PanelStateFieldTypes[keyof ButtonedTileFields]
-  | PanelStateFieldTypes[keyof DoorTileFields]
-  | { t: 'saveModifyPanel' }
-  | { t: 'setCurrentLevel', name: string }
-  ;
-
-export type Dispatch = (a: Action) => void;
 
 export function reduceCommand(s: State, cmd: Command): State {
   switch (cmd) {
