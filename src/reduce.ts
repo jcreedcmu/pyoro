@@ -161,6 +161,25 @@ export function reduce(s: State, a: Action): State {
     case 'setState': return a.s;
     case 'resize':
       return produce(s, s => { s.iface.vd = a.vd; });
+    case 'mouseDown': {
+      const vd = s.iface.vd;
+      if (vd == null)
+        return s;
+      const wpoint = wpoint_of_vd(vd, a.point, s);
+      logger('mouse', 'mouseDown wpoint=', wpoint);
+      switch (wpoint.t) {
+        case 'World': return handle_world_mousedown(s, a.point, wpoint.p);
+        case 'Toolbar': return handle_toolbar_mousedown(s, wpoint.tilePoint);
+      }
+    }
+    case 'mouseUp': return produce(s, s => { s.iface.mouse = { t: 'up' } });
+    case 'mouseMove': {
+      const vd = s.iface.vd;
+      if (vd == null)
+        return s;
+      const wpoint = wpoint_of_vd(vd, a.point, s);
+      return handle_world_drag(s, a.point, wpoint);
+    }
 
     default: // XXX deprecated
       const res = reduceResult(s, a);
@@ -173,26 +192,7 @@ export function reduce(s: State, a: Action): State {
 export function reduceResult(s: State, a: Action): Result {
   switch (a.t) {
 
-    case 'mouseDown': {
-      const vd = s.iface.vd;
-      if (vd == null)
-        return pure(s);
-      const wpoint = wpoint_of_vd(vd, a.point, s);
-      logger('mouse', 'mouseDown wpoint=', wpoint);
-      switch (wpoint.t) {
-        case 'World': return pure(handle_world_mousedown(s, a.point, wpoint.p));
-        case 'Toolbar': return pure(handle_toolbar_mousedown(s, wpoint.tilePoint));
-      }
-    }
-    case 'mouseUp': return pure(produce(s, s => { s.iface.mouse = { t: 'up' } }));
-    case 'mouseMove': {
-      const vd = s.iface.vd;
-      if (vd == null)
-        return pure(s);
-      const wpoint = wpoint_of_vd(vd, a.point, s);
-      return pure(handle_world_drag(s, a.point, wpoint));
 
-    }
     case 'setCurrentToolState':
       return pure(produce(s, s => {
         s.iface.toolState = a.toolState;
