@@ -85,25 +85,21 @@ export function reduceCommand(s: State, cmd: Command): State {
   }
 }
 
-function reduceMove(s: State, move: Move): Result {
+function reduceMove(s: State, move: Move): State {
   if (s.anim == null) {
-    return {
-      state: produce(s, s => {
-        s.anim = {
-          frame: 1,
-          animator: animator_for_move(s, move)
-        }
-      }),
-      effects: [{ t: 'scheduleFrame' }]
-    };
+    return produce(s, s => {
+      s.anim = {
+        frame: 1,
+        animator: animator_for_move(s, move)
+      };
+      s.effects.push({ t: 'scheduleFrame' });
+    });
   }
   else {
-    return {
-      state: produce(s, s => {
-        s.iface.bufferedMoves.push(move);
-      }),
-      effects: [{ t: 'scheduleFrame' }]
-    }
+    return produce(s, s => {
+      s.iface.bufferedMoves.push(move);
+      s.effects.push({ t: 'scheduleFrame' });
+    });
   }
 }
 
@@ -123,6 +119,8 @@ export function reduce(s: State, a: Action): State {
     }
     case 'doCommand':
       return reduceCommand(s, a.command);
+    case 'doMove':
+      return reduceMove(s, a.move);
 
     default: // XXX deprecated
       const res = reduceResult(s, a);
@@ -150,7 +148,11 @@ export function reduceResult(s: State, a: Action): Result {
         else {
           const move = s.iface.bufferedMoves[0];
           const stateAfterShift = produce(s, s => { s.iface.bufferedMoves.shift(); });
-          const result = reduceMove(stateAfterShift, move);
+          const resultState = reduceMove(stateAfterShift, move);
+          const result = {
+            state: produce(resultState, s => { s.effects = []; }),
+            effects: resultState.effects
+          };
           // If this is the only buffered move, no need to schedule more frames
           if (s.iface.bufferedMoves.length <= 1)
             return result;
@@ -195,8 +197,6 @@ export function reduceResult(s: State, a: Action): Result {
       return pure(handle_world_drag(s, a.point, wpoint));
 
     }
-    case 'doMove':
-      return reduceMove(s, a.move);
     case 'setCurrentToolState':
       return pure(produce(s, s => {
         s.iface.toolState = a.toolState;
