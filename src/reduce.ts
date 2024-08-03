@@ -172,7 +172,12 @@ export function reduceResult(s: State, a: Action): Result {
         return { state: nextState, effects: [] };
       }
       else {
-        return { state: produce(s, s => { s.anim!.frame++ }), effects: [{ t: 'scheduleFrame' }] };
+        return {
+          state: produce(s, s => {
+            s.anim!.frame++;
+            s.effects.push({ t: 'scheduleFrame' });
+          }), effects: []
+        };
       }
     }
     case 'mouseDown': {
