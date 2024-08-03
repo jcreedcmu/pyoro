@@ -149,16 +149,16 @@ export function reduceResult(s: State, a: Action): Result {
           const stateAfterShift = produce(s, s => { s.iface.bufferedMoves.shift(); });
           const resultState = reduceMove(stateAfterShift, move);
           const result = {
-            state: produce(resultState, s => { s.effects = []; }),
-            effects: resultState.effects
+            state: resultState,
+            effects: [],
           };
           // If this is the only buffered move, no need to schedule more frames
           if (s.iface.bufferedMoves.length <= 1)
             return result;
           // Otherwise, schedule more
           return {
-            state: result.state,
-            effects: [...(result.effects ?? []), { t: 'scheduleFrame' }],
+            state: produce(result.state, s => { s.effects.push({ t: 'scheduleFrame' }) }),
+            effects: [],
           }
         }
       }
