@@ -5,35 +5,11 @@ import { _putTileInGameStateInitOverlay, animateMove, getOverlayForSave, renderG
 import { emptyOverlay, GameState, init_player } from '../src/state';
 import { Tile, Move, DynamicTile } from '../src/types';
 
-function complexLayer(): PointMap<Tile> {
-  return {
-    'tiles':
-      { '0,1': { t: 'up_box' } }
-  }
-};
-
-function complexState(layer: PointMap<Tile>): GameState {
+function testState(layerName: string): GameState {
   return {
     levels: {
       start: {
-        initOverlay: mapPointMap(layer, dynamicOfTile),
-        overlay: mapPointMap(layer, dynamicOfTile),
-      }
-    },
-    currentLevel: 'start',
-    inventory: { teal_fruit: undefined, },
-    lastSave: { x: 0, y: 0 },
-    player: init_player,
-    time: 0,
-    busState: { red: false, green: false, blue: false },
-  };
-}
-
-function dynamicState(layer: PointMap<DynamicTile>): GameState {
-  return {
-    levels: {
-      start: {
-        initOverlay: layer,
+        initOverlay: initOverlay[layerName],
         overlay: emptyOverlay,
       }
     },
@@ -53,7 +29,7 @@ function executeMove(s: GameState, move: Move): GameState {
 describe('State', () => {
   it('should allow jumping up', () => {
 
-    let m = dynamicState(initOverlay['_test1']);
+    let m = testState('_test1');
     m = executeMove(m, 'up');
     const player = m.player;
     expect(player.animState).toBe("player_rise");
@@ -63,7 +39,7 @@ describe('State', () => {
   });
 
   it('should prevent jumping straight up into boxes', () => {
-    let m = dynamicState(initOverlay['_test2']);
+    let m = testState('_test2');
     m = executeMove(m, 'up');
 
     const player = m.player;
@@ -74,7 +50,7 @@ describe('State', () => {
   });
 
   it('should allow running over small gaps', () => {
-    let m = dynamicState(initOverlay['_test3']);
+    let m = testState('_test3');
     m = executeMove(m, 'left');
     {
       const player = m.player;
@@ -94,7 +70,7 @@ describe('State', () => {
   });
 
   it('should disallow narrow diagonal moves', () => {
-    let m = dynamicState(initOverlay['_test4']);
+    let m = testState('_test4');
     m = executeMove(m, 'up');
     {
       const player = m.player;
@@ -124,7 +100,7 @@ describe('State', () => {
   });
 
   it('should disallow horizontally constrained diagonal moves', () => {
-    let m = dynamicState(initOverlay['_test2']);
+    let m = testState('_test2');
     m = executeMove(m, 'up-left');
 
     const player = m.player;
@@ -136,31 +112,18 @@ describe('State', () => {
   });
 
   it('should allow jumping and breaking ice bricks if there is enough impetus', () => {
-    const layer = complexLayer();
-    layer.tiles['0,' + (-FULL_IMPETUS)] = { t: 'fragile_box' };
-    let m = complexState(layer);
+    let m = testState('_test5');
 
-    for (let i = 0; i < FULL_IMPETUS; i++)
-      m = executeMove(m, 'up');
-
-    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS })).toEqual(emptyTile());
-  });
-
-  it('should not breaking ice bricks if there is not enough impetus', () => {
-    const layer = complexLayer();
-    layer.tiles['0,' + (-FULL_IMPETUS - 1)] = { t: 'fragile_box' };
-    let m = complexState(layer);
-
-    for (let i = 0; i < FULL_IMPETUS + 1; i++)
-      m = executeMove(m, 'up');
-
-    expect(tileOfGameState(m, { x: 0, y: -FULL_IMPETUS - 1 })).toEqual({ t: 'fragile_box' });
+    m = executeMove(m, 'up');
+    m = executeMove(m, 'up');
+    m = executeMove(m, 'up');
+    expect(tileOfGameState(m, { x: 0, y: -4 })).toEqual({ t: 'fragile_box' });
+    m = executeMove(m, 'up');
+    expect(tileOfGameState(m, { x: 0, y: -4 })).toEqual(emptyTile());
   });
 
   it('should allow recentering', () => {
-    const layer = complexLayer();
-    let m = complexState(layer);
-    console.log(m);
+    let m = testState('_test1');
     m = executeMove(m, 'recenter');
     m = executeMove(m, 'left');
   });
@@ -168,7 +131,7 @@ describe('State', () => {
 
 describe('getOverlayForSave', () => {
   it('should filter out empties', () => {
-    let s = complexState(complexLayer());
+    let s = testState('_test1');
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfTile(emptyTile())); // delete the existing box
     expect(getOverlayForSave(s)).toEqual({ start: { tiles: {} } });
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfTile(boxTile())); // add some box
