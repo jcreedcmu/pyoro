@@ -138,7 +138,6 @@ export function reduceResult(s: State, a: Action): Result {
     case 'resize':
       return pure(produce(s, s => { s.iface.vd = a.vd; }));
     case 'nextFrame': {
-      const effects: Effect[] = [];
       const ams = s.anim;
       if (ams == null) {
         if (s.iface.bufferedMoves.length == 0) {
@@ -170,11 +169,10 @@ export function reduceResult(s: State, a: Action): Result {
           anim: null,
           effects: [],
         }
-        return { state: nextState, effects: effects };
+        return { state: nextState, effects: [] };
       }
       else {
-        effects.push({ t: 'scheduleFrame' });
-        return { state: produce(s, s => { s.anim!.frame++ }), effects: effects };
+        return { state: produce(s, s => { s.anim!.frame++ }), effects: [{ t: 'scheduleFrame' }] };
       }
     }
     case 'mouseDown': {
