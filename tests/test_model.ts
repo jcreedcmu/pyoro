@@ -94,10 +94,7 @@ describe('State', () => {
   });
 
   it('should disallow narrow diagonal moves', () => {
-    const layer = complexLayer();
-    layer.tiles['-1,-2'] = boxTile();
-    layer.tiles['0,-3'] = boxTile();
-    let m = complexState(layer);
+    let m = dynamicState(initOverlay['_test4']);
     m = executeMove(m, 'up');
     {
       const player = m.player;

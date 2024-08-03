@@ -2563,5 +2563,27 @@ export const initOverlay: Record<string, DynamicLayer> = {
         }
       }
     }
+  },
+  "_test4": {
+    "tiles": {
+      "0,1": {
+        "t": "static",
+        "tile": {
+          "t": "up_box"
+        }
+      },
+      "-1,-2": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      },
+      "0,-3": {
+        "t": "static",
+        "tile": {
+          "t": "box"
+        }
+      }
+    }
   }
 };
