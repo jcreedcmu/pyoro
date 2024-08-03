@@ -51,12 +51,6 @@ export type Action =
 
 export type Dispatch = (a: Action) => void;
 
-export type Result = effectful.Result<State, Effect>;
-
-export function pure(state: State): Result {
-  return { state };
-}
-
 export function reduceCommand(s: State, cmd: Command): State {
   switch (cmd) {
     case 'nextEditTile':
@@ -233,20 +227,5 @@ export function reduce(s: State, a: Action): State {
       return produce(s, s => {
         s.game = newGameState;
       });
-
-    default: // XXX deprecated
-      const res = reduceResult(s, a);
-      return produce(res.state, s => {
-        s.effects = [...res.state.effects, ...(res.effects ?? [])];
-      });
-  }
-}
-
-export function reduceResult(s: State, a: Action): Result {
-  switch (a.t) {
-
-
-
-    default: throw new Error(`invariant violation`);
   }
 }
