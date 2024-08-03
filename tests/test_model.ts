@@ -124,9 +124,7 @@ describe('State', () => {
   });
 
   it('should disallow horizontally constrained diagonal moves', () => {
-    const layer = complexLayer();
-    layer.tiles['0,-1'] = boxTile();
-    let m = complexState(layer);
+    let m = dynamicState(initOverlay['_test2']);
     m = executeMove(m, 'up-left');
 
     const player = m.player;
