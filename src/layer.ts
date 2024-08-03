@@ -14,6 +14,10 @@ export function putItem<T>(l: PointMap<T>, p: Point, v: T): void {
   l.tiles[p.x + ',' + p.y] = v;
 }
 
+export function removeItem<T>(l: PointMap<T>, p: Point): void {
+  delete l.tiles[p.x + ',' + p.y];
+}
+
 export type LayerStack =
   | { t: 'base', layer: DynamicLayer }
   | { t: 'overlay', top: DynamicLayer, rest: LayerStack };
@@ -113,6 +117,10 @@ export function putTileInDynamicLayer(l: DynamicLayer, p: Point, t: Tile): void 
 
 export function putDynamicTile(l: DynamicLayer, p: Point, t: DynamicTile): void {
   putItem(l, p, t);
+}
+
+export function removeDynamicTile(l: DynamicLayer, p: Point): void {
+  removeItem(l, p);
 }
 
 export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext, viewIntent?: boolean): Tile {

@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { COMBO_THRESHOLD, editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext, pointMapEntries } from './layer';
+import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext, pointMapEntries, removeDynamicTile } from './layer';
 import { vequal, vmn, vplus } from './point';
 import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Point, Sprite, Tool } from './types';
@@ -213,6 +213,7 @@ export function dynamicTileOfGameState(s: GameState, p: Point): DynamicTile {
 export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: DynamicTile): GameState {
   return produce(s, s => {
     putDynamicTile(getInitOverlay(s), p, t);
+    removeDynamicTile(getOverlay(s), p);
   });
 }
 

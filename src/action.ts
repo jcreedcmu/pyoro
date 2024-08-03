@@ -1,6 +1,6 @@
 import { Point } from "./point";
 import { Command, PanelStateFieldTypes } from "./reduce";
-import { State, ToolState, TimedTileFields, ButtonedTileFields, DoorTileFields } from "./state";
+import { ButtonedTileFields, DoorTileFields, State, TimedTileFields, ToolState } from "./state";
 import { Move } from "./types";
 import { ViewData } from "./view";
 
