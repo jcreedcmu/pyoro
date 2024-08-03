@@ -29,6 +29,7 @@ export type PanelStateFieldTypes =
   & { [P in keyof DoorTileFields]: { t: 'setPanelStateField', key: P, value: DoorTileFields[P] } }
   ;
 
+// XXX move to action.ts
 export type Action =
   | { t: 'keyUp', key: string, code: string, name: string }
   | { t: 'keyDown', key: string, code: string, name: string }
@@ -56,29 +57,31 @@ export function pure(state: State): Result {
   return { state };
 }
 
-export function reduceCommand(s: State, cmd: Command): Result {
+export function reduceCommand(s: State, cmd: Command): State {
   switch (cmd) {
     case 'nextEditTile':
-      return pure(produce(s, s => {
+      return produce(s, s => {
         s.iface.editTileIx = (s.iface.editTileIx + 1) % editTiles.length;
-      }));
+      });
 
     case 'prevEditTile':
-      return pure(produce(s, s => {
+      return produce(s, s => {
         s.iface.editTileIx = (s.iface.editTileIx - 1 + editTiles.length) % editTiles.length;
-      }));
+      });
 
     case 'saveOverlay': {
-      return { state: s, effects: [{ t: 'saveOverlay' }] };
+      return produce(s, s => {
+        s.effects.push({ t: 'saveOverlay' });
+      });
     }
 
     case 'rotateEditTile':
-      return pure(produce(s, s => {
+      return produce(s, s => {
         s.iface.editTileRotation = (s.iface.editTileRotation + 1) % 4;
-      }));
+      });
     case 'debug':
       console.log(s);
-      return pure(s);
+      return s;
   }
 }
 
@@ -118,6 +121,9 @@ export function reduce(s: State, a: Action): State {
         return ss;
       }
     }
+    case 'doCommand':
+      return reduceCommand(s, a.command);
+
     default: // XXX deprecated
       const res = reduceResult(s, a);
       return produce(res.state, s => {
@@ -189,8 +195,6 @@ export function reduceResult(s: State, a: Action): Result {
       return pure(handle_world_drag(s, a.point, wpoint));
 
     }
-    case 'doCommand':
-      return reduceCommand(s, a.command);
     case 'doMove':
       return reduceMove(s, a.move);
     case 'setCurrentToolState':
