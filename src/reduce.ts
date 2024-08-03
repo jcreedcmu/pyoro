@@ -125,7 +125,7 @@ export function reduce(s: State, a: Action): State {
     default: // XXX deprecated
       const res = reduceResult(s, a);
       return produce(res.state, s => {
-        s.effects = res.effects ?? [];
+        s.effects = [...res.state.effects, ...(res.effects ?? [])];
       });
   }
 }
