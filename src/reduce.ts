@@ -105,26 +105,29 @@ function reduceMove(s: State, move: Move): Result {
 }
 
 export function reduce(s: State, a: Action): State {
-  const res = reduceResult(s, a);
-  return produce(res.state, s => {
-    s.effects = res.effects ?? [];
-  });
-}
-
-export function reduceResult(s: State, a: Action): Result {
   switch (a.t) {
     case 'keyDown': {
       const name = a.name;
       const action = bindings[name];
       const ss = produce(s, s => { s.iface.keysDown[a.code] = true; });
       if (action) {
-        return reduceResult(ss, action);
+        return reduce(ss, action);
       }
       else {
         logger('chatty', `unbound key ${name} pressed`);
-        return pure(ss);
+        return ss;
       }
     }
+    default: // XXX deprecated
+      const res = reduceResult(s, a);
+      return produce(res.state, s => {
+        s.effects = res.effects ?? [];
+      });
+  }
+}
+
+export function reduceResult(s: State, a: Action): Result {
+  switch (a.t) {
     case 'keyUp':
       return pure(produce(s, s => { delete s.iface.keysDown[a.code]; }));
     case 'setState': return pure(a.s);
@@ -243,5 +246,6 @@ export function reduceResult(s: State, a: Action): Result {
       return pure(produce(s, s => {
         s.game = newGameState;
       }));
+    default: throw new Error(`invariant violation`);
   }
 }
