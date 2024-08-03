@@ -1,8 +1,13 @@
 import { FRAME_DURATION_MS } from './constants';
 import { logger } from './logger';
 import { getOverlayForSave } from './model';
-import { Dispatch, Effect } from './reduce';
+import { Dispatch } from './reduce';
 import { State } from './state';
+
+export type Effect =
+  | { t: 'scheduleFrame' }
+  | { t: 'saveOverlay' }
+  ;
 
 export function doEffect(state: State, dispatch: Dispatch, e: Effect) {
   switch (e.t) {

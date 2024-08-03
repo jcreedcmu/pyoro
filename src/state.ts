@@ -1,12 +1,11 @@
 import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
+import { Effect } from './effect';
 import { initOverlay } from './initial_overlay';
 import { DynamicLayer } from './layer';
-import { Effect } from './reduce';
 import { Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Point } from './types';
 import { mapValues } from './util';
 import { ViewData } from './view';
-
 
 export type Combo = undefined | { t: 'combo', dir: Point, rep: number };
 

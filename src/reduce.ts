@@ -10,6 +10,7 @@ import { DynamicTile, Move } from "./types";
 import * as effectful from "./use-effectful-reducer";
 import { ViewData, wpoint_of_vd } from "./view";
 import { getInitOverlay, setCurrentLevel } from "./game-state-access";
+import { Effect } from './effect';
 
 export type Command =
   | 'prevEditTile'
@@ -48,11 +49,6 @@ export type Action =
   ;
 
 export type Dispatch = (a: Action) => void;
-
-export type Effect =
-  | { t: 'scheduleFrame' }
-  | { t: 'saveOverlay' }
-  ;
 
 export type Result = effectful.Result<State, Effect>;
 
