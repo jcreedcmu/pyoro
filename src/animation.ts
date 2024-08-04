@@ -1,11 +1,11 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { tileEq, emptyTile, putTileInDynamicLayer } from './layer';
-import { computeCombo, tileOfGameState } from './model';
-import { int, lerp, vm2, vplus, vscale, vsub } from './point';
-import { GameState, IfaceState, init_state, State } from './state';
-import { Bus, Facing, Item, PlayerSprite, Point } from './types';
 import { getOverlay, setCurrentLevel, setOverlay } from './game-state-access';
+import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
+import { computeCombo, tileOfGameState } from './model';
+import { int, lerp, Point, vm2, vplus, vscale, vsub } from './point';
+import { GameState, IfaceState, init_state, State } from './state';
+import { Bus, Facing, Item, PlayerSprite } from './types';
 
 export type Animation =
   {

@@ -1,3 +1,4 @@
+/** A point in a 2d space. */
 export type Point = { x: number, y: number };
 
 export function vm(a: Point, f: (a: number) => number): Point {

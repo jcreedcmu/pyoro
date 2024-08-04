@@ -5,9 +5,9 @@ import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, ro
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
-import { int, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
+import { int, Point, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
 import { Combo, State } from './state';
-import { Tile, Item, PlayerSprite, Point, ToolTile } from './types';
+import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
 

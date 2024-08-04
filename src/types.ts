@@ -1,8 +1,7 @@
+import { Point } from "./point";
+
 /** A string-keyed dictionary whose values are `T` */
 export type Dict<T> = { [k: string]: T };
-
-/** A point in a 2d space. */
-export type Point = { x: number, y: number };
 
 /** A color in the RGB colorspace, where the components are in [0,255]. */
 export type Color = { r: number, g: number, b: number };

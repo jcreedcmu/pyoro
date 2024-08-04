@@ -1,7 +1,7 @@
-import { Facing, Move, PlayerSprite, Point } from '../src/types';
+import { Facing, Move, PlayerSprite } from '../src/types';
 import { initOverlay } from './initial_overlay';
 import { animateMove, renderGameAnims } from './model';
-import { vequal } from './point';
+import { Point, vequal } from './point';
 import { emptyOverlay, GameState, init_player } from './state';
 
 export type MotionTestAssertion =

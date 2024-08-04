@@ -3,7 +3,8 @@ import { FULL_IMPETUS } from './constants';
 import { Effect } from './effect';
 import { initOverlay } from './initial_overlay';
 import { DynamicLayer } from './layer';
-import { Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Point } from './types';
+import { Point } from './point';
+import { Bus, DynamicTile, Facing, Item, Move, PlayerSprite } from './types';
 import { mapValues } from './util';
 import { ViewData } from './view';
 
