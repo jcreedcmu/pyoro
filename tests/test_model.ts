@@ -2,6 +2,7 @@ import { FULL_IMPETUS } from '../src/constants';
 import { initOverlay } from '../src/initial_overlay';
 import { boxTile, dynamicOfTile, emptyTile, mapPointMap, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMove, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
+import { motionTestPasses, motionTestSuite } from '../src/motion_tests';
 import { emptyOverlay, GameState, init_player } from '../src/state';
 import { Tile, Move, DynamicTile } from '../src/types';
 
@@ -26,18 +27,15 @@ function executeMove(s: GameState, move: Move): GameState {
   return renderGameAnims(animateMove(s, move), 'complete', s);
 }
 
-describe('State', () => {
-  it('should allow jumping up', () => {
-
-    let m = testState('_test1');
-    m = executeMove(m, 'up');
-    const player = m.player;
-    expect(player.animState).toBe("player_rise");
-    expect(player.flipState).toBe('right');
-    expect(player.pos).toEqual({ x: 0, y: -1 });
-    expect(player.impetus).toBe(FULL_IMPETUS - 1);
+describe('Motion rules', () => {
+  motionTestSuite.forEach(mtest => {
+    it(mtest.description, () => {
+      expect(motionTestPasses(mtest)).toBe(true);
+    });
   });
+});
 
+describe('State', () => {
   it('should prevent jumping straight up into boxes', () => {
     let m = testState('_test2');
     m = executeMove(m, 'up');

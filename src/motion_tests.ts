@@ -16,6 +16,7 @@ export type MotionTestStep =
   | { t: 'move', move: Move }
 
 export type MotionTest = {
+  description: string,
   levelName: string,
   steps: MotionTestStep[],
 }
@@ -62,7 +63,11 @@ function motionTestStep(state: GameState, step: MotionTestStep): [boolean, GameS
   }
 }
 
-export function motionTestPasses(test: MotionTest, time?: number): [boolean, GameState] {
+export function motionTestPasses(test: MotionTest): boolean {
+  return motionTestResult(test, undefined).pass;
+}
+
+export function motionTestResult(test: MotionTest, time: number | undefined): { pass: boolean, state: GameState } {
   if (time == undefined)
     time = motionTestLength(test);
 
@@ -73,8 +78,21 @@ export function motionTestPasses(test: MotionTest, time?: number): [boolean, Gam
   for (let i = 0; i < time; i++) {
     const [pass, newState] = motionTestStep(state, test.steps[i]);
     if (!pass)
-      return [false, newState];
+      return { pass: false, state: newState };
     state = newState;
   }
-  return [true, state];
+  return { pass: true, state };
 }
+
+export const motionTestSuite: MotionTest[] = [
+  {
+    description: 'should allow jumping up',
+    levelName: '_test1', steps: [
+      { t: 'move', move: 'up' },
+      { t: 'assertion', assn: { t: 'animState', sprite: 'player_rise' } },
+      { t: 'assertion', assn: { t: 'flipState', facing: 'right' } },
+      { t: 'assertion', assn: { t: 'position', pos: { x: 0, y: -1 } } },
+      { t: 'assertion', assn: { t: 'impetus', impetus: 3 } },
+    ]
+  }
+]
