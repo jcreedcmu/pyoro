@@ -4,6 +4,7 @@ Mount Pyoro
 
 [![Screenshot of Current Prototype](screenshot.png)](https://jcreedcmu.github.io/pyoro/)
 Demo of prototype is [here](https://jcreedcmu.github.io/pyoro/).
+Generated Jsdoc documentation is [here](https://jcreedcmu.github.io/pyoro/docs/).
 
 This is an old game idea I've been tinkering with from time to time.
 The premise is: puzzle-platformer, but time is discrete, so there's
