@@ -6,6 +6,7 @@ check:
 
 build:
 	node build-client.mjs
+
 watch:
 	node build-client.mjs watch
 
