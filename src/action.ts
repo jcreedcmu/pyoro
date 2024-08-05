@@ -1,3 +1,4 @@
+import { Setter } from "./optic";
 import { Point } from "./point";
 import { Command, PanelStateFieldTypes } from "./reduce";
 import { ButtonedTileFields, DoorTileFields, State, TimedTileFields, ToolState } from "./state";
@@ -23,4 +24,5 @@ export type Action =
   | PanelStateFieldTypes[keyof DoorTileFields]
   | { t: 'saveModifyPanel' }
   | { t: 'setCurrentLevel', name: string }
+  | { t: 'setField', setter: Setter<State> }
   ;

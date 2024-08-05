@@ -9,6 +9,7 @@ import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_
 import { ButtonedTileFields, DoorTileFields, State, TimedTileFields } from './state';
 import { DynamicTile, Move } from './types';
 import { wpoint_of_vd } from './view';
+import { runSetter } from './optic';
 
 export type Command =
   | 'prevEditTile'
@@ -203,5 +204,7 @@ export function reduce(s: State, a: Action): State {
       return produce(s, s => {
         s.game = newGameState;
       });
+    case 'setField':
+      return runSetter(a.setter, s);
   }
 }
