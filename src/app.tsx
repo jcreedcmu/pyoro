@@ -12,6 +12,7 @@ import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
+import { motionTestSuite } from './test-motion';
 
 type CanvasProps = {
   main: State,
@@ -118,9 +119,14 @@ function renderLevelPicker(state: State, dispatch: Dispatch): JSX.Element | unde
 }
 
 function renderTestTools(state: State, dispatch: Dispatch): JSX.Element | undefined {
-  if (state.iface.toolState.t != 'test_tool')
+  const toolState = state.iface.toolState;
+  if (toolState.t != 'test_tool')
     return undefined;
+  const { testToolState: { currentTestIx } } = toolState;
+  const currentTest = motionTestSuite[currentTestIx];
   return <div className="test-tools">
+    <b>{currentTest.levelName}</b><br />
+    {currentTest.description}<br />
   </div>;
 }
 
