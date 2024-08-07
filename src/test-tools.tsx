@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Level, State, TestToolState } from './state';
-import { MotionTest, motionTestResult, motionTestSuite } from './test-motion';
+import { MotionTest, MotionTestAssertion, motionTestResult, MotionTestStep, motionTestSuite } from './test-motion';
 import { produce } from 'immer';
 import { mod } from './util';
 
@@ -32,18 +32,37 @@ export function reduce(tts: TestToolState, action: Action): TestToolState {
     case 'prevStep': {
       const currentTest = getCurrentTest(tts);
       return produce(tts, s => {
-        s.testTime = mod(tts.testTime - 1, currentTest.steps.length);
+        s.testTime = mod(tts.testTime - 1, currentTest.steps.length + 1);
       });
     }
     case 'nextStep': {
       const currentTest = getCurrentTest(tts);
       return produce(tts, s => {
-        s.testTime = mod(tts.testTime + 1, currentTest.steps.length);
+        s.testTime = mod(tts.testTime + 1, currentTest.steps.length + 1);
       });
     }
   }
 }
 
+export function renderAssertion(assn: MotionTestAssertion): JSX.Element | string {
+  switch (assn.t) {
+    case 'position': return `Position: (${assn.pos.x}, ${assn.pos.y})`;
+    case 'flipState': return `Flip State: ${assn.facing}`;
+    case 'animState': return `Anim State: ${assn.sprite}`;
+    case 'impetus': return `Impetus: ${assn.impetus}`;
+  }
+}
+
+export function renderStep(steps: MotionTestStep[], time: number): JSX.Element | string {
+  if (time >= steps.length) {
+    return 'done';
+  }
+  const step = steps[time];
+  switch (step.t) {
+    case 'assertion': return `Assertion: ${renderAssertion(step.assn)}`;
+    case 'move': return `Move: ${step.move}`;
+  }
+}
 export function renderTestTools(state: State, dispatch: (action: Action) => void): JSX.Element | undefined {
   const toolState = state.iface.toolState;
   if (toolState.t != 'test_tool')
@@ -53,7 +72,7 @@ export function renderTestTools(state: State, dispatch: (action: Action) => void
   const currentTest = motionTestSuite[testIx];
 
   // XXX Doing a lot of unnecessary work here duplicating that in getTestState
-  const { pass } = motionTestResult(motionTestSuite[testIx], testTime);
+  const { pass } = motionTestResult(currentTest, testTime);
 
   return <div className="test-tools">
     <b>{currentTest.levelName}</b><br />
@@ -65,6 +84,7 @@ export function renderTestTools(state: State, dispatch: (action: Action) => void
     <br />
     <b>Time</b>: {testTime}<br />
     <b>Result</b>: {pass ? 'pass' : 'fail'}<br />
+    <b>Next Step</b>: {renderStep(currentTest.steps, testTime)}<br />
     <br />
     {currentTest.description}
   </div>;
