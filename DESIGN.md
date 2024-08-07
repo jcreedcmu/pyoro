@@ -38,7 +38,7 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
     <summary>🚨 Spoilers 🚨 for Leap Year</summary>
 
     Leap Year's treatment of fall damage is especially relevant to
-    this point: player's *expect* monotonicity in that if falling from
+    this point: players *expect* monotonicity in that if falling from
     height X kills them, then surely falling from height 2X will as
     well. I find Leap Year's violation of this assumption very clever.
 
