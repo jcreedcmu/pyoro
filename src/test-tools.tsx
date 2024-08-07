@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Level, State, TestToolState } from './state';
-import { MotionTest, motionTestSuite } from './test-motion';
+import { MotionTest, motionTestResult, motionTestSuite } from './test-motion';
 import { produce } from 'immer';
 import { mod } from './util';
 
@@ -48,8 +48,13 @@ export function renderTestTools(state: State, dispatch: (action: Action) => void
   const toolState = state.iface.toolState;
   if (toolState.t != 'test_tool')
     return undefined;
-  const { testToolState: { testIx, testTime } } = toolState;
+  const { testToolState } = toolState;
+  const { testIx, testTime } = testToolState;
   const currentTest = motionTestSuite[testIx];
+
+  // XXX Doing a lot of unnecessary work here duplicating that in getTestState
+  const { pass } = motionTestResult(motionTestSuite[testIx], testTime);
+
   return <div className="test-tools">
     <b>{currentTest.levelName}</b><br />
     <button onMouseDown={() => { dispatch({ t: 'prevTest' }) }}>prev</button>
@@ -58,7 +63,8 @@ export function renderTestTools(state: State, dispatch: (action: Action) => void
     <button onMouseDown={() => { dispatch({ t: 'prevStep' }) }}>&lt;</button>
     <button onMouseDown={() => { dispatch({ t: 'nextStep' }) }}>&gt;</button>
     <br />
-    <b>Test time</b>: {testTime}
+    <b>Time</b>: {testTime}<br />
+    <b>Result</b>: {pass ? 'pass' : 'fail'}<br />
     <br />
     {currentTest.description}
   </div>;

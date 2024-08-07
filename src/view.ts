@@ -11,6 +11,7 @@ import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
 import { getTestState } from './test-state';
+import { motionTestResult } from './test-motion';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
