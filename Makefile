@@ -18,3 +18,7 @@ test:
 .PHONY: docs
 docs:
 	npm run docs
+
+# deploy to github pages
+deploy:
+	git push origin "main:deploy"
