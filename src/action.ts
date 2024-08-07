@@ -2,6 +2,7 @@ import { Setter } from "./optic";
 import { Point } from "./point";
 import { Command, PanelStateFieldTypes } from "./reduce";
 import { ButtonedTileFields, DoorTileFields, State, TimedTileFields, ToolState } from "./state";
+import * as testTools from './test-tools';
 import { Move } from "./types";
 import { ViewData } from "./view";
 
@@ -25,4 +26,5 @@ export type Action =
   | { t: 'saveModifyPanel' }
   | { t: 'setCurrentLevel', name: string }
   | { t: 'setField', setter: Setter<State> }
+  | { t: 'testToolsAction', action: testTools.Action }
   ;

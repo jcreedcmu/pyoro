@@ -6,10 +6,11 @@ import { getInitOverlay, setCurrentLevel } from './game-state-access';
 import { putDynamicTile } from './layer';
 import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims } from './model';
+import { runSetter } from './optic';
 import { ButtonedTileFields, DoorTileFields, State, TimedTileFields } from './state';
+import * as testTools from './test-tools';
 import { DynamicTile, Move } from './types';
 import { wpoint_of_vd } from './view';
-import { runSetter } from './optic';
 
 export type Command =
   | 'prevEditTile'
@@ -206,5 +207,15 @@ export function reduce(s: State, a: Action): State {
       });
     case 'setField':
       return runSetter(a.setter, s);
+    case 'testToolsAction': {
+      if (s.iface.toolState.t != 'test_tool') {
+        throw new Error('reducing test tool action while not in test tool state');
+      }
+      const oldState = s.iface.toolState.testToolState;
+      const newState = testTools.reduce(oldState, a.action);
+      return produce(s, s => {
+        s.iface.toolState = { t: 'test_tool', testToolState: newState };
+      });
+    }
   }
 }

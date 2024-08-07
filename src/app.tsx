@@ -7,12 +7,13 @@ import { extractEffects } from './extract-effects';
 import { keyFromCode } from './key';
 import { logger } from './logger';
 import { reduce } from './reduce';
-import { ButtonedTileFields, DoorTileFields, GameState, init_state, State, TimedTileFields, ToolState } from './state';
+import { ButtonedTileFields, DoorTileFields, init_state, State, TimedTileFields, ToolState } from './state';
+import * as testTools from './test-tools';
+import { renderTestTools } from './test-tools';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
-import { motionTestSuite } from './test-motion';
 
 type CanvasProps = {
   main: State,
@@ -118,22 +119,6 @@ function renderLevelPicker(state: State, dispatch: Dispatch): JSX.Element | unde
   </div>;
 }
 
-function renderTestTools(state: State, dispatch: Dispatch): JSX.Element | undefined {
-  const toolState = state.iface.toolState;
-  if (toolState.t != 'test_tool')
-    return undefined;
-  const { testToolState: { currentTestIx } } = toolState;
-  const currentTest = motionTestSuite[currentTestIx];
-  return <div className="test-tools">
-    <b>{currentTest.levelName}</b><br />
-    {currentTest.description}<br />
-    <button>prev</button>
-    <button>next</button>
-    <br />
-    <button>&lt;</button>
-    <button>&gt;</button>
-  </div>;
-}
 
 export function App(props: {}): JSX.Element {
   function render(ci: CanvasInfo, props: CanvasProps) {
@@ -205,6 +190,7 @@ export function App(props: {}): JSX.Element {
     : undefined;
 
   const canvasCursor = cursorOfToolState(state.iface.toolState);
+
   return <div>
     <canvas style={{ cursor: canvasCursor }}
       tabIndex={0}
@@ -214,6 +200,6 @@ export function App(props: {}): JSX.Element {
     {dragHandler}
     {renderModifyPanel(state, dispatch)}
     {renderLevelPicker(state, dispatch)}
-    {renderTestTools(state, dispatch)}
+    {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
   </div>;
 }
