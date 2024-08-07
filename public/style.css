@@ -39,8 +39,3 @@ body {
   padding: 1em;
   background-color: #777;
 }
-
-.test-tools .title {
-  overflow-x: hidden;
-  white-space: nowrap;
-}

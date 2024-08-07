@@ -93,7 +93,10 @@ export type ModifyPanelState =
   | { t: 'door' } & DoorTileFields
   ;
 
-export type TestToolState = { currentTestIx: number };
+export type TestToolState = {
+  testIx: number,
+  testTime: number
+};
 
 export type ToolState =
   | { t: 'play_tool' }
