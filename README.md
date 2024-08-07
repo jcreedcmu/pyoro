@@ -27,3 +27,24 @@ Should probably turn these into puzzle ideas.
 - Skimming just behind a phased transient block
 - Running off the edge of a platform and then back to get enough
   combo momentum for something
+
+Development
+----------
+
+In one shell, you can
+```shell
+make watch
+```
+to build the js bundle and in another
+```shell
+make
+```
+to start a local server on port 3000.
+
+Browse to http://localhost:3000 to play the game.
+
+Other useful targets in the makefile are
+```shell
+make test # run unit test on file changes
+make check # run typescript typechecker on file changes
+```
