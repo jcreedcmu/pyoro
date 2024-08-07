@@ -36,17 +36,6 @@ describe('Motion rules', () => {
 });
 
 describe('State', () => {
-  it('should prevent jumping straight up into boxes', () => {
-    let m = testState('_test2');
-    m = executeMove(m, 'up');
-
-    const player = m.player;
-    expect(player.animState).toBe('player');
-    expect(player.flipState).toBe('right');
-    expect(player.pos).toEqual({ x: 0, y: 0 });
-    expect(player.impetus).toBe(FULL_IMPETUS);
-  });
-
   it('should allow running over small gaps', () => {
     let m = testState('_test3');
     m = executeMove(m, 'left');

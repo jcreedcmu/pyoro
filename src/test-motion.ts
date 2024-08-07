@@ -94,5 +94,15 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'position', pos: { x: 0, y: -1 } } },
       { t: 'assertion', assn: { t: 'impetus', impetus: 3 } },
     ]
-  }
+  },
+  {
+    description: 'should prevent jumping straight up into boxes',
+    levelName: '_test2', steps: [
+      { t: 'move', move: 'up' },
+      { t: 'assertion', assn: { t: 'animState', sprite: 'player' } },
+      { t: 'assertion', assn: { t: 'flipState', facing: 'right' } },
+      { t: 'assertion', assn: { t: 'position', pos: { x: 0, y: 0 } } },
+      { t: 'assertion', assn: { t: 'impetus', impetus: 4 } },
+    ],
+  },
 ]
