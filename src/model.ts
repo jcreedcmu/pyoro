@@ -516,6 +516,8 @@ export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Po
       });
     case 'play_tool':
       return s;
+    case 'test_tool':
+      return s;
   }
 }
 
@@ -549,6 +551,7 @@ function initialToolState(t: Tool): ToolState {
     case 'hand_tool': return { t: 'hand_tool' };
     case 'modify_tool': return { t: 'modify_tool', modifyCell: null, panelState: { t: 'none' } };
     case 'play_tool': return { t: 'play_tool' };
+    case 'test_tool': return { t: 'test_tool', testToolState: { currentTest: 0 } };
   }
 }
 

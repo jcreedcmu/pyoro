@@ -7,7 +7,7 @@ import { extractEffects } from './extract-effects';
 import { keyFromCode } from './key';
 import { logger } from './logger';
 import { reduce } from './reduce';
-import { ButtonedTileFields, DoorTileFields, init_state, State, TimedTileFields, ToolState } from './state';
+import { ButtonedTileFields, DoorTileFields, GameState, init_state, State, TimedTileFields, ToolState } from './state';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { imgProm } from './util';
@@ -28,6 +28,7 @@ function cursorOfToolState(toolState: ToolState): CSS.Property.Cursor {
     case 'hand_tool': return 'grab';
     case 'pencil_tool': return 'cell';
     case 'modify_tool': return 'url(/assets/modify-tool.png) 8 8, auto';
+    case 'test_tool': return 'pointer';
   }
 }
 
@@ -102,6 +103,27 @@ function renderModifyPanel(state: State, dispatch: Dispatch): JSX.Element | null
   }
 }
 
+function renderLevelPicker(state: State, dispatch: Dispatch): JSX.Element | undefined {
+  if (state.iface.toolState.t != 'pencil_tool')
+    return undefined;
+  return <div className="level-picker">
+    <b>{state.game.currentLevel}</b>
+    <input onKeyDown={(e) => {
+      if (e.code == 'Enter') {
+        dispatch({ t: 'setCurrentLevel', name: e.currentTarget.value });
+      }
+    }} ></input>
+    <em>{JSON.stringify(state.iface.bufferedMoves)}</em>
+  </div>;
+}
+
+function renderTestTools(state: State, dispatch: Dispatch): JSX.Element | undefined {
+  if (state.iface.toolState.t != 'test_tool')
+    return undefined;
+  return <div className="test-tools">
+  </div>;
+}
+
 export function App(props: {}): JSX.Element {
   function render(ci: CanvasInfo, props: CanvasProps) {
     const { d, size: { x, y } } = ci;
@@ -171,18 +193,7 @@ export function App(props: {}): JSX.Element {
     ? <DragHandler dispatch={dispatch} />
     : undefined;
 
-  const levelPicker = <div className="level-picker">
-    <b>{state.game.currentLevel}</b>
-    <input onKeyDown={(e) => {
-      if (e.code == 'Enter') {
-        dispatch({ t: 'setCurrentLevel', name: e.currentTarget.value });
-      }
-    }} ></input>
-    <em>{JSON.stringify(state.iface.bufferedMoves)}</em>
-  </div>;
-
   const canvasCursor = cursorOfToolState(state.iface.toolState);
-  const modifyPanel = renderModifyPanel(state, dispatch);
   return <div>
     <canvas style={{ cursor: canvasCursor }}
       tabIndex={0}
@@ -190,7 +201,8 @@ export function App(props: {}): JSX.Element {
       onKeyUp={handleKeyUp}
       ref={cref} />
     {dragHandler}
-    {modifyPanel}
-    {levelPicker}
+    {renderModifyPanel(state, dispatch)}
+    {renderLevelPicker(state, dispatch)}
+    {renderTestTools(state, dispatch)}
   </div>;
 }

@@ -1,4 +1,4 @@
-import { Facing, Move, PlayerSprite } from '../src/types';
+import { Facing, Move, PlayerSprite } from './types';
 import { initOverlay } from './initial_overlay';
 import { animateMove, renderGameAnims } from './model';
 import { Point, vequal } from './point';

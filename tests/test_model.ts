@@ -2,7 +2,7 @@ import { FULL_IMPETUS } from '../src/constants';
 import { initOverlay } from '../src/initial_overlay';
 import { boxTile, dynamicOfTile, emptyTile, mapPointMap, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMove, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
-import { motionTestPasses, motionTestSuite } from '../src/motion_tests';
+import { motionTestPasses, motionTestSuite } from '../src/test-motion';
 import { emptyOverlay, GameState, init_player } from '../src/state';
 import { Tile, Move, DynamicTile } from '../src/types';
 

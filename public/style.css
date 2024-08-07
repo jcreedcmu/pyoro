@@ -29,3 +29,13 @@ body {
   margin-left: 1em;
   width: 40em;
 }
+
+.test-tools {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  height: 20em;
+  width: 10em;
+  padding: 1em;
+  background-color: #777;
+}

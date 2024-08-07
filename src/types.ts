@@ -148,6 +148,7 @@ export type Tool =
   | 'hand_tool'
   | 'pencil_tool'
   | 'modify_tool'
+  | 'test_tool'
   ;
 
 /** A state of a tool button in the editor UI. */

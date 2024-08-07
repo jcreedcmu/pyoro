@@ -93,11 +93,14 @@ export type ModifyPanelState =
   | { t: 'door' } & DoorTileFields
   ;
 
+export type TestToolState = { currentTest: number };
+
 export type ToolState =
   | { t: 'play_tool' }
   | { t: 'hand_tool' }
   | { t: 'pencil_tool' }
   | { t: 'modify_tool', modifyCell: Point | null, panelState: ModifyPanelState }
+  | { t: 'test_tool', testToolState: TestToolState }
   ;
 
 export const init_level: Level = {

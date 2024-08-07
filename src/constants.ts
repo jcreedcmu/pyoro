@@ -15,6 +15,7 @@ export const tools: Tool[] = [
   'pencil_tool',
   'hand_tool',
   'modify_tool',
+  'test_tool',
 ]
 
 export const editTiles: Tile[] =

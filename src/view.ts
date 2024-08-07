@@ -167,6 +167,8 @@ function spriteLocOfTool(s: ToolTile): Point {
     case 'modify_tool_active': return { x: 12, y: 1 };
     case 'play_tool_inactive': return { x: 13, y: 0 };
     case 'play_tool_active': return { x: 13, y: 1 };
+    case 'test_tool_inactive': return { x: 14, y: 0 };
+    case 'test_tool_active': return { x: 14, y: 1 };
   }
 }
 
