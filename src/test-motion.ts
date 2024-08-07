@@ -105,4 +105,19 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'impetus', impetus: 4 } },
     ],
   },
+  {
+    description: 'should allow running over small gaps',
+    levelName: '_test3', steps: [
+      { t: 'move', move: 'left' },
+      { t: 'assertion', assn: { t: 'animState', sprite: 'player_fall' } },
+      { t: 'assertion', assn: { t: 'flipState', facing: 'left' } },
+      { t: 'assertion', assn: { t: 'position', pos: { x: -1, y: 0 } } },
+      { t: 'assertion', assn: { t: 'impetus', impetus: 0 } },
+      { t: 'move', move: 'left' },
+      { t: 'assertion', assn: { t: 'animState', sprite: 'player' } },
+      { t: 'assertion', assn: { t: 'flipState', facing: 'left' } },
+      { t: 'assertion', assn: { t: 'position', pos: { x: -2, y: 0 } } },
+      { t: 'assertion', assn: { t: 'impetus', impetus: 1 } },
+    ],
+  },
 ]

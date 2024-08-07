@@ -36,26 +36,6 @@ describe('Motion rules', () => {
 });
 
 describe('State', () => {
-  it('should allow running over small gaps', () => {
-    let m = testState('_test3');
-    m = executeMove(m, 'left');
-    {
-      const player = m.player;
-      expect(player.animState).toBe("player_fall");
-      expect(player.flipState).toBe('left');
-      expect(player.pos).toEqual({ x: -1, y: 0 });
-      expect(player.impetus).toBe(0);
-    }
-    m = executeMove(m, 'left');
-    {
-      const player = m.player;
-      expect(player.animState).toBe("player");
-      expect(player.flipState).toBe('left');
-      expect(player.pos).toEqual({ x: -2, y: 0 });
-      expect(player.impetus).toBe(1);
-    }
-  });
-
   it('should disallow narrow diagonal moves', () => {
     let m = testState('_test4');
     m = executeMove(m, 'up');
