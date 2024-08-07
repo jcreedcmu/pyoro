@@ -24,11 +24,27 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 
 ## Goals
 
-### Physics
+### Physics/"Feel"
 
 - There is a notion of gravity, and therefore a notion of "up". It
   should be challenging --- and therefore rewarding --- to get to
-  "high-up" stuff. Like Celeste, success is about *climbing*.
+  "high-up" stuff.
+
+- There should ways the player can move that feel "fun" or "exciting"
+  or "surprising" in and of themselves, even when performed in
+  discrete steps of time. A core motivation for this game is that I
+  want to be able feel the cool feelings of playing Celeste --- the
+  feeling of making just the right dash or dodge or getting a tricky
+  long jump perfect --- despite the fact that I suck at
+  platformers.
+
+- This is a difficult constraint, because one thing that makes Celeste
+  exciting is the skill gap between planning and execution of a plan.
+  I don't want to make it actually hard to execute a plan, but I do
+  want to cultivate the *illusion* of drama, (tension,
+  time-sensitiveness, the player being in danger) as much as possible.
+
+### Puzzles
 
 - Puzzles ideally come from unexpected interactions between puzzle
   mechanisms, unexpected corner cases thereof. Some of my favorite
