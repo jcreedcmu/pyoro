@@ -10,6 +10,7 @@ import { Combo, State } from './state';
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
+import { getTestState } from './test-state';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
@@ -333,17 +334,30 @@ export function drawView(fv: FView, state: State): void {
   d.save();
   d.scale(devicePixelRatio, devicePixelRatio);
 
-  // Here's where we let animators actually act
   let effectiveState = state;
-  const ams = state.anim;
-  if (ams !== null) {
+
+  if (state.iface.toolState.t == 'test_tool') {
+    const gameState = getTestState(state.game.levels, state.iface.toolState.testToolState);
     effectiveState = {
-      iface: renderIfaceAnims(ams.animator.anims, ams.frame, state),
-      game: renderGameAnims(ams.animator.anims, ams.frame, state.game),
-      anim: state.anim, // Hmm, it's not 100% clear to me why I need this to be non-null
-      effects: [],
-    };
+      anim: state.anim,
+      effects: state.effects,
+      game: gameState,
+      iface: state.iface,
+    }
   }
+  else {
+    // Here's where we let animators actually act
+    const ams = state.anim;
+    if (ams !== null) {
+      effectiveState = {
+        iface: renderIfaceAnims(ams.animator.anims, ams.frame, state),
+        game: renderGameAnims(ams.animator.anims, ams.frame, state.game),
+        anim: state.anim, // Hmm, it's not 100% clear to me why I need this to be non-null
+        effects: [],
+      };
+    }
+  }
+
   drawScaled(fv, effectiveState);
   d.restore();
 }

@@ -21,7 +21,7 @@ export type MotionTest = {
   steps: MotionTestStep[],
 }
 
-function testState(layerName: string): GameState {
+export function testInitialGameState(layerName: string): GameState {
   return {
     levels: {
       start: {
@@ -74,7 +74,7 @@ export function motionTestResult(test: MotionTest, time: number | undefined): { 
   // time == 0 means don't execute any test steps
   // time == 1 means execute one test step
   // time == motionTestLength(test) means execute all steps.
-  let state = testState(test.levelName);
+  let state = testInitialGameState(test.levelName);
   for (let i = 0; i < time; i++) {
     const [pass, newState] = motionTestStep(state, test.steps[i]);
     if (!pass)

@@ -127,6 +127,11 @@ function renderTestTools(state: State, dispatch: Dispatch): JSX.Element | undefi
   return <div className="test-tools">
     <b>{currentTest.levelName}</b><br />
     {currentTest.description}<br />
+    <button>prev</button>
+    <button>next</button>
+    <br />
+    <button>&lt;</button>
+    <button>&gt;</button>
   </div>;
 }
 
