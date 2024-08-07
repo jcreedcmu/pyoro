@@ -65,6 +65,8 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
   limited, but they are the foundation of all progress in the game.
   Isles of Sea and Sky represents a good standard here.
 
+- A player may decide to reset a room's state at any time.
+
 - In IoSaS, certain barriers may be removed, and certain items may be acquired,
   which survive the room being reset. These are perceived by the player as
  *monotonic progress forward* in the game.
@@ -75,7 +77,12 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
   gain access elsewhere. Care should be taken during puzzle design
   to ensure this doesn't happen in practice.
 
-- Resetting a room's state is allowed at any time.
+### Development
+
+- Game levels/rooms should serve as integration tests.
+
+- There should be pretty well-covering unit tests for the game
+  mechanics, at a finer resolution than that.
 
 ## Non-Goals
 
