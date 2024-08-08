@@ -18,7 +18,7 @@ export type Player = {
   combo: Combo,
   prevPos: Point,
   posOffset?: Point, // undefined in all non-animated GameStates
-  _impetus: number,
+  impetus: Point,
 };
 
 export type AnimState = {
@@ -75,7 +75,7 @@ export const init_player: Player = {
   prevPos: { x: 0, y: 0 },
   animState: 'player',
   flipState: 'right',
-  _impetus: FULL_IMPETUS,
+  impetus: { x: 0, y: FULL_IMPETUS }, // XXX this FULL_IMPETUS seems very wrong
 };
 
 export const emptyOverlay: DynamicLayer = { tiles: {} };

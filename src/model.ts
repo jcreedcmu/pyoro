@@ -2,7 +2,7 @@ import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { COMBO_THRESHOLD, editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
 import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext, pointMapEntries, removeDynamicTile } from './layer';
-import { Point, vequal, vmn, vplus } from './point';
+import { Point, vadd, vequal, vmn, vplus } from './point';
 import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Sprite, Tool } from './types';
 import { mapValues, max } from './util';
@@ -50,10 +50,10 @@ function isDeadly(x: Tile): boolean {
   return isSpike(x);
 }
 
-function genImpetus(x: Tile): number {
-  if (isOpen(x)) return 0;
-  if (tileEq(x, { t: 'up_box' })) return FULL_IMPETUS;
-  return 1;
+function genImpetus(x: Tile): Point {
+  if (isOpen(x)) return { x: 0, y: 0 };
+  if (tileEq(x, { t: 'up_box' })) return { x: 0, y: FULL_IMPETUS };
+  return { x: 0, y: 1 };
 }
 
 export type Board = { player: Player, trc: TileResolutionContext };
@@ -330,13 +330,13 @@ export function animateMove(s: GameState, move: Move): Animation[] {
       anims.push(...forceBlock(s, pos, tileOfGameState(s, pos)));
   });
 
-  let impetus = getVerticalImpetus(player);
+  let impetus = player.impetus;
 
   const jumpSucceeded = result.dpos.y < 0;
   if (stableBefore && isJump(move) && jumpSucceeded)
-    impetus = genImpetus(tileBefore) + (s.inventory.teal_fruit ?? 0);
+    impetus = vadd(genImpetus(tileBefore), { x: 0, y: (s.inventory.teal_fruit ?? 0) });
   else if (result.impetus != null)
-    impetus = result.impetus;
+    impetus = { x: 0, y: result.impetus }; // XXX make result impetus a point rather than number also
 
   if (result.dpos == null)
     throw "didn't expect to have a null dpos here";
@@ -358,8 +358,8 @@ export function animateMove(s: GameState, move: Move): Animation[] {
       impetus = genImpetus(suppTileAfter);
     }
     else {
-      if (impetus)
-        impetus--;
+      if (impetus.y != 0)
+        impetus = vadd(impetus, { x: 0, y: -1 });
     }
   }
 
@@ -370,7 +370,7 @@ export function animateMove(s: GameState, move: Move): Animation[] {
     animState = 'player_crouch';
   }
   else {
-    animState = supportedAfter ? 'player' : impetus ? 'player_rise' : 'player_fall';
+    animState = supportedAfter ? 'player' : impetus.y != 0 ? 'player_rise' : 'player_fall';
   }
 
   anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });

@@ -12,7 +12,7 @@ export type Animation =
     t: 'PlayerAnimation',
     pos: Point,
     animState: PlayerSprite,
-    impetus: number,
+    impetus: Point,
     flipState: Facing,
     dead: boolean
   }
@@ -135,7 +135,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
           posOffset: vplus(vscale(s.player.pos, -t), vscale(pos, t)),
           animState: animState,
           flipState: flipState,
-          _impetus: impetus
+          impetus: impetus
         }
         if (t == 1) {
           s.time++;
