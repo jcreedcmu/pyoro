@@ -62,7 +62,7 @@ type Posture = 'stand' | 'attachWall' | 'crouch';
 type Motion = {
   dpos: Point,
   forced?: Point, // optionally force a block in the direction of motion
-  impetus?: number, // optionally set impetus to some value
+  impetus?: Point, // optionally set impetus to some value
   posture?: Posture, // optionally set posture to some value
 };
 
@@ -78,8 +78,8 @@ function rgrabbable(b: Board, x: number, y: number): boolean {
 
 function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
   return ropen(b, 0, 1) ?
-    { dpos: { x: 0, y: 1 }, impetus: 0, posture: 'stand' } :
-    { dpos: { x: 0, y: 0 }, impetus: 0, posture: opts?.preventCrouch ? 'stand' : 'crouch' }
+    { dpos: { x: 0, y: 1 }, impetus: { x: 0, y: 0 }, posture: 'stand' } :
+    { dpos: { x: 0, y: 0 }, impetus: { x: 0, y: 0 }, posture: opts?.preventCrouch ? 'stand' : 'crouch' }
 }
 
 function execute_up(b: Board): Motion {
@@ -104,22 +104,22 @@ function execute_horiz(b: Board, flip: Facing): Motion {
   const dx = flip == 'left' ? -1 : 1;
   const forward_open = ropen(b, dx, 0);
   if (rgrabbable(b, dx, 0)) {
-    return { dpos: { x: 0, y: 0 }, impetus: 1, posture: 'attachWall' };
+    return { dpos: { x: 0, y: 0 }, impetus: { x: 0, y: 1 }, posture: 'attachWall' };
   }
 
   if (getVerticalImpetus(player) != 0 && !ropen(b, 0, 1)) {
     return forward_open
-      ? { dpos: { x: dx, y: 0 }, impetus: 0, posture: 'stand' }
-      : { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, impetus: 0, posture: 'stand' };
+      ? { dpos: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' }
+      : { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' };
   }
   else {
     if (forward_open) {
       return ropen(b, dx, 1)
-        ? { dpos: { x: dx, y: 1 }, impetus: 0, posture: 'stand' }
-        : { dpos: { x: dx, y: 0 }, impetus: 0, posture: 'stand' };
+        ? { dpos: { x: dx, y: 1 }, impetus: { x: 0, y: 0 }, posture: 'stand' }
+        : { dpos: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' };
     }
     else
-      return { dpos: { x: 0, y: 1 }, forced: { x: dx, y: 0 }, impetus: 0, posture: 'stand' }
+      return { dpos: { x: 0, y: 1 }, forced: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' }
   }
 }
 
@@ -336,7 +336,7 @@ export function animateMove(s: GameState, move: Move): Animation[] {
   if (stableBefore && isJump(move) && jumpSucceeded)
     impetus = vadd(genImpetus(tileBefore), { x: 0, y: (s.inventory.teal_fruit ?? 0) });
   else if (result.impetus != null)
-    impetus = { x: 0, y: result.impetus }; // XXX make result impetus a point rather than number also
+    impetus = result.impetus;
 
   if (result.dpos == null)
     throw "didn't expect to have a null dpos here";
