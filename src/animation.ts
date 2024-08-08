@@ -207,6 +207,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       return produce(setCurrentLevel(state, a.newLevel), s => {
         s.player.pos = a.newPosition;
         s.lastSave = a.newPosition;
+        s.player.combo = undefined;
       });
   }
 }
