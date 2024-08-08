@@ -293,20 +293,29 @@ function isBlockForceSuccess(player: Player, forceLocation: Point, forceTile: Ti
 }
 
 // The animations we return here are concurrent
+// FUTURE: Maybe allow a DAG of animations related by causal
+// dependency. tom7 suggested this based on experience with Escape.
 export function animateMove(s: GameState, move: Move): Animation[] {
   const forcedBlocks: Point[] = []
   const anims: Animation[] = [];
 
   const player = s.player;
 
+  // If our move is a manual reset, or a forced reset because we died
+  // on the last move, that should take precedence over other move
+  // logic below.
   if (player.dead || move == 'reset') {
     return [{ t: 'ResetAnimation' }];
   }
 
+  // If our move is to recenter the view on the player's position,
+  // that should take precedence over other move logic below.
   if (move == 'recenter') {
     return [{ t: 'RecenterAnimation' }];
   }
 
+  // If our move results in passage through a door, that should take
+  // precedence over other move logic below.
   const doorPassAnim = getDoorPassAnim(s, move);
   if (doorPassAnim != undefined)
     return doorPassAnim;
