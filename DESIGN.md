@@ -92,6 +92,23 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
   invisible data of what their destination room is, but it only requires
   passing through the door to find out where it goes.
 
+### Animation
+
+- We show animations to transition from one discrete-time game state
+  to the next, but they are just there to make things more
+  understandable to the player. The game is mechanically the same game
+  without animations. The code should be structured to make this
+  separation reasonably clear.
+
+- If a player tries to make a move during the playing of an animation,
+  we should skip to the end of the animation and start the next move.
+  An alternative considered and implemented was buffering moves, but
+  the above approach feels snappier.
+
+- No animations should be playing passively while the player is not
+  inputting moves. I had considered showing conveyor belts animating,
+  but I think I would find it distracting.
+
 ### Player Choices
 
 - The number of per-move player choices available at any given time
