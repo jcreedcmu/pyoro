@@ -49,11 +49,18 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
   long jump perfect --- despite the fact that I suck at
   platformers.
 
-- This is a difficult constraint, because one thing that makes Celeste
-  exciting is the skill gap between planning and execution of a plan.
-  I don't want to make it actually hard to execute a plan, but I do
-  want to cultivate the *illusion* of drama, (tension,
-  time-sensitiveness, the player being in danger) as much as possible.
+  - This is a difficult constraint, because one thing that makes Celeste
+    exciting is the skill gap between planning and execution of a plan.
+    I don't want to make it actually hard to execute a plan, but I do
+    want to cultivate the *illusion* of drama, (tension,
+    time-sensitiveness, the player being in danger) as much as possible.
+
+- Barring discontinuous motion like teleporters, the player should
+  only move one cell per "tick", (allowing diagonals) even when
+  notionally they have high "velocity". This notion of "high velocity"
+  should translate instead to a notion of "collision with high force"
+  which could be advantageous (e.g. to break certain kinds of blocks)
+  or disadvantageous (e.g. leading to fall damage).
 
 ### Puzzles
 
