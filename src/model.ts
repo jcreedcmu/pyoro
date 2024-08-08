@@ -50,9 +50,16 @@ function isDeadly(x: Tile): boolean {
   return isSpike(x);
 }
 
-function genImpetus(x: Tile): Point {
-  if (isOpen(x)) return { x: 0, y: 0 };
-  if (tileEq(x, { t: 'up_box' })) return { x: 0, y: FULL_IMPETUS };
+/**
+ * @param tile Which tile
+ * @returns How much impetus jumping from that tile yields
+ *
+ * **XXX**: We probably will need to generalize this for trampolines,
+     to also take impetus as an input.
+ */
+export function genImpetus(tile: Tile): Point {
+  if (isOpen(tile)) return { x: 0, y: 0 };
+  if (tileEq(tile, { t: 'up_box' })) return { x: 0, y: FULL_IMPETUS };
   return { x: 0, y: 1 };
 }
 
@@ -327,10 +334,14 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   if (doorPassAnim != undefined)
     return doorPassAnim;
 
+  /* The position below our feet before movement */
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
+  /* The tile in the position below our feet before movement */
   const tileBefore = tileOfGameState(state, belowBefore);
+  /* Whether we were supported during the previous step */
   const supportedBefore = !isOpen(tileBefore);
   if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
+  /* Whether we were in a "stable" state during the previous step */
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
   const result = get_motion(boardOfState(state), move);
