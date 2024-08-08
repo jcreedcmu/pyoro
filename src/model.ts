@@ -292,14 +292,21 @@ function isBlockForceSuccess(player: Player, forceLocation: Point, forceTile: Ti
   return true;
 }
 
-// The animations we return here are concurrent
-// FUTURE: Maybe allow a DAG of animations related by causal
-// dependency. tom7 suggested this based on experience with Escape.
-export function animateMove(s: GameState, move: Move): Animation[] {
+/**
+ * This is the heart of computing what a move does.
+ * @param state The state before the move
+ * @param move The player's move
+ * @returns A list of {@link Animation}s that result from the move.
+ *
+ * The animations we return here are concurrent
+ * FUTURE: Maybe allow a DAG of animations related by causal
+ * dependency. tom7 suggested this based on experience with Escape.
+ */
+export function animateMove(state: GameState, move: Move): Animation[] {
   const forcedBlocks: Point[] = []
   const anims: Animation[] = [];
 
-  const player = s.player;
+  const player = state.player;
 
   // If our move is a manual reset, or a forced reset because we died
   // on the last move, that should take precedence over other move
@@ -316,17 +323,17 @@ export function animateMove(s: GameState, move: Move): Animation[] {
 
   // If our move results in passage through a door, that should take
   // precedence over other move logic below.
-  const doorPassAnim = getDoorPassAnim(s, move);
+  const doorPassAnim = getDoorPassAnim(state, move);
   if (doorPassAnim != undefined)
     return doorPassAnim;
 
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
-  const tileBefore = tileOfGameState(s, belowBefore);
+  const tileBefore = tileOfGameState(state, belowBefore);
   const supportedBefore = !isOpen(tileBefore);
   if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
-  const result = get_motion(boardOfState(s), move);
+  const result = get_motion(boardOfState(state), move);
   const flipState = get_flip_state(move) || player.flipState;
 
   if (result.forced != null) {
@@ -335,15 +342,15 @@ export function animateMove(s: GameState, move: Move): Animation[] {
 
   forcedBlocks.forEach(fb => {
     const pos = vplus(player.pos, fb);
-    if (isBlockForceSuccess(player, fb, tileOfGameState(s, pos)))
-      anims.push(...forceBlock(s, pos, tileOfGameState(s, pos)));
+    if (isBlockForceSuccess(player, fb, tileOfGameState(state, pos)))
+      anims.push(...forceBlock(state, pos, tileOfGameState(state, pos)));
   });
 
   let impetus = player.impetus;
 
   const jumpSucceeded = result.dpos.y < 0;
   if (stableBefore && isJump(move) && jumpSucceeded)
-    impetus = vadd(genImpetus(tileBefore), { x: 0, y: (s.inventory.teal_fruit ?? 0) });
+    impetus = vadd(genImpetus(tileBefore), { x: 0, y: (state.inventory.teal_fruit ?? 0) });
   else if (result.impetus != null)
     impetus = result.impetus;
 
@@ -355,9 +362,9 @@ export function animateMove(s: GameState, move: Move): Animation[] {
 
   // I'm not sure how generally this will work, but it works for
   // predicting the next state of time-oscillating blocks.
-  const nextTimeS = produce(s, s => { s.time++ });
+  const nextTimeS = produce(state, s => { s.time++ });
 
-  const tileAfter = tileOfGameState(s, nextPos);
+  const tileAfter = tileOfGameState(state, nextPos);
   const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
   const supportedAfter = !isOpen(suppTileAfter);
   const dead = isDeadly(tileAfter);

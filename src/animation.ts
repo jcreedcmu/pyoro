@@ -8,9 +8,9 @@ import { GameState, IfaceState, init_state, State } from './state';
 import { Bus, Facing, Item, PlayerSprite } from './types';
 
 /**
- * The type of Animation is: the type of all changes to the game state
- * that result from player actions, together with enough information
- * that we can render them as animations.
+ * An `Animation` is the type of all changes to the game state that
+ * result from player actions, together with enough information that
+ * we can render them as animations.
  */
 export type Animation =
   {
@@ -34,21 +34,24 @@ export type Animation =
   ;
 
 
-// Here's the intended invariant. Suppose s is the current state. an
-// Animator has a total of dur+1 frames, 0, 1, 2, … n. To get the
-// state at frame i, we call anim(i, s) --- all based from the same
-// initial state, not folded together. If we want to get the effect of
-// the move overall, without all the intermediate animations, we can
-// simply call anim(dur, s).
+/**
+ * An `Animator` is a list of animations (which are meant to run concurrently)
+ * together with the duration that the whole group takes.
+ * **WEIRD**: Why store this duration as a separate value? Isn't it just
+ * the max of the individual animation's durations?
+ */
 export type Animator = {
   dur: number, // duration in frames
 
   anims: Animation[],
 }
 
+/** A convenience type for two perspectives on time during an animation. */
 export type Time = {
-  t: number,  // the fraction of the animation's duration that has been completed.
-  fr: number, // the number of frames since the animation has started
+  /** The fraction of the animation's duration that has been completed, in [0,1] */
+  t: number,
+  /** The number of frames since the animation has started. */
+  fr: number,
 };
 
 export function centeredViewPort(pos: Point): Point {
