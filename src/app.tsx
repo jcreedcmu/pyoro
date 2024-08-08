@@ -115,7 +115,6 @@ function renderLevelPicker(state: State, dispatch: Dispatch): JSX.Element | unde
         dispatch({ t: 'setCurrentLevel', name: e.currentTarget.value });
       }
     }} ></input>
-    <em>{JSON.stringify(state.iface.bufferedMoves)}</em>
   </div>;
 }
 

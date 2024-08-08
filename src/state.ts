@@ -33,7 +33,6 @@ export type MouseState =
 
 export type IfaceState = {
   keysDown: Record<string, boolean>,
-  bufferedMoves: Move[],
   editTileIx: number,
   toolState: ToolState,
   editTileRotation: number,
@@ -128,7 +127,6 @@ export const init_state: State = {
     }
   },
   iface: {
-    bufferedMoves: [],
     keysDown: {},
     viewPort: { x: -13, y: -9 },
     blackout: 0,

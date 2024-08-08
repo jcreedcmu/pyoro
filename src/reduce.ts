@@ -11,6 +11,7 @@ import { ButtonedTileFields, DoorTileFields, State, TimedTileFields } from './st
 import * as testTools from './test-tools';
 import { DynamicTile, Move } from './types';
 import { wpoint_of_vd } from './view';
+import { Animation } from './animation';
 
 export type Command =
   | 'prevEditTile'
@@ -58,21 +59,28 @@ export function reduceCommand(s: State, cmd: Command): State {
 }
 
 function reduceMove(s: State, move: Move): State {
-  if (s.anim == null) {
-    return produce(s, s => {
-      s.anim = {
-        frame: 1,
-        animator: animator_for_move(s, move)
-      };
-      s.effects.push({ t: 'scheduleFrame' });
-    });
+  let anim = s.anim;
+  if (anim != null) {
+    // resolve existing animation first
+    s = resolveAllAnimations(s, anim.animator.anims);
   }
-  else {
-    return produce(s, s => {
-      s.iface.bufferedMoves.push(move);
-      s.effects.push({ t: 'scheduleFrame' });
-    });
-  }
+
+  return produce(s, s => {
+    s.anim = {
+      frame: 1,
+      animator: animator_for_move(s, move)
+    };
+    s.effects.push({ t: 'scheduleFrame' });
+  });
+}
+
+function resolveAllAnimations(s: State, anims: Animation[]): State {
+  return {
+    iface: renderIfaceAnims(anims, 'complete', s),
+    game: renderGameAnims(anims, 'complete', s.game),
+    anim: null,
+    effects: [],
+  };
 }
 
 export function reduce(s: State, a: Action): State {
@@ -96,30 +104,11 @@ export function reduce(s: State, a: Action): State {
     case 'nextFrame': {
       const ams = s.anim;
       if (ams == null) {
-        if (s.iface.bufferedMoves.length == 0) {
-          console.error('Tried to advance frame without active animation or buffered moves');
-          return s;
-        }
-        else {
-          const move = s.iface.bufferedMoves[0];
-          const stateAfterShift = produce(s, s => { s.iface.bufferedMoves.shift(); });
-          const resultState = reduceMove(stateAfterShift, move);
-
-          // If this is the only buffered move, no need to schedule more frames
-          if (s.iface.bufferedMoves.length <= 1)
-            return resultState;
-          // Otherwise, schedule more
-          return produce(resultState, s => { s.effects.push({ t: 'scheduleFrame' }) });
-        }
+        console.error('Tried to advance frame without active animation');
+        return s;
       }
       if (ams.animator.dur == ams.frame + 1) {
-        const nextState = {
-          iface: renderIfaceAnims(ams.animator.anims, 'complete', s),
-          game: renderGameAnims(ams.animator.anims, 'complete', s.game),
-          anim: null,
-          effects: [],
-        }
-        return nextState;
+        return resolveAllAnimations(s, ams.animator.anims);
       }
       else {
         return produce(s, s => {

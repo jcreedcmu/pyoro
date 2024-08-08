@@ -7,6 +7,11 @@ import { int, lerp, Point, vm2, vplus, vscale, vsub } from './point';
 import { GameState, IfaceState, init_state, State } from './state';
 import { Bus, Facing, Item, PlayerSprite } from './types';
 
+/**
+ * The type of Animation is: the type of all changes to the game state
+ * that result from player actions, together with enough information
+ * that we can render them as animations.
+ */
 export type Animation =
   {
     t: 'PlayerAnimation',
