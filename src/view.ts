@@ -86,7 +86,7 @@ function drawScaled(fv: FView, state: State): void {
     debugLines.push(`time: ${state.game.time}`);
   }
   if (DEBUG.impetus) {
-    debugLines.push(`impetus: ${state.game.player.impetus}`);
+    debugLines.push(`impetus: ${state.game.player._impetus}`);
   }
   if (DEBUG.combo) {
     debugLines.push(`combo: ${stringOfCombo(state.game.player.combo)}`);

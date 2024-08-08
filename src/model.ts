@@ -8,6 +8,7 @@ import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Sprite, Tool } from 
 import { mapValues, max } from './util';
 import { WidgetPoint } from './view';
 import { getInitOverlay, getOverlay } from './game-state-access';
+import { getVerticalImpetus } from './player-accessors';
 
 function getItem(x: Tile): Item | undefined {
   if (x.t == 'item')
@@ -83,7 +84,7 @@ function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
 
 function execute_up(b: Board): Motion {
   var { player } = b;
-  if (player.impetus) {
+  if (getVerticalImpetus(player) != 0) {
     if (ropen(b, 0, -1)) {
       return { dpos: { x: 0, y: -1 }, posture: 'stand' }
     }
@@ -106,7 +107,7 @@ function execute_horiz(b: Board, flip: Facing): Motion {
     return { dpos: { x: 0, y: 0 }, impetus: 1, posture: 'attachWall' };
   }
 
-  if (player.impetus && !ropen(b, 0, 1)) {
+  if (getVerticalImpetus(player) != 0 && !ropen(b, 0, 1)) {
     return forward_open
       ? { dpos: { x: dx, y: 0 }, impetus: 0, posture: 'stand' }
       : { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, impetus: 0, posture: 'stand' };
@@ -126,7 +127,7 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
   const { player } = b;
   const dx = flip == 'left' ? -1 : 1;
   const forward_open = ropen(b, dx, 0);
-  if (!player.impetus)
+  if (getVerticalImpetus(player) == 0)
     return execute_horiz(b, flip);
   if (!ropen(b, 0, -1)) {
     const rv = execute_horiz(b, flip);
@@ -329,7 +330,7 @@ export function animateMove(s: GameState, move: Move): Animation[] {
       anims.push(...forceBlock(s, pos, tileOfGameState(s, pos)));
   });
 
-  let impetus = player.impetus;
+  let impetus = getVerticalImpetus(player);
 
   const jumpSucceeded = result.dpos.y < 0;
   if (stableBefore && isJump(move) && jumpSucceeded)

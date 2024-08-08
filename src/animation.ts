@@ -135,7 +135,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
           posOffset: vplus(vscale(s.player.pos, -t), vscale(pos, t)),
           animState: animState,
           flipState: flipState,
-          impetus: impetus
+          _impetus: impetus
         }
         if (t == 1) {
           s.time++;

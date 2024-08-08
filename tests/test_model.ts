@@ -5,6 +5,7 @@ import { _putTileInGameStateInitOverlay, animateMove, getOverlayForSave, renderG
 import { motionTestPasses, motionTestSuite } from '../src/test-motion';
 import { emptyOverlay, GameState, init_player } from '../src/state';
 import { Tile, Move, DynamicTile } from '../src/types';
+import { getVerticalImpetus } from '../src/player-accessors';
 
 function testState(layerName: string): GameState {
   return {
@@ -44,7 +45,7 @@ describe('State', () => {
       expect(player.animState).toBe("player_rise");
       expect(player.flipState).toBe('right');
       expect(player.pos).toEqual({ x: 0, y: -1 });
-      expect(player.impetus).toBe(FULL_IMPETUS - 1);
+      expect(getVerticalImpetus(player)).toBe(FULL_IMPETUS - 1);
     }
     m = executeMove(m, 'up');
 
@@ -53,7 +54,7 @@ describe('State', () => {
       expect(player.animState).toBe("player_rise");
       expect(player.flipState).toBe('right');
       expect(player.pos).toEqual({ x: 0, y: -2 });
-      expect(player.impetus).toBe(FULL_IMPETUS - 2);
+      expect(getVerticalImpetus(player)).toBe(FULL_IMPETUS - 2);
     }
     m = executeMove(m, 'up-left');
 
@@ -62,7 +63,7 @@ describe('State', () => {
       expect(player.animState).toBe("player_fall");
       expect(player.flipState).toBe('left');
       expect(player.pos).toEqual({ x: 0, y: -1 });
-      expect(player.impetus).toBe(0);
+      expect(getVerticalImpetus(player)).toBe(0);
     }
   });
 
@@ -74,7 +75,7 @@ describe('State', () => {
     expect(player.animState).toBe("player_fall");
     expect(player.flipState).toBe('left');
     expect(player.pos).toEqual({ x: -1, y: 0 });
-    expect(player.impetus).toBe(0);
+    expect(getVerticalImpetus(player)).toBe(0);
 
   });
 

@@ -3,6 +3,7 @@ import { initOverlay } from './initial_overlay';
 import { animateMove, renderGameAnims } from './model';
 import { Point, vequal } from './point';
 import { emptyOverlay, GameState, init_player } from './state';
+import { getVerticalImpetus } from './player-accessors';
 
 export type MotionTestAssertion =
   | { t: 'position', pos: Point }
@@ -52,7 +53,7 @@ function motionTestAssertion(state: GameState, assertion: MotionTestAssertion): 
     case 'position': return vequal(player.pos, assertion.pos);
     case 'flipState': return player.flipState == assertion.facing;
     case 'animState': return player.animState == assertion.sprite;
-    case 'impetus': return player.impetus == assertion.impetus;
+    case 'impetus': return getVerticalImpetus(player) == assertion.impetus;
   }
 }
 
