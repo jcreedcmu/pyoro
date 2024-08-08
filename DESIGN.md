@@ -25,6 +25,16 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 
 ## Goals
 
+### Narrative Structure
+
+- The world is broken up into "rooms".
+
+- The game should feel somewhat "open-world". It may be linear-ish in
+  parts, but there should be some branching freely chosen by the
+  player.
+
+- The game is won by gaining access to the final room.
+
 ### Physics/"Feel"
 
 - There is a notion of gravity, and therefore a notion of "up". It
@@ -84,18 +94,43 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 
 ### Player Choices
 
-- The number of player choices available at any given time should be
-  fairly small, probably fewer than 10.
+- The number of per-move player choices available at any given time
+  should be fairly small, probably fewer than 10.
 
 - Player choices should for the most part, be limited to choosing a
   direction of motion (or, perhaps, standing still and waiting) This
   could be augmented with a small set of "modifiers". For example, a
   "dash" move-right might be distinct from a normal move-right.
 
-### Rooms
+- OPEN: Should single-move undo be supported?
+    - Argument for supporting: most puzzle games do
+    - Argument for not supporting: might enhance "drama" if mistakes are a little consequential.
 
-- The world should be broken up into "rooms", and for the most part
-  any room's state is entirely reset if you leave and come back.
+### Intra-Room Geometry
+
+- Each room is of a finite size.
+
+- The exterior of a room should feel more like "impassable blocks"
+  rather than "empty space". This is to support the well-definedness
+  of mechanics that involve an object moving as many times as possible
+  until a collision occurs.
+
+### Inter-Room Geometry
+
+- OPEN: Should room edges cause transitions?
+
+- It's okay for room navigation to be a *little* confusing, but shouldn't
+  be completely baffling. It's okay if the player needs to keep a map.
+  The geometry of IoSaS's air island was a bit more disjointed than I'd like.
+
+- Some breadcrumbs should be provided to help mapping. Perhaps:
+  - every room has a unique name.
+  - doors tend to be close to the cardinal directions.
+  - graphics suggests coherent "biomes" which help memorability.
+
+### Room State
+
+- As much as possible, a room's state is entirely reset if you leave and come back.
 
 - Exceptions to "a room's state is entirely reset" are intentionally
   limited, but they are the foundation of all progress in the game.
@@ -123,9 +158,3 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 ## Non-Goals
 
 - At least for now, I'm not planning on managing a repository of user-designed levels.
-
-## Open Questions
-
-- Should single-move undo be supported?
-    - Argument for supporting: most puzzle games do
-    - Argument for not supporting: might enhance "drama" if mistakes are a little consequential.
