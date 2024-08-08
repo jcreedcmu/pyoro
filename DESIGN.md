@@ -63,6 +63,25 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 
 - Mechanisms are taught ideally wordlessly, by demonstration.
 
+### Legibility
+
+- Invisible state is not entirely forbidden, but as much as possible,
+  prefer mechanisms where all the information a player needs to
+  understand is on the screen.
+
+- For example, we prefer alternative 2 to alternative 1:
+  - alternative 1 is a button could come equipped with data of a destination
+    tile that it affects, or tiles could conversely come equipped with
+    data of which button controls them
+  - alternative 2 is a series of buttons of different colors, which affect
+    the solidity of all tiles of the same color (which are still visible in
+    some form, even when not solid)
+
+- Where invisible data remains, try to minimize the amount and complexity
+  of experimentation needed to reveal the data. For example, doors have
+  invisible data of what their destination room is, but it only requires
+  passing through the door to find out where it goes.
+
 ### Player Choices
 
 - The number of player choices available at any given time should be
