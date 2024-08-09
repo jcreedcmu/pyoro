@@ -1864,7 +1864,7 @@ export const allLevels: Record<string, LevelData> = {
     "boundRect": {
       "min": {
         "x": -11,
-        "y": -3
+        "y": -4
       },
       "max": {
         "x": 7,
