@@ -33,9 +33,9 @@ to build the js bundle and in another
 ```shell
 make
 ```
-to start a local server on port 3000.
+to start a local server on port 8000.
 
-Browse to http://localhost:3000 to play the game.
+Browse to http://localhost:8000 to play the game.
 
 Other useful targets in the makefile are
 ```shell

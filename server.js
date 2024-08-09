@@ -24,7 +24,7 @@ export const allLevels: Record<string, LevelData> = ${json};
   res.send(JSON.stringify('ok'));
 });
 
-const PORT = 3000;
+const PORT = 8000;
 server.listen(PORT, 'localhost', () => {
   console.log(`listening on port ${PORT}...`);
 });
