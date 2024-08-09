@@ -43,7 +43,7 @@ but exceptions probably should be justified by some other consideration.
   carrot that is offered to players is gaining access to places. It is desirable
   to tease the existence of places before they're accessible.
 
-### Physics/"Feel"
+### General Physics
 
 - There is a notion of gravity, and therefore a notion of "up". It
   should be challenging --- and therefore rewarding --- to get to
@@ -72,6 +72,69 @@ but exceptions probably should be justified by some other consideration.
 
 - Physics should be invariant to left-right flipping, but is very much not
   required to be invariant to up-down flipping, because of gravity.
+
+### Low-Level Physics
+
+- All entities, player and otherwise, should MOSTLY have the same
+  physics interactions with the rest of the world.
+
+- Each entity has in its state a **impetus**, an integer valued vector
+  relative to that entity. This isn't really a velocity vector, but it
+  is somewhat like one.
+
+#### How the Physics Update Works
+
+- For each entity, the tick computation
+  - takes as input the entity's **impetus**
+  - takes as input where the entity is trying to move, if anywhere; call
+    this its **motive**.
+  - takes other data pertaining to the local neighborhood, e.g. whether
+    the entity is currently **supported** beneath by a solid block.
+  - returns a **destination**, a place where it can move
+    if no other entities tried to move there.
+  - returns what the entity's internal state is in the next
+    step, including impetus.
+  - returns some information about which tiles the entity's motion
+    applies "forces" to. In MOST situations this should be at most one
+    tile.
+
+- After all entities have been moved to their destination, resolve
+  collisions. Some types of entities might have precedence over
+  another. "Bouncing" entities is not allowed at this stage, only
+  entity destruction. Mutual destruction is always an option if there
+  are equal-precedence entities colliding.
+
+#### Some Constraints on Tick Update
+
+The tick computation may have more internal structure, but the below
+statements are about what the result is at the end.
+
+- In the absence of any barriers, when an entity wants to move up,
+  laterally, or up-diagonally from a normal supported state, with zero
+  impetus, its destination coincides with its motive, with a
+  resultant zero impetus.
+
+- In the absence of any barriers, when an entity wants to move from a
+  unsupported state, with zero horizontal impetus, its destination coincides
+  horizontally with its motive, with a resultant zero horizontal impetus.
+  - Its destination moves up if its prior vertical impetus was up
+  - Its destination moves down if its prior vertical impetus was down or zero
+
+- In order to resolve barriers, near the end of the tick update, we
+  try the following destinations in order, looking for the first "clear" one:
+  - the original motion
+  - the original motion with the vertical component of motion and impetus zeroed
+  - the original motion with the horizontal component of motion and impetus zeroed
+
+- The original motion is not considered "clear" unless at least one of
+  the projected motions is clear, i.e. we can't slip diagonally
+  through cracks.
+
+- OPEN: Do I want to say "The original motion is not considered
+  "clear" unless the vertical motion is clear"?
+
+- As a corollary to the above points, a player can walking continuously
+  across a floor with at most one-tile gaps, with a constant impetus of (0,0).
 
 ### Puzzles
 
