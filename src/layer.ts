@@ -1,5 +1,5 @@
 import { Point, vequal, vsub } from './point';
-import { Bus, Dict, DynamicTile, Tile } from './types';
+import { Brect, Bus, Dict, DynamicTile, Tile } from './types';
 import { mapValues } from './util';
 
 export type PointMap<T> = { tiles: Dict<T> };
@@ -28,6 +28,7 @@ export type TileResolutionContext = {
   playerPrevPos: Point,
   time: number,
   layerStack: LayerStack,
+  boundRect: Brect,
 }
 
 function busActive(trc: TileResolutionContext, bus: Bus): boolean {

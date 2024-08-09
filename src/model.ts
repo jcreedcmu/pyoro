@@ -7,7 +7,7 @@ import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolStat
 import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Sprite, Tool } from './types';
 import { boundBrect, mapValues, max } from './util';
 import { WidgetPoint } from './view';
-import { getInitOverlay, getOverlay } from './game-state-access';
+import { getBoundRect, getInitOverlay, getOverlay } from './game-state-access';
 import { getVerticalImpetus } from './player-accessors';
 import { LevelData } from './level';
 
@@ -170,6 +170,7 @@ function boardOfState(s: GameState): Board {
       time: s.time,
       playerPos: s.player.pos,
       playerPrevPos: s.player.prevPos,
+      boundRect: getBoundRect(s),
     }
   };
 }
