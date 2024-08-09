@@ -7,7 +7,7 @@ import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolStat
 import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Sprite, Tool } from './types';
 import { boundBrect, mapValues, max } from './util';
 import { WidgetPoint } from './view';
-import { getBoundRect, getInitOverlay, getOverlay } from './game-state-access';
+import { expandBoundRect, getBoundRect, getInitOverlay, getOverlay } from './game-state-access';
 import { getVerticalImpetus } from './player-accessors';
 import { LevelData } from './level';
 
@@ -224,6 +224,7 @@ export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: Dynami
   return produce(s, s => {
     putDynamicTile(getInitOverlay(s), p, t);
     removeDynamicTile(getOverlay(s), p);
+    expandBoundRect(s, p);
   });
 }
 

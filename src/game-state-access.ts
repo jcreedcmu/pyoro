@@ -3,6 +3,8 @@ import { DynamicLayer } from './layer';
 import { GameState, State } from './state';
 import { emptyLevel } from './level';
 import { Brect } from './types';
+import { boundBrect, pointInBrect } from './util';
+import { Point } from './point';
 
 export function getBoundRect(state: GameState): Brect {
   return state.levels[state.currentLevel].boundRect;
@@ -27,4 +29,15 @@ export function setCurrentLevel(state: GameState, levelName: string): GameState 
     }
     s.currentLevel = levelName;
   });
+}
+
+/**
+ * Imperatively update the bounding rect of the current level to include p.
+ * This is an idempotent operation.
+ */
+export function expandBoundRect(state: GameState, p: Point): void {
+  const brect = getBoundRect(state);
+  if (!pointInBrect(p, brect)) {
+    state.levels[state.currentLevel].boundRect = boundBrect([brect.min, brect.max, p]);
+  }
 }

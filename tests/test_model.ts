@@ -102,13 +102,18 @@ describe('getAllLevels', () => {
     const expected1: Record<string, LevelData> = {
       start: {
         initOverlay: { tiles: {} },
-        boundRect: { min: { x: 0, y: 1 }, max: { x: 0, y: 1 } }
+        boundRect: { min: { x: -1, y: -1 }, max: { x: 1, y: 2 } }
       }
     };
     expect(getAllLevels(s)).toEqual(expected1);
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfTile(boxTile())); // add some box
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfTile(emptyTile())); // add another spurious empty
-    const expected2: Record<string, LevelData> = { start: { initOverlay: { tiles: { '0,2': dynamicOfTile(boxTile()) } }, boundRect: { min: { x: 0, y: 1 }, max: { x: 0, y: 1 } } } };
+    const expected2: Record<string, LevelData> = {
+      start: {
+        initOverlay: { tiles: { '0,2': dynamicOfTile(boxTile()) } },
+        boundRect: { min: { x: -1, y: -1 }, max: { x: 1, y: 2 } },
+      }
+    };
     expect(getAllLevels(s)).toEqual(expected2);
   });
 });
