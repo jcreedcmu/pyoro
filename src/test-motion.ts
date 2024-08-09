@@ -1,9 +1,10 @@
 import { Facing, Move, PlayerSprite } from './types';
-import { initOverlay } from './initial_overlay';
 import { animateMove, renderGameAnims } from './model';
 import { Point, vequal } from './point';
-import { emptyOverlay, GameState, init_player } from './state';
+import { GameState, init_player } from './state';
 import { getVerticalImpetus } from './player-accessors';
+import { mkLevel } from './level-data';
+import { allLevels } from './levels';
 
 export type MotionTestAssertion =
   | { t: 'position', pos: Point }
@@ -22,14 +23,10 @@ export type MotionTest = {
   steps: MotionTestStep[],
 }
 
-export function testInitialGameState(layerName: string): GameState {
+export function testInitialGameState(levelName: string): GameState {
   return {
     levels: {
-      start: {
-        initOverlay: initOverlay[layerName],
-        overlay: emptyOverlay,
-        boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } }, // XXX rects should be in initOverlay
-      }
+      start: mkLevel(allLevels[levelName]),
     },
     currentLevel: 'start',
     inventory: { teal_fruit: undefined, },

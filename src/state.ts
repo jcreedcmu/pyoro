@@ -1,8 +1,9 @@
 import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { Effect } from './effect';
-import { initOverlay } from './initial_overlay';
 import { DynamicLayer } from './layer';
+import { mkLevel } from './level-data';
+import { allLevels } from './levels';
 import { Point } from './point';
 import { Brect, Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Rect } from './types';
 import { mapValues } from './util';
@@ -78,7 +79,9 @@ export const init_player: Player = {
   impetus: { x: 0, y: FULL_IMPETUS }, // XXX this FULL_IMPETUS seems very wrong
 };
 
-export const emptyOverlay: DynamicLayer = { tiles: {} };
+export function getEmptyOverlay(): DynamicLayer {
+  return { tiles: {} };
+}
 
 
 // In the interface, not in the model
@@ -110,10 +113,7 @@ export const init_state: State = {
   effects: [],
   game: {
     player: init_player,
-    levels: mapValues(initOverlay, initOverlay => ({
-      initOverlay, overlay: emptyOverlay,
-      boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } }, // XXX rects should be in initOverlay
-    })),
+    levels: mapValues(allLevels, mkLevel),
     currentLevel: 'start',
     inventory: {
     },

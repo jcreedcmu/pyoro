@@ -1,21 +1,17 @@
 import { FULL_IMPETUS } from '../src/constants';
-import { initOverlay } from '../src/initial_overlay';
 import { boxTile, dynamicOfTile, emptyTile, mapPointMap, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMove, getAllLevels, renderGameAnims, tileOfGameState } from '../src/model';
 import { motionTestPasses, motionTestSuite } from '../src/test-motion';
-import { emptyOverlay, GameState, init_player } from '../src/state';
+import { GameState, init_player } from '../src/state';
 import { Tile, Move, DynamicTile } from '../src/types';
 import { getVerticalImpetus } from '../src/player-accessors';
-import { LevelData } from '../src/level-data';
+import { LevelData, mkLevel } from '../src/level-data';
+import { allLevels } from '../src/levels';
 
-function testState(layerName: string): GameState {
+function testState(levelName: string): GameState {
   return {
     levels: {
-      start: {
-        initOverlay: initOverlay[layerName],
-        overlay: emptyOverlay,
-        boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } }, // XXX rects should be in initOverlay
-      }
+      start: mkLevel(allLevels[levelName]),
     },
     currentLevel: 'start',
     inventory: { teal_fruit: undefined, },

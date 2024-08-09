@@ -1,6 +1,7 @@
 import { produce } from 'immer';
 import { DynamicLayer } from './layer';
-import { emptyOverlay, GameState, State } from './state';
+import { GameState, State } from './state';
+import { emptyLevel } from './level-data';
 
 export function getInitOverlay(state: GameState): DynamicLayer {
   return state.levels[state.currentLevel].initOverlay;
@@ -17,11 +18,7 @@ export function setOverlay(state: GameState, overlay: DynamicLayer): GameState {
 export function setCurrentLevel(state: GameState, levelName: string): GameState {
   return produce(state, s => {
     if (state.levels[levelName] == undefined) {
-      s.levels[levelName] = {
-        initOverlay: emptyOverlay,
-        overlay: emptyOverlay,
-        boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } }, // XXX rects should be in initOverlay
-      };
+      s.levels[levelName] = emptyLevel();
     }
     s.currentLevel = levelName;
   });
