@@ -28,6 +28,7 @@ export function testInitialGameState(layerName: string): GameState {
       start: {
         initOverlay: initOverlay[layerName],
         overlay: emptyOverlay,
+        boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } }, // XXX rects should be in initOverlay
       }
     },
     currentLevel: 'start',

@@ -4,7 +4,7 @@ import { Effect } from './effect';
 import { initOverlay } from './initial_overlay';
 import { DynamicLayer } from './layer';
 import { Point } from './point';
-import { Bus, DynamicTile, Facing, Item, Move, PlayerSprite } from './types';
+import { Brect, Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Rect } from './types';
 import { mapValues } from './util';
 import { ViewData } from './view';
 
@@ -47,6 +47,7 @@ export type Inventory = Partial<Record<Item, number>>;
 export type Level = {
   initOverlay: DynamicLayer,
   overlay: DynamicLayer,
+  boundRect: Brect,
 }
 
 // XXX may want to move other stuff into level state
@@ -105,16 +106,14 @@ export type ToolState =
   | { t: 'test_tool', testToolState: TestToolState }
   ;
 
-export const init_level: Level = {
-  initOverlay: initOverlay.start,
-  overlay: emptyOverlay,
-};
-
 export const init_state: State = {
   effects: [],
   game: {
     player: init_player,
-    levels: mapValues(initOverlay, initOverlay => ({ initOverlay, overlay: emptyOverlay })),
+    levels: mapValues(initOverlay, initOverlay => ({
+      initOverlay, overlay: emptyOverlay,
+      boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } }, // XXX rects should be in initOverlay
+    })),
     currentLevel: 'start',
     inventory: {
     },
