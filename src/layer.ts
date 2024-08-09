@@ -1,6 +1,6 @@
 import { Point, vequal, vsub } from './point';
 import { Brect, Bus, Dict, DynamicTile, Tile } from './types';
-import { mapValues } from './util';
+import { mapValues, pointInBrect } from './util';
 
 export type PointMap<T> = { tiles: Dict<T> };
 
@@ -125,6 +125,9 @@ export function removeDynamicTile(l: DynamicLayer, p: Point): void {
 }
 
 export function tileOfStack(ls: LayerStack, p: Point, trc: TileResolutionContext, viewIntent?: boolean): Tile {
+  if (!pointInBrect(p, trc.boundRect)) {
+    return { t: 'box' }
+  }
   const ct = dynamicTileOfStack(ls, p);
   return resolveDynamicTile(ct, p, trc, viewIntent);
 }
