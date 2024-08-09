@@ -10,6 +10,7 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 
 - [Celeste](https://store.steampowered.com/app/504230/Celeste/)
 - [Leap Year](https://store.steampowered.com/app/2951770/Leap_Year/)
+- [Spelunky](https://store.steampowered.com/app/239350/Spelunky/)
 - Classic platformers like Mario, Sonic, etc.
 
 ### Puzzles
@@ -150,7 +151,7 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 - Some breadcrumbs should be provided to help mapping. Perhaps:
   - every room has a unique name.
   - doors tend to be close to the cardinal directions.
-  - graphics suggests coherent "biomes" which help memorability.
+  - graphics suggest coherent "biomes" which help memorability.
 
 ### Room State
 
