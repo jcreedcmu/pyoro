@@ -2,11 +2,8 @@ import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { Effect } from './effect';
 import { DynamicLayer } from './layer';
-import { mkLevel } from './level-data';
-import { allLevels } from './levels';
 import { Point } from './point';
 import { Brect, Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Rect } from './types';
-import { mapValues } from './util';
 import { ViewData } from './view';
 
 export type Combo = undefined | { t: 'combo', dir: Point, rep: number };
@@ -108,32 +105,3 @@ export type ToolState =
   | { t: 'modify_tool', modifyCell: Point | null, panelState: ModifyPanelState }
   | { t: 'test_tool', testToolState: TestToolState }
   ;
-
-export const init_state: State = {
-  effects: [],
-  game: {
-    player: init_player,
-    levels: mapValues(allLevels, mkLevel),
-    currentLevel: 'start',
-    inventory: {
-    },
-    lastSave: { x: 0, y: 0 },
-    time: 0,
-    busState: {
-      red: false,
-      green: false,
-      blue: false,
-    }
-  },
-  iface: {
-    keysDown: {},
-    viewPort: { x: -13, y: -9 },
-    blackout: 0,
-    editTileIx: 0,
-    toolState: { t: 'pencil_tool' },
-    editTileRotation: 0,
-    mouse: { t: 'up' },
-    vd: null,
-  },
-  anim: null,
-};

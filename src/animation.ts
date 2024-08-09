@@ -4,7 +4,8 @@ import { getOverlay, setCurrentLevel, setOverlay } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { computeCombo, tileOfGameState } from './model';
 import { int, lerp, Point, vm2, vplus, vscale, vsub } from './point';
-import { GameState, IfaceState, init_state, State } from './state';
+import { GameState, IfaceState, State } from './state';
+import { init_state } from './init-state';
 import { Bus, Facing, Item, PlayerSprite } from './types';
 
 /**
