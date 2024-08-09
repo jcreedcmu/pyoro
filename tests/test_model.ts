@@ -103,11 +103,16 @@ describe('getAllLevels', () => {
   it('should filter out empties', () => {
     let s = testState('_test1');
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfTile(emptyTile())); // delete the existing box
-    const expected1: Record<string, LevelData> = { start: { initOverlay: { tiles: {} }, boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } } } };
+    const expected1: Record<string, LevelData> = {
+      start: {
+        initOverlay: { tiles: {} },
+        boundRect: { min: { x: Infinity, y: Infinity }, max: { x: -Infinity, y: -Infinity } }
+      }
+    };
     expect(getAllLevels(s)).toEqual(expected1);
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfTile(boxTile())); // add some box
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfTile(emptyTile())); // add another spurious empty
-    const expected2: Record<string, LevelData> = { start: { initOverlay: { tiles: { '0,2': dynamicOfTile(boxTile()) } }, boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } } } };
+    const expected2: Record<string, LevelData> = { start: { initOverlay: { tiles: { '0,2': dynamicOfTile(boxTile()) } }, boundRect: { min: { x: 0, y: 2 }, max: { x: 0, y: 2 } } } };
     expect(getAllLevels(s)).toEqual(expected2);
   });
 });

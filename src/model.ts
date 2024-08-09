@@ -1,11 +1,11 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { COMBO_THRESHOLD, editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext, pointMapEntries, removeDynamicTile } from './layer';
+import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext, pointMapEntries, removeDynamicTile, mapPointMap } from './layer';
 import { Point, vadd, vequal, vmn, vplus } from './point';
 import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
 import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Sprite, Tool } from './types';
-import { mapValues, max } from './util';
+import { boundBrect, mapValues, max } from './util';
 import { WidgetPoint } from './view';
 import { getInitOverlay, getOverlay } from './game-state-access';
 import { getVerticalImpetus } from './player-accessors';
@@ -613,7 +613,10 @@ export function getAllLevels(s: GameState): Record<string, LevelData> {
       if (!isEmptyTile(v))
         layer.tiles[k] = v;
     }
-    return { initOverlay: layer, boundRect: level.boundRect };
+    // YYY: Temporary solution to backfill data because I'm migrating formats.
+    // Going forward, should propagate boundRect: level.boundRect instead.
+    const brect = boundBrect(pointMapEntries(layer).map(({ loc }) => loc));
+    return { initOverlay: layer, boundRect: brect };
   });
 }
 

@@ -1,5 +1,5 @@
-import { Point } from './point';
-import { Color, Rect, Dict } from './types';
+import { Point, vsub } from './point';
+import { Color, Rect, Dict, Brect } from './types';
 
 export function int(x: number): number {
   return Math.floor(x);
@@ -62,4 +62,12 @@ export function mapValues<T, U>(d: Dict<T>, f: (x: T, key: string) => U): Dict<U
     rv[key] = f(d[key], key);
   }
   return rv;
+}
+
+export function boundBrect(points: Point[]): Brect {
+  const xs = points.map(p => p.x);
+  const ys = points.map(p => p.y);
+  const min = { x: Math.min(...xs), y: Math.min(...ys) };
+  const max = { x: Math.max(...xs), y: Math.max(...ys) };
+  return { min, max };
 }
