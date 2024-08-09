@@ -1,7 +1,8 @@
 import { Dispatch } from './action';
 import { FRAME_DURATION_MS } from './constants';
+import { LevelData } from './level-data';
 import { logger } from './logger';
-import { getOverlayForSave } from './model';
+import { getAllLevels } from './model';
 import { State } from './state';
 
 export type Effect =
@@ -15,9 +16,10 @@ export function doEffect(state: State, dispatch: Dispatch, e: Effect) {
       setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);
       break;
     case 'saveOverlay':
+      const levels: Record<string, LevelData> = getAllLevels(state.game);
       const req = new Request('/save', {
         method: 'POST',
-        body: JSON.stringify(getOverlayForSave(state.game)),
+        body: JSON.stringify(levels),
         headers: {
           'Content-Type': 'application/json',
         }

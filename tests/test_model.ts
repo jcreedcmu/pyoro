@@ -1,11 +1,12 @@
 import { FULL_IMPETUS } from '../src/constants';
 import { initOverlay } from '../src/initial_overlay';
 import { boxTile, dynamicOfTile, emptyTile, mapPointMap, PointMap } from '../src/layer';
-import { _putTileInGameStateInitOverlay, animateMove, getOverlayForSave, renderGameAnims, tileOfGameState } from '../src/model';
+import { _putTileInGameStateInitOverlay, animateMove, getAllLevels, renderGameAnims, tileOfGameState } from '../src/model';
 import { motionTestPasses, motionTestSuite } from '../src/test-motion';
 import { emptyOverlay, GameState, init_player } from '../src/state';
 import { Tile, Move, DynamicTile } from '../src/types';
 import { getVerticalImpetus } from '../src/player-accessors';
+import { LevelData } from '../src/level-data';
 
 function testState(layerName: string): GameState {
   return {
@@ -98,13 +99,15 @@ describe('State', () => {
   });
 });
 
-describe('getOverlayForSave', () => {
+describe('getAllLevels', () => {
   it('should filter out empties', () => {
     let s = testState('_test1');
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfTile(emptyTile())); // delete the existing box
-    expect(getOverlayForSave(s)).toEqual({ start: { tiles: {} } });
+    const expected1: Record<string, LevelData> = { start: { initOverlay: { tiles: {} }, boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } } } };
+    expect(getAllLevels(s)).toEqual(expected1);
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfTile(boxTile())); // add some box
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfTile(emptyTile())); // add another spurious empty
-    expect(getOverlayForSave(s)).toEqual({ start: { tiles: { '0,2': dynamicOfTile(boxTile()) } } });
+    const expected2: Record<string, LevelData> = { start: { initOverlay: { tiles: { '0,2': dynamicOfTile(boxTile()) } }, boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } } } };
+    expect(getAllLevels(s)).toEqual(expected2);
   });
 });

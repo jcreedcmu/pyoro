@@ -9,6 +9,7 @@ import { mapValues, max } from './util';
 import { WidgetPoint } from './view';
 import { getInitOverlay, getOverlay } from './game-state-access';
 import { getVerticalImpetus } from './player-accessors';
+import { LevelData } from './level-data';
 
 function getItem(x: Tile): Item | undefined {
   if (x.t == 'item')
@@ -605,14 +606,14 @@ export function show_empty_tile_override(s: State): boolean {
   return !s.iface.keysDown['KeyN']; // XXX Debugging
 }
 
-export function getOverlayForSave(s: GameState): Record<string, DynamicLayer> {
+export function getAllLevels(s: GameState): Record<string, LevelData> {
   return mapValues(s.levels, level => {
     const layer: DynamicLayer = { tiles: {} };
     for (const [k, v] of Object.entries(level.initOverlay.tiles)) {
       if (!isEmptyTile(v))
         layer.tiles[k] = v;
     }
-    return layer;
+    return { initOverlay: layer, boundRect: level.boundRect };
   });
 }
 
