@@ -9,7 +9,7 @@ import { boundBrect, mapValues, max } from './util';
 import { WidgetPoint } from './view';
 import { getInitOverlay, getOverlay } from './game-state-access';
 import { getVerticalImpetus } from './player-accessors';
-import { LevelData } from './level-data';
+import { LevelData } from './level';
 
 function getItem(x: Tile): Item | undefined {
   if (x.t == 'item')
@@ -613,10 +613,7 @@ export function getAllLevels(s: GameState): Record<string, LevelData> {
       if (!isEmptyTile(v))
         layer.tiles[k] = v;
     }
-    // YYY: Temporary solution to backfill data because I'm migrating formats.
-    // Going forward, should propagate boundRect: level.boundRect instead.
-    const brect = boundBrect(pointMapEntries(layer).map(({ loc }) => loc));
-    return { initOverlay: layer, boundRect: brect };
+    return { initOverlay: layer, boundRect: level.boundRect };
   });
 }
 

@@ -5,8 +5,8 @@ import { motionTestPasses, motionTestSuite } from '../src/test-motion';
 import { GameState, init_player } from '../src/state';
 import { Tile, Move, DynamicTile } from '../src/types';
 import { getVerticalImpetus } from '../src/player-accessors';
-import { LevelData, mkLevel } from '../src/level-data';
-import { allLevels } from '../src/levels';
+import { LevelData, mkLevel } from '../src/level';
+import { allLevels } from '../src/level-data';
 
 function testState(levelName: string): GameState {
   return {
@@ -102,13 +102,13 @@ describe('getAllLevels', () => {
     const expected1: Record<string, LevelData> = {
       start: {
         initOverlay: { tiles: {} },
-        boundRect: { min: { x: Infinity, y: Infinity }, max: { x: -Infinity, y: -Infinity } }
+        boundRect: { min: { x: 0, y: 1 }, max: { x: 0, y: 1 } }
       }
     };
     expect(getAllLevels(s)).toEqual(expected1);
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 2 }, dynamicOfTile(boxTile())); // add some box
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 0 }, dynamicOfTile(emptyTile())); // add another spurious empty
-    const expected2: Record<string, LevelData> = { start: { initOverlay: { tiles: { '0,2': dynamicOfTile(boxTile()) } }, boundRect: { min: { x: 0, y: 2 }, max: { x: 0, y: 2 } } } };
+    const expected2: Record<string, LevelData> = { start: { initOverlay: { tiles: { '0,2': dynamicOfTile(boxTile()) } }, boundRect: { min: { x: 0, y: 1 }, max: { x: 0, y: 1 } } } };
     expect(getAllLevels(s)).toEqual(expected2);
   });
 });

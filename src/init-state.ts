@@ -1,5 +1,5 @@
-import { mkLevel } from "./level-data";
-import { allLevels } from "./levels";
+import { mkLevel } from "./level";
+import { allLevels } from "./level-data";
 import { State, init_player } from "./state";
 import { mapValues } from "./util";
 

@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { DynamicLayer } from './layer';
 import { GameState, State } from './state';
-import { emptyLevel } from './level-data';
+import { emptyLevel } from './level';
 
 export function getInitOverlay(state: GameState): DynamicLayer {
   return state.levels[state.currentLevel].initOverlay;

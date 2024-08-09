@@ -3,8 +3,8 @@ import { animateMove, renderGameAnims } from './model';
 import { Point, vequal } from './point';
 import { GameState, init_player } from './state';
 import { getVerticalImpetus } from './player-accessors';
-import { mkLevel } from './level-data';
-import { allLevels } from './levels';
+import { mkLevel } from './level';
+import { allLevels } from './level-data';
 
 export type MotionTestAssertion =
   | { t: 'position', pos: Point }

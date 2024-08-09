@@ -1,6 +1,6 @@
 import { Dispatch } from './action';
 import { FRAME_DURATION_MS } from './constants';
-import { LevelData } from './level-data';
+import { LevelData } from './level';
 import { logger } from './logger';
 import { getAllLevels } from './model';
 import { State } from './state';
