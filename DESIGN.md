@@ -4,6 +4,11 @@
 
 Mount Pyoro is a puzzle platformer with discrete time and space.
 
+## Terms
+
+MOSTLY means a prescription is not expected to be applicable without exception,
+but exceptions probably should be justified by some other consideration.
+
 ## Influences
 
 ### Platforming
@@ -34,7 +39,9 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
   parts, but there should be some branching freely chosen by the
   player.
 
-- The game is won by gaining access to the final room.
+- The game is won by gaining access to the final room. In general, the
+  carrot that is offered to players is gaining access to places. It is desirable
+  to tease the existence of places before they're accessible.
 
 ### Physics/"Feel"
 
@@ -68,9 +75,10 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 
 ### Puzzles
 
-- Puzzles ideally come from unexpected interactions between puzzle
-  mechanisms, unexpected corner cases thereof. Some of my favorite
-  puzzles in Stephen's Sausage Roll and Baba is You were of this form.
+- Puzzles MOSTLY come from unexpected interactions between puzzle
+  mechanisms, and/or unexpected corner cases thereof. Some of my
+  favorite puzzles in Stephen's Sausage Roll and Baba is You were of
+  this form.
 
 - <details>
     <summary>🚨 Spoilers 🚨 for Leap Year</summary>
@@ -82,13 +90,12 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 
   </details>
 
-- Mechanisms are taught ideally wordlessly, by demonstration.
+- Mechanisms are MOSTLY taught without explicit tutorial or description,
+  by existing puzzles.
 
 ### Legibility
 
-- Invisible state is not entirely forbidden, but as much as possible,
-  prefer mechanisms where all the information a player needs to
-  understand is on the screen.
+- State should MOSTLY be immediately legible from information on the screen.
 
 - For example, we prefer alternative 2 to alternative 1:
   - alternative 1 is a button could come equipped with data of a destination
@@ -102,6 +109,12 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
   of experimentation needed to reveal the data. For example, doors have
   invisible data of what their destination room is, but it only requires
   passing through the door to find out where it goes.
+
+- Exceptions can be made when there is a way for the player to
+  methodically figure out what the current state is from careful
+  observation. This can be an effective way of creating puzzles where
+  the solution is getting into parts of state space that superficially
+  resemble non-useful states, but where the hidden state is different.
 
 ### Animation
 
@@ -125,7 +138,7 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 - The number of per-move player choices available at any given time
   should be fairly small, probably fewer than 10.
 
-- Player choices should, for the most part, be limited to choosing a
+- Player choices should MOSTLY be limited to choosing a
   direction of motion (or, perhaps, standing still and waiting) This
   could be augmented with a small set of "modifiers". For example, a
   "dash" move-right might be distinct from a normal move-right.
@@ -141,10 +154,10 @@ locations to some type `Tile`. By "entities" I mean things whose
 locations are represented with a map from some type `EntityId` to grid
 locations.
 
-- Most of the game state should be as tiles. A limited amount may
-  exist as entities.
+- The game state should MOSTLY tiles. A limited amount of state at any
+  given time should be entities.
 
-- Ideally, physics should be invariant to any intrinsic notion of
+- Physics should MOSTLY be invariant to any intrinsic notion of
   entity ordering, but this may be hard to achieve in practice.
   This is a corollary of the desire for legibility; the ordering
   of entities is typically invisible.
@@ -172,34 +185,39 @@ locations.
 - The exterior of a room should feel more like "impassable blocks"
   rather than "empty space". This is to support the well-definedness
   of mechanics that involve an object moving as many times as possible
-  until a collision occurs.
+  until a collision occurs. This also prevents having to deal with a
+  player (or other entity) falling endlessly.
 
 ### Inter-Room Geometry
 
 - OPEN: Should room edges cause transitions?
 
-- It's okay for room navigation to be a *little* confusing, but shouldn't
-  be completely baffling. It's okay if the player needs to keep a map.
-  The geometry of IoSaS's air island was a bit more disjointed than I'd like.
+- Navigation should be MOSTLY straightforward and comprehensible. It's
+  okay for room navigation to be a *little* confusing. It's okay if
+  the player needs to keep a map. The geometry of IoSaS's air island
+  was a bit more disjointed than I'd like.
 
-- Some breadcrumbs should be provided to help mapping. Perhaps:
+- Breadcrumbs should be provided to help mapping. Perhaps:
   - every room has a unique name.
   - doors tend to be close to the cardinal directions.
-  - graphics suggest coherent "biomes" which help memorability.
+  - graphics suggest coherent "biomes" which group rooms together to help memorability.
 
 ### Room State
 
-- As much as possible, a room's state is entirely reset if you leave and come back.
+- A room's state is MOSTLY reset to its original state if you leave and come back.
 
-- Exceptions to "a room's state is entirely reset" are intentionally
-  limited, but they are the foundation of all progress in the game.
+- A player may decide to reset a room's state (meaning: having the same effect as
+  leaving and coming back) at any time.
+
+- Exceptions to this are limited but crucial for progress in the game.
   Isles of Sea and Sky represents a good standard here.
-
-- A player may decide to reset a room's state at any time.
 
 - In IoSaS, certain barriers may be removed, and certain items may be acquired,
   which survive the room being reset. These are perceived by the player as
  *monotonic progress forward* in the game.
+
+- One piece of state that is actually affected by these resets is the
+  entrance through which you came into the room.
 
 - The "barriers being removed is unambiguously progress" is more subtle for
   a game with "gravity" compared to a top-down puzzler like IoSaS, because
@@ -216,4 +234,5 @@ locations.
 
 ## Non-Goals
 
-- At least for now, I'm not planning on managing a repository of user-designed levels.
+- There are no current plans to manage a repository of user-designed levels,
+  though I would like to invite collaboration somehow.
