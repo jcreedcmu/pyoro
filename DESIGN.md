@@ -125,7 +125,7 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 - The number of per-move player choices available at any given time
   should be fairly small, probably fewer than 10.
 
-- Player choices should for the most part, be limited to choosing a
+- Player choices should, for the most part, be limited to choosing a
   direction of motion (or, perhaps, standing still and waiting) This
   could be augmented with a small set of "modifiers". For example, a
   "dash" move-right might be distinct from a normal move-right.
