@@ -71,3 +71,12 @@ export function boundBrect(points: Point[]): Brect {
   const max = { x: Math.max(...xs), y: Math.max(...ys) };
   return { min, max };
 }
+
+export function pointInBrect(p: Point, r: Brect): boolean {
+  return (
+    p.x >= r.min.x &&
+    p.y >= r.min.y &&
+    p.x <= r.max.x &&
+    p.y <= r.max.y
+  );
+}

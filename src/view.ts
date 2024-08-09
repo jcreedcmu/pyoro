@@ -12,6 +12,7 @@ import * as u from './util';
 import { rgba } from './util';
 import { getTestState } from './test-state';
 import { motionTestResult } from './test-motion';
+import { getBoundRect } from './game-state-access';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
@@ -179,6 +180,8 @@ function drawField(fv: FView, state: State): void {
   const { d } = fv;
   const vp = state.iface.viewPort;
 
+  const brect = getBoundRect(state.game);
+
   // emptyTileOverride "temporarily" displays things as empty, for
   // which we want to retain some kind of convenient way of reinstating
   // them. Therefore I am using this for savepoints (because I want old
@@ -199,6 +202,13 @@ function drawField(fv: FView, state: State): void {
       if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state) && tile.t == 'save_point')
         tile = emptyTile();
       draw_sprite(fv, spriteLocOfTile(tile), vminus(p, vfpart(vp)));
+
+      if (!u.pointInBrect(realp, brect)) {
+        d.fillStyle = '#666';
+        d.beginPath();
+        draw_rect(fv, vminus(p, vfpart(vp)));
+        d.fill();
+      }
     }
   }
 
@@ -328,6 +338,16 @@ function draw_sprite(fv: FView, sprite_loc: Point, wpos: Point, flip?: boolean):
   if (wpos.x < - 1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
     return;
   raw_draw_sprite(fv, sprite_loc, worldTilePosition(fv, wpos), flip);
+}
+
+// wpos: position in window, in tiles. (0,0) is top left of viewport
+function draw_rect(fv: FView, wpos: Point): void {
+  const { vd: { origin } } = fv;
+  if (wpos.x < - 1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
+    return;
+  const d = fv.d;
+  const spos = worldTilePosition(fv, wpos);
+  d.rect(spos.x, spos.y, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
 }
 
 export function drawView(fv: FView, state: State): void {

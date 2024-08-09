@@ -2,6 +2,11 @@ import { produce } from 'immer';
 import { DynamicLayer } from './layer';
 import { GameState, State } from './state';
 import { emptyLevel } from './level';
+import { Brect } from './types';
+
+export function getBoundRect(state: GameState): Brect {
+  return state.levels[state.currentLevel].boundRect;
+}
 
 export function getInitOverlay(state: GameState): DynamicLayer {
   return state.levels[state.currentLevel].initOverlay;
