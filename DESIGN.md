@@ -63,6 +63,9 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
   which could be advantageous (e.g. to break certain kinds of blocks)
   or disadvantageous (e.g. leading to fall damage).
 
+- Physics should be invariant to left-right flipping, but is very much not
+  required to be invariant to up-down flipping, because of gravity.
+
 ### Puzzles
 
 - Puzzles ideally come from unexpected interactions between puzzle
@@ -130,6 +133,37 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 - OPEN: Should single-move undo be supported?
     - Argument for supporting: most puzzle games do
     - Argument for not supporting: might enhance "drama" if mistakes are a little consequential.
+
+### Tiles and Entities
+
+By "tiles" I mean things that are represented with a map from grid
+locations to some type `Tile`. By "entities" I mean things whose
+locations are represented with a map from some type `EntityId` to grid
+locations.
+
+- Most of the game state should be as tiles. A limited amount may
+  exist as entities.
+
+- Ideally, physics should be invariant to any intrinsic notion of
+  entity ordering, but this may be hard to achieve in practice.
+  This is a corollary of the desire for legibility; the ordering
+  of entities is typically invisible.
+  - It is, however, ok to order entities by height in the world, if physics
+    rules can be devised to be "horizontally concurrent" while having some
+    vertical asymmetry.
+  - It is somewhat ok to order entities by the order in which they were created,
+    if they were created during play.
+
+- It is ok for a logical "thing" in the game to change during play
+  from tile to entity and back, perhaps even retaining the same visual
+  representation.
+
+- No two entities should occupy the same place at the same time.
+  If this would occur, prefer deleting all such colocated entities and replacing
+  them with some sort of generic "crash"/"collision"/"explosion" entity or tile.
+
+- For the most part, tiles should obey a principle of subconservation.
+  They may be moved or destroyed (i.e. replaced with empty) but not created.
 
 ### Intra-Room Geometry
 
