@@ -1115,6 +1115,328 @@ export const allLevels: Record<string, LevelData> = {
         "-9,5": {
           "t": "door",
           "destinationLevel": "sideblock"
+        },
+        "-18,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-17,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-16,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-14,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-13,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-12,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-11,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-10,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-9,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-8,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-7,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-6,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-5,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-4,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-3,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-2,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-1,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "1,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "3,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "2,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "0,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "4,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "5,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "6,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "7,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "8,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "9,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "10,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "11,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "12,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "13,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "14,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "15,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "16,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "17,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "18,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "19,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "20,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "21,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "22,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "23,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "24,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "25,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "26,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "27,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "28,21": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
         }
       }
     },
