@@ -1106,12 +1106,6 @@ export const allLevels: Record<string, LevelData> = {
           "t": "door",
           "destinationLevel": "boxes2"
         },
-        "3,1": {
-          "t": "static",
-          "tile": {
-            "t": "side_breakable"
-          }
-        },
         "-9,5": {
           "t": "door",
           "destinationLevel": "sideblock"
