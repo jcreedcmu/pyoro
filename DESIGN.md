@@ -84,6 +84,11 @@ but exceptions probably should be justified by some other consideration.
 
 #### How the Physics Update Works
 
+- The major phases are
+ - Determining how support affects motion
+ - Resolving motive/prev impetus into destination/next impetus
+ - Resolving potential collisions
+
 - For each entity, the tick computation
   - takes as input the entity's **impetus**
   - takes as input where the entity is trying to move, if anywhere; call
