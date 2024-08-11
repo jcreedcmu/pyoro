@@ -4,10 +4,13 @@
 
 Mount Pyoro is a puzzle platformer with discrete time and space.
 
-## Terms
+## Conventions
 
 MOSTLY means a prescription is not expected to be applicable without exception,
 but exceptions probably should be justified by some other consideration.
+
+The coordinate system is such that x increases to the right, and y
+increases down, in the direction of gravity.
 
 ## Influences
 
@@ -79,15 +82,86 @@ but exceptions probably should be justified by some other consideration.
   physics interactions with the rest of the world.
 
 - Each entity has in its state a **impetus**, an integer valued vector
-  relative to that entity. This isn't really a velocity vector, but it
-  is somewhat like one.
+  relative to that entity. This is something like a velocity vector,
+  but can have significant intuitive differences.
 
-#### How the Physics Update Works
+- An entity beginning a tick with nonzero impetus tends to move in the
+  direction of its impetus, with "voluntary" changes being a
+  correction to that motion.
 
-- The major phases are
- - Determining how support affects motion
- - Resolving motive/prev impetus into destination/next impetus
- - Resolving potential collisions
+The state passed through the phases of physics tick update are
+
+- motive (a vector, a direction the entity is "trying" to move)
+- impetus (a vector, as described above)
+- target (a point in world space, a sort of provisional destination)
+- destination (a point in world space)
+
+The major phases are
+- "target" For each entity, compute target
+- "bounce" For each entity, compute destination from entity-tile interactions
+- "collision" Resolve entity-entity collisions.
+
+The target phase has two alternatives, supported and unsupported.
+The unsupported target phase can be further subdivided into computing
+the horizontal and vertical components of motion.
+
+#### Target Phase (Supported)
+**Outputs**: Target \
+**Outputs**: Next-tick Impetus
+
+If the entity is supported by a block opposing the direction of the
+motive, then the target is exactly where the motive is.
+The resulting impetus by default is zero, but the nature of the supporting
+block might change this.
+
+#### Target Phase (Unsupported, Vertical Component)
+**Outputs**: Target \
+**Outputs**: Next-tick Impetus
+
+Assuming the entity is unsupported, we split cases.
+
+If the impetus and motive are *both* negative, then we are still
+ascending. Vertical target is one square up, and vertical impetus
+is increased by one due to gravity.
+
+Otherwise, we are falling, either involuntarily (due to impetus) or
+voluntarily (due to motive). It is intentionally "unrealistic" that we
+can choose to "exit" a jump at any time. Vertical target is one square
+down, and vertical impetus is set to
+
+$$ \max(\mathrm{impetus}_y + 1, \mathrm{motive}_y) $$
+
+NOTE: because of this, I think there's a very small amount of slightly
+surprising control the player has regarding their motive immediately
+after exiting a jump. They get different values from exiting "down"
+(namely: 1) vs. "right" (namely: 0). This could be the crux of a
+puzzle.
+
+#### Target Phase (Unsupported, Horizontal Component)
+**Outputs**: Target \
+**Outputs**: Next-tick Impetus
+
+We split cases on the sign of the horizontal impetus.
+If the impetus is zero, the target is exactly where the motive is.
+The next-tick impetus stays zero.
+
+If the impetus is non-zero, then the target is one square
+in the direction of the impetus. The next-tick impetus reduces
+the magnitude of the impetus by 1 towards zero, unless
+the motive is also non-zero, and in the **same** direction as the impetus.
+
+#### Bounce Phase
+**Inputs**: Target
+**Outputs**: Destination
+
+#### Collision Phase
+
+- After all entities have been moved to their destination, resolve
+  collisions. Some types of entities might have precedence over
+  another. "Bouncing" entities is not allowed at this stage, only
+  entity destruction. Mutual destruction is always an option if there
+  are equal-precedence entities colliding.
+
 
 - For each entity, the tick computation
   - takes as input the entity's **impetus**
@@ -103,11 +177,6 @@ but exceptions probably should be justified by some other consideration.
     applies "forces" to. In MOST situations this should be at most one
     tile.
 
-- After all entities have been moved to their destination, resolve
-  collisions. Some types of entities might have precedence over
-  another. "Bouncing" entities is not allowed at this stage, only
-  entity destruction. Mutual destruction is always an option if there
-  are equal-precedence entities colliding.
 
 #### Some Constraints on Tick Update
 
@@ -173,16 +242,20 @@ statements are about what the result is at the end.
     the solidity of all tiles of the same color (which are still visible in
     some form, even when not solid)
 
-- Where invisible data remains, try to minimize the amount and complexity
-  of experimentation needed to reveal the data. For example, doors have
-  invisible data of what their destination room is, but it only requires
-  passing through the door to find out where it goes.
+- Where invisible data remains, it should be discoverable through
+  experimentation. Either it should be completely straightforward to
+  discover, or an interesting puzzle to "work out the laws of
+  physics".
 
-- Exceptions can be made when there is a way for the player to
-  methodically figure out what the current state is from careful
-  observation. This can be an effective way of creating puzzles where
-  the solution is getting into parts of state space that superficially
-  resemble non-useful states, but where the hidden state is different.
+- For example, doors are a case of "completely straightforward and
+  low-effort". They have invisible data of what their destination room
+  is, but it only requires passing through the door to find out where
+  it goes.
+
+- "An interesting puzzle to work out" hidden state should be an
+  effective way of creating subsequent puzzles where the solution
+  requires deliberately accessing parts of state space that would
+  otherwise be unlikely to stumble into.
 
 ### Animation
 
