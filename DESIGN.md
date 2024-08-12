@@ -68,10 +68,16 @@ increases down, in the direction of gravity.
 
 - Barring discontinuous motion like teleporters, the player should
   only move one cell per "tick", (allowing diagonals) even when
-  notionally they have high "velocity". This notion of "high velocity"
-  should translate instead to a notion of "collision with high force"
-  which could be advantageous (e.g. to break certain kinds of blocks)
-  or disadvantageous (e.g. leading to fall damage).
+  notionally they have high "velocity", which is called "impetus"
+  in an attempt to avoid confusion. High impetus
+  can instead manifest as
+    - ease in continuing motion against an external force (the
+      canonical example being upward "velocity" permitting motion
+      against the direction of gravity)
+    - difficulty in *reversing* direction relative to that velocity
+    - a notion of "collision with high force" when collisions happen
+      which could be advantageous (e.g. to break certain kinds of blocks)
+      or disadvantageous (e.g. leading to fall damage).
 
 - Physics should be invariant to left-right flipping, but is very much not
   required to be invariant to up-down flipping, because of gravity.
@@ -145,14 +151,47 @@ We split cases on the sign of the horizontal impetus.
 If the impetus is zero, the target is exactly where the motive is.
 The next-tick impetus stays zero.
 
-If the impetus is non-zero, then the target is one square
-in the direction of the impetus. The next-tick impetus reduces
-the magnitude of the impetus by 1 towards zero, unless
-the motive is also non-zero, and in the **same** direction as the impetus.
+If the impetus is non-zero, then the target is one square in the
+direction of the impetus. The next-tick impetus reduces the magnitude
+of the impetus by 1 towards zero, unless the motive is also non-zero,
+and in the **same** direction as the impetus.
 
 #### Bounce Phase
-**Inputs**: Target
+**Inputs**: Target \
 **Outputs**: Destination
+
+In order to find the actual destination of motion, we iterate through
+some candidate approximations to the target, picking the first one
+that is "clear". The "vertical projection" of a vector means what you
+get when you set the x component to zero, and "horizontal" likewise
+what you get from setting the y component to zero.
+
+A cell is *open* if its tile admits movement into it. This is defined
+per-tile. We always consider the entity's own cell to be open for the
+purposes of this phase.
+
+- Naturally, the preferred destination is the target itself. This
+  destination is clear if the target is open, *and the vertical
+  approximation* of the target is also open. This prevents
+  diagonal movement when there is no "headroom", as well as preventing
+  slipping through "diagonal cracks".
+
+- The preferred destination is the target itself. This destination is
+  considered clear if the target is open, *and the vertical
+  approximation* of the target is also open. This prevents diagonal
+  movement when there is no "headroom", as well as preventing slipping
+  through "diagonal cracks".
+
+- The next most preferred destination is the horizontal approximation
+  of the target. This motion is considered clear if the destination is
+  open.
+
+- The next most preferred destination is the vertical approximation of
+  the target. This motion is considered clear if the destination is
+  open.
+
+- Finally, if all of the above destinations are not clear, set the
+  destination to the current position of the entity.
 
 #### Collision Phase
 
@@ -162,53 +201,27 @@ the motive is also non-zero, and in the **same** direction as the impetus.
   entity destruction. Mutual destruction is always an option if there
   are equal-precedence entities colliding.
 
+#### Forcing Blocks
 
-- For each entity, the tick computation
-  - takes as input the entity's **impetus**
-  - takes as input where the entity is trying to move, if anywhere; call
-    this its **motive**.
-  - takes other data pertaining to the local neighborhood, e.g. whether
-    the entity is currently **supported** beneath by a solid block.
-  - returns a **destination**, a place where it can move
-    if no other entities tried to move there.
-  - returns what the entity's internal state is in the next
-    step, including impetus.
-  - returns some information about which tiles the entity's motion
-    applies "forces" to. In MOST situations this should be at most one
-    tile.
+🚨 TBD
 
+#### Constraints on Tick Update
 
-#### Some Constraints on Tick Update
+Regardless of the internal structure of the tick update, we think
+it should result in the truth of the below statements. Consider these
+"integration tests" for the above spec.
 
-The tick computation may have more internal structure, but the below
-statements are about what the result is at the end.
+🚨 XXX: Maybe this section is becoming close to obsolete, being
+supplanted by actual tests in code, if I can't think up any more
+informal integration tests.
 
 - In the absence of any barriers, when an entity wants to move up,
   laterally, or up-diagonally from a normal supported state, with zero
   impetus, its destination coincides with its motive, with a
   resultant zero impetus.
 
-- In the absence of any barriers, when an entity wants to move from a
-  unsupported state, with zero horizontal impetus, its destination coincides
-  horizontally with its motive, with a resultant zero horizontal impetus.
-  - Its destination moves up if its prior vertical impetus was up
-  - Its destination moves down if its prior vertical impetus was down or zero
-
-- In order to resolve barriers, near the end of the tick update, we
-  try the following destinations in order, looking for the first "clear" one:
-  - the original motion
-  - the original motion with the vertical component of motion and impetus zeroed
-  - the original motion with the horizontal component of motion and impetus zeroed
-
-- The original motion is not considered "clear" unless at least one of
-  the projected motions is clear, i.e. we can't slip diagonally
-  through cracks.
-
-- OPEN: Do I want to say "The original motion is not considered
-  "clear" unless the vertical motion is clear"?
-
-- As a corollary to the above points, a player can walking continuously
-  across a floor with at most one-tile gaps, with a constant impetus of (0,0).
+- A player can walking continuously across a floor with at most
+  one-tile gaps, with a constant impetus of (0,0).
 
 ### Puzzles
 
