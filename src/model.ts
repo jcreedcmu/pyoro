@@ -11,6 +11,7 @@ import { expandBoundRect, getBoundRect, getInitOverlay, getOverlay } from './gam
 import { getVerticalImpetus } from './player-accessors';
 import { LevelData } from './level';
 import { Board, Motion, ropen, rgrabbable, ForcedBlock, isOpen, genImpetus, isDeadly, getItem } from './model-utils';
+import { entityTick } from './physics';
 
 function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
   return ropen(b, 0, 1) ?
@@ -112,6 +113,17 @@ function get_motion(b: Board, move: MotiveMove): Motion {
     case 'right': return execute_horiz(b, 'right');
     case 'up-left': return execute_up_diag(b, 'left');
     case 'up-right': return execute_up_diag(b, 'right');
+  }
+}
+
+function motiveOfMove(move: MotiveMove): Point {
+  switch (move) {
+    case 'up': return { x: 0, y: -1 };
+    case 'down': return { x: 0, y: 1 };
+    case 'left': return { x: -1, y: 0 };
+    case 'right': return { x: 1, y: 0 };
+    case 'up-left': return { x: -1, y: -1 };
+    case 'up-right': return { x: 1, y: -1 };
   }
 }
 
@@ -274,6 +286,19 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   if (supportedBefore) forcedBlocks.push({ pos: { x: 0, y: 1 }, force: { x: 0, y: 1 } });
   /* Whether we were in a "stable" state during the previous step */
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
+
+  function getSupport(): Point | undefined {
+    if (supportedBefore) return { x: 0, y: 1 };
+    if (player.animState == 'player_wall')
+      return player.flipState == 'left' ? { x: -1, y: 0 } : { x: 1, y: 0 };
+  }
+
+  const tickOutput = entityTick(state, {
+    entity: { impetus: player.impetus, pos: player.pos },
+    motive: motiveOfMove(move),
+    support: getSupport()
+  });
+  console.log(JSON.stringify(tickOutput));
 
   const result = get_motion(boardOfState(state), move);
   const flipState = get_flip_state(move) || player.flipState;
