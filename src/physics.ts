@@ -27,6 +27,42 @@ export type TargetPhaseOutput = {
   forced: ForcedBlock[]
 };
 
+export type TargetPhaseContextOneAxis = {
+  motive: number,
+  impetus: number,
+}
+
+export type TargetPhaseOutputOneAxis = {
+  target: number, // relative coordinate
+  newImpetus: number,
+};
+
+export function targetPhaseUnsupportedX(state: GameState, ctx: TargetPhaseContextOneAxis): TargetPhaseOutputOneAxis {
+  const { motive, impetus } = ctx;
+  if (impetus == 0) {
+    // unaffected by impetus
+    return { target: motive, newImpetus: 0 };
+  }
+  else {
+    // affected by impetus
+    const si = Math.sign(impetus);
+    const sm = Math.sign(motive);
+    return { target: si, newImpetus: impetus - si * (sm != si ? 1 : 0) };
+  }
+}
+
+export function targetPhaseUnsupportedY(state: GameState, ctx: TargetPhaseContextOneAxis): TargetPhaseOutputOneAxis {
+  const { motive, impetus } = ctx;
+  if (motive < 0 && impetus < 0) {
+    // ascending
+    return { target: -1, newImpetus: impetus + 1 }
+  }
+  else {
+    // descending
+    return { target: 1, newImpetus: Math.max(motive, impetus + 1) };
+  }
+}
+
 export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPhaseOutput {
   const { entity, motive, support } = ctx;
   const { impetus, pos } = entity;
@@ -40,7 +76,13 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
     };
   }
   else {
-
+    const resultX = targetPhaseUnsupportedX(state, { impetus: impetus.x, motive: motive.x });
+    const resultY = targetPhaseUnsupportedY(state, { impetus: impetus.y, motive: motive.y });
+    return {
+      forced: [],
+      newImpetus: { x: resultX.newImpetus, y: resultY.newImpetus },
+      target: { x: resultX.target, y: resultY.target },
+    };
   }
 }
 
