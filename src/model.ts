@@ -1,93 +1,16 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
-import { COMBO_THRESHOLD, editTiles, FULL_IMPETUS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, TileResolutionContext, pointMapEntries, removeDynamicTile, mapPointMap } from './layer';
+import { COMBO_THRESHOLD, editTiles, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
+import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, pointMapEntries, removeDynamicTile, mapPointMap } from './layer';
 import { Point, vadd, vequal, vmn, vplus } from './point';
 import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
-import { Tile, DynamicTile, Facing, Item, MotiveMove, Move, Sprite, Tool } from './types';
+import { Tile, DynamicTile, Facing, MotiveMove, Move, Sprite, Tool } from './types';
 import { boundBrect, mapValues, max } from './util';
 import { WidgetPoint } from './view';
 import { expandBoundRect, getBoundRect, getInitOverlay, getOverlay } from './game-state-access';
 import { getVerticalImpetus } from './player-accessors';
 import { LevelData } from './level';
-
-function getItem(x: Tile): Item | undefined {
-  if (x.t == 'item')
-    return x.item;
-  else
-    return undefined;
-}
-
-function isItem(x: Tile): boolean {
-  return getItem(x) !== undefined;
-}
-
-function isOpenBusBlock(x: Tile): boolean {
-  return x.t == 'bus_block' && x.on == false;
-}
-
-function isOpenMotionBlock(x: Tile): boolean {
-  return x.t == 'motion_block' && x.on == false;
-}
-
-function isDoor(x: Tile): boolean {
-  return x.t == 'door';
-}
-
-function isOpen(x: Tile): boolean {
-  return tileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x)
-    || isOpenBusBlock(x) || isOpenMotionBlock(x) || isDoor(x);
-}
-
-function isGrabbable(x: Tile): boolean {
-  return x.t == 'grip_wall';
-}
-
-function isSpike(x: Tile): boolean {
-  return x.t == 'spike';
-}
-
-function isDeadly(x: Tile): boolean {
-  return isSpike(x);
-}
-
-/**
- * @param tile Which tile
- * @returns How much impetus jumping from that tile yields
- *
- * **XXX**: We probably will need to generalize this for trampolines,
-     to also take impetus as an input.
- */
-export function genImpetus(tile: Tile): Point {
-  if (isOpen(tile)) return { x: 0, y: 0 };
-  if (tileEq(tile, { t: 'up_box' })) return { x: 0, y: FULL_IMPETUS };
-  return { x: 0, y: 1 };
-}
-
-export type Board = { player: Player, trc: TileResolutionContext };
-
-type ForcedBlock = {
-  pos: Point,
-  force: Point,
-};
-
-type Posture = 'stand' | 'attachWall' | 'crouch';
-type Motion = {
-  dpos: Point,
-  forced?: ForcedBlock, // optionally force a block in the direction of motion
-  impetus?: Point, // optionally set impetus to some value
-  posture?: Posture, // optionally set posture to some value
-};
-
-function ropen(b: Board, x: number, y: number): boolean {
-  const { player, trc } = b;
-  return isOpen(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
-}
-
-function rgrabbable(b: Board, x: number, y: number): boolean {
-  const { player, trc } = b;
-  return isGrabbable(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
-}
+import { Board, Motion, ropen, rgrabbable, ForcedBlock, isOpen, genImpetus, isDeadly, getItem } from './model-utils';
 
 function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
   return ropen(b, 0, 1) ?
