@@ -97,32 +97,44 @@ increases down, in the direction of gravity.
 
 The state passed through the phases of physics tick update are
 
-- motive (a vector, a direction the entity is "trying" to move)
-- impetus (a vector, as described above)
-- target (a point in world space, a sort of provisional destination)
-- destination (a point in world space)
+- **motive**: a vector, a direction the entity is "trying" to move.
+- **impetus**: a vector, as described above.
+- **target**: a point in world space, a sort of provisional destination.
+- **destination** a point in world space.
+- **forced block set**: a set of tile positions paired with vectors. These
+  are blocks in the world that have forces "applied" to them by entity motion.
+  Those tiles can do other things based on that information.
 
-The major phases are
-- "target" For each entity, compute target
-- "bounce" For each entity, compute destination from entity-tile interactions
-- "collision" Resolve entity-entity collisions.
+The phases of the tick update computation are:
+- **target phase**: For each entity, output target and next-tick impetus
+- **bounce phase**: For each entity, input target and output
+  destination, based on entity-tile interactions
+- **collision phase**: Resolve entity-entity collisions.
 
 The target phase has two alternatives, supported and unsupported.
 The unsupported target phase can be further subdivided into computing
 the horizontal and vertical components of motion.
 
 #### Target Phase (Supported)
-**Outputs**: Target \
-**Outputs**: Next-tick Impetus
 
 If the entity is supported by a block opposing the direction of the
 motive, then the target is exactly where the motive is.
 The resulting impetus by default is zero, but the nature of the supporting
 block might change this.
 
+Add the supporting block as a forced block, with force vector being
+the "vector of support", which I leave for now to be defined on a
+case-by-case basis.
+
+For example, a block supporting player from below adds itself as
+forced with vector `(impetus.x, max(impetus.y, 1))`
+
+A side-grabbable block supporting a player adds itself as forced with
+vector (1,0) or (-1,0) depending on whether the player is grabbing it
+from the left or right. Here I'm relying on the grabbed state as
+having zero impetus.
+
 #### Target Phase (Unsupported, Vertical Component)
-**Outputs**: Target \
-**Outputs**: Next-tick Impetus
 
 Assuming the entity is unsupported, we split cases.
 
@@ -144,8 +156,6 @@ after exiting a jump. They get different values from exiting "down"
 puzzle.
 
 #### Target Phase (Unsupported, Horizontal Component)
-**Outputs**: Target \
-**Outputs**: Next-tick Impetus
 
 We split cases on the sign of the horizontal impetus.
 If the impetus is zero, the target is exactly where the motive is.
@@ -157,8 +167,6 @@ of the impetus by 1 towards zero, unless the motive is also non-zero,
 and in the **same** direction as the impetus.
 
 #### Bounce Phase
-**Inputs**: Target \
-**Outputs**: Destination
 
 In order to find the actual destination of motion, we iterate through
 some candidate approximations to the target, picking the first one
@@ -193,6 +201,10 @@ purposes of this phase.
 - Finally, if all of the above destinations are not clear, set the
   destination to the current position of the entity.
 
+If we didn't move to the target itself, add to the set of forced tiles
+the *last* proposed target that wasn't used, with the force vector
+being the impetus.
+
 #### Collision Phase
 
 - After all entities have been moved to their destination, resolve
@@ -200,10 +212,6 @@ purposes of this phase.
   another. "Bouncing" entities is not allowed at this stage, only
   entity destruction. Mutual destruction is always an option if there
   are equal-precedence entities colliding.
-
-#### Forcing Blocks
-
-🚨 TBD
 
 #### Constraints on Tick Update
 
