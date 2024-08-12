@@ -66,10 +66,15 @@ export function genImpetus(tile: Tile): Point {
 
 export type Board = { player: Player, trc: TileResolutionContext };
 
+type ForcedBlock = {
+  pos: Point,
+  force: Point,
+};
+
 type Posture = 'stand' | 'attachWall' | 'crouch';
 type Motion = {
   dpos: Point,
-  forced?: Point, // optionally force a block in the direction of motion
+  forced?: ForcedBlock, // optionally force a block in the direction of motion
   impetus?: Point, // optionally set impetus to some value
   posture?: Posture, // optionally set posture to some value
 };
@@ -98,7 +103,7 @@ function execute_up(b: Board): Motion {
     }
     else {
       var rv = execute_down(b, { preventCrouch: true });
-      rv.forced = { x: 0, y: -1 };
+      rv.forced = { pos: { x: 0, y: -1 }, force: { x: 0, y: -1 } };
       return rv;
     }
   }
@@ -118,7 +123,7 @@ function execute_horiz(b: Board, flip: Facing): Motion {
   if (getVerticalImpetus(player) != 0 && !ropen(b, 0, 1)) {
     return forward_open
       ? { dpos: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' }
-      : { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' };
+      : { dpos: { x: 0, y: 0 }, forced: { pos: { x: dx, y: 0 }, force: { x: dx, y: 0 } }, impetus: { x: 0, y: 0 }, posture: 'stand' };
   }
   else {
     if (forward_open) {
@@ -127,7 +132,7 @@ function execute_horiz(b: Board, flip: Facing): Motion {
         : { dpos: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' };
     }
     else
-      return { dpos: { x: 0, y: 1 }, forced: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' }
+      return { dpos: { x: 0, y: 1 }, forced: { pos: { x: dx, y: 0 }, force: { x: dx, y: 0 } }, impetus: { x: 0, y: 0 }, posture: 'stand' }
   }
 }
 
@@ -139,16 +144,16 @@ function execute_up_diag(b: Board, flip: Facing): Motion {
     return execute_horiz(b, flip);
   if (!ropen(b, 0, -1)) {
     const rv = execute_horiz(b, flip);
-    rv.forced = { x: 0, y: -1 };
+    rv.forced = { pos: { x: 0, y: -1 }, force: { x: 0, y: -1 } };
     return rv;
   }
   if (rgrabbable(b, dx, 0))
-    return { dpos: { x: 0, y: 0 }, forced: { x: dx, y: 0 }, posture: 'attachWall' };
+    return { dpos: { x: 0, y: 0 }, forced: { pos: { x: dx, y: 0 }, force: { x: dx, y: 0 } }, posture: 'attachWall' };
   if (ropen(b, dx, -1))
     return { dpos: { x: dx, y: -1 }, posture: 'stand' }
   else {
     const rv = execute_down(b);
-    rv.forced = { x: dx, y: -1 };
+    rv.forced = { pos: { x: dx, y: -1 }, force: { x: dx, y: -1 } };
     return rv;
   }
 }
@@ -313,7 +318,7 @@ function isBlockForceSuccess(player: Player, forceLocation: Point, forceTile: Ti
  * dependency. tom7 suggested this based on experience with Escape.
  */
 export function animateMove(state: GameState, move: Move): Animation[] {
-  const forcedBlocks: Point[] = []
+  const forcedBlocks: ForcedBlock[] = []
   const anims: Animation[] = [];
 
   const player = state.player;
@@ -343,7 +348,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   const tileBefore = tileOfGameState(state, belowBefore);
   /* Whether we were supported during the previous step */
   const supportedBefore = !isOpen(tileBefore);
-  if (supportedBefore) forcedBlocks.push({ x: 0, y: 1 });
+  if (supportedBefore) forcedBlocks.push({ pos: { x: 0, y: 1 }, force: { x: 0, y: 1 } });
   /* Whether we were in a "stable" state during the previous step */
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
@@ -355,8 +360,8 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   }
 
   forcedBlocks.forEach(fb => {
-    const pos = vplus(player.pos, fb);
-    if (isBlockForceSuccess(player, fb, tileOfGameState(state, pos)))
+    const pos = vplus(player.pos, fb.pos);
+    if (isBlockForceSuccess(player, fb.pos, tileOfGameState(state, pos)))
       anims.push(...forceBlock(state, pos, tileOfGameState(state, pos)));
   });
 
