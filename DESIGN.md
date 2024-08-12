@@ -178,12 +178,6 @@ A cell is *open* if its tile admits movement into it. This is defined
 per-tile. We always consider the entity's own cell to be open for the
 purposes of this phase.
 
-- Naturally, the preferred destination is the target itself. This
-  destination is clear if the target is open, *and the vertical
-  approximation* of the target is also open. This prevents
-  diagonal movement when there is no "headroom", as well as preventing
-  slipping through "diagonal cracks".
-
 - The preferred destination is the target itself. This destination is
   considered clear if the target is open, *and the vertical
   approximation* of the target is also open. This prevents diagonal

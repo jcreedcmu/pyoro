@@ -67,8 +67,7 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
   const { entity, motive, support } = ctx;
   const { impetus, pos } = entity;
   if (support != undefined) {
-    const supportPosAbs = vadd(pos, support);
-    const supportTile = tileOfGameState(state, supportPosAbs);
+    const supportTile = tileOfGameState(state, vadd(pos, support));
     return {
       target: motive,
       newImpetus: vadd(genImpetus(supportTile), { x: 0, y: -1 }),
@@ -86,7 +85,7 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
   }
 }
 
-export type BouncePhaseContext = { target: Point };
+export type BouncePhaseContext = { entity: EntityState, target: Point };
 
 export type BouncePhaseOutput = {
   destination: Point,
@@ -94,13 +93,39 @@ export type BouncePhaseOutput = {
 };
 
 export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePhaseOutput {
+  const { entity, target } = ctx;
+  const { pos, impetus } = entity;
 
+  function isRpOpen(relPt: Point): boolean {
+    return isOpen(tileOfGameState(state, vadd(pos, relPt)));
+  }
+
+  const vertProj = { x: 0, y: target.y };
+  const horizProj = { x: target.x, y: 0 };
+
+  // Attempt 1: Go to target tile
+  if (isRpOpen(target) && isRpOpen(vertProj)) {
+    return { destination: target, forced: [] };
+  }
+
+  // Attempt 2: go to horizontal projection
+  if (isRpOpen(horizProj)) {
+    return { destination: horizProj, forced: [{ pos: !isRpOpen(vertProj) ? vertProj : target, force: impetus }] };
+  }
+
+  // Attempt 3: go to vertical projection
+  if (isRpOpen(vertProj)) {
+    return { destination: horizProj, forced: [{ pos: horizProj, force: impetus }] };
+  }
+
+  // Attempt 4: hold still
+  return { destination: horizProj, forced: [{ pos: vertProj, force: impetus }] };
 }
 
 
 export function entityTick(state: GameState, tickContext: TickContext): TickOutput {
   const { newImpetus, target, forced: forced1 } = targetPhase(state, tickContext);
-  const { destination, forced: forced2 } = bouncePhase(state, { target });
+  const { destination, forced: forced2 } = bouncePhase(state, { entity: tickContext.entity, target });
   return {
     entity: {
       pos: destination,
