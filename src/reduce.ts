@@ -64,11 +64,11 @@ function reduceMove(s: State, move: Move): State {
     // resolve existing animation first
     s = resolveAllAnimations(s, anim.animator.anims);
   }
-
+  const animator = animator_for_move(s, move);
   return produce(s, s => {
     s.anim = {
       frame: 1,
-      animator: animator_for_move(s, move)
+      animator,
     };
     s.effects.push({ t: 'scheduleFrame' });
   });
@@ -84,9 +84,7 @@ function resolveAllAnimations(s: State, anims: Animation[]): State {
 }
 
 export function reduce(s: State, a: Action): State {
-  const look = tileOfGameState(s.game, { x: 1, y: 2 });
-  console.log('reduce peek', look);
-  console.log('reduce', s, a);
+  const look = tileOfGameState(s.game, { x: 0, y: 1 });
   switch (a.t) {
     case 'keyDown': {
       const name = a.name;

@@ -138,16 +138,10 @@ export type FallPhaseOutput = {
 };
 
 function fallPhase(state: GameState, entity: EntityState, fall: boolean): FallPhaseOutput {
-  const lookupPos = vadd(entity.pos, { x: 0, y: 1 });
-  console.log('entityPos', entity.pos, 'lookupPos', lookupPos);
-  const tt = tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 }));
-  console.log(tt, isOpen(tt));
   if (fall && isOpen(tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 })))) {
-    console.log('fall');
     return { entity: { pos: entity.pos, impetus: vadd(entity.impetus, { x: 0, y: 1 }) } };
   }
   else {
-    console.log('no fall');
     return { entity };
   }
 }
