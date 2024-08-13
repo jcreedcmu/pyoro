@@ -1,6 +1,6 @@
 import { tileOfGameState } from "./model";
 import { ForcedBlock, genImpetus, isGrabbable, isOpen, Posture } from './model-utils';
-import { Point, vadd, vplus } from './point';
+import { Point, vadd, vplus, vsub } from './point';
 import { GameState } from "./state";
 import { Tile } from "./types";
 
@@ -68,7 +68,7 @@ export function targetPhaseUnsupportedY(state: GameState, ctx: TargetPhaseContex
 
 function genImpetusForMotive(supportTile: Tile, motive: Point): Point {
   if (motive.y < 0)
-    return vadd(genImpetus(supportTile), { x: 0, y: -1 });
+    return vsub({ x: 0, y: 1 }, genImpetus(supportTile));
   else
     return { x: 0, y: 0 };
 }
@@ -120,9 +120,11 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
   const vertProj = { x: 0, y: target.y };
   const horizProj = { x: target.x, y: 0 };
 
+  console.log(target, impetus, tileOfGameState(state, vadd(pos, { x: target.x, y: 0 })),
+    isRpGrabbable({ x: target.x, y: 0 }), impetus.y <= 1)
   // Early-return special case; If target tile is grabbable wall,
   // and target is horizontal, then we can grab it.
-  if (isRpGrabbable(target) && target.y == 0) {
+  if (isRpGrabbable({ x: target.x, y: 0 }) && impetus.y <= 1) {
     return { destination: { x: 0, y: 0 }, forced: [], posture: 'attachWall' };
   }
 
