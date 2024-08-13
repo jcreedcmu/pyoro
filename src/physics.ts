@@ -2,6 +2,7 @@ import { tileOfGameState } from "./model";
 import { ForcedBlock, genImpetus, isOpen } from './model-utils';
 import { Point, vadd, vplus } from './point';
 import { GameState } from "./state";
+import { Tile } from "./types";
 
 export type TickContext = {
   entity: EntityState,
@@ -64,6 +65,13 @@ export function targetPhaseUnsupportedY(state: GameState, ctx: TargetPhaseContex
   }
 }
 
+function genImpetusForMotive(supportTile: Tile, motive: Point): Point {
+  if (motive.y < 0)
+    return vadd(genImpetus(supportTile), { x: 0, y: -1 });
+  else
+    return { x: 0, y: 0 };
+}
+
 export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPhaseOutput {
   const { entity, motive, support } = ctx;
   const { impetus, pos } = entity;
@@ -71,7 +79,7 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
     const supportTile = tileOfGameState(state, vadd(pos, support));
     return {
       target: motive,
-      newImpetus: vadd(genImpetus(supportTile), { x: 0, y: -1 }),
+      newImpetus: genImpetusForMotive(supportTile, motive),
       forced: [{ pos: support, force: impetus }],
       fall: false, // fall is already "baked in" to newImpetus
     };
@@ -130,9 +138,15 @@ export type FallPhaseOutput = {
 };
 
 function fallPhase(state: GameState, entity: EntityState, fall: boolean): FallPhaseOutput {
-  if (fall && isOpen(tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 }))))
+  const lookupPos = vadd(entity.pos, { x: 0, y: 1 });
+  const tt = tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 }));
+  console.log(tt, isOpen(tt));
+  if (fall && isOpen(tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 })))) {
+    console.log('fall');
     return { entity: { pos: entity.pos, impetus: vadd(entity.impetus, { x: 0, y: 1 }) } };
+  }
   else {
+    console.log('no fall');
     return { entity };
   }
 }
