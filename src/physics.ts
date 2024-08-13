@@ -139,6 +139,7 @@ export type FallPhaseOutput = {
 
 function fallPhase(state: GameState, entity: EntityState, fall: boolean): FallPhaseOutput {
   const lookupPos = vadd(entity.pos, { x: 0, y: 1 });
+  console.log('entityPos', entity.pos, 'lookupPos', lookupPos);
   const tt = tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 }));
   console.log(tt, isOpen(tt));
   if (fall && isOpen(tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 })))) {
@@ -155,7 +156,7 @@ export function entityTick(state: GameState, tickContext: TickContext): TickOutp
   const { newImpetus, target, forced: forced1, fall } = targetPhase(state, tickContext);
   const { destination, forced: forced2 } = bouncePhase(state, { entity: tickContext.entity, target });
   const entity = {
-    pos: destination,
+    pos: vadd(tickContext.entity.pos, destination),
     impetus: newImpetus,
   };
   const { entity: finalEntity } = fallPhase(state, entity, fall);

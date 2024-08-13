@@ -5,7 +5,7 @@ import { editTiles } from './constants';
 import { getInitOverlay, setCurrentLevel } from './game-state-access';
 import { putDynamicTile } from './layer';
 import { logger } from './logger';
-import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims } from './model';
+import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, tileOfGameState } from './model';
 import { runSetter } from './optic';
 import { ButtonedTileFields, DoorTileFields, State, TimedTileFields } from './state';
 import * as testTools from './test-tools';
@@ -84,6 +84,9 @@ function resolveAllAnimations(s: State, anims: Animation[]): State {
 }
 
 export function reduce(s: State, a: Action): State {
+  const look = tileOfGameState(s.game, { x: 1, y: 2 });
+  console.log('reduce peek', look);
+  console.log('reduce', s, a);
   switch (a.t) {
     case 'keyDown': {
       const name = a.name;
