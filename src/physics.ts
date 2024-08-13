@@ -25,6 +25,7 @@ export type TargetPhaseOutput = {
   target: Point,
   newImpetus: Point,
   forced: ForcedBlock[]
+  fall: boolean,
 };
 
 export type TargetPhaseContextOneAxis = {
@@ -55,11 +56,11 @@ export function targetPhaseUnsupportedY(state: GameState, ctx: TargetPhaseContex
   const { motive, impetus } = ctx;
   if (motive < 0 && impetus < 0) {
     // ascending
-    return { target: -1, newImpetus: impetus + 1 }
+    return { target: -1, newImpetus: impetus }
   }
   else {
     // descending
-    return { target: 1, newImpetus: Math.max(motive, impetus + 1) };
+    return { target: 1, newImpetus: Math.max(motive - 1, impetus) }; // OPEN: substitute motive for motive-1?
   }
 }
 
@@ -71,7 +72,8 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
     return {
       target: motive,
       newImpetus: vadd(genImpetus(supportTile), { x: 0, y: -1 }),
-      forced: [{ pos: support, force: impetus }]
+      forced: [{ pos: support, force: impetus }],
+      fall: false, // fall is already "baked in" to newImpetus
     };
   }
   else {
@@ -81,6 +83,7 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
       forced: [],
       newImpetus: { x: resultX.newImpetus, y: resultY.newImpetus },
       target: { x: resultX.target, y: resultY.target },
+      fall: true,
     };
   }
 }
@@ -122,15 +125,28 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
   return { destination: horizProj, forced: [{ pos: vertProj, force: impetus }] };
 }
 
+export type FallPhaseOutput = {
+  entity: EntityState,
+};
+
+function fallPhase(state: GameState, entity: EntityState, fall: boolean): FallPhaseOutput {
+  if (fall && isOpen(tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 }))))
+    return { entity: { pos: entity.pos, impetus: vadd(entity.impetus, { x: 0, y: 1 }) } };
+  else {
+    return { entity };
+  }
+}
 
 export function entityTick(state: GameState, tickContext: TickContext): TickOutput {
-  const { newImpetus, target, forced: forced1 } = targetPhase(state, tickContext);
+  const { newImpetus, target, forced: forced1, fall } = targetPhase(state, tickContext);
   const { destination, forced: forced2 } = bouncePhase(state, { entity: tickContext.entity, target });
+  const entity = {
+    pos: destination,
+    impetus: newImpetus,
+  };
+  const { entity: finalEntity } = fallPhase(state, entity, fall);
   return {
-    entity: {
-      pos: destination,
-      impetus: newImpetus,
-    },
+    entity: finalEntity,
     forced: [...forced1, ...forced2]
   }
 }
