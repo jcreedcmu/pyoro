@@ -293,39 +293,29 @@ export function animateMove(state: GameState, move: Move): Animation[] {
       return player.flipState == 'left' ? { x: -1, y: 0 } : { x: 1, y: 0 };
   }
 
+  const motive = motiveOfMove(move);
   const tickOutput = entityTick(state, {
     entity: { impetus: player.impetus, pos: player.pos },
-    motive: motiveOfMove(move),
+    motive,
     support: getSupport()
   });
-  console.log(JSON.stringify(tickOutput));
 
-  const result = get_motion(boardOfState(state), move);
-  const flipState = get_flip_state(move) || player.flipState;
 
-  if (result.forced != null) {
-    forcedBlocks.push(result.forced);
+  function flipStateOfMotive(motive: Point): Facing | null {
+    if (motive.x < 0) return 'left';
+    if (motive.x > 0) return 'right';
+    return null;
   }
 
-  forcedBlocks.forEach(fb => {
+  const flipState = flipStateOfMotive(motive) || player.flipState;
+
+  tickOutput.forced.forEach(fb => {
     const pos = vplus(player.pos, fb.pos);
     if (isBlockForceSuccess(player, fb.pos, tileOfGameState(state, pos)))
       anims.push(...forceBlock(state, pos, tileOfGameState(state, pos)));
   });
 
-  let impetus = player.impetus;
-
-  const jumpSucceeded = result.dpos.y < 0;
-  if (stableBefore && isJump(move) && jumpSucceeded)
-    impetus = vadd(genImpetus(tileBefore), { x: 0, y: (state.inventory.teal_fruit ?? 0) });
-  else if (result.impetus != null)
-    impetus = result.impetus;
-
-  if (result.dpos == null)
-    throw "didn't expect to have a null dpos here";
-
-  const nextPos = vplus(player.pos, result.dpos);
-  let animState: Sprite = 'player';
+  const nextPos = tickOutput.entity.pos;
 
   // I'm not sure how generally this will work, but it works for
   // predicting the next state of time-oscillating blocks.
@@ -336,27 +326,18 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   const supportedAfter = !isOpen(suppTileAfter);
   const dead = isDeadly(tileAfter);
 
-  if (result.posture != 'attachWall') {
-    if (supportedAfter) {
-      impetus = genImpetus(suppTileAfter);
-    }
-    else {
-      if (impetus.y != 0)
-        impetus = vadd(impetus, { x: 0, y: -1 });
-    }
-  }
-
-  if (result.posture == 'attachWall') {
+  let animState: Sprite = 'player';
+  if (tickOutput.posture == 'attachWall') {
     animState = 'player_wall';
   }
-  else if (result.posture == 'crouch') {
+  else if (tickOutput.posture == 'crouch') {
     animState = 'player_crouch';
   }
   else {
-    animState = supportedAfter ? 'player' : impetus.y != 0 ? 'player_rise' : 'player_fall';
+    animState = supportedAfter ? 'player' : tickOutput.entity.impetus.y != 0 ? 'player_rise' : 'player_fall';
   }
 
-  anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus, flipState, dead });
+  anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus: tickOutput.entity.impetus, flipState, dead });
 
   if (tileEq(tileAfter, { t: 'save_point' }))
     anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });
