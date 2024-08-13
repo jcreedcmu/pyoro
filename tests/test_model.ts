@@ -43,7 +43,7 @@ describe('State', () => {
       expect(player.animState).toBe("player_rise");
       expect(player.flipState).toBe('right');
       expect(player.pos).toEqual({ x: 0, y: -1 });
-      expect(getVerticalImpetus(player)).toBe(FULL_IMPETUS - 1);
+      expect(getVerticalImpetus(player)).toBe(1 - FULL_IMPETUS);
     }
     m = executeMove(m, 'up');
 
@@ -52,7 +52,7 @@ describe('State', () => {
       expect(player.animState).toBe("player_rise");
       expect(player.flipState).toBe('right');
       expect(player.pos).toEqual({ x: 0, y: -2 });
-      expect(getVerticalImpetus(player)).toBe(FULL_IMPETUS - 2);
+      expect(getVerticalImpetus(player)).toBe(2 - FULL_IMPETUS);
     }
     m = executeMove(m, 'up-left');
 
