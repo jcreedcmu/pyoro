@@ -1,5 +1,5 @@
 import { tileOfGameState } from "./model";
-import { ForcedBlock, genImpetus, isOpen } from './model-utils';
+import { ForcedBlock, genImpetus, isGrabbable, isOpen, Posture } from './model-utils';
 import { Point, vadd, vplus } from './point';
 import { GameState } from "./state";
 import { Tile } from "./types";
@@ -13,6 +13,7 @@ export type TickContext = {
 export type TickOutput = {
   entity: EntityState,
   forced: ForcedBlock[],
+  posture: Posture,
 };
 
 export type EntityState = {
@@ -101,6 +102,7 @@ export type BouncePhaseContext = { entity: EntityState, target: Point };
 export type BouncePhaseOutput = {
   destination: Point,
   forced: ForcedBlock[]
+  posture: Posture,
 };
 
 export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePhaseOutput {
@@ -111,51 +113,76 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
     return isOpen(tileOfGameState(state, vadd(pos, relPt)));
   }
 
+  function isRpGrabbable(relPt: Point): boolean {
+    return isGrabbable(tileOfGameState(state, vadd(pos, relPt)));
+  }
+
   const vertProj = { x: 0, y: target.y };
   const horizProj = { x: target.x, y: 0 };
 
+  // Early-return special case; If target tile is grabbable wall,
+  // and target is horizontal, then we can grab it.
+  if (isRpGrabbable(target) && target.y == 0) {
+    return { destination: { x: 0, y: 0 }, forced: [], posture: 'attachWall' };
+  }
+
   // Attempt 1: Go to target tile
   if (isRpOpen(target) && isRpOpen(vertProj)) {
-    return { destination: target, forced: [] };
+    return { destination: target, forced: [], posture: 'stand' };
   }
 
   // Attempt 2: go to horizontal projection
   if (isRpOpen(horizProj)) {
-    return { destination: horizProj, forced: [{ pos: !isRpOpen(vertProj) ? vertProj : target, force: impetus }] };
+    return { destination: horizProj, forced: [{ pos: !isRpOpen(vertProj) ? vertProj : target, force: impetus }], posture: 'stand' };
   }
 
   // Attempt 3: go to vertical projection
   if (isRpOpen(vertProj)) {
-    return { destination: horizProj, forced: [{ pos: horizProj, force: impetus }] };
+    return { destination: horizProj, forced: [{ pos: horizProj, force: impetus }], posture: 'stand' };
   }
 
   // Attempt 4: hold still
-  return { destination: horizProj, forced: [{ pos: vertProj, force: impetus }] };
+  return { destination: horizProj, forced: [{ pos: vertProj, force: impetus }], posture: 'stand' };
 }
+
+export type FallPhaseContext = {
+  entity: EntityState,
+  fall: boolean,
+  posture: Posture,
+};
 
 export type FallPhaseOutput = {
   entity: EntityState,
 };
 
-function fallPhase(state: GameState, entity: EntityState, fall: boolean): FallPhaseOutput {
-  if (fall && isOpen(tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 })))) {
-    return { entity: { pos: entity.pos, impetus: vadd(entity.impetus, { x: 0, y: 1 }) } };
-  }
-  else {
+function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPhaseOutput {
+  const { entity, fall, posture } = fallPhaseContext;
+
+  if (!fall)
+    return { entity };
+
+  if (posture == 'attachWall')
+    return { entity };
+
+  if (!isOpen(tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 })))) {
     return { entity };
   }
+
+  // if none of the above conditions apply, let gravity affect impetus
+  return { entity: { pos: entity.pos, impetus: vadd(entity.impetus, { x: 0, y: 1 }) } };
 }
 
 export function entityTick(state: GameState, tickContext: TickContext): TickOutput {
   const { newImpetus, target, forced: forced1, fall } = targetPhase(state, tickContext);
-  const { destination, forced: forced2 } = bouncePhase(state, { entity: tickContext.entity, target });
+  const { destination, posture, forced: forced2 } = bouncePhase(state, { entity: tickContext.entity, target });
   const entity = {
     pos: vadd(tickContext.entity.pos, destination),
     impetus: newImpetus,
   };
-  const { entity: finalEntity } = fallPhase(state, entity, fall);
+  const { entity: finalEntity } = fallPhase(state, { entity, fall, posture });
   return {
     entity: finalEntity,
-    forced: [...forced1, ...forced2]
+    forced: [...forced1, ...forced2],
+    posture,
   }
 }

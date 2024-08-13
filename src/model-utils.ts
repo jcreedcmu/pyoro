@@ -33,7 +33,7 @@ export function isOpen(x: Tile): boolean {
     || isOpenBusBlock(x) || isOpenMotionBlock(x) || isDoor(x);
 }
 
-function isGrabbable(x: Tile): boolean {
+export function isGrabbable(x: Tile): boolean {
   return x.t == 'grip_wall';
 }
 
