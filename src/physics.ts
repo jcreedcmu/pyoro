@@ -138,11 +138,11 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
 
   // Attempt 3: go to vertical projection
   if (isRpOpen(vertProj)) {
-    return { destination: horizProj, forced: [{ pos: horizProj, force: impetus }], posture: 'stand' };
+    return { destination: vertProj, forced: [{ pos: horizProj, force: impetus }], posture: 'stand' };
   }
 
   // Attempt 4: hold still
-  return { destination: horizProj, forced: [{ pos: vertProj, force: impetus }], posture: 'stand' };
+  return { destination: { x: 0, y: 0 }, forced: [{ pos: vertProj, force: impetus }], posture: 'stand' };
 }
 
 export type FallPhaseContext = {
