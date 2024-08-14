@@ -91,7 +91,7 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'animState', sprite: 'player_rise' } },
       { t: 'assertion', assn: { t: 'flipState', facing: 'right' } },
       { t: 'assertion', assn: { t: 'position', pos: { x: 0, y: -1 } } },
-      { t: 'assertion', assn: { t: 'impetus', impetus: 3 } },
+      { t: 'assertion', assn: { t: 'impetus', impetus: -3 } },
     ]
   },
   {
@@ -101,7 +101,7 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'animState', sprite: 'player' } },
       { t: 'assertion', assn: { t: 'flipState', facing: 'right' } },
       { t: 'assertion', assn: { t: 'position', pos: { x: 0, y: 0 } } },
-      { t: 'assertion', assn: { t: 'impetus', impetus: 4 } },
+      { t: 'assertion', assn: { t: 'impetus', impetus: 0 } },
     ],
   },
   {
@@ -116,7 +116,7 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'animState', sprite: 'player' } },
       { t: 'assertion', assn: { t: 'flipState', facing: 'left' } },
       { t: 'assertion', assn: { t: 'position', pos: { x: -2, y: 0 } } },
-      { t: 'assertion', assn: { t: 'impetus', impetus: 1 } },
+      { t: 'assertion', assn: { t: 'impetus', impetus: 0 } },
     ],
   },
 ]

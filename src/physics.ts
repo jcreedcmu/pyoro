@@ -120,8 +120,6 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
   const vertProj = { x: 0, y: motive.y };
   const horizProj = { x: motive.x, y: 0 };
 
-  console.log(motive, impetus, tileOfGameState(state, vadd(pos, { x: motive.x, y: 0 })),
-    isRpGrabbable({ x: motive.x, y: 0 }), impetus.y <= 1)
   // Early-return special case; If motive tile is grabbable wall,
   // and motive is horizontal, then we can grab it.
   if (isRpGrabbable({ x: motive.x, y: 0 }) && impetus.y <= 1) {
@@ -170,8 +168,6 @@ export function destinationPhase(state: GameState, ctx: DestinationPhaseContext)
   const vertProj = { x: 0, y: target.y };
   const horizProj = { x: target.x, y: 0 };
 
-  console.log(target, impetus, tileOfGameState(state, vadd(pos, { x: target.x, y: 0 })),
-    isRpGrabbable({ x: target.x, y: 0 }), impetus.y <= 1)
   // Early-return special case; If target tile is grabbable wall,
   // and target is horizontal, then we can grab it.
   if (isRpGrabbable({ x: target.x, y: 0 }) && impetus.y <= 1) {
@@ -234,6 +230,7 @@ export function entityTick(state: GameState, tickContext: TickContext): TickOutp
     pos: vadd(entity.pos, destination),
     impetus: newImpetus,
   };
+  // XXX we're using posture from destination phase and ignoring bounce phase. That's probably wrong?
   const { entity: finalEntity } = fallPhase(state, { entity: destEntity, fall, posture });
   return {
     entity: finalEntity,
