@@ -97,15 +97,65 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
   }
 }
 
-export type BouncePhaseContext = { entity: EntityState, target: Point };
+export type BouncePhaseContext = { entity: EntityState, motive: Point };
 
 export type BouncePhaseOutput = {
+  bounce: Point,
+  forced: ForcedBlock[],
+  posture: Posture,
+};
+
+export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePhaseOutput {
+  const { entity, motive } = ctx;
+  const { pos, impetus } = entity;
+
+  function isRpOpen(relPt: Point): boolean {
+    return isOpen(tileOfGameState(state, vadd(pos, relPt)));
+  }
+
+  function isRpGrabbable(relPt: Point): boolean {
+    return isGrabbable(tileOfGameState(state, vadd(pos, relPt)));
+  }
+
+  const vertProj = { x: 0, y: motive.y };
+  const horizProj = { x: motive.x, y: 0 };
+
+  console.log(motive, impetus, tileOfGameState(state, vadd(pos, { x: motive.x, y: 0 })),
+    isRpGrabbable({ x: motive.x, y: 0 }), impetus.y <= 1)
+  // Early-return special case; If motive tile is grabbable wall,
+  // and motive is horizontal, then we can grab it.
+  if (isRpGrabbable({ x: motive.x, y: 0 }) && impetus.y <= 1) {
+    return { bounce: { x: 0, y: 0 }, forced: [], posture: 'attachWall' };
+  }
+
+  // Attempt 1: Go to motive tile
+  if (isRpOpen(motive) && isRpOpen(vertProj)) {
+    return { bounce: motive, forced: [], posture: 'stand' };
+  }
+
+  // Attempt 2: go to horizontal projection
+  if (isRpOpen(horizProj)) {
+    return { bounce: horizProj, forced: [{ pos: !isRpOpen(vertProj) ? vertProj : motive, force: impetus }], posture: 'stand' };
+  }
+
+  // Attempt 3: go to vertical projection
+  if (isRpOpen(vertProj)) {
+    return { bounce: vertProj, forced: [{ pos: horizProj, force: impetus }], posture: 'stand' };
+  }
+
+  // Attempt 4: hold still
+  return { bounce: { x: 0, y: 0 }, forced: [{ pos: vertProj, force: impetus }], posture: 'stand' };
+}
+
+export type DestinationPhaseContext = { entity: EntityState, target: Point };
+
+export type DestinationPhaseOutput = {
   destination: Point,
   forced: ForcedBlock[]
   posture: Posture,
 };
 
-export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePhaseOutput {
+export function destinationPhase(state: GameState, ctx: DestinationPhaseContext): DestinationPhaseOutput {
   const { entity, target } = ctx;
   const { pos, impetus } = entity;
 
@@ -175,16 +225,19 @@ function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPh
 }
 
 export function entityTick(state: GameState, tickContext: TickContext): TickOutput {
-  const { newImpetus, target, forced: forced1, fall } = targetPhase(state, tickContext);
-  const { destination, posture, forced: forced2 } = bouncePhase(state, { entity: tickContext.entity, target });
-  const entity = {
-    pos: vadd(tickContext.entity.pos, destination),
+  const entity = tickContext.entity;
+  const { bounce, posture: posture1, forced: forced0 } = bouncePhase(state, { entity, motive: tickContext.motive });
+
+  const { newImpetus, target, forced: forced1, fall } = targetPhase(state, { entity, motive: bounce, support: tickContext.support });
+  const { destination, posture, forced: forced2 } = destinationPhase(state, { entity, target });
+  const destEntity = {
+    pos: vadd(entity.pos, destination),
     impetus: newImpetus,
   };
-  const { entity: finalEntity } = fallPhase(state, { entity, fall, posture });
+  const { entity: finalEntity } = fallPhase(state, { entity: destEntity, fall, posture });
   return {
     entity: finalEntity,
-    forced: [...forced1, ...forced2],
+    forced: [...forced0, ...forced1, ...forced2],
     posture,
   }
 }
