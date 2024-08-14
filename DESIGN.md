@@ -105,6 +105,8 @@ increases down, in the direction of gravity.
 
 ### Low-Level Physics
 
+#### Diagram
+
 - Each entity has in its state a **impetus**, an integer valued vector
   relative to that entity. This is something like a velocity vector,
   but can have significant intuitive differences.
@@ -124,14 +126,64 @@ The state passed through the phases of physics tick update are
   Those tiles can do other things based on that information.
 
 The phases of the tick update computation are:
-- **target phase**: For each entity, output target and next-tick impetus
-- **bounce phase**: For each entity, input target and output
-  destination, based on entity-tile interactions
+- **bounce phase**: Let entity interact with motive tile, producing bounce.
+- **target phase**: Let impetus affect entity, producing target.
+- **destination phase**: Let entity interact with target tile, producing destination.
+- **fall phase**: Adjusted impetus according to gravity if required.
 - **collision phase**: Resolve entity-entity collisions.
 
 The target phase has two alternatives, supported and unsupported.
 The unsupported target phase can be further subdivided into computing
 the horizontal and vertical components of motion.
+
+#### Diagram
+
+This is approximate. Not all data flow is represented.
+
+```mermaid
+graph LR
+
+subgraph inputs[ ]
+ direction LR
+ inputEntity["entity"]:::value
+ inputMotive["motive"]:::value
+ inputSupport["support"]:::value
+end
+
+subgraph outputs[ ]
+ direction LR
+ outputEntity["entity"]:::value
+ outputForced["forced"]:::value
+ outputPosture["posture"]:::value
+end
+ subgraph main[ ]
+ direction LR
+EB(Bounce)
+T(Target)
+LB(Destination)
+F(Fall)
+EB --> outputForced
+EB -->|"bounce"| T
+
+T --> outputForced
+T -->|target| LB
+
+LB --> outputForced
+LB --> outputPosture
+LB --> |posture| F
+T -->|fall| F
+end
+inputMotive --> EB
+inputEntity --> main
+
+inputSupport --> T
+
+F --> outputEntity
+
+classDef hide fill:none,stroke:none
+classDef value fill:#dfe,stroke:#070
+class inputs,outputs,input1,input2,output1,output2 hide;
+```
 
 #### Target Phase (Supported)
 
