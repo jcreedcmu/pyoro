@@ -82,10 +82,28 @@ increases down, in the direction of gravity.
 - Physics should be invariant to left-right flipping, but is very much not
   required to be invariant to up-down flipping, because of gravity.
 
-### Low-Level Physics
+- ("Unimodality") Unsupported vertical motion should be "unimodal".
+  Any sequence of unsupported moves should have at most one
+  "ascending" subsequence followed by at most one "descending"
+  subsequence. In freefall, we shouldn't be able to wiggle around
+  vertically, or even pause and resume ascent, without some kind of
+  exceptional situation that "explains" the change in vertical
+  velocity. Legitimate exceptions include: landing on solid ground,
+  wall-grabs, or encountering some kind of bonus that gives us more
+  vertical impetus.
+
+- ("Small Jumps") In the absence of any barriers, when an entity wants
+  to move up, laterally, or up-diagonally from a normal supported
+  state, with zero impetus, its destination coincides with its motive,
+  with a resultant zero impetus.
+
+- ("Gap Running") A player can walking continuously across a floor
+  with at most one-tile gaps, with a constant impetus of (0,0).
 
 - All entities, player and otherwise, should MOSTLY have the same
   physics interactions with the rest of the world.
+
+### Low-Level Physics
 
 - Each entity has in its state a **impetus**, an integer valued vector
   relative to that entity. This is something like a velocity vector,
@@ -206,24 +224,6 @@ being the impetus.
   another. "Bouncing" entities is not allowed at this stage, only
   entity destruction. Mutual destruction is always an option if there
   are equal-precedence entities colliding.
-
-#### Constraints on Tick Update
-
-Regardless of the internal structure of the tick update, we think
-it should result in the truth of the below statements. Consider these
-"integration tests" for the above spec.
-
-🚨 XXX: Maybe this section is becoming close to obsolete, being
-supplanted by actual tests in code, if I can't think up any more
-informal integration tests.
-
-- In the absence of any barriers, when an entity wants to move up,
-  laterally, or up-diagonally from a normal supported state, with zero
-  impetus, its destination coincides with its motive, with a
-  resultant zero impetus.
-
-- A player can walking continuously across a floor with at most
-  one-tile gaps, with a constant impetus of (0,0).
 
 ### Puzzles
 
