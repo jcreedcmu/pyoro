@@ -105,8 +105,6 @@ increases down, in the direction of gravity.
 
 ### Low-Level Physics
 
-#### Diagram
-
 - Each entity has in its state a **impetus**, an integer valued vector
   relative to that entity. This is something like a velocity vector,
   but can have significant intuitive differences.
@@ -185,10 +183,47 @@ classDef value fill:#dfe,stroke:#070
 class inputs,outputs,input1,input2,output1,output2 hide;
 ```
 
+#### Bounce Phase
+
+The motive may be directing us to move into a cell that is already
+full. We want to revise it to the *bounce* direction, which at least
+attempts to move to an open cell. A cell is *open* if its tile admits
+movement into it. This is defined per-tile. We always consider the
+entity's own cell to be open for the purposes of this phase.
+
+In order to find the bounce direction, we iterate through some
+candidate approximations to the target, picking the first one that is
+"clear", which is a slightly stronger condition than "open", as it may
+involve checking openness of other nearby cells. The "vertical
+projection" of a vector means what you get when you set the x
+component to zero, and "horizontal" likewise what you get from setting
+the y component to zero.
+
+- The preferred direction is the target itself. This direction is
+  considered clear if the target is open, *and the vertical
+  approximation* of the target is also open. This prevents diagonal
+  movement when there is no "headroom", as well as preventing slipping
+  through "diagonal cracks".
+
+- The next most preferred direction is the horizontal approximation
+  of the target. This motion is considered clear if the direction is
+  open.
+
+- The next most preferred direction is the vertical approximation of
+  the target. This motion is considered clear if the direction is
+  open.
+
+- Finally, if all of the above directions are not clear, set the
+  bounce direction to the current position of the entity.
+
+If we didn't bounce to the motive itself, add to the set of forced
+tiles the *last* proposed bounce that wasn't used, with the force
+vector being the impetus.
+
 #### Target Phase (Supported)
 
 If the entity is supported by a block opposing the direction of the
-motive, then the target is exactly where the motive is.
+motive, then the target is exactly where the bounce direction is.
 The resulting impetus by default is zero, but the nature of the supporting
 block might change this.
 
@@ -208,66 +243,44 @@ having zero impetus.
 
 Assuming the entity is unsupported, we split cases.
 
-If the impetus and motive are *both* negative, then we are still
+If the impetus and bounce are *both* negative, then we are still
 ascending. Vertical target is one square up, and vertical impetus
 is increased by one due to gravity.
 
 Otherwise, we are falling, either involuntarily (due to impetus) or
-voluntarily (due to motive). It is intentionally "unrealistic" that we
-can choose to "exit" a jump at any time. Vertical target is one square
-down, and vertical impetus is set to
+somewhat voluntarily (due to bounce). It is intentionally
+"unrealistic" that we can choose to "exit" a jump at any time.
+Vertical target is one square down, and vertical impetus is set to
 
-$$ \max(\mathrm{impetus}_y + 1, \mathrm{motive}_y) $$
+$$ \max(\mathrm{impetus}_y, \mathrm{bounce}_y - 1) $$
 
 NOTE: because of this, I think there's a very small amount of slightly
-surprising control the player has regarding their motive immediately
+surprising control the player has regarding their motion immediately
 after exiting a jump. They get different values from exiting "down"
-(namely: 1) vs. "right" (namely: 0). This could be the crux of a
+(namely: 0) vs. "right" (namely: -1). This could be the crux of a
 puzzle.
+
+**XXX**: Discuss the `fall` boolean, and why the impetus calculation
+above doesn't include it.
 
 #### Target Phase (Unsupported, Horizontal Component)
 
 We split cases on the sign of the horizontal impetus.
-If the impetus is zero, the target is exactly where the motive is.
+If the impetus is zero, the target is exactly where the bounce is.
 The next-tick impetus stays zero.
 
 If the impetus is non-zero, then the target is one square in the
 direction of the impetus. The next-tick impetus reduces the magnitude
-of the impetus by 1 towards zero, unless the motive is also non-zero,
+of the impetus by 1 towards zero, unless the bounce is also non-zero,
 and in the **same** direction as the impetus.
 
-#### Bounce Phase
+#### Destination Phase
 
-In order to find the actual destination of motion, we iterate through
-some candidate approximations to the target, picking the first one
-that is "clear". The "vertical projection" of a vector means what you
-get when you set the x component to zero, and "horizontal" likewise
-what you get from setting the y component to zero.
+The destination phase is another "bounce"-like phase.
+To compute the destination from the target does the same iteration
+as bounce. The only difference is we also compute a posture.
 
-A cell is *open* if its tile admits movement into it. This is defined
-per-tile. We always consider the entity's own cell to be open for the
-purposes of this phase.
-
-- The preferred destination is the target itself. This destination is
-  considered clear if the target is open, *and the vertical
-  approximation* of the target is also open. This prevents diagonal
-  movement when there is no "headroom", as well as preventing slipping
-  through "diagonal cracks".
-
-- The next most preferred destination is the horizontal approximation
-  of the target. This motion is considered clear if the destination is
-  open.
-
-- The next most preferred destination is the vertical approximation of
-  the target. This motion is considered clear if the destination is
-  open.
-
-- Finally, if all of the above destinations are not clear, set the
-  destination to the current position of the entity.
-
-If we didn't move to the target itself, add to the set of forced tiles
-the *last* proposed target that wasn't used, with the force vector
-being the impetus.
+**XXX**: describe this.
 
 #### Collision Phase
 
