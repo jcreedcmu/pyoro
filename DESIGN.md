@@ -139,20 +139,21 @@ the horizontal and vertical components of motion.
 #### Diagram
 
 This is approximate. Not all data flow is represented.
+In particular, all phases have access to entity position and impetus.
 
 ```mermaid
 graph LR
 
 subgraph inputs[ ]
  direction LR
- inputEntity["entity"]:::value
  inputMotive["motive"]:::value
  inputSupport["support"]:::value
 end
 
 subgraph outputs[ ]
  direction LR
- outputEntity["entity"]:::value
+ outputPosition["position"]:::value
+ outputImpetus["impetus"]:::value
  outputForced["forced"]:::value
  outputPosture["posture"]:::value
 end
@@ -174,11 +175,10 @@ LB --> |posture| F
 T -->|fall| F
 end
 inputMotive --> EB
-inputEntity --> main
 
 inputSupport --> T
-
-F --> outputEntity
+LB --> outputPosition
+F --> outputImpetus
 
 classDef hide fill:none,stroke:none
 classDef value fill:#dfe,stroke:#070
