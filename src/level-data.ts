@@ -2413,6 +2413,30 @@ export const allLevels: Record<string, LevelData> = {
           "tile": {
             "t": "box3"
           }
+        },
+        "1,-7": {
+          "t": "static",
+          "tile": {
+            "t": "stone"
+          }
+        },
+        "2,-5": {
+          "t": "static",
+          "tile": {
+            "t": "stone"
+          }
+        },
+        "1,-11": {
+          "t": "static",
+          "tile": {
+            "t": "stone"
+          }
+        },
+        "11,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
         }
       }
     },
