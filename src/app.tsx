@@ -119,6 +119,15 @@ function renderLevelPicker(state: State, dispatch: Dispatch): JSX.Element | unde
   </div>;
 }
 
+export function repoLink(): JSX.Element {
+  const linkSvg = `<a href="https://github.com/jcreedcmu/pyoro" target="_blank">
+<svg width="80" height="80"
+   viewBox="0 0 250 250"
+   style="z-index: 1000; fill:#000; position: absolute; top: 0; border: 0; right: 0;"
+   aria-hidden="true">
+<path d="M 0 0 L 36.80 36.80 C 36.76 36.83 37.98 37.27 38.33 36.92 L 40.66 34.60 C 36.53 31.71 38.08 28.67 38.08 28.67 C 39.04 26.46 38.56 25.15 38.56 25.15 C 38.14 23.04 39.48 24.41 39.48 24.41 C 40.73 25.88 40.16 27.93 40.16 27.93 C 39.43 30.80 41.20 32.21 42.48 32.81 L 42.78 32.51 C 43.80 31.74 44.76 31.48 45.50 31.55 C 42.81 28.16 40.79 23.80 46.01 18.56 C 47.51 17.08 49.27 16.38 51.10 16.32 C 51.29 15.80 52.22 13.95 54.84 12.83 C 54.84 12.83 56.35 13.60 57.21 17.98 C 58.59 18.75 59.90 19.77 61.08 20.92 C 62.23 22.07 63.26 23.42 64.03 24.83 C 68.41 25.66 69.21 27.16 69.21 27.16 C 68.06 29.79 66.20 30.72 65.72 30.91 C 65.63 32.76 64.95 34.49 63.45 36 C 58.20 41.24 53.85 39.19 50.46 36.51 C 50.52 37.40 50.14 38.68 48.86 39.96 L 45.11 43.67 C 44.73 44.06 45.31 45.40 45.37 45.37 L 80 80 L 80 0 L 0 0 z " transform="scale(3.125)"/></svg></a>`;
+  return <div dangerouslySetInnerHTML={{ __html: linkSvg }}></div>;
+}
 
 export function App(props: {}): JSX.Element {
   function render(ci: CanvasInfo, props: CanvasProps) {
@@ -201,5 +210,6 @@ export function App(props: {}): JSX.Element {
     {renderModifyPanel(state, dispatch)}
     {renderLevelPicker(state, dispatch)}
     {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
+    {repoLink()}
   </div>;
 }
