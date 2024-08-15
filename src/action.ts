@@ -27,4 +27,5 @@ export type Action =
   | { t: 'setCurrentLevel', name: string }
   | { t: 'setField', setter: Setter<State> }
   | { t: 'testToolsAction', action: testTools.Action }
+  | { t: 'cacheMouse', p: Point }
   ;

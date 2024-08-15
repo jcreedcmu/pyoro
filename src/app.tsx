@@ -131,6 +131,7 @@ export function repoLink(): JSX.Element {
 
 export function App(props: {}): JSX.Element {
   function render(ci: CanvasInfo, props: CanvasProps) {
+    console.log('render');
     const { d, size: { x, y } } = ci;
     if (props.spriteImg !== null && props.main.iface.vd !== null) {
       drawView({ d, spriteImg: props.spriteImg, vd: props.main.iface.vd }, props.main);
@@ -169,7 +170,16 @@ export function App(props: {}): JSX.Element {
   const [state, dispatch] = useEffectfulReducer(init_state, extractEffects(reduce), doEffect);
   const [cref, mc] = useCanvas(
     { main: state, spriteImg: spriteImg }, render,
-    [state, spriteImg, state.iface.vd],
+    [
+      state.game,
+      state.iface,
+      state.anim,
+      // XXX state.effects used to be here. I think it was safe to remove?
+      // It updates every time we reduce, now, which is too often for
+      // mouse position caching.
+      spriteImg,
+      state.iface.vd
+    ],
     ci => {
       ci.c.focus();
       dispatch({ t: 'resize', vd: resizeView(ci.c) });
@@ -205,7 +215,9 @@ export function App(props: {}): JSX.Element {
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
-      ref={cref} />
+      ref={cref}
+      onMouseMove={e => dispatch({ t: 'cacheMouse', p: { x: e.clientX, y: e.clientY } })}
+    />
     {dragHandler}
     {renderModifyPanel(state, dispatch)}
     {renderLevelPicker(state, dispatch)}

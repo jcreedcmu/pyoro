@@ -1,9 +1,10 @@
 import { produce } from 'immer';
 import { Action } from './action';
+import { Animation } from './animation';
 import { bindings } from './bindings';
 import { editTiles } from './constants';
 import { getInitOverlay, setCurrentLevel } from './game-state-access';
-import { putDynamicTile } from './layer';
+import { putDynamicTile, weakTileEq } from './layer';
 import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, tileOfGameState } from './model';
 import { runSetter } from './optic';
@@ -11,14 +12,15 @@ import { ButtonedTileFields, DoorTileFields, State, TimedTileFields } from './st
 import * as testTools from './test-tools';
 import { DynamicTile, Move } from './types';
 import { wpoint_of_vd } from './view';
-import { Animation } from './animation';
 
 export type Command =
   | 'prevEditTile'
   | 'nextEditTile'
   | 'saveOverlay'
   | 'rotateEditTile'
-  | 'debug';
+  | 'debug'
+  | 'eyedropper'
+  ;
 
 
 /**
@@ -55,6 +57,21 @@ export function reduceCommand(s: State, cmd: Command): State {
     case 'debug':
       console.log(s);
       return s;
+    case 'eyedropper':
+      const vd = s.iface.vd;
+      if (vd == null || s.mouseCache == undefined)
+        return s;
+      const wpoint = wpoint_of_vd(vd, s.mouseCache, s);
+      if (wpoint.t == 'Toolbar') {
+        return s;
+      }
+      const tile = tileOfGameState(s.game, wpoint.p, true);
+      const tileIx = editTiles.findIndex(t => weakTileEq(tile, t));
+      if (tileIx == -1)
+        return s;
+      return produce(s, s => {
+        s.iface.editTileIx = tileIx;
+      });
   }
 }
 
@@ -76,6 +93,7 @@ function reduceMove(s: State, move: Move): State {
 
 function resolveAllAnimations(s: State, anims: Animation[]): State {
   return {
+    mouseCache: s.mouseCache,
     iface: renderIfaceAnims(anims, 'complete', s),
     game: renderGameAnims(anims, 'complete', s.game),
     anim: null,
@@ -135,6 +153,11 @@ export function reduce(s: State, a: Action): State {
       }
     }
     case 'mouseUp': return produce(s, s => { s.iface.mouse = { t: 'up' } });
+    case 'cacheMouse': {
+      return produce(s, s => {
+        s.mouseCache = a.p;
+      });
+    }
     case 'mouseMove': {
       const vd = s.iface.vd;
       if (vd == null)

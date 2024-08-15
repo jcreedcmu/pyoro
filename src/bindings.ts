@@ -31,6 +31,7 @@ export const commandBindings: Dict<Command> = {
   'C-s': 'saveOverlay',
   'r': 'rotateEditTile',
   'C-d': 'debug',
+  '`': 'eyedropper',
 }
 
 export const miscBindings: Dict<Action> = {

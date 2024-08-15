@@ -109,6 +109,14 @@ export function tileEq(t1: Tile, t2: Tile): boolean {
   }
 }
 
+/**
+ * Returns true if `t1` and `t2` are a close enough match to justify
+ * switching tiles in the editor to the one found in the world.
+ */
+export function weakTileEq(t1: Tile, t2: Tile): boolean {
+  return t1.t == t2.t;
+}
+
 export function isEmptyTile(ct: DynamicTile): boolean {
   return ct.t == 'static' && ct.tile.t == 'empty';
 }

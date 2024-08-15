@@ -64,6 +64,7 @@ export type State = {
   iface: IfaceState,
   anim: AnimState | null,
   effects: Effect[],
+  mouseCache: Point | undefined,
 };
 
 export const init_player: Player = {
