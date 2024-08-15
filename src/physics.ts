@@ -237,7 +237,6 @@ export type FallPhaseOutput = {
 function lethalForcedBlock(collideBlock: ForcedBlock): boolean {
   // XXX: Include tile type in ForcedBlock
   const { force, pos } = collideBlock;
-  console.log(force);
   return Math.max(Math.abs(force.x), Math.abs(force.y)) > 3;
 }
 
@@ -280,7 +279,6 @@ export function entityTick(state: GameState, tickContext: TickContext): TickOutp
   };
 
   const forced = [...forced0, ...forced1, ...forced2];
-  console.log(forced);
   if (forced.some(lethalForcedBlock)) {
     return { entity: entity, forced: [], posture: 'dead' };
   }
