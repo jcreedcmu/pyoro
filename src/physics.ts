@@ -196,7 +196,6 @@ export function destinationPhase(state: GameState, ctx: DestinationPhaseContext)
 export type FallPhaseContext = {
   entity: EntityState,
   fall: boolean,
-  posture: Posture,
 };
 
 export type FallPhaseOutput = {
@@ -204,12 +203,9 @@ export type FallPhaseOutput = {
 };
 
 function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPhaseOutput {
-  const { entity, fall, posture } = fallPhaseContext;
+  const { entity, fall } = fallPhaseContext;
 
   if (!fall)
-    return { entity };
-
-  if (posture == 'attachWall')
     return { entity };
 
   if (!isOpen(tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 })))) {
@@ -222,19 +218,28 @@ function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPh
 
 export function entityTick(state: GameState, tickContext: TickContext): TickOutput {
   const entity = tickContext.entity;
-  const { bounce, posture: posture1, forced: forced0 } = bouncePhase(state, { entity, motive: tickContext.motive });
+  const { bounce, posture: posture, forced: forced0 } = bouncePhase(state, { entity, motive: tickContext.motive });
+
+  if (posture == 'attachWall') {
+    return {
+      entity: { pos: entity.pos, impetus: { x: 0, y: 0 } },
+      forced: [],
+      posture: 'attachWall',
+    }
+  }
 
   const { newImpetus, target, forced: forced1, fall } = targetPhase(state, { entity, motive: bounce, support: tickContext.support });
-  const { destination, posture, forced: forced2 } = destinationPhase(state, { entity, target });
+  // XXX we're throwing away posture here. Is that ok?
+  const { destination, forced: forced2, posture: undefined } = destinationPhase(state, { entity, target });
   const destEntity = {
     pos: vadd(entity.pos, destination),
     impetus: newImpetus,
   };
-  // XXX we're using posture from destination phase and ignoring bounce phase. That's probably wrong?
-  const { entity: finalEntity } = fallPhase(state, { entity: destEntity, fall, posture });
+
+  const { entity: finalEntity } = fallPhase(state, { entity: destEntity, fall });
   return {
     entity: finalEntity,
     forced: [...forced0, ...forced1, ...forced2],
-    posture,
+    posture: posture,
   }
 }

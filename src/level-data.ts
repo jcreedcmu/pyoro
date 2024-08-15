@@ -3040,5 +3040,39 @@ export const allLevels: Record<string, LevelData> = {
         "y": 2
       }
     }
+  },
+  "_test6": {
+    "initOverlay": {
+      "tiles": {
+        "1,-1": {
+          "t": "static",
+          "tile": {
+            "t": "grip_wall"
+          }
+        },
+        "0,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-2,-2": {
+          "t": "static",
+          "tile": {
+            "t": "grip_wall"
+          }
+        }
+      }
+    },
+    "boundRect": {
+      "min": {
+        "x": -2,
+        "y": -2
+      },
+      "max": {
+        "x": 1,
+        "y": 1
+      }
+    }
   }
 };

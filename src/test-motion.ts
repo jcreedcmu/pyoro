@@ -119,4 +119,15 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'impetus', impetus: 0 } },
     ],
   },
+  {
+    description: 'should be able to do wall jumps',
+    levelName: '_test6', steps: [
+      { t: 'move', move: 'up' },
+      { t: 'move', move: 'right' },
+      { t: 'move', move: 'up-left' },
+      { t: 'move', move: 'left' },
+      { t: 'assertion', assn: { t: 'position', pos: { x: -1, y: -2 } } },
+      { t: 'assertion', assn: { t: 'animState', sprite: 'player_wall' } },
+    ],
+  },
 ]
