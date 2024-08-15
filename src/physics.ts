@@ -76,12 +76,21 @@ function genImpetusForMotive(supportTile: Tile, motive: Point, extraImpetus: num
 export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPhaseOutput {
   const { entity, motive, support } = ctx;
   const { impetus, pos } = entity;
+
+  function fblock(rpos: Point): ForcedBlock {
+    return restrictForcedBlock({
+      pos: rpos,
+      force: impetus,
+      tile: tileOfGameState(state, vadd(pos, rpos))
+    });
+  }
+
   if (support != undefined) {
     const supportTile = tileOfGameState(state, vadd(pos, support));
     return {
       target: motive,
       newImpetus: genImpetusForMotive(supportTile, motive, state.inventory.teal_fruit),
-      forced: [restrictForcedBlock({ pos: support, force: impetus })],
+      forced: [fblock(support)],
       fall: false, // fall is already "baked in" to newImpetus
     };
   }
@@ -109,6 +118,14 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
   const { entity, motive } = ctx;
   const { pos, impetus } = entity;
 
+  function fblock(rpos: Point): ForcedBlock {
+    return restrictForcedBlock({
+      pos: rpos,
+      force: impetus,
+      tile: tileOfGameState(state, vadd(pos, rpos))
+    });
+  }
+
   function isRpOpen(relPt: Point): boolean {
     return isOpen(tileOfGameState(state, vadd(pos, relPt)));
   }
@@ -133,16 +150,16 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
 
   // Attempt 2: go to horizontal projection
   if (isRpOpen(horizProj)) {
-    return { bounce: horizProj, forced: [restrictForcedBlock({ pos: !isRpOpen(vertProj) ? vertProj : motive, force: impetus })], posture: 'stand' };
+    return { bounce: horizProj, forced: [fblock(!isRpOpen(vertProj) ? vertProj : motive)], posture: 'stand' };
   }
 
   // Attempt 3: go to vertical projection
   if (isRpOpen(vertProj)) {
-    return { bounce: vertProj, forced: [restrictForcedBlock({ pos: horizProj, force: impetus })], posture: 'stand' };
+    return { bounce: vertProj, forced: [fblock(horizProj)], posture: 'stand' };
   }
 
   // Attempt 4: hold still
-  return { bounce: { x: 0, y: 0 }, forced: [restrictForcedBlock({ pos: vertProj, force: impetus })], posture: 'stand' };
+  return { bounce: { x: 0, y: 0 }, forced: [fblock(vertProj)], posture: 'stand' };
 }
 
 export type DestinationPhaseContext = { entity: EntityState, target: Point };
@@ -182,12 +199,20 @@ export function restrictImpetus(impetus: Point, target: Point): Point {
 
 /** Returns the effective amount of impetus that should actually apply to a forced block. */
 export function restrictForcedBlock(block: ForcedBlock): ForcedBlock {
-  return { pos: block.pos, force: restrictImpetus(block.force, block.pos) };
+  return { pos: block.pos, tile: block.tile, force: restrictImpetus(block.force, block.pos) };
 }
 
 export function destinationPhase(state: GameState, ctx: DestinationPhaseContext): DestinationPhaseOutput {
   const { entity, target } = ctx;
   const { pos, impetus } = entity;
+
+  function fblock(rpos: Point): ForcedBlock {
+    return restrictForcedBlock({
+      pos: rpos,
+      force: impetus,
+      tile: tileOfGameState(state, vadd(pos, rpos))
+    });
+  }
 
   function isRpOpen(relPt: Point): boolean {
     return isOpen(tileOfGameState(state, vadd(pos, relPt)));
@@ -213,16 +238,16 @@ export function destinationPhase(state: GameState, ctx: DestinationPhaseContext)
 
   // Attempt 2: go to horizontal projection
   if (isRpOpen(horizProj)) {
-    return { destination: horizProj, forced: [restrictForcedBlock({ pos: !isRpOpen(vertProj) ? vertProj : target, force: impetus })], posture: 'stand' };
+    return { destination: horizProj, forced: [fblock(!isRpOpen(vertProj) ? vertProj : target)], posture: 'stand' };
   }
 
   // Attempt 3: go to vertical projection
   if (isRpOpen(vertProj)) {
-    return { destination: vertProj, forced: [restrictForcedBlock({ pos: horizProj, force: impetus })], posture: 'stand' };
+    return { destination: vertProj, forced: [fblock(horizProj)], posture: 'stand' };
   }
 
   // Attempt 4: hold still
-  return { destination: { x: 0, y: 0 }, forced: [restrictForcedBlock({ pos: vertProj, force: impetus })], posture: 'stand' };
+  return { destination: { x: 0, y: 0 }, forced: [fblock(vertProj)], posture: 'stand' };
 }
 
 export type FallPhaseContext = {
@@ -234,10 +259,24 @@ export type FallPhaseOutput = {
   entity: EntityState,
 };
 
+/**
+ * Returns the maximum survivable impetus when colliding with this block.
+ */
+function lethalThreshold(tile: Tile): number {
+  switch (tile.t) {
+    case 'stone': return 3;
+    case 'box': return 5;
+    case 'box3': return 5;
+    default: return 5;
+  }
+}
+
+/**
+ * Returns true if this forced block applies so much force that we die.
+ */
 function lethalForcedBlock(collideBlock: ForcedBlock): boolean {
-  // XXX: Include tile type in ForcedBlock
   const { force, pos } = collideBlock;
-  return Math.max(Math.abs(force.x), Math.abs(force.y)) > 3;
+  return Math.max(Math.abs(force.x), Math.abs(force.y)) > lethalThreshold(collideBlock.tile);
 }
 
 function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPhaseOutput {

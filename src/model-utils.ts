@@ -73,6 +73,7 @@ export type Board = {
 export type ForcedBlock = {
   pos: Point,
   force: Point,
+  tile: Tile,
 };
 
 export type Posture = 'stand' | 'attachWall' | 'crouch' | 'dead';

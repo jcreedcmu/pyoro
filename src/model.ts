@@ -188,7 +188,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   const tileBefore = tileOfGameState(state, belowBefore);
   /* Whether we were supported during the previous step */
   const supportedBefore = !isOpen(tileBefore);
-  if (supportedBefore) forcedBlocks.push({ pos: { x: 0, y: 1 }, force: { x: 0, y: 1 } });
+  if (supportedBefore) forcedBlocks.push({ pos: { x: 0, y: 1 }, force: { x: 0, y: 1 }, tile: tileBefore });
   /* Whether we were in a "stable" state during the previous step */
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
