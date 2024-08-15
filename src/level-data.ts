@@ -3084,7 +3084,7 @@ export const allLevels: Record<string, LevelData> = {
             "t": "box"
           }
         },
-        "2,1": {
+        "2,2": {
           "t": "static",
           "tile": {
             "t": "grip_wall"
@@ -3099,7 +3099,7 @@ export const allLevels: Record<string, LevelData> = {
       },
       "max": {
         "x": 2,
-        "y": 3
+        "y": 4
       }
     }
   }

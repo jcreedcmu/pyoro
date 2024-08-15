@@ -122,7 +122,7 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
 
   // Early-return special case; If motive tile is grabbable wall,
   // and motive is horizontal, then we can grab it.
-  if (isRpGrabbable({ x: motive.x, y: 0 }) && impetus.y <= 1) {
+  if (isRpGrabbable({ x: motive.x, y: 0 }) && impetus.y <= 2) {
     return { bounce: { x: 0, y: 0 }, forced: [], posture: 'attachWall' };
   }
 
