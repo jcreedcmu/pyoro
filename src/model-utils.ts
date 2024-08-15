@@ -75,4 +75,4 @@ export type ForcedBlock = {
   force: Point,
 };
 
-export type Posture = 'stand' | 'attachWall' | 'crouch';
+export type Posture = 'stand' | 'attachWall' | 'crouch' | 'dead';

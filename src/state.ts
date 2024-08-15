@@ -73,7 +73,7 @@ export const init_player: Player = {
   prevPos: { x: 0, y: 0 },
   animState: 'player',
   flipState: 'right',
-  impetus: { x: 0, y: FULL_IMPETUS }, // XXX this FULL_IMPETUS seems very wrong
+  impetus: { x: 0, y: 0 },
 };
 
 export function getEmptyOverlay(): DynamicLayer {

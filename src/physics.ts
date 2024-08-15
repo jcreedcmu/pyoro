@@ -81,7 +81,7 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
     return {
       target: motive,
       newImpetus: genImpetusForMotive(supportTile, motive),
-      forced: [{ pos: support, force: impetus }],
+      forced: [restrictForcedBlock({ pos: support, force: impetus })],
       fall: false, // fall is already "baked in" to newImpetus
     };
   }
@@ -133,16 +133,16 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
 
   // Attempt 2: go to horizontal projection
   if (isRpOpen(horizProj)) {
-    return { bounce: horizProj, forced: [{ pos: !isRpOpen(vertProj) ? vertProj : motive, force: impetus }], posture: 'stand' };
+    return { bounce: horizProj, forced: [restrictForcedBlock({ pos: !isRpOpen(vertProj) ? vertProj : motive, force: impetus })], posture: 'stand' };
   }
 
   // Attempt 3: go to vertical projection
   if (isRpOpen(vertProj)) {
-    return { bounce: vertProj, forced: [{ pos: horizProj, force: impetus }], posture: 'stand' };
+    return { bounce: vertProj, forced: [restrictForcedBlock({ pos: horizProj, force: impetus })], posture: 'stand' };
   }
 
   // Attempt 4: hold still
-  return { bounce: { x: 0, y: 0 }, forced: [{ pos: vertProj, force: impetus }], posture: 'stand' };
+  return { bounce: { x: 0, y: 0 }, forced: [restrictForcedBlock({ pos: vertProj, force: impetus })], posture: 'stand' };
 }
 
 export type DestinationPhaseContext = { entity: EntityState, target: Point };
@@ -152,6 +152,38 @@ export type DestinationPhaseOutput = {
   forced: ForcedBlock[]
   posture: Posture,
 };
+
+/** Along one dimension, returns the effective amount of impetus that
+ * should actually apply to a collision, assuming the raw impetus is
+ * `impetus` and the tile the entity is colliding with is located at
+ * `target` relative to the entity.
+ */
+export function restrictImpetusOneAxis(impetus: number, target: number): number {
+  if (Math.sign(target) != 0
+    && Math.sign(impetus) != 0
+    && Math.sign(impetus) == Math.sign(target)) {
+    return impetus;
+  }
+  else {
+    return 0;
+  }
+}
+
+/** Returns the effective amount of impetus that should actually apply to a collision,
+ * assuming the raw impetus is `impetus` and the tile the entity is colliding
+ * with is located at `target` relative to the entity.
+ */
+export function restrictImpetus(impetus: Point, target: Point): Point {
+  return {
+    x: restrictImpetusOneAxis(impetus.x, target.x),
+    y: restrictImpetusOneAxis(impetus.y, target.y),
+  }
+}
+
+/** Returns the effective amount of impetus that should actually apply to a forced block. */
+export function restrictForcedBlock(block: ForcedBlock): ForcedBlock {
+  return { pos: block.pos, force: restrictImpetus(block.force, block.pos) };
+}
 
 export function destinationPhase(state: GameState, ctx: DestinationPhaseContext): DestinationPhaseOutput {
   const { entity, target } = ctx;
@@ -181,16 +213,16 @@ export function destinationPhase(state: GameState, ctx: DestinationPhaseContext)
 
   // Attempt 2: go to horizontal projection
   if (isRpOpen(horizProj)) {
-    return { destination: horizProj, forced: [{ pos: !isRpOpen(vertProj) ? vertProj : target, force: impetus }], posture: 'stand' };
+    return { destination: horizProj, forced: [restrictForcedBlock({ pos: !isRpOpen(vertProj) ? vertProj : target, force: impetus })], posture: 'stand' };
   }
 
   // Attempt 3: go to vertical projection
   if (isRpOpen(vertProj)) {
-    return { destination: vertProj, forced: [{ pos: horizProj, force: impetus }], posture: 'stand' };
+    return { destination: vertProj, forced: [restrictForcedBlock({ pos: horizProj, force: impetus })], posture: 'stand' };
   }
 
   // Attempt 4: hold still
-  return { destination: { x: 0, y: 0 }, forced: [{ pos: vertProj, force: impetus }], posture: 'stand' };
+  return { destination: { x: 0, y: 0 }, forced: [restrictForcedBlock({ pos: vertProj, force: impetus })], posture: 'stand' };
 }
 
 export type FallPhaseContext = {
@@ -201,6 +233,13 @@ export type FallPhaseContext = {
 export type FallPhaseOutput = {
   entity: EntityState,
 };
+
+function lethalForcedBlock(collideBlock: ForcedBlock): boolean {
+  // XXX: Include tile type in ForcedBlock
+  const { force, pos } = collideBlock;
+  console.log(force);
+  return Math.max(Math.abs(force.x), Math.abs(force.y)) > 3;
+}
 
 function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPhaseOutput {
   const { entity, fall } = fallPhaseContext;
@@ -218,6 +257,7 @@ function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPh
 
 export function entityTick(state: GameState, tickContext: TickContext): TickOutput {
   const entity = tickContext.entity;
+  // Bounce Phase
   const { bounce, posture: posture, forced: forced0 } = bouncePhase(state, { entity, motive: tickContext.motive });
 
   if (posture == 'attachWall') {
@@ -228,18 +268,27 @@ export function entityTick(state: GameState, tickContext: TickContext): TickOutp
     }
   }
 
+  // Target Phase
   const { newImpetus, target, forced: forced1, fall } = targetPhase(state, { entity, motive: bounce, support: tickContext.support });
   // XXX we're throwing away posture here. Is that ok?
+
+  // Destination Phase
   const { destination, forced: forced2, posture: undefined } = destinationPhase(state, { entity, target });
   const destEntity = {
     pos: vadd(entity.pos, destination),
     impetus: newImpetus,
   };
 
+  const forced = [...forced0, ...forced1, ...forced2];
+  console.log(forced);
+  if (forced.some(lethalForcedBlock)) {
+    return { entity: entity, forced: [], posture: 'dead' };
+  }
+
   const { entity: finalEntity } = fallPhase(state, { entity: destEntity, fall });
   return {
     entity: finalEntity,
-    forced: [...forced0, ...forced1, ...forced2],
-    posture: posture,
+    forced,
+    posture,
   }
 }

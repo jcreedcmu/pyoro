@@ -114,19 +114,6 @@ function forceBlock(s: GameState, pos: Point, tile: Tile): Animation[] {
   }
 }
 
-function isJump(move: Move): boolean {
-  switch (move) {
-    case 'up': return true;
-    case 'down': return false;
-    case 'left': return false;
-    case 'right': return false;
-    case 'up-left': return true;
-    case 'up-right': return true;
-    case 'reset': return false;
-    case 'recenter': return false;
-  }
-}
-
 function getDoorPassAnim(s: GameState, move: Move): Animation[] | undefined {
   const tileAt = tileOfGameState(s, s.player.pos);
   if (move == 'down' && tileAt.t == 'door') {
@@ -242,7 +229,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   const tileAfter = tileOfGameState(state, nextPos);
   const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
   const supportedAfter = !isOpen(suppTileAfter);
-  const dead = isDeadly(tileAfter);
+  const dead = isDeadly(tileAfter) || tickOutput.posture == 'dead';
 
   let animState: Sprite = 'player';
   if (tickOutput.posture == 'attachWall') {
