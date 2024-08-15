@@ -3102,5 +3102,52 @@ export const allLevels: Record<string, LevelData> = {
         "y": 4
       }
     }
+  },
+  "_test8": {
+    "initOverlay": {
+      "tiles": {
+        "0,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,0": {
+          "t": "static",
+          "tile": {
+            "t": "item",
+            "item": "teal_fruit"
+          }
+        },
+        "2,1": {
+          "t": "static",
+          "tile": {
+            "t": "up_box"
+          }
+        },
+        "3,-4": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        }
+      }
+    },
+    "boundRect": {
+      "min": {
+        "x": 0,
+        "y": -5
+      },
+      "max": {
+        "x": 3,
+        "y": 1
+      }
+    }
   }
 };

@@ -141,5 +141,20 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'position', pos: { x: 1, y: 3 } } },
       { t: 'assertion', assn: { t: 'animState', sprite: 'player_fall' } },
     ],
-  }
+  },
+  {
+    description: 'teal fruit should enhance jump',
+    levelName: '_test8', steps: [
+      { t: 'move', move: 'right' },
+      { t: 'move', move: 'right' },
+      { t: 'move', move: 'up' },
+      { t: 'move', move: 'up' },
+      { t: 'move', move: 'up' },
+      { t: 'move', move: 'up' },
+      { t: 'move', move: 'up' },
+      { t: 'move', move: 'right' },
+      { t: 'assertion', assn: { t: 'position', pos: { x: 3, y: -5 } } },
+      { t: 'assertion', assn: { t: 'animState', sprite: 'player' } },
+    ],
+  },
 ]
