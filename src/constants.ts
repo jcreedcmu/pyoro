@@ -23,6 +23,7 @@ export const editTiles: Tile[] =
     boxTile(),
     { t: 'grip_wall' },
     { t: 'box3' },
+    { t: 'stone' },
     { t: 'up_box' },
     { t: 'fragile_box' },
     { t: 'spike', direction: 'left' },

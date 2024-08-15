@@ -86,6 +86,8 @@ export type Tile =
   | { t: 'box' }
   /** A box with grass on it */
   | { t: 'box3' }
+  /** Stone texture */
+  | { t: 'stone' }
   /** A box that disappears if you walk on it */
   | { t: 'fragile_box' }
   | { t: 'empty' }

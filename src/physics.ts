@@ -66,9 +66,9 @@ export function targetPhaseUnsupportedY(state: GameState, ctx: TargetPhaseContex
   }
 }
 
-function genImpetusForMotive(supportTile: Tile, motive: Point): Point {
+function genImpetusForMotive(supportTile: Tile, motive: Point, extraImpetus: number = 0): Point {
   if (motive.y < 0)
-    return vsub({ x: 0, y: 1 }, genImpetus(supportTile));
+    return vsub({ x: 0, y: 1 - extraImpetus }, genImpetus(supportTile));
   else
     return { x: 0, y: 0 };
 }
@@ -80,7 +80,7 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
     const supportTile = tileOfGameState(state, vadd(pos, support));
     return {
       target: motive,
-      newImpetus: genImpetusForMotive(supportTile, motive),
+      newImpetus: genImpetusForMotive(supportTile, motive, state.inventory.teal_fruit),
       forced: [restrictForcedBlock({ pos: support, force: impetus })],
       fall: false, // fall is already "baked in" to newImpetus
     };

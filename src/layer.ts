@@ -87,6 +87,7 @@ export function tileEq(t1: Tile, t2: Tile): boolean {
   switch (t1.t) {
     case 'box': return t2.t == 'box';
     case 'box3': return t2.t == 'box3';
+    case 'stone': return t2.t == 'stone';
     case 'fragile_box': return t2.t == 'fragile_box';
     case 'empty': return t2.t == 'empty';
     case 'broken_box': return t2.t == 'broken_box';

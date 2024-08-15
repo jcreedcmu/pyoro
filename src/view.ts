@@ -105,6 +105,7 @@ function spriteLocOfTile(tile: Tile): Point {
   switch (tile.t) {
     case 'box': return { x: 1, y: 4 };
     case 'box3': return { x: 3, y: 3 };
+    case 'stone': return { x: 1, y: 7 };
     case 'fragile_box': return { x: 2, y: 6 };
     case 'empty': return { x: 0, y: 0 };
     case 'broken_box': return { x: 4, y: 3 };

@@ -223,7 +223,7 @@ export const allLevels: Record<string, LevelData> = {
         "3,4": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "-8,10": {
@@ -436,49 +436,49 @@ export const allLevels: Record<string, LevelData> = {
         "-6,6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "-5,6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "-4,6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "-2,6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "-3,6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "-1,6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "0,6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "1,6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "2,6": {
@@ -490,13 +490,13 @@ export const allLevels: Record<string, LevelData> = {
         "3,6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "3,5": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "stone"
           }
         },
         "-12,2": {
