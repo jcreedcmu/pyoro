@@ -114,7 +114,12 @@ export function tileEq(t1: Tile, t2: Tile): boolean {
  * switching tiles in the editor to the one found in the world.
  */
 export function weakTileEq(t1: Tile, t2: Tile): boolean {
-  return t1.t == t2.t;
+  switch (t1.t) {
+    case 'bus_block': return t2.t == 'bus_block' && t1.bus == t2.bus;
+    case 'bus_button': return t2.t == 'bus_button' && t1.bus == t2.bus;
+    default:
+      return t1.t == t2.t;
+  }
 }
 
 export function isEmptyTile(ct: DynamicTile): boolean {
