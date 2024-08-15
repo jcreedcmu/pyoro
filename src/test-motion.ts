@@ -130,4 +130,15 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'animState', sprite: 'player_wall' } },
     ],
   },
+  {
+    description: 'wall jump should fail when falling fast',
+    levelName: '_test7', steps: [
+      { t: 'move', move: 'up-right' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'right' },
+      { t: 'assertion', assn: { t: 'position', pos: { x: 1, y: 2 } } },
+      // { t: 'assertion', assn: { t: 'animState', sprite: 'player_fall' } },
+    ],
+  }
 ]
