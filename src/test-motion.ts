@@ -138,7 +138,7 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'move', move: 'down' },
       { t: 'move', move: 'right' },
       { t: 'assertion', assn: { t: 'position', pos: { x: 1, y: 2 } } },
-      // { t: 'assertion', assn: { t: 'animState', sprite: 'player_fall' } },
+      { t: 'assertion', assn: { t: 'animState', sprite: 'player_fall' } },
     ],
   }
 ]

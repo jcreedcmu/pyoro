@@ -334,7 +334,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
     animState = 'player_crouch';
   }
   else {
-    animState = supportedAfter ? 'player' : tickOutput.entity.impetus.y != 0 ? 'player_rise' : 'player_fall';
+    animState = supportedAfter ? 'player' : tickOutput.entity.impetus.y < 0 ? 'player_rise' : 'player_fall';
   }
 
   anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus: tickOutput.entity.impetus, flipState, dead });
