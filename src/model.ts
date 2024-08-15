@@ -1,86 +1,16 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { COMBO_THRESHOLD, editTiles, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { tileEq, DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, putDynamicTile, tileOfStack, pointMapEntries, removeDynamicTile, mapPointMap } from './layer';
-import { Point, vadd, vequal, vmn, vplus } from './point';
-import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
-import { Tile, DynamicTile, Facing, MotiveMove, Move, Sprite, Tool } from './types';
-import { boundBrect, mapValues, max } from './util';
-import { WidgetPoint } from './view';
 import { expandBoundRect, getBoundRect, getInitOverlay, getOverlay } from './game-state-access';
-import { getVerticalImpetus } from './player-accessors';
+import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
-import { Board, Motion, ropen, rgrabbable, ForcedBlock, isOpen, genImpetus, isDeadly, getItem } from './model-utils';
+import { Board, ForcedBlock, getItem, isDeadly, isOpen } from './model-utils';
 import { entityTick } from './physics';
-
-function execute_down(b: Board, opts?: { preventCrouch: boolean }): Motion {
-  return ropen(b, 0, 1) ?
-    { dpos: { x: 0, y: 1 }, impetus: { x: 0, y: 0 }, posture: 'stand' } :
-    { dpos: { x: 0, y: 0 }, impetus: { x: 0, y: 0 }, posture: opts?.preventCrouch ? 'stand' : 'crouch' }
-}
-
-function execute_up(b: Board): Motion {
-  var { player } = b;
-  if (getVerticalImpetus(player) != 0) {
-    if (ropen(b, 0, -1)) {
-      return { dpos: { x: 0, y: -1 }, posture: 'stand' }
-    }
-    else {
-      var rv = execute_down(b, { preventCrouch: true });
-      rv.forced = { pos: { x: 0, y: -1 }, force: { x: 0, y: -1 } };
-      return rv;
-    }
-  }
-  else {
-    return { dpos: { x: 0, y: 1 }, posture: 'stand' };
-  }
-}
-
-function execute_horiz(b: Board, flip: Facing): Motion {
-  const { player } = b;
-  const dx = flip == 'left' ? -1 : 1;
-  const forward_open = ropen(b, dx, 0);
-  if (rgrabbable(b, dx, 0)) {
-    return { dpos: { x: 0, y: 0 }, impetus: { x: 0, y: 1 }, posture: 'attachWall' };
-  }
-
-  if (getVerticalImpetus(player) != 0 && !ropen(b, 0, 1)) {
-    return forward_open
-      ? { dpos: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' }
-      : { dpos: { x: 0, y: 0 }, forced: { pos: { x: dx, y: 0 }, force: { x: dx, y: 0 } }, impetus: { x: 0, y: 0 }, posture: 'stand' };
-  }
-  else {
-    if (forward_open) {
-      return ropen(b, dx, 1)
-        ? { dpos: { x: dx, y: 1 }, impetus: { x: 0, y: 0 }, posture: 'stand' }
-        : { dpos: { x: dx, y: 0 }, impetus: { x: 0, y: 0 }, posture: 'stand' };
-    }
-    else
-      return { dpos: { x: 0, y: 1 }, forced: { pos: { x: dx, y: 0 }, force: { x: dx, y: 0 } }, impetus: { x: 0, y: 0 }, posture: 'stand' }
-  }
-}
-
-function execute_up_diag(b: Board, flip: Facing): Motion {
-  const { player } = b;
-  const dx = flip == 'left' ? -1 : 1;
-  const forward_open = ropen(b, dx, 0);
-  if (getVerticalImpetus(player) == 0)
-    return execute_horiz(b, flip);
-  if (!ropen(b, 0, -1)) {
-    const rv = execute_horiz(b, flip);
-    rv.forced = { pos: { x: 0, y: -1 }, force: { x: 0, y: -1 } };
-    return rv;
-  }
-  if (rgrabbable(b, dx, 0))
-    return { dpos: { x: 0, y: 0 }, forced: { pos: { x: dx, y: 0 }, force: { x: dx, y: 0 } }, posture: 'attachWall' };
-  if (ropen(b, dx, -1))
-    return { dpos: { x: dx, y: -1 }, posture: 'stand' }
-  else {
-    const rv = execute_down(b);
-    rv.forced = { pos: { x: dx, y: -1 }, force: { x: dx, y: -1 } };
-    return rv;
-  }
-}
+import { Point, vequal, vmn, vplus } from './point';
+import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
+import { DynamicTile, Facing, MotiveMove, Move, Sprite, Tile, Tool } from './types';
+import { mapValues, max } from './util';
+import { WidgetPoint } from './view';
 
 function layerStackOfState(s: GameState): LayerStack {
   return {
@@ -102,18 +32,6 @@ function boardOfState(s: GameState): Board {
       boundRect: getBoundRect(s),
     }
   };
-}
-
-// This goes from a Move to a Motion
-function get_motion(b: Board, move: MotiveMove): Motion {
-  switch (move) {
-    case 'up': return execute_up(b);
-    case 'down': return execute_down(b);
-    case 'left': return execute_horiz(b, 'left');
-    case 'right': return execute_horiz(b, 'right');
-    case 'up-left': return execute_up_diag(b, 'left');
-    case 'up-right': return execute_up_diag(b, 'right');
-  }
 }
 
 function motiveOfMove(move: MotiveMove): Point {

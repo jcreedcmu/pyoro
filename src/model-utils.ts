@@ -76,19 +76,3 @@ export type ForcedBlock = {
 };
 
 export type Posture = 'stand' | 'attachWall' | 'crouch';
-
-export type Motion = {
-  dpos: Point,
-  forced?: ForcedBlock, // optionally force a block in the direction of motion
-  impetus?: Point, // optionally set impetus to some value
-  posture?: Posture, // optionally set posture to some value
-};
-
-export function ropen(b: Board, x: number, y: number): boolean {
-  const { player, trc } = b;
-  return isOpen(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
-}
-export function rgrabbable(b: Board, x: number, y: number): boolean {
-  const { player, trc } = b;
-  return isGrabbable(tileOfStack(trc.layerStack, vplus(player.pos, { x, y }), trc));
-}
