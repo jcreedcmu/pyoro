@@ -22,3 +22,6 @@ docs:
 # deploy to github pages
 deploy:
 	git push origin "main:deploy"
+
+count:
+	ag -g 'tsx?$$' --ignore='tests' --ignore='level-data.ts' | xargs wc -l
