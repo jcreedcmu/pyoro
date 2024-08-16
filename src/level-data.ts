@@ -3262,19 +3262,19 @@ export const allLevels: Record<string, LevelData> = {
         "0,1": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "-2,1": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "-1,1": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "3,1": {
@@ -3290,7 +3290,7 @@ export const allLevels: Record<string, LevelData> = {
         "3,-1": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "6,-2": {
@@ -3317,31 +3317,31 @@ export const allLevels: Record<string, LevelData> = {
         "7,3": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "6,3": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "5,3": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "4,3": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "3,3": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "4,0": {
@@ -3378,7 +3378,7 @@ export const allLevels: Record<string, LevelData> = {
         "1,2": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "1,3": {
@@ -3390,7 +3390,7 @@ export const allLevels: Record<string, LevelData> = {
         "2,3": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "0,3": {
@@ -3402,7 +3402,7 @@ export const allLevels: Record<string, LevelData> = {
         "4,1": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "5,1": {
@@ -3454,10 +3454,8 @@ export const allLevels: Record<string, LevelData> = {
           }
         },
         "-6,1": {
-          "t": "static",
-          "tile": {
-            "t": "box"
-          }
+          "t": "bus_block",
+          "bus": "green"
         },
         "-6,0": {
           "t": "static",
@@ -3472,6 +3470,186 @@ export const allLevels: Record<string, LevelData> = {
             "t": "spike",
             "direction": "up"
           }
+        },
+        "8,3": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "9,3": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "10,3": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "11,3": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "7,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "8,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "10,0": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "9,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "12,3": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "13,3": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "14,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "11,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "12,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "14,0": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "14,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "11,0": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "12,0": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "10,-1": {
+          "t": "static",
+          "tile": {
+            "t": "grip_wall"
+          }
+        },
+        "11,-1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "10,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "15,-2": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "14,-2": {
+          "t": "bus_button",
+          "bus": "green"
+        },
+        "15,-1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "15,0": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "15,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "14,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "15,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "15,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "7,-3": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "7,-2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
         }
       }
     },
@@ -3481,7 +3659,7 @@ export const allLevels: Record<string, LevelData> = {
         "y": -3
       },
       "max": {
-        "x": 7,
+        "x": 15,
         "y": 3
       }
     }
