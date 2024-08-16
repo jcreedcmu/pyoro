@@ -131,7 +131,6 @@ export function repoLink(): JSX.Element {
 
 export function App(props: {}): JSX.Element {
   function render(ci: CanvasInfo, props: CanvasProps) {
-    console.log('render');
     const { d, size: { x, y } } = ci;
     if (props.spriteImg !== null && props.main.iface.vd !== null) {
       drawView({ d, spriteImg: props.spriteImg, vd: props.main.iface.vd }, props.main);
