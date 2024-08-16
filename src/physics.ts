@@ -266,8 +266,8 @@ function lethalThreshold(tile: Tile): number {
   switch (tile.t) {
     case 'stone': return 3;
     case 'box': return 5;
-    case 'box3': return 5;
-    default: return 5;
+    case 'box3': return Infinity;
+    default: return Infinity;
   }
 }
 
