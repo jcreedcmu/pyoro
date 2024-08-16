@@ -76,6 +76,14 @@ function drawScaled(fv: FView, state: State): void {
     drawEditorStuff(fv, state);
   }
 
+  // Draw fade effect for death and restart
+  if (state.iface.blackout) {
+    const c = u.rgbOfColor(guiData.stage_color);
+    d.fillStyle = rgba(c.r, c.g, c.b, state.iface.blackout);
+    d.fillRect(origin.x, origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
+    return;
+  }
+
   drawInventory(fv, state);
 
   if (DEBUG.devicePixelRatio) {
@@ -269,13 +277,6 @@ function drawEditorStuff(fv: FView, state: State): void {
 
   // selected tile & selected tool
   drawInventorySelection(d, { x: state.iface.editTileIx, y: 0 });
-
-  if (state.iface.blackout) {
-    const c = u.rgbOfColor(guiData.stage_color);
-    d.fillStyle = rgba(c.r, c.g, c.b, state.iface.blackout);
-    d.fillRect(origin.x, origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
-    return;
-  }
 }
 
 function drawInventory(fv: FView, state: State): void {
