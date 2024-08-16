@@ -1431,6 +1431,46 @@ export const allLevels: Record<string, LevelData> = {
             "t": "spike",
             "direction": "up"
           }
+        },
+        "-10,7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-11,8": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-12,9": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-13,10": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-14,10": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-15,10": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-16,9": {
+          "t": "door",
+          "destinationLevel": "button-hack"
         }
       }
     },
@@ -3213,6 +3253,236 @@ export const allLevels: Record<string, LevelData> = {
       "max": {
         "x": 2,
         "y": 4
+      }
+    }
+  },
+  "button-hack": {
+    "initOverlay": {
+      "tiles": {
+        "0,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-2,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-1,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "3,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,0": {
+          "t": "door",
+          "destinationLevel": "start"
+        },
+        "3,-1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "6,-2": {
+          "t": "bus_button",
+          "bus": "red"
+        },
+        "6,0": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "6,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-3,1": {
+          "t": "bus_block",
+          "bus": "red"
+        },
+        "7,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "6,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "5,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "4,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "3,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "4,0": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "right"
+          }
+        },
+        "3,0": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "2,-1": {
+          "t": "static",
+          "tile": {
+            "t": "grip_wall"
+          }
+        },
+        "2,0": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "2,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "4,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "5,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "5,0": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-5,3": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-4,3": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-3,3": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-2,3": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-1,3": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "-6,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-6,0": {
+          "t": "static",
+          "tile": {
+            "t": "item",
+            "item": "coin"
+          }
+        },
+        "-6,3": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        }
+      }
+    },
+    "boundRect": {
+      "min": {
+        "x": -6,
+        "y": -3
+      },
+      "max": {
+        "x": 7,
+        "y": 3
       }
     }
   }
