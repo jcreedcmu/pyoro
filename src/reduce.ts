@@ -19,6 +19,7 @@ export type Command =
   | 'saveOverlay'
   | 'rotateEditTile'
   | 'debug'
+  | 'edit'
   | 'eyedropper'
   ;
 
@@ -57,6 +58,17 @@ export function reduceCommand(s: State, cmd: Command): State {
     case 'debug':
       console.log(s);
       return s;
+    case 'edit':
+      if (s.iface.toolState.t == 'pencil_tool') {
+        return produce(s, s => {
+          s.iface.toolState = { t: 'play_tool' };
+        });
+      }
+      else {
+        return produce(s, s => {
+          s.iface.toolState = { t: 'pencil_tool' };
+        });
+      }
     case 'eyedropper':
       const vd = s.iface.vd;
       if (vd == null || s.mouseCache == undefined)

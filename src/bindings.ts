@@ -30,6 +30,7 @@ export const commandBindings: Dict<Command> = {
   ',': 'prevEditTile',
   'C-s': 'saveOverlay',
   'r': 'rotateEditTile',
+  'S-d': 'edit',
   'C-d': 'debug',
   '`': 'eyedropper',
 }

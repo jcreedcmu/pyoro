@@ -12,11 +12,13 @@ import * as u from './util';
 import { rgba } from './util';
 import { getTestState } from './test-state';
 import { motionTestResult } from './test-motion';
-import { getBoundRect } from './game-state-access';
+import { getBoundRect, isToolbarActive } from './game-state-access';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
-  | { t: 'World', p: Point };
+  | { t: 'World', p: Point }
+  | { t: 'None', p: Point }
+  ;
 
 // Functional View Data
 export type FView = {
@@ -70,7 +72,10 @@ function drawScaled(fv: FView, state: State): void {
   }
   d.restore();
 
-  drawEditorStuff(fv, state);
+  if (isToolbarActive(state)) {
+    drawEditorStuff(fv, state);
+  }
+
   drawInventory(fv, state);
 
   if (DEBUG.devicePixelRatio) {
@@ -83,22 +88,24 @@ function drawScaled(fv: FView, state: State): void {
 
   const debugLines: string[] = [];
 
-  if (DEBUG.gameTime) {
-    debugLines.push(`time: ${state.game.time}`);
-  }
-  if (DEBUG.impetus) {
-    debugLines.push(`impetus: ${JSON.stringify(state.game.player.impetus)}`);
-  }
-  if (DEBUG.combo) {
-    debugLines.push(`combo: ${stringOfCombo(state.game.player.combo)}`);
-  }
+  if (isToolbarActive(state)) {
+    if (DEBUG.gameTime) {
+      debugLines.push(`time: ${state.game.time}`);
+    }
+    if (DEBUG.impetus) {
+      debugLines.push(`impetus: ${JSON.stringify(state.game.player.impetus)}`);
+    }
+    if (DEBUG.combo) {
+      debugLines.push(`combo: ${stringOfCombo(state.game.player.combo)}`);
+    }
 
-  debugLines.forEach((line, i) => {
-    d.fillStyle = 'white';
-    d.font = '10px sans-serif';
-    d.textBaseline = 'top';
-    d.fillText(line, fv.vd.origin.x + 3, fv.vd.origin.y - (i + 1) * 15);
-  });
+    debugLines.forEach((line, i) => {
+      d.fillStyle = 'white';
+      d.font = '10px sans-serif';
+      d.textBaseline = 'top';
+      d.fillText(line, fv.vd.origin.x + 3, fv.vd.origin.y - (i + 1) * 15);
+    });
+  }
 }
 
 function spriteLocOfTile(tile: Tile): Point {
@@ -418,11 +425,17 @@ export function wpoint_of_vd(vd: ViewData, p: Point, s: State): WidgetPoint {
       t: 'World',
       p: vmn([s.iface.viewPort, origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
     };
-  else {
+  else if (isToolbarActive(s)) {
     const rv: WidgetPoint = {
       t: 'Toolbar',
       tilePoint: vm(p, p => int(p / (SCALE * TILE_SIZE))),
     }
     return rv;
+  }
+  else {
+    return {
+      t: 'None',
+      p,
+    }
   }
 }

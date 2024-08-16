@@ -24,7 +24,7 @@ export const init_state: State = {
     viewPort: { x: -13, y: -9 },
     blackout: 0,
     editTileIx: 0,
-    toolState: { t: 'pencil_tool' },
+    toolState: { t: 'play_tool' },
     editTileRotation: 0,
     mouse: { t: 'up' },
     vd: null,

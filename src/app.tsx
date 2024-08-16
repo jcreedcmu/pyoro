@@ -27,7 +27,7 @@ function passthrough(k: string): boolean {
 
 function cursorOfToolState(toolState: ToolState): CSS.Property.Cursor {
   switch (toolState.t) {
-    case 'play_tool': return 'pointer';
+    case 'play_tool': return 'auto';
     case 'hand_tool': return 'grab';
     case 'pencil_tool': return 'cell';
     case 'modify_tool': return 'url(/assets/modify-tool.png) 8 8, auto';
@@ -222,6 +222,6 @@ export function App(props: {}): JSX.Element {
     {renderModifyPanel(state, dispatch)}
     {renderLevelPicker(state, dispatch)}
     {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
-    {repoLink()}
+    {state.iface.toolState.t == 'play_tool' ? repoLink() : undefined}
   </div>;
 }

@@ -41,3 +41,7 @@ export function expandBoundRect(state: GameState, p: Point): void {
     state.levels[state.currentLevel].boundRect = boundBrect([brect.min, brect.max, p]);
   }
 }
+
+export function isToolbarActive(state: State): boolean {
+  return state.iface.toolState.t != 'play_tool';
+}
