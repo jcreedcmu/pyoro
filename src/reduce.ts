@@ -140,7 +140,9 @@ export function reduce(s: State, a: Action): State {
         return s;
       }
       if (ams.animator.dur == ams.frame + 1) {
-        return resolveAllAnimations(s, ams.animator.anims);
+        return produce(resolveAllAnimations(s, ams.animator.anims), s => {
+          s.effects.push({ t: 'soundEffect', sound: { t: 'click' } });
+        });
       }
       else {
         return produce(s, s => {
