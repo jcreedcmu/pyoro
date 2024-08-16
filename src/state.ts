@@ -59,12 +59,19 @@ export type GameState = {
   busState: Record<Bus, boolean>,
 }
 
+/**
+ * This is state which we don't expect to do rerenders based on it
+ */
+export type NonVisibleState = {
+  mouseCache: Point | undefined,
+};
+
 export type State = {
   game: GameState,
   iface: IfaceState,
   anim: AnimState | null,
   effects: Effect[],
-  mouseCache: Point | undefined,
+  nonVisibleState: NonVisibleState,
 };
 
 export const init_player: Player = {

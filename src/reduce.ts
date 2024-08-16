@@ -3,7 +3,7 @@ import { Action } from './action';
 import { Animation } from './animation';
 import { bindings } from './bindings';
 import { editTiles } from './constants';
-import { getInitOverlay, setCurrentLevel } from './game-state-access';
+import { getInitOverlay, getMouseCache, setCurrentLevel, setMouseCache } from './game-state-access';
 import { putDynamicTile, weakTileEq } from './layer';
 import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, tileOfGameState } from './model';
@@ -71,9 +71,10 @@ export function reduceCommand(s: State, cmd: Command): State {
       }
     case 'eyedropper':
       const vd = s.iface.vd;
-      if (vd == null || s.mouseCache == undefined)
+      const mc = getMouseCache(s);
+      if (vd == null || mc == undefined)
         return s;
-      const wpoint = wpoint_of_vd(vd, s.mouseCache, s);
+      const wpoint = wpoint_of_vd(vd, mc, s);
       if (wpoint.t == 'Toolbar') {
         return s;
       }
@@ -105,7 +106,7 @@ function reduceMove(s: State, move: Move): State {
 
 function resolveAllAnimations(s: State, anims: Animation[]): State {
   return {
-    mouseCache: s.mouseCache,
+    nonVisibleState: s.nonVisibleState,
     iface: renderIfaceAnims(anims, 'complete', s),
     game: renderGameAnims(anims, 'complete', s.game),
     anim: null,
@@ -167,7 +168,7 @@ export function reduce(s: State, a: Action): State {
     case 'mouseUp': return produce(s, s => { s.iface.mouse = { t: 'up' } });
     case 'cacheMouse': {
       return produce(s, s => {
-        s.mouseCache = a.p;
+        setMouseCache(s, a.p);
       });
     }
     case 'mouseMove': {

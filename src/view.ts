@@ -368,7 +368,7 @@ export function drawView(fv: FView, state: State): void {
   if (state.iface.toolState.t == 'test_tool') {
     const gameState = getTestState(state.game.levels, state.iface.toolState.testToolState);
     effectiveState = {
-      mouseCache: state.mouseCache,
+      nonVisibleState: state.nonVisibleState,
       anim: state.anim,
       effects: state.effects,
       game: gameState,
@@ -380,7 +380,7 @@ export function drawView(fv: FView, state: State): void {
     const ams = state.anim;
     if (ams !== null) {
       effectiveState = {
-        mouseCache: state.mouseCache,
+        nonVisibleState: state.nonVisibleState,
         iface: renderIfaceAnims(ams.animator.anims, ams.frame, state),
         game: renderGameAnims(ams.animator.anims, ams.frame, state.game),
         anim: state.anim, // Hmm, it's not 100% clear to me why I need this to be non-null

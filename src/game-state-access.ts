@@ -45,3 +45,11 @@ export function expandBoundRect(state: GameState, p: Point): void {
 export function isToolbarActive(state: State): boolean {
   return state.iface.toolState.t != 'play_tool';
 }
+
+export function getMouseCache(state: State): Point | undefined {
+  return state.nonVisibleState.mouseCache;
+}
+
+export function setMouseCache(state: State, p: Point | undefined): void {
+  state.nonVisibleState.mouseCache = p;
+}

@@ -4,7 +4,9 @@ import { State, init_player } from "./state";
 import { mapValues } from "./util";
 
 export const init_state: State = {
-  mouseCache: undefined,
+  nonVisibleState: {
+    mouseCache: undefined,
+  },
   effects: [],
   game: {
     player: init_player,
