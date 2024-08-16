@@ -310,6 +310,22 @@ as bounce. The only difference is we also compute a posture.
 - Mechanisms are MOSTLY taught without explicit tutorial or description,
   by existing puzzles.
 
+#### Interesting Corner Cases
+
+I'm collecting in this section some examples of unexpected behavior or
+unlikely corners of state-space that might make for good puzzles.
+
+- Diagonal-up pushing of a button
+- Diagonal-crossing of a block
+- Skimming just behind a phased transient block
+- Running off the edge of a platform and then back to get enough
+  combo momentum for something
+- A long ascent/descent can change horizontal direction multiple times,
+  possibly interacting with buttons.
+- I **don't** presently have a notion of down-diagonal moves, but if I
+  did, maybe could exploit subtle differences between down-left and
+  left, down-right and down, and wait and down.
+
 ### Legibility
 
 - State should MOSTLY be immediately legible from information on the screen.

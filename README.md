@@ -12,16 +12,6 @@ no need to have good twitch skills.
 
 See [design doc](DESIGN.md) for more.
 
-## Interesting Corner Cases
-
-Should probably turn these into puzzle ideas.
-
-- Diagonal-up pushing of a button
-- Diagonal-crossing of a block
-- Skimming just behind a phased transient block
-- Running off the edge of a platform and then back to get enough
-  combo momentum for something
-
 Development
 ----------
 
