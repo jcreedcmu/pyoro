@@ -214,7 +214,9 @@ export function reduce(s: State, a: Action): State {
       }
     });
     case 'setCurrentLevel':
-      const newGameState = setCurrentLevel(s.game, a.name);
+      const newGameState = produce(setCurrentLevel(s.game, a.name), s => {
+        s.player.pos = { x: 0, y: 0 };
+      });
       return produce(s, s => {
         s.game = newGameState;
       });
