@@ -3571,8 +3571,7 @@ export const allLevels: Record<string, LevelData> = {
         "12,0": {
           "t": "static",
           "tile": {
-            "t": "spike",
-            "direction": "up"
+            "t": "box"
           }
         },
         "10,-1": {
@@ -3649,6 +3648,26 @@ export const allLevels: Record<string, LevelData> = {
           "t": "static",
           "tile": {
             "t": "box"
+          }
+        },
+        "13,-1": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "right"
+          }
+        },
+        "12,-1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "12,-2": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
           }
         }
       }
