@@ -1,22 +1,30 @@
 import { produce } from 'immer';
 import { DynamicLayer } from './layer';
-import { GameState, MainState } from './state';
-import { emptyLevel } from './level';
+import { GameState, Level, MainState } from './state';
+import { emptyLevel, LevelData } from './level';
 import { Brect } from './types';
 import { boundBrect, pointInBrect } from './util';
 import { Point } from './point';
 import { initMainState } from './init-state';
 
+export function getCurrentLevel(state: GameState): Level {
+  return state.levels[state.currentLevel];
+}
+
+export function getCurrentLevelData(state: GameState): LevelData {
+  return getCurrentLevel(state).levelData;
+}
+
 export function getBoundRect(state: GameState): Brect {
-  return state.levels[state.currentLevel].levelData.boundRect;
+  return getCurrentLevelData(state).boundRect;
 }
 
 export function getInitOverlay(state: GameState): DynamicLayer {
-  return state.levels[state.currentLevel].levelData.initOverlay;
+  return getCurrentLevelData(state).initOverlay;
 }
 
 export function getOverlay(state: GameState): DynamicLayer {
-  return state.levels[state.currentLevel].overlay;
+  return getCurrentLevel(state).overlay;
 }
 
 export function setOverlay(state: GameState, overlay: DynamicLayer): GameState {

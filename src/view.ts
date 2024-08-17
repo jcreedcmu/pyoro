@@ -1,5 +1,6 @@
+import { produce } from 'immer';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { getBoundRect, isToolbarActive } from './game-state-access';
+import { getBoundRect, getCurrentLevelData, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
@@ -257,10 +258,16 @@ function drawEditorStuff(fv: FView, state: MainState): void {
   d.fillStyle = guiData.background_color;
   d.fillRect(0, 0, editTiles.length * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
 
+  const levelInitBusState = getCurrentLevelData(state.game).busState;
+
   // tiles for pencil tool
   editTiles.forEach((et, ix) => {
-    const t = rotateTile(et, state.iface.editTileRotation);
-    raw_draw_sprite(fv, spriteLocOfTile(t), { x: ix * TILE_SIZE * SCALE, y: 0 });
+    let tile = rotateTile(et, state.iface.editTileRotation);
+    if (tile.t == 'bus_block' || tile.t == 'bus_button') {
+      const bus = tile.bus;
+      tile = produce(tile, tl => { tl.on = levelInitBusState[bus] });
+    }
+    raw_draw_sprite(fv, spriteLocOfTile(tile), { x: ix * TILE_SIZE * SCALE, y: 0 });
   });
 
   // selected tile & selected tool
