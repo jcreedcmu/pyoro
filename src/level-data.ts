@@ -1867,13 +1867,13 @@ export const allLevels: Record<string, LevelData> = {
         "1,-2": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "grip_wall"
           }
         },
         "1,-3": {
           "t": "static",
           "tile": {
-            "t": "box3"
+            "t": "grip_wall"
           }
         },
         "-9,-3": {
@@ -1897,13 +1897,19 @@ export const allLevels: Record<string, LevelData> = {
         "-1,0": {
           "t": "door",
           "destinationLevel": "start"
+        },
+        "5,-1": {
+          "t": "static",
+          "tile": {
+            "t": "grip_wall"
+          }
         }
       }
     },
     "boundRect": {
       "min": {
         "x": -11,
-        "y": -4
+        "y": -5
       },
       "max": {
         "x": 7,
