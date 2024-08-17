@@ -1483,6 +1483,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 28,
         "y": 21
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "boxes": {
@@ -1904,6 +1909,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 7,
         "y": 4
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "boxes2": {
@@ -2489,6 +2499,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 17,
         "y": 4
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "sideblock": {
@@ -2907,6 +2922,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 14,
         "y": 6
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "boxes3": {
@@ -2963,6 +2983,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 2,
         "y": 1
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "_test1": {
@@ -2985,6 +3010,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 1,
         "y": 2
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "_test2": {
@@ -3013,6 +3043,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 1,
         "y": 2
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "_test3": {
@@ -3041,6 +3076,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 1,
         "y": 2
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "_test4": {
@@ -3075,6 +3115,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 1,
         "y": 2
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "_test5": {
@@ -3103,6 +3148,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 1,
         "y": 2
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "_test6": {
@@ -3137,6 +3187,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 1,
         "y": 1
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "_test7": {
@@ -3165,6 +3220,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 2,
         "y": 4
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "_test8": {
@@ -3212,6 +3272,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 3,
         "y": 1
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "_test9": {
@@ -3254,6 +3319,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 2,
         "y": 4
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   },
   "button-hack": {
@@ -3681,6 +3751,11 @@ export const allLevels: Record<string, LevelData> = {
         "x": 15,
         "y": 3
       }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
     }
   }
 };

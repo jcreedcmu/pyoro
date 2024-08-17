@@ -102,7 +102,8 @@ describe('getAllLevels', () => {
     const expected1: Record<string, LevelData> = {
       start: {
         initOverlay: { tiles: {} },
-        boundRect: { min: { x: -1, y: -1 }, max: { x: 1, y: 2 } }
+        boundRect: { min: { x: -1, y: -1 }, max: { x: 1, y: 2 } },
+        busState: { red: false, green: false, blue: false },
       }
     };
     expect(getAllLevels(s)).toEqual(expected1);
@@ -112,6 +113,7 @@ describe('getAllLevels', () => {
       start: {
         initOverlay: { tiles: { '0,2': dynamicOfTile(boxTile()) } },
         boundRect: { min: { x: -1, y: -1 }, max: { x: 1, y: 2 } },
+        busState: { red: false, green: false, blue: false },
       }
     };
     expect(getAllLevels(s)).toEqual(expected2);

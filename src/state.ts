@@ -42,10 +42,16 @@ export type IfaceState = {
 
 export type Inventory = Partial<Record<Item, number>>;
 
+/**
+ * The type of level data "in flight", as we're playing the game.
+ * XXX: Probably should include a LevelData instead of inline copying
+ * all its fields.
+ */
 export type Level = {
   initOverlay: DynamicLayer,
   overlay: DynamicLayer,
   boundRect: Brect,
+  busState: Record<Bus, boolean>,
 }
 
 // XXX may want to move other stuff into level state

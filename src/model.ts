@@ -454,7 +454,10 @@ export function getAllLevels(s: GameState): Record<string, LevelData> {
       if (!isEmptyTile(v))
         layer.tiles[k] = v;
     }
-    return { initOverlay: layer, boundRect: level.boundRect };
+    return {
+      initOverlay: layer, boundRect: level.boundRect,
+      busState: level.busState,
+    };
   });
 }
 

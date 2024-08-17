@@ -1,6 +1,6 @@
 import { DynamicLayer } from "./layer";
 import { getEmptyOverlay, Level } from "./state";
-import { Brect } from "./types";
+import { Brect, Bus } from "./types";
 
 /**
  * The type of level data "at rest", as returned by {@link getAllLevels}.
@@ -8,6 +8,7 @@ import { Brect } from "./types";
 export type LevelData = {
   initOverlay: DynamicLayer,
   boundRect: Brect,
+  busState: Record<Bus, boolean>,
 }
 
 /**
@@ -17,6 +18,7 @@ export function emptyLevel(): Level {
   return mkLevel({
     initOverlay: getEmptyOverlay(),
     boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } },
+    busState: { red: false, green: false, blue: false },
   });
 }
 
@@ -29,5 +31,6 @@ export function mkLevel(ld: LevelData): Level {
     boundRect: ld.boundRect,
     initOverlay: ld.initOverlay,
     overlay: getEmptyOverlay(),
+    busState: ld.busState,
   }
 }
