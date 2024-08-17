@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { DynamicLayer } from './layer';
-import { GameState, State } from './state';
+import { GameState, MainState } from './state';
 import { emptyLevel } from './level';
 import { Brect } from './types';
 import { boundBrect, pointInBrect } from './util';
@@ -42,14 +42,14 @@ export function expandBoundRect(state: GameState, p: Point): void {
   }
 }
 
-export function isToolbarActive(state: State): boolean {
+export function isToolbarActive(state: MainState): boolean {
   return state.iface.toolState.t != 'play_tool';
 }
 
-export function getMouseCache(state: State): Point | undefined {
+export function getMouseCache(state: MainState): Point | undefined {
   return state.nonVisibleState.mouseCache;
 }
 
-export function setMouseCache(state: State, p: Point | undefined): void {
+export function setMouseCache(state: MainState, p: Point | undefined): void {
   state.nonVisibleState.mouseCache = p;
 }

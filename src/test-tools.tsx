@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Level, State, TestToolState } from './state';
+import { Level, MainState, TestToolState } from './state';
 import { MotionTest, MotionTestAssertion, motionTestResult, MotionTestStep, motionTestSuite } from './test-motion';
 import { produce } from 'immer';
 import { mod } from './util';
@@ -11,7 +11,7 @@ export type Action =
   | { t: 'nextStep' }
   ;
 
-function getCurrentTestLevel(state: State, tts: TestToolState): Level {
+function getCurrentTestLevel(state: MainState, tts: TestToolState): Level {
   return state.game.levels[motionTestSuite[tts.testIx].levelName];
 }
 
@@ -63,7 +63,7 @@ export function renderStep(steps: MotionTestStep[], time: number): JSX.Element |
     case 'move': return `Move: ${step.move}`;
   }
 }
-export function renderTestTools(state: State, dispatch: (action: Action) => void): JSX.Element | undefined {
+export function renderTestTools(state: MainState, dispatch: (action: Action) => void): JSX.Element | undefined {
   const toolState = state.iface.toolState;
   if (toolState.t != 'test_tool')
     return undefined;

@@ -8,7 +8,7 @@ import { putDynamicTile, weakTileEq } from './layer';
 import { logger } from './logger';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, tileOfGameState } from './model';
 import { runSetter } from './optic';
-import { ButtonedTileFields, DoorTileFields, State, TimedTileFields } from './state';
+import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields } from './state';
 import * as testTools from './test-tools';
 import { DynamicTile, Move } from './types';
 import { wpoint_of_vd } from './view';
@@ -33,7 +33,7 @@ export type PanelStateFieldTypes =
   & { [P in keyof DoorTileFields]: { t: 'setPanelStateField', key: P, value: DoorTileFields[P] } }
   ;
 
-export function reduceCommand(s: State, cmd: Command): State {
+export function reduceCommand(s: MainState, cmd: Command): MainState {
   switch (cmd) {
     case 'nextEditTile':
       return produce(s, s => {
@@ -88,7 +88,7 @@ export function reduceCommand(s: State, cmd: Command): State {
   }
 }
 
-function reduceMove(s: State, move: Move): State {
+function reduceMove(s: MainState, move: Move): MainState {
   let anim = s.anim;
   if (anim != null) {
     // resolve existing animation first
@@ -104,7 +104,7 @@ function reduceMove(s: State, move: Move): State {
   });
 }
 
-function resolveAllAnimations(s: State, anims: Animation[]): State {
+function resolveAllAnimations(s: MainState, anims: Animation[]): MainState {
   return {
     nonVisibleState: s.nonVisibleState,
     iface: renderIfaceAnims(anims, 'complete', s),
@@ -114,7 +114,7 @@ function resolveAllAnimations(s: State, anims: Animation[]): State {
   };
 }
 
-export function reduce(s: State, a: Action): State {
+export function reduce(s: MainState, a: Action): MainState {
   const look = tileOfGameState(s.game, { x: 0, y: 1 });
   switch (a.t) {
     case 'keyDown': {

@@ -6,7 +6,7 @@ import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, Point, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
-import { Combo, State } from './state';
+import { Combo, MainState } from './state';
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
@@ -48,7 +48,7 @@ export function initView() {
   root.render(React.createElement(App, {}));
 }
 
-function drawScaled(fv: FView, state: State): void {
+function drawScaled(fv: FView, state: MainState): void {
   const { d, vd: { origin, wsize } } = fv;
 
   // background
@@ -191,7 +191,7 @@ function spriteLocOfTool(s: ToolTile): Point {
   }
 }
 
-function drawField(fv: FView, state: State): void {
+function drawField(fv: FView, state: MainState): void {
   const player = state.game.player;
   const { d } = fv;
   const vp = state.iface.viewPort;
@@ -256,7 +256,7 @@ function drawWorldTileSelection(fv: FView, p: Point): void {
   d.fill('evenodd');
 }
 
-function drawEditorStuff(fv: FView, state: State): void {
+function drawEditorStuff(fv: FView, state: MainState): void {
   const { d, vd: { origin } } = fv;
 
   // toolbar
@@ -279,7 +279,7 @@ function drawEditorStuff(fv: FView, state: State): void {
   drawInventorySelection(d, { x: state.iface.editTileIx, y: 0 });
 }
 
-function drawInventory(fv: FView, state: State): void {
+function drawInventory(fv: FView, state: MainState): void {
   const { d, vd: { origin } } = fv;
   const i = state.game.inventory;
   d.fillStyle = guiData.background_color;
@@ -359,7 +359,7 @@ function draw_rect(fv: FView, wpos: Point): void {
   d.rect(spos.x, spos.y, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
 }
 
-export function drawView(fv: FView, state: State): void {
+export function drawView(fv: FView, state: MainState): void {
   const { d } = fv;
   d.save();
   d.scale(devicePixelRatio, devicePixelRatio);
@@ -417,7 +417,7 @@ export function resizeView(c: HTMLCanvasElement): ViewData {
   return { origin, wsize };
 }
 
-export function wpoint_of_vd(vd: ViewData, p: Point, s: State): WidgetPoint {
+export function wpoint_of_vd(vd: ViewData, p: Point, s: MainState): WidgetPoint {
   const { origin } = vd;
 
   const world_size = vm(NUM_TILES, NT => TILE_SIZE * SCALE * NT);

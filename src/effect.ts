@@ -4,7 +4,7 @@ import { LevelData } from './level';
 import { logger } from './logger';
 import { getAllLevels } from './model';
 import { soundService } from './sound';
-import { State } from './state';
+import { MainState } from './state';
 
 export type Effect =
   | { t: 'scheduleFrame' }
@@ -12,7 +12,7 @@ export type Effect =
   | { t: 'soundEffect', sound: SoundEffect };
 ;
 
-export function doEffect(state: State, dispatch: Dispatch, effect: Effect) {
+export function doEffect(state: MainState, dispatch: Dispatch, effect: Effect) {
   switch (effect.t) {
     case 'scheduleFrame':
       setTimeout(() => { dispatch({ t: 'nextFrame' }); }, FRAME_DURATION_MS);

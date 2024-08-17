@@ -7,7 +7,7 @@ import { LevelData } from './level';
 import { Board, ForcedBlock, getItem, isDeadly, isOpen } from './model-utils';
 import { entityTick } from './physics';
 import { Point, vequal, vmn, vplus } from './point';
-import { Combo, GameState, IfaceState, ModifyPanelState, Player, State, ToolState } from "./state";
+import { Combo, GameState, IfaceState, ModifyPanelState, Player, MainState, ToolState } from "./state";
 import { DynamicTile, Facing, MotiveMove, Move, Sprite, Tile, Tool } from './types';
 import { mapValues, max } from './util';
 import { WidgetPoint } from './view';
@@ -60,11 +60,11 @@ function get_flip_state(move: MotiveMove): Facing | null {
   }
 }
 
-export function tileOfState(s: State, p: Point, viewIntent?: boolean): Tile {
+export function tileOfState(s: MainState, p: Point, viewIntent?: boolean): Tile {
   return tileOfGameState(s.game, p, viewIntent);
 }
 
-export function dynamicTileOfState(s: State, p: Point): DynamicTile {
+export function dynamicTileOfState(s: MainState, p: Point): DynamicTile {
   return dynamicTileOfGameState(s.game, p);
 }
 
@@ -86,7 +86,7 @@ export function _putTileInGameStateInitOverlay(s: GameState, p: Point, t: Dynami
   });
 }
 
-export function _putTileInInitOverlay(s: State, p: Point, t: DynamicTile): State {
+export function _putTileInInitOverlay(s: MainState, p: Point, t: DynamicTile): MainState {
   return produce(s, s => {
     s.game = _putTileInGameStateInitOverlay(s.game, p, t);
   });
@@ -254,7 +254,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   return anims;
 }
 
-export function animateViewPort(s: State, move: Move, nextPos: Point | undefined): Animation[] {
+export function animateViewPort(s: MainState, move: Move, nextPos: Point | undefined): Animation[] {
   const iface = s.iface;
   const anims: Animation[] = [];
   if (nextPos !== undefined) {
@@ -287,14 +287,14 @@ export function renderGameAnims(anims: Animation[], fr: number | 'complete', s: 
   return s;
 }
 
-export function renderIfaceAnims(anims: Animation[], fr: number | 'complete', s: State): IfaceState {
+export function renderIfaceAnims(anims: Animation[], fr: number | 'complete', s: MainState): IfaceState {
   anims.forEach(anim => {
     s = produce(s, s => { s.iface = applyIfaceAnimation(anim, s, fr) });
   });
   return s.iface;
 }
 
-export function animator_for_move(s: State, move: Move): Animator {
+export function animator_for_move(s: MainState, move: Move): Animator {
   const animsGame = animateMove(s.game, move);
   const nextPos = animsGame.map(hasNextPos).find(x => x !== undefined);
   const animsViewport = animateViewPort(s, move, nextPos);
@@ -341,13 +341,13 @@ function defaultDynamicTileToPut(tile: Tile): DynamicTile {
   }
 }
 
-function determineTileToPut(s: State, worldPoint: Point): DynamicTile {
+function determineTileToPut(s: MainState, worldPoint: Point): DynamicTile {
   const newTile = defaultDynamicTileToPut(rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation));
 
   return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? dynamicOfTile(emptyTile()) : newTile;
 }
 
-export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPanelState {
+export function modifyPanelStateForTile(s: MainState, worldPoint: Point): ModifyPanelState {
   const ct = dynamicTileOfState(s, worldPoint);
   switch (ct.t) {
     case 'static': return { t: 'none' };
@@ -372,7 +372,7 @@ export function modifyPanelStateForTile(s: State, worldPoint: Point): ModifyPane
   }
 }
 
-export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Point): State {
+export function handle_world_mousedown(s: MainState, rawPoint: Point, worldPoint: Point): MainState {
   const toolState = s.iface.toolState;
   switch (toolState.t) {
     case 'pencil_tool':
@@ -391,7 +391,7 @@ export function handle_world_mousedown(s: State, rawPoint: Point, worldPoint: Po
   }
 }
 
-export function handle_world_drag(s: State, rawPoint: Point, widgetPoint: WidgetPoint): State {
+export function handle_world_drag(s: MainState, rawPoint: Point, widgetPoint: WidgetPoint): MainState {
   const mouse = s.iface.mouse;
   switch (mouse.t) {
     case 'tileDrag':
@@ -425,7 +425,7 @@ function initialToolState(t: Tool): ToolState {
   }
 }
 
-export function handle_toolbar_mousedown(s: State, p: Point): State {
+export function handle_toolbar_mousedown(s: MainState, p: Point): MainState {
   if (p.y == 0) {
     return produce(s, s => {
       if (p.x < editTiles.length && p.x >= 0)
@@ -443,7 +443,7 @@ export function handle_toolbar_mousedown(s: State, p: Point): State {
   }
 }
 
-export function show_empty_tile_override(s: State): boolean {
+export function show_empty_tile_override(s: MainState): boolean {
   return !s.iface.keysDown['KeyN']; // XXX Debugging
 }
 

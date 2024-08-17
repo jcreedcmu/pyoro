@@ -4,7 +4,7 @@ import { getOverlay, setCurrentLevel, setOverlay } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { computeCombo, tileOfGameState } from './model';
 import { int, lerp, Point, vm2, vplus, vscale, vsub } from './point';
-import { GameState, IfaceState, State } from './state';
+import { GameState, IfaceState, MainState } from './state';
 import { init_state } from './init-state';
 import { Bus, Facing, Item, PlayerSprite } from './types';
 
@@ -70,7 +70,7 @@ const CHANGE_ROOM_FADE_IN = 2;
 const CHANGE_ROOM_FRAMES = CHANGE_ROOM_FADE_OUT + CHANGE_ROOM_HOLD + CHANGE_ROOM_FADE_IN;
 
 
-export function applyIfaceAnimation(a: Animation, state: State, frc: number | 'complete'): IfaceState {
+export function applyIfaceAnimation(a: Animation, state: MainState, frc: number | 'complete'): IfaceState {
   const dur = duration(a);
   const fr = frc == 'complete' ? dur : frc;
   const t = fr / dur;

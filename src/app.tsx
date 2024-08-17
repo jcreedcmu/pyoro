@@ -7,7 +7,7 @@ import { extractEffects } from './extract-effects';
 import { keyFromCode } from './key';
 import { logger } from './logger';
 import { reduce } from './reduce';
-import { ButtonedTileFields, DoorTileFields, State, TimedTileFields, ToolState } from './state';
+import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields, ToolState } from './state';
 import { init_state } from './init-state';
 import * as testTools from './test-tools';
 import { renderTestTools } from './test-tools';
@@ -17,7 +17,7 @@ import { imgProm } from './util';
 import { drawView, resizeView } from './view';
 
 type CanvasProps = {
-  main: State,
+  main: MainState,
   spriteImg: HTMLImageElement | null
 };
 
@@ -77,7 +77,7 @@ function renderDoorEditor(ttf: DoorTileFields, dispatch: Dispatch): JSX.Element 
   </span>;
 }
 
-function renderModifyPanel(state: State, dispatch: Dispatch): JSX.Element | null {
+function renderModifyPanel(state: MainState, dispatch: Dispatch): JSX.Element | null {
   const toolState = state.iface.toolState;
   if (toolState.t == 'modify_tool' && toolState.modifyCell !== null) {
     const style: React.CSSProperties = {
@@ -106,7 +106,7 @@ function renderModifyPanel(state: State, dispatch: Dispatch): JSX.Element | null
   }
 }
 
-function renderLevelPicker(state: State, dispatch: Dispatch): JSX.Element | undefined {
+function renderLevelPicker(state: MainState, dispatch: Dispatch): JSX.Element | undefined {
   if (state.iface.toolState.t != 'pencil_tool')
     return undefined;
   return <div className="level-picker">

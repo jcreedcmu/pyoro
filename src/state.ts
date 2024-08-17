@@ -66,7 +66,10 @@ export type NonVisibleState = {
   mouseCache: Point | undefined,
 };
 
-export type State = {
+/**
+ * All the state we need when we're in the middle of playing the game
+ */
+export type MainState = {
   game: GameState,
   iface: IfaceState,
   anim: AnimState | null,

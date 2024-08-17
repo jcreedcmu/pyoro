@@ -1,7 +1,7 @@
 import { Setter } from "./optic";
 import { Point } from "./point";
 import { Command, PanelStateFieldTypes } from "./reduce";
-import { ButtonedTileFields, DoorTileFields, State, TimedTileFields, ToolState } from "./state";
+import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields, ToolState } from "./state";
 import * as testTools from './test-tools';
 import { Move } from "./types";
 import { ViewData } from "./view";
@@ -11,7 +11,7 @@ export type Dispatch = (a: Action) => void;
 export type Action =
   | { t: 'keyUp', key: string, code: string, name: string }
   | { t: 'keyDown', key: string, code: string, name: string }
-  | { t: 'setState', s: State }
+  | { t: 'setState', s: MainState }
   | { t: 'mouseDown', point: Point }
   | { t: 'mouseUp' }
   | { t: 'mouseMove', point: Point }
@@ -25,7 +25,7 @@ export type Action =
   | PanelStateFieldTypes[keyof DoorTileFields]
   | { t: 'saveModifyPanel' }
   | { t: 'setCurrentLevel', name: string }
-  | { t: 'setField', setter: Setter<State> }
+  | { t: 'setField', setter: Setter<MainState> }
   | { t: 'testToolsAction', action: testTools.Action }
   | { t: 'cacheMouse', p: Point }
   ;
