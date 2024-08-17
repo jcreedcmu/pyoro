@@ -1,18 +1,14 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom/client';
-import { App, MainComp } from './app';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
+import { getBoundRect, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { int, Point, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './point';
 import { Combo, MainState } from './state';
+import { getTestState } from './test-state';
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
-import { getTestState } from './test-state';
-import { motionTestResult } from './test-motion';
-import { getBoundRect, isToolbarActive } from './game-state-access';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
