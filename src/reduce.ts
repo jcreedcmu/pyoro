@@ -164,7 +164,7 @@ export function reduceMain(s: MainState, a: Action): MainState {
       logger('mouse', 'mouseDown wpoint=', wpoint);
       switch (wpoint.t) {
         case 'World': return handle_world_mousedown(s, a.point, wpoint.p);
-        case 'Toolbar': return handle_toolbar_mousedown(s, wpoint.tilePoint);
+        case 'Toolbar': return handle_toolbar_mousedown(s, wpoint.tilePoint, a.buttons);
       }
     }
     case 'mouseUp': return produce(s, s => { s.iface.mouse = { t: 'up' } });

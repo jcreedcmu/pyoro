@@ -29,6 +29,7 @@ export function emptyLevel(): Level {
 export function mkLevel(ld: LevelData): Level {
   return {
     overlay: getEmptyOverlay(),
+    busState: ld.busState,
     levelData: ld,
   }
 }

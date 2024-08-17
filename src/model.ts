@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { COMBO_THRESHOLD, editTiles, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { expandBoundRect, getBoundRect, getInitOverlay, getOverlay } from './game-state-access';
+import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
 import { Board, ForcedBlock, getItem, isDeadly, isOpen } from './model-utils';
@@ -24,7 +24,7 @@ function boardOfState(s: GameState): Board {
   return {
     player: s.player,
     trc: {
-      busState: s.busState,
+      busState: getCurrentLevel(s).busState,
       layerStack: layerStackOfState(s),
       time: s.time,
       playerPos: s.player.pos,
@@ -425,12 +425,26 @@ function initialToolState(t: Tool): ToolState {
   }
 }
 
-export function handle_toolbar_mousedown(s: MainState, p: Point): MainState {
+export function handle_toolbar_mousedown(s: MainState, p: Point, buttons: number): MainState {
   if (p.y == 0) {
-    return produce(s, s => {
-      if (p.x < editTiles.length && p.x >= 0)
-        s.iface.editTileIx = p.x;
-    });
+    if (buttons == 2) { // right mouse button means toggle bus state
+      const tile = editTiles[p.x];
+      if (tile.t == 'bus_block' || tile.t == 'bus_button') {
+        const bus = tile.bus;
+        const oldBusState = getCurrentLevelData(s.game).busState[bus];
+        return produce(s, s => {
+          getCurrentLevelData(s.game).busState[bus] = !oldBusState;
+        });
+      }
+      else
+        return s;
+    }
+    else {
+      return produce(s, s => {
+        if (p.x < editTiles.length && p.x >= 0)
+          s.iface.editTileIx = p.x;
+      });
+    }
   }
   else if (p.y == 1) {
     return produce(s, s => {

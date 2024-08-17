@@ -73,13 +73,15 @@ export function setMouseCache(state: MainState, p: Point | undefined): void {
 export function resetRoom(state: GameState): GameState {
   state = setOverlay(state, { tiles: {} });
 
+  const last_save = state.lastSave;
+  const initBusState = getCurrentLevelData(state).busState;
+  const newPlayer = produce(initMainState.game.player, p => {
+    p.pos = last_save;
+  });
   return produce(state, s => {
     s.inventory = {};
-    const last_save = s.lastSave;
-    s.player = produce(initMainState.game.player, p => {
-      s.busState = { red: false, green: false, blue: false };
-      p.pos = last_save;
-    });
+    getCurrentLevel(s).busState = initBusState;
+    s.player = newPlayer;
     s.time = 0;
   });
 }

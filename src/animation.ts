@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { getOverlay, resetRoom, setCurrentLevel, setOverlay } from './game-state-access';
+import { getCurrentLevel, getOverlay, resetRoom, setCurrentLevel, setOverlay } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { computeCombo, tileOfGameState } from './model';
 import { int, lerp, Point, vm2, vplus, vscale, vsub } from './point';
@@ -188,8 +188,9 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         putTileInDynamicLayer(getOverlay(s), a.pos, tileEq(tileOfGameState(s, a.pos), { t: 'button_on' }) ? { t: 'button_off' } : { t: 'button_on' });
       });
     case 'BusButtonToggleAnimation':
+      const oldBusState = getCurrentLevel(state).busState[a.bus];
       return produce(state, s => {
-        s.busState[a.bus] = !s.busState[a.bus];
+        getCurrentLevel(s).busState[a.bus] = !oldBusState;
       });
     case 'ChangeLevelAnimation':
       if (fr < CHANGE_ROOM_FADE_OUT)

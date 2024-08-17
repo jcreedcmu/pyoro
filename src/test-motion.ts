@@ -33,7 +33,6 @@ export function testInitialGameState(levelName: string): GameState {
     lastSave: { x: 0, y: 0 },
     player: init_player,
     time: 0,
-    busState: { red: false, green: false, blue: false },
   };
 }
 

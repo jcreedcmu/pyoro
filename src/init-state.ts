@@ -19,11 +19,6 @@ export const initMainState: MainState = {
     inventory: {},
     lastSave: { x: 0, y: 0 },
     time: 0,
-    busState: {
-      red: false,
-      green: false,
-      blue: false,
-    }
   },
   iface: {
     keysDown: {},

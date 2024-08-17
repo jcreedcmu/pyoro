@@ -19,7 +19,7 @@ export function TitleCard(props: { dispatch: Dispatch }): JSX.Element {
       backgroundColor: '#6a0d35',
       cursor: 'pointer',
     }}
-    onMouseDown={e => dispatch({ t: 'mouseDown', point: { x: 0, y: 0 } })}>
+    onMouseDown={e => dispatch({ t: 'mouseDown', point: { x: 0, y: 0 }, buttons: 0 })}>
     <img style={{ width: 722, imageRendering: 'crisp-edges' }} src="assets/title.png" />
   </div>
 }

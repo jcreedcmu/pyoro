@@ -12,7 +12,7 @@ export type Action =
   | { t: 'keyUp', key: string, code: string, name: string }
   | { t: 'keyDown', key: string, code: string, name: string }
   | { t: 'setState', s: MainState }
-  | { t: 'mouseDown', point: Point }
+  | { t: 'mouseDown', point: Point, buttons: number }
   | { t: 'mouseUp' }
   | { t: 'mouseMove', point: Point }
   | { t: 'resize', vd: ViewData }

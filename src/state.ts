@@ -50,6 +50,7 @@ export type Inventory = Partial<Record<Item, number>>;
  */
 export type Level = {
   overlay: DynamicLayer,
+  busState: Record<Bus, boolean>,
   levelData: LevelData,
 }
 
@@ -61,7 +62,6 @@ export type GameState = {
   inventory: Inventory,
   lastSave: Point,
   time: number,
-  busState: Record<Bus, boolean>,
 }
 
 /**
