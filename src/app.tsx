@@ -18,7 +18,7 @@ function reduceWithEffects(state: State, action: Action): { state: State, effect
     case 'title': {
       switch (action.t) {
         default:
-          return { state: { t: 'main', state: initMainState }, effects: [] };
+          return { state: { t: 'main', state: initMainState }, effects: [{ t: 'startSound' }] };
       }
     }
   }

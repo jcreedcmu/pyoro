@@ -80,6 +80,10 @@ let soundService: Sound | undefined = undefined;
 
 export function getSoundService(): Sound {
   if (soundService == undefined) {
+    const music = new Audio('assets/theme-from-time-badger.mp3');
+    music.loop = true;
+    music.volume = 0.25;
+    music.play();
     soundService = new Sound();
   }
   return soundService;

@@ -9,6 +9,7 @@ import { MainState, State } from './state';
 export type Effect =
   | { t: 'scheduleFrame' }
   | { t: 'saveOverlay' }
+  | { t: 'startSound' }
   | { t: 'soundEffect', sound: SoundEffect };
 ;
 
@@ -34,6 +35,7 @@ export function doEffect(state: State, dispatch: Dispatch, effect: Effect) {
             .catch(console.error);
           break;
         case 'soundEffect': doSoundEffect(effect.sound); return;
+        case 'startSound': getSoundService(); return;
       }
   }
 }
