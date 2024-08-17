@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { getOverlay, setCurrentLevel, setOverlay } from './game-state-access';
+import { getOverlay, resetRoom, setCurrentLevel, setOverlay } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { computeCombo, tileOfGameState } from './model';
 import { int, lerp, Point, vm2, vplus, vscale, vsub } from './point';
@@ -162,22 +162,8 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ResetAnimation':
       if (fr < DEATH_FADE_OUT)
         return state;
-      // XXX Need to more carefully consider what state really changes
-      // when reset Specifically bus state is not reset right now, and
-      // maybe only the current level should be reset? While
-      // preserving "monotonic progress changes" whatever those might
-      // be? My point of reference for that concept is how Isles of
-      // Sea and Sky handles unlockables.
-      state = setOverlay(state, { tiles: {} });
-
-      return produce(state, s => {
-        s.inventory = {};
-        const last_save = s.lastSave;
-        s.player = produce(initMainState.game.player, p => {
-          p.pos = last_save;
-        });
-        s.time = 0;
-      });
+      else
+        return resetRoom(state);
     case 'SavePointChangeAnimation':
       return produce(state, s => {
         if (t > 0.5)

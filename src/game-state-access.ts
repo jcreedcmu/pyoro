@@ -5,6 +5,7 @@ import { emptyLevel } from './level';
 import { Brect } from './types';
 import { boundBrect, pointInBrect } from './util';
 import { Point } from './point';
+import { initMainState } from './init-state';
 
 export function getBoundRect(state: GameState): Brect {
   return state.levels[state.currentLevel].boundRect;
@@ -52,4 +53,25 @@ export function getMouseCache(state: MainState): Point | undefined {
 
 export function setMouseCache(state: MainState, p: Point | undefined): void {
   state.nonVisibleState.mouseCache = p;
+}
+
+/**
+ * Resets the current room's state. This can be somewhat subtle,
+ * since if there's elements that have changed that we want to
+ * consider "monotonic progress forward" we don't want to reset them.
+ * My point of reference for that concept is how Isles of
+ * Sea and Sky. This is discussed a little in DESIGN.md.
+ */
+export function resetRoom(state: GameState): GameState {
+  state = setOverlay(state, { tiles: {} });
+
+  return produce(state, s => {
+    s.inventory = {};
+    const last_save = s.lastSave;
+    s.player = produce(initMainState.game.player, p => {
+      s.busState = { red: false, green: false, blue: false };
+      p.pos = last_save;
+    });
+    s.time = 0;
+  });
 }
