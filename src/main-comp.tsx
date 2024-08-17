@@ -175,7 +175,9 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
       state.iface.vd
     ],
     ci => {
-      ci.c.focus();
+      // Not sure why I need to delay this. But if I don't,
+      // clicking on the title card doesn't keep focus on the canvas.
+      setInterval(() => { ci.c.focus(); }, 0);
       dispatch({ t: 'resize', vd: resizeView(ci.c) });
     }
   );

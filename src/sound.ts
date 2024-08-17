@@ -76,4 +76,11 @@ export class Sound {
   }
 }
 
-export const soundService = new Sound();
+let soundService: Sound | undefined = undefined;
+
+export function getSoundService(): Sound {
+  if (soundService == undefined) {
+    soundService = new Sound();
+  }
+  return soundService;
+}

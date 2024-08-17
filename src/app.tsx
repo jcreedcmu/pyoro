@@ -1,12 +1,33 @@
 import * as React from 'react';
-import { doEffect } from './effect';
+import { Action } from './action';
+import { doEffect, Effect } from './effect';
 import { extractEffects } from './extract-effects';
-import { initMainState } from './init-state';
+import { initMainState, initState } from './init-state';
 import { MainComp } from './main-comp';
-import { reduce } from './reduce';
+import { reduceMain } from './reduce';
+import { MainState, State } from './state';
+import { TitleCard } from './title';
 import { useEffectfulReducer } from './use-effectful-reducer';
 
+function reduceWithEffects(state: State, action: Action): { state: State, effects: Effect[] | undefined } {
+  switch (state.t) {
+    case 'main': {
+      const { state: mstate, effects } = extractEffects<Action, Effect, MainState>(reduceMain)(state.state, action);
+      return { state: { t: 'main', state: mstate }, effects };
+    }
+    case 'title': {
+      switch (action.t) {
+        default:
+          return { state: { t: 'main', state: initMainState }, effects: [] };
+      }
+    }
+  }
+}
+
 export function App(props: {}): JSX.Element {
-  const [state, dispatch] = useEffectfulReducer(initMainState, extractEffects(reduce), doEffect);
-  return <MainComp state={state} dispatch={dispatch} />;
+  const [state, dispatch] = useEffectfulReducer(initState, reduceWithEffects, doEffect);
+  switch (state.t) {
+    case 'main': return <MainComp state={state.state} dispatch={dispatch} />;
+    case 'title': return <TitleCard dispatch={dispatch} />;
+  }
 }

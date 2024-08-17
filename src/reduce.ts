@@ -114,7 +114,7 @@ function resolveAllAnimations(s: MainState, anims: Animation[]): MainState {
   };
 }
 
-export function reduce(s: MainState, a: Action): MainState {
+export function reduceMain(s: MainState, a: Action): MainState {
   const look = tileOfGameState(s.game, { x: 0, y: 1 });
   switch (a.t) {
     case 'keyDown': {
@@ -122,7 +122,7 @@ export function reduce(s: MainState, a: Action): MainState {
       const action = bindings[name];
       const ss = produce(s, s => { s.iface.keysDown[a.code] = true; });
       if (action) {
-        return reduce(ss, action);
+        return reduceMain(ss, action);
       }
       else {
         logger('chatty', `unbound key ${name} pressed`);
