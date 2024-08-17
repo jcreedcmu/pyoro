@@ -1,9 +1,13 @@
 import { mkLevel } from "./level";
 import { allLevels } from "./level-data";
-import { MainState, init_player } from "./state";
+import { MainState, State, init_player } from "./state";
 import { mapValues } from "./util";
 
-export const init_state: MainState = {
+export const initState: State = {
+  t: 'title'
+};
+
+export const initMainState: MainState = {
   nonVisibleState: {
     mouseCache: undefined,
   },

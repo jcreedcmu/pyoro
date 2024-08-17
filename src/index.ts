@@ -1,7 +1,7 @@
 import * as dat from 'dat.gui';
 import { guiData } from './constants';
 import { DEBUG } from './logger';
-import { initView } from './view';
+import { initView } from './init-view';
 
 window.addEventListener('load', onload);
 

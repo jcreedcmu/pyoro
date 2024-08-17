@@ -5,7 +5,7 @@ import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { computeCombo, tileOfGameState } from './model';
 import { int, lerp, Point, vm2, vplus, vscale, vsub } from './point';
 import { GameState, IfaceState, MainState } from './state';
-import { init_state } from './init-state';
+import { initMainState } from './init-state';
 import { Bus, Facing, Item, PlayerSprite } from './types';
 
 /**
@@ -173,7 +173,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       return produce(state, s => {
         s.inventory = {};
         const last_save = s.lastSave;
-        s.player = produce(init_state.game.player, p => {
+        s.player = produce(initMainState.game.player, p => {
           p.pos = last_save;
         });
         s.time = 0;

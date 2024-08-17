@@ -77,6 +77,11 @@ export type MainState = {
   nonVisibleState: NonVisibleState,
 };
 
+export type State =
+  | { t: 'main', state: MainState }
+  | { t: 'title' }
+  ;
+
 export const init_player: Player = {
   dead: false,
   pos: { x: 0, y: 0 },

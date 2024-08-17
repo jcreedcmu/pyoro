@@ -8,7 +8,7 @@ import { keyFromCode } from './key';
 import { logger } from './logger';
 import { reduce } from './reduce';
 import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields, ToolState } from './state';
-import { init_state } from './init-state';
+import { initMainState } from './init-state';
 import * as testTools from './test-tools';
 import { renderTestTools } from './test-tools';
 import { CanvasInfo, useCanvas } from './use-canvas';
@@ -130,6 +130,13 @@ export function repoLink(): JSX.Element {
 }
 
 export function App(props: {}): JSX.Element {
+  const [state, dispatch] = useEffectfulReducer(initMainState, extractEffects(reduce), doEffect);
+  return <MainComp state={state} dispatch={dispatch} />;
+}
+
+export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.Element {
+  const { state, dispatch } = props;
+
   function render(ci: CanvasInfo, props: CanvasProps) {
     const { d, size: { x, y } } = ci;
     if (props.spriteImg !== null && props.main.iface.vd !== null) {
@@ -166,7 +173,6 @@ export function App(props: {}): JSX.Element {
 
   // State
   const [spriteImg, setSpriteImg] = React.useState(null as (null | HTMLImageElement));
-  const [state, dispatch] = useEffectfulReducer(init_state, extractEffects(reduce), doEffect);
   const [cref, mc] = useCanvas(
     { main: state, spriteImg: spriteImg }, render,
     [

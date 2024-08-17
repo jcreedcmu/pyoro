@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { App } from './app';
+import { App, MainComp } from './app';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { DEBUG } from './logger';
@@ -38,14 +38,6 @@ export type ViewData = {
 export function stringOfCombo(c: Combo): string {
   if (c == undefined) return 'none';
   return `(${c.dir.x}, ${c.dir.y}) x ${c.rep}`;
-}
-
-/**
- * Initializes the react renderer
- */
-export function initView() {
-  const root = ReactDOM.createRoot(document.getElementById('render-root')!);
-  root.render(React.createElement(App, {}));
 }
 
 function drawScaled(fv: FView, state: MainState): void {
