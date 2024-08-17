@@ -2798,20 +2798,11 @@ export const allLevels: Record<string, LevelData> = {
             "t": "box"
           }
         },
-        "9,-3": {
+        "11,-5": {
           "t": "static",
           "tile": {
-            "t": "spike",
-            "direction": "up"
+            "t": "box"
           }
-        },
-        "8,-4": {
-          "t": "bus_block",
-          "bus": "red"
-        },
-        "11,-5": {
-          "t": "bus_button",
-          "bus": "red"
         },
         "11,-4": {
           "t": "static",
@@ -2820,25 +2811,6 @@ export const allLevels: Record<string, LevelData> = {
           }
         },
         "11,-6": {
-          "t": "static",
-          "tile": {
-            "t": "box3"
-          }
-        },
-        "8,-3": {
-          "t": "static",
-          "tile": {
-            "t": "spike",
-            "direction": "up"
-          }
-        },
-        "8,-2": {
-          "t": "static",
-          "tile": {
-            "t": "box"
-          }
-        },
-        "9,-2": {
           "t": "static",
           "tile": {
             "t": "box"
@@ -2892,19 +2864,6 @@ export const allLevels: Record<string, LevelData> = {
             "t": "box"
           }
         },
-        "7,-2": {
-          "t": "static",
-          "tile": {
-            "t": "box"
-          }
-        },
-        "7,-3": {
-          "t": "static",
-          "tile": {
-            "t": "spike",
-            "direction": "up"
-          }
-        },
         "13,-2": {
           "t": "static",
           "tile": {
@@ -2916,7 +2875,7 @@ export const allLevels: Record<string, LevelData> = {
     "boundRect": {
       "min": {
         "x": -5,
-        "y": -6
+        "y": -7
       },
       "max": {
         "x": 14,
@@ -2924,7 +2883,7 @@ export const allLevels: Record<string, LevelData> = {
       }
     },
     "busState": {
-      "red": false,
+      "red": true,
       "green": false,
       "blue": false
     }
