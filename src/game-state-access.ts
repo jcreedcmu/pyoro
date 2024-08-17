@@ -8,11 +8,11 @@ import { Point } from './point';
 import { initMainState } from './init-state';
 
 export function getBoundRect(state: GameState): Brect {
-  return state.levels[state.currentLevel].boundRect;
+  return state.levels[state.currentLevel].levelData.boundRect;
 }
 
 export function getInitOverlay(state: GameState): DynamicLayer {
-  return state.levels[state.currentLevel].initOverlay;
+  return state.levels[state.currentLevel].levelData.initOverlay;
 }
 
 export function getOverlay(state: GameState): DynamicLayer {
@@ -39,7 +39,7 @@ export function setCurrentLevel(state: GameState, levelName: string): GameState 
 export function expandBoundRect(state: GameState, p: Point): void {
   const brect = getBoundRect(state);
   if (!pointInBrect(p, brect)) {
-    state.levels[state.currentLevel].boundRect = boundBrect([brect.min, brect.max, p]);
+    state.levels[state.currentLevel].levelData.boundRect = boundBrect([brect.min, brect.max, p]);
   }
 }
 

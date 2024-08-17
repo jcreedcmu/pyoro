@@ -28,9 +28,7 @@ export function emptyLevel(): Level {
  */
 export function mkLevel(ld: LevelData): Level {
   return {
-    boundRect: ld.boundRect,
-    initOverlay: ld.initOverlay,
     overlay: getEmptyOverlay(),
-    busState: ld.busState,
+    levelData: ld,
   }
 }

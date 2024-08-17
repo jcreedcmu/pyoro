@@ -2,6 +2,7 @@ import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { Effect } from './effect';
 import { DynamicLayer } from './layer';
+import { LevelData } from './level';
 import { Point } from './point';
 import { Brect, Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Rect } from './types';
 import { ViewData } from './view';
@@ -48,10 +49,8 @@ export type Inventory = Partial<Record<Item, number>>;
  * all its fields.
  */
 export type Level = {
-  initOverlay: DynamicLayer,
   overlay: DynamicLayer,
-  boundRect: Brect,
-  busState: Record<Bus, boolean>,
+  levelData: LevelData,
 }
 
 // XXX may want to move other stuff into level state
