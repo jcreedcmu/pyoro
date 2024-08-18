@@ -210,8 +210,8 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
 // duration in frames
 export function duration(a: Animation): number {
   switch (a.t) {
-    case 'PlayerAnimation': return 2;
-    case 'ViewPortAnimation': return 2;
+    case 'PlayerAnimation': return 4;
+    case 'ViewPortAnimation': return 4;
     case 'MeltAnimation': return 2;
     case 'ResetAnimation': return DEATH_FRAMES;
     case 'SavePointChangeAnimation': return 2;

@@ -149,8 +149,8 @@ function spriteLocOfTile(tile: Tile): Point {
     } break;
     case 'door': return { x: 8, y: 6 };
     case 'side_breakable': return { x: 7, y: 6 };
+    case 'movable': return { x: 7, y: 7 };
   }
-
 }
 
 function spriteLocOfPlayer(s: PlayerSprite): Point {
