@@ -1,5 +1,6 @@
-import { Point, vequal, vsub } from './point';
-import { Brect, Bus, Dict, DynamicTile, Tile } from './types';
+import { Point, vequal, vsub } from './lib/point';
+import { Bus, DynamicTile, Tile } from './types';
+import { Brect, Dict } from "./lib/types";
 import { mapValues, pointInBrect } from './util';
 
 export type PointMap<T> = { tiles: Dict<T> };

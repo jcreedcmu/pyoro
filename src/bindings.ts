@@ -1,6 +1,7 @@
 import { Command } from "./reduce";
 import { Action } from './action';
-import { Dict, Move } from "./types";
+import { Move } from "./types";
+import { Dict } from "./lib/types";
 import { mapValues } from "./util";
 
 export const moveBindings: Dict<Move> = {

@@ -6,7 +6,7 @@ import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile
 import { LevelData } from './level';
 import { Board, ForcedBlock, getItem, isDeadly, isOpen } from './model-utils';
 import { entityTick } from './physics';
-import { Point, vequal, vmn, vplus } from './point';
+import { Point, vequal, vmn, vplus } from './lib/point';
 import { Combo, GameState, IfaceState, ModifyPanelState, Player, MainState, ToolState } from "./state";
 import { DynamicTile, Facing, MotiveMove, Move, Sprite, Tile, Tool } from './types';
 import { mapValues, max } from './util';

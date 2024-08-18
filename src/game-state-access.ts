@@ -2,9 +2,9 @@ import { produce } from 'immer';
 import { DynamicLayer } from './layer';
 import { GameState, Level, MainState } from './state';
 import { emptyLevel, LevelData } from './level';
-import { Brect } from './types';
+import { Brect } from "./lib/types";
 import { boundBrect, pointInBrect } from './util';
-import { Point } from './point';
+import { Point } from './lib/point';
 import { initMainState } from './init-state';
 
 export function getCurrentLevel(state: GameState): Level {

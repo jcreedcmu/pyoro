@@ -1,5 +1,5 @@
 import { Setter } from "./optic";
-import { Point } from "./point";
+import { Point } from "./lib/point";
 import { Command, PanelStateFieldTypes } from "./reduce";
 import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields, ToolState } from "./state";
 import * as testTools from './test-tools';

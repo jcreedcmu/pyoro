@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Point } from './point';
+import { Point } from './lib/point';
 
 export type CanvasInfo = {
   c: HTMLCanvasElement,

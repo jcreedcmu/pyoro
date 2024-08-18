@@ -1,8 +1,8 @@
 import { FULL_IMPETUS } from "./constants";
-import { tileEq, emptyTile, TileResolutionContext, tileOfStack } from "./layer";
-import { Point, vplus } from "./point";
+import { emptyTile, tileEq, TileResolutionContext } from "./layer";
+import { Point } from "./lib/point";
 import { Player } from "./state";
-import { Tile, Item } from "./types";
+import { Item, Tile } from "./types";
 
 export function getItem(x: Tile): Item | undefined {
   if (x.t == 'item')

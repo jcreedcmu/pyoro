@@ -1,11 +1,10 @@
 import { Animator } from './animation';
-import { FULL_IMPETUS } from './constants';
 import { Effect } from './effect';
 import { EntityState } from './entity';
 import { DynamicLayer } from './layer';
 import { LevelData } from './level';
-import { Point } from './point';
-import { Brect, Bus, DynamicTile, Facing, Item, Move, PlayerSprite, Rect } from './types';
+import { Point } from './lib/point';
+import { Bus, DynamicTile, Facing, Item, PlayerSprite } from './types';
 import { ViewData } from './view';
 
 export type Combo = undefined | { t: 'combo', dir: Point, rep: number };

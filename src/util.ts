@@ -1,5 +1,5 @@
-import { Point, vsub } from './point';
-import { Color, Rect, Dict, Brect } from './types';
+import { Point, vsub } from './lib/point';
+import { Color, Rect, Dict, Brect } from "./lib/types";
 
 export function int(x: number): number {
   return Math.floor(x);

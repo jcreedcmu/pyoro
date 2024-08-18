@@ -1,6 +1,6 @@
 import { tileOfGameState } from "./model";
 import { ForcedBlock, genImpetus, isGrabbable, isOpen, Posture } from './model-utils';
-import { Point, vadd, vplus, vsub } from './point';
+import { Point, vadd, vplus, vsub } from './lib/point';
 import { GameState } from "./state";
 import { Tile } from "./types";
 

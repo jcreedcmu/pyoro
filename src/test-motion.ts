@@ -1,6 +1,6 @@
 import { Facing, Move, PlayerSprite } from './types';
 import { animateMove, renderGameAnims } from './model';
-import { Point, vequal } from './point';
+import { Point, vequal } from './lib/point';
 import { GameState, init_player } from './state';
 import { getVerticalImpetus } from './player-accessors';
 import { mkLevel } from './level';

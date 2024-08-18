@@ -1,11 +1,10 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setOverlay } from './game-state-access';
+import { getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
+import { int, lerp, Point, vm2, vplus, vscale, vsub } from './lib/point';
 import { computeCombo, tileOfGameState } from './model';
-import { int, lerp, Point, vm2, vplus, vscale, vsub } from './point';
 import { GameState, IfaceState, MainState } from './state';
-import { initMainState } from './init-state';
 import { Bus, Facing, Item, PlayerSprite } from './types';
 
 /**

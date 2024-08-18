@@ -1,6 +1,7 @@
 import { DynamicLayer } from "./layer";
 import { getEmptyOverlay, Level } from "./state";
-import { Brect, Bus } from "./types";
+import { Bus } from "./types";
+import { Brect } from "./lib/types";
 
 /**
  * The type of level data "at rest", as returned by {@link getAllLevels}.

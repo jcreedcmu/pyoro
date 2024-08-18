@@ -1,18 +1,5 @@
-import { Point } from "./point";
+import { Point } from "./lib/point";
 
-/** A string-keyed dictionary whose values are `T` */
-export type Dict<T> = { [k: string]: T };
-
-/** A color in the RGB colorspace, where the components are in [0,255]. */
-export type Color = { r: number, g: number, b: number };
-
-/** A rectangle given by its offset and size. */
-export type Rect = { p: Point, sz: Point };
-
-/** A rectangle given by its min and max. */
-export type Brect = { min: Point, max: Point };
-
-/** An object in the game world that can be picked up. */
 export type Item =
   | 'teal_fruit'
   | 'coin'

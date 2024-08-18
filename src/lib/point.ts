@@ -54,3 +54,7 @@ export function vfpart(v: Point): Point {
 export function lerp(a: number, b: number, l: number): number {
   return a * (1 - l) + b * l;
 }
+
+export function vmul(a: Point, b: Point): Point {
+  return { x: a.x * b.x, y: a.y * b.y };
+}
