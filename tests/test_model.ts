@@ -1,27 +1,13 @@
 import { FULL_IMPETUS } from '../src/constants';
 import { boxTile, dynamicOfTile, emptyTile, mapPointMap, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMove, getAllLevels, renderGameAnims, tileOfGameState } from '../src/model';
-import { motionTestPasses, motionTestSuite } from '../src/test-motion';
+import { motionTestPasses, motionTestSuite, testInitialGameState } from '../src/test-motion';
 import { GameState, init_player } from '../src/state';
 import { Tile, Move, DynamicTile } from '../src/types';
 import { getVerticalImpetus } from '../src/player-accessors';
 import { LevelData, mkLevel } from '../src/level';
 import { allLevels } from '../src/level-data';
 
-// XXX(#43) use same function from test-motion.ts
-function testState(levelName: string): GameState {
-  return {
-    levels: {
-      start: mkLevel(allLevels[levelName]),
-    },
-    currentLevel: 'start',
-    inventory: { teal_fruit: undefined, },
-    lastSave: { x: 0, y: 0 },
-    player: init_player,
-    entities: [],
-    time: 0,
-  };
-}
 
 function executeMove(s: GameState, move: Move): GameState {
   return renderGameAnims(animateMove(s, move), 'complete', s);
@@ -37,7 +23,7 @@ describe('Motion rules', () => {
 
 describe('State', () => {
   it('should disallow narrow diagonal moves', () => {
-    let m = testState('_test4');
+    let m = testInitialGameState('_test4');
     m = executeMove(m, 'up');
     {
       const player = m.player;
@@ -67,7 +53,7 @@ describe('State', () => {
   });
 
   it('should disallow horizontally constrained diagonal moves', () => {
-    let m = testState('_test2');
+    let m = testInitialGameState('_test2');
     m = executeMove(m, 'up-left');
 
     const player = m.player;
@@ -79,7 +65,7 @@ describe('State', () => {
   });
 
   it('should allow jumping and breaking ice bricks if there is enough impetus', () => {
-    let m = testState('_test5');
+    let m = testInitialGameState('_test5');
 
     m = executeMove(m, 'up');
     m = executeMove(m, 'up');
@@ -90,7 +76,7 @@ describe('State', () => {
   });
 
   it('should allow recentering', () => {
-    let m = testState('_test1');
+    let m = testInitialGameState('_test1');
     m = executeMove(m, 'recenter');
     m = executeMove(m, 'left');
   });
@@ -98,7 +84,7 @@ describe('State', () => {
 
 describe('getAllLevels', () => {
   it('should filter out empties', () => {
-    let s = testState('_test1');
+    let s = testInitialGameState('_test1');
     s = _putTileInGameStateInitOverlay(s, { x: 0, y: 1 }, dynamicOfTile(emptyTile())); // delete the existing box
     const expected1: Record<string, LevelData> = {
       start: {
