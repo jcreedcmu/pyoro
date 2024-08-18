@@ -23,7 +23,7 @@ export const initMainState: MainState = {
   },
   iface: {
     keysDown: {},
-    viewPort: { x: -13, y: -9 },
+    _viewPort: { x: -13, y: -9 },
     blackout: 0,
     editTileIx: 0,
     toolState: { t: 'play_tool' },

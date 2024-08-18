@@ -35,7 +35,14 @@ export type IfaceState = {
   editTileIx: number,
   toolState: ToolState,
   editTileRotation: number,
-  viewPort: Point,
+
+  /**
+   * The world coordinates of the top-left displayed tile. As a
+   * transform, this would be the translation component of
+   * world_from_view_tile.
+   */
+  _viewPort: Point,
+
   blackout: number,
   mouse: MouseState,
   vd: ViewData | null,
@@ -45,8 +52,6 @@ export type Inventory = Partial<Record<Item, number>>;
 
 /**
  * The type of level data "in flight", as we're playing the game.
- * XXX: Probably should include a LevelData instead of inline copying
- * all its fields.
  */
 export type Level = {
   overlay: DynamicLayer,

@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { getBoundRect, getCurrentLevelData, isToolbarActive } from './game-state-access';
+import { getBoundRect, getCurrentLevelData, getViewport, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { int, Point, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './lib/point';
 import { DEBUG } from './logger';
@@ -25,8 +25,8 @@ export type FView = {
 }
 
 export type ViewData = {
-  wsize: Point,
-  origin: Point,
+  wsize: Point, // this is the overall window size
+  origin: Point, // this is the origin of the play area in pixels, as an offset from the browser window
 };
 
 /**
@@ -57,7 +57,7 @@ function drawScaled(fv: FView, state: MainState): void {
 
   const ts = state.iface.toolState;
   if (ts.t == 'modify_tool' && ts.modifyCell !== null) {
-    drawWorldTileSelection(fv, vsub(ts.modifyCell, state.iface.viewPort));
+    drawWorldTileSelection(fv, vsub(ts.modifyCell, getViewport(state)));
   }
   d.restore();
 
@@ -183,7 +183,7 @@ function spriteLocOfTool(s: ToolTile): Point {
 function drawField(fv: FView, state: MainState): void {
   const player = state.game.player;
   const { d } = fv;
-  const vp = state.iface.viewPort;
+  const vp = getViewport(state);
 
   const brect = getBoundRect(state.game);
 
@@ -419,7 +419,7 @@ export function wpoint_of_vd(vd: ViewData, p: Point, s: MainState): WidgetPoint 
   if (u.inrect(p, { p: origin, sz: world_size }))
     return {
       t: 'World',
-      p: vmn([s.iface.viewPort, origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
+      p: vmn([getViewport(s), origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
     };
   else if (isToolbarActive(s)) {
     const rv: WidgetPoint = {

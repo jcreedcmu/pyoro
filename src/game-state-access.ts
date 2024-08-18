@@ -1,11 +1,11 @@
 import { produce } from 'immer';
-import { DynamicLayer } from './layer';
-import { GameState, Level, MainState } from './state';
-import { emptyLevel, LevelData } from './level';
-import { Brect } from "./lib/types";
-import { boundBrect, pointInBrect } from './util';
-import { Point } from './lib/point';
 import { initMainState } from './init-state';
+import { DynamicLayer } from './layer';
+import { emptyLevel, LevelData } from './level';
+import { Point } from './lib/point';
+import { Brect } from "./lib/types";
+import { GameState, IfaceState, Level, MainState } from './state';
+import { boundBrect, pointInBrect } from './util';
 
 export function getCurrentLevel(state: GameState): Level {
   return state.levels[state.currentLevel];
@@ -83,5 +83,26 @@ export function resetRoom(state: GameState): GameState {
     getCurrentLevel(s).busState = initBusState;
     s.player = newPlayer;
     s.time = 0;
+  });
+}
+
+export function getViewport(state: MainState): Point {
+  return getViewportIface(state.iface);
+}
+
+export function getViewportIface(state: IfaceState): Point {
+  return state._viewPort;
+}
+
+export function setViewport(state: MainState, viewPort: Point): MainState {
+  const newIface = setViewportIface(state.iface, viewPort);
+  return produce(state, s => {
+    state.iface = newIface;
+  });
+}
+
+export function setViewportIface(state: IfaceState, viewPort: Point): IfaceState {
+  return produce(state, s => {
+    state._viewPort = viewPort;
   });
 }

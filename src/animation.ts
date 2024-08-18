@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel } from './game-state-access';
+import { getCurrentLevel, getCurrentLevelData, getOverlay, getViewportIface, resetRoom, setCurrentLevel, setViewport, setViewportIface } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { int, lerp, Point, vm2, vplus, vscale, vsub } from './lib/point';
 import { computeCombo, tileOfGameState } from './model';
@@ -79,12 +79,10 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
   switch (a.t) {
     case 'PlayerAnimation': return iface;
     case 'ViewPortAnimation':
-      return produce(iface, s => {
-        s.viewPort = vplus(s.viewPort, vscale(a.dpos, t));
-      });
+      return setViewportIface(iface, vplus(getViewportIface(iface), vscale(a.dpos, t)));
     case 'MeltAnimation': return iface;
-    case 'ResetAnimation':
-      return produce(iface, s => {
+    case 'ResetAnimation': {
+      let blackout = produce(iface, s => {
         if (fr <= DEATH_FADE_OUT) {
           s.blackout = fr / DEATH_FADE_OUT;
         }
@@ -94,34 +92,37 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
         else {
           s.blackout = (DEATH_FRAMES - fr) / DEATH_FADE_OUT;
         }
-        if (fr >= DEATH_FADE_OUT) {
-          s.viewPort = centeredViewPort(game.lastSave);
-        }
       });
+      if (fr >= DEATH_FADE_OUT) {
+        blackout = setViewportIface(blackout, centeredViewPort(game.lastSave));
+      }
+      return blackout;
+    }
     case 'SavePointChangeAnimation': return iface;
-    case 'RecenterAnimation':
-      return produce(iface, s => {
-        const target = centeredViewPort(game.player.pos);
-        s.viewPort = vm2(target, s.viewPort, (tgt, vp) => lerp(vp, tgt, t));
-      });
+    case 'RecenterAnimation': {
+      const target = centeredViewPort(game.player.pos);
+      return setViewportIface(iface, vm2(target, getViewportIface(iface), (tgt, vp) => lerp(vp, tgt, t)));
+    }
     case 'ItemGetAnimation': return iface;
     case 'SpendCoinAnimation': return iface;
     case 'ButtonToggleAnimation': return iface;
     case 'BusButtonToggleAnimation': return iface;
-    case 'ChangeLevelAnimation': return produce(iface, s => {
-      if (fr <= CHANGE_ROOM_FADE_OUT) {
-        s.blackout = fr / CHANGE_ROOM_FADE_OUT;
-      }
-      else if (fr <= CHANGE_ROOM_FADE_OUT + CHANGE_ROOM_HOLD) {
-        s.blackout = 1;
-      }
-      else {
-        s.blackout = (CHANGE_ROOM_FRAMES - fr) / CHANGE_ROOM_FADE_OUT;
-      }
-      if (fr >= CHANGE_ROOM_FADE_OUT) {
-        s.viewPort = centeredViewPort(a.newPosition);
-      }
-    });
+    case 'ChangeLevelAnimation': {
+      let blackout = produce(iface, s => {
+        if (fr <= CHANGE_ROOM_FADE_OUT) {
+          s.blackout = fr / CHANGE_ROOM_FADE_OUT;
+        }
+        else if (fr <= CHANGE_ROOM_FADE_OUT + CHANGE_ROOM_HOLD) {
+          s.blackout = 1;
+        }
+        else {
+          s.blackout = (CHANGE_ROOM_FRAMES - fr) / CHANGE_ROOM_FADE_OUT;
+        }
+      });
+      if (fr >= CHANGE_ROOM_FADE_OUT)
+        blackout = setViewportIface(blackout, centeredViewPort(a.newPosition));
+      return blackout;
+    }
   }
 }
 

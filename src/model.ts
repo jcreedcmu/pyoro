@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { COMBO_THRESHOLD, editTiles, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay } from './game-state-access';
+import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay, getViewport, setViewport } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
 import { Board, ForcedBlock, getItem, isDeadly, isOpen } from './model-utils';
@@ -255,16 +255,16 @@ export function animateMove(state: GameState, move: Move): Animation[] {
 }
 
 export function animateViewPort(s: MainState, move: Move, nextPos: Point | undefined): Animation[] {
-  const iface = s.iface;
+  const vp = getViewport(s);
   const anims: Animation[] = [];
   if (nextPos !== undefined) {
-    if (nextPos.x - iface.viewPort.x >= NUM_TILES.x - 1)
+    if (nextPos.x - vp.x >= NUM_TILES.x - 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
-    if (nextPos.x - iface.viewPort.x < 1)
+    if (nextPos.x - vp.x < 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: -1, y: 0 } });
-    if (nextPos.y - iface.viewPort.y >= NUM_TILES.y - 1)
+    if (nextPos.y - vp.y >= NUM_TILES.y - 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: 1 } });
-    if (nextPos.y - iface.viewPort.y < 1)
+    if (nextPos.y - vp.y < 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: -1 } });
   }
   return anims;
@@ -379,7 +379,7 @@ export function handle_world_mousedown(s: MainState, rawPoint: Point, worldPoint
       const tileToPut = determineTileToPut(s, worldPoint);
       return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
     case 'hand_tool':
-      return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint, initViewPort: s.iface.viewPort } });
+      return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint, initViewPort: getViewport(s) } });
     case 'modify_tool':
       return produce(s, s => {
         s.iface.toolState = { t: 'modify_tool', modifyCell: worldPoint, panelState: modifyPanelStateForTile(s, worldPoint) };
@@ -402,11 +402,9 @@ export function handle_world_drag(s: MainState, rawPoint: Point, widgetPoint: Wi
         return s;
       }
     case 'panDrag':
-      return produce(s, s => {
-        s.iface.viewPort = vmn(
-          [mouse.init, mouse.initViewPort, rawPoint],
-          ([i, ivp, rp]) => ivp + Math.round((i - rp) / (TILE_SIZE * SCALE)))
-      });
+      return setViewport(s, vmn(
+        [mouse.init, mouse.initViewPort, rawPoint],
+        ([i, ivp, rp]) => ivp + Math.round((i - rp) / (TILE_SIZE * SCALE))));
     default:
       console.error(`inconsistent mouse state: ` +
         `processing drag event but mouse stat isn't "drag". ` +
