@@ -5,18 +5,18 @@ import { GameState } from "./state";
 import { Tile } from "./types";
 
 export type TickContext = {
-  entity: EntityState,
+  entity: PhysicsEntityState,
   motive: Point,
   support: Point | undefined,
 };
 
 export type TickOutput = {
-  entity: EntityState,
+  entity: PhysicsEntityState,
   forced: ForcedBlock[],
   posture: Posture,
 };
 
-export type EntityState = {
+type PhysicsEntityState = {
   pos: Point,
   impetus: Point,
 };
@@ -106,7 +106,7 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
   }
 }
 
-export type BouncePhaseContext = { entity: EntityState, motive: Point };
+export type BouncePhaseContext = { entity: PhysicsEntityState, motive: Point };
 
 export type BouncePhaseOutput = {
   bounce: Point,
@@ -162,7 +162,7 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
   return { bounce: { x: 0, y: 0 }, forced: [fblock(vertProj)], posture: 'stand' };
 }
 
-export type DestinationPhaseContext = { entity: EntityState, target: Point };
+export type DestinationPhaseContext = { entity: PhysicsEntityState, target: Point };
 
 export type DestinationPhaseOutput = {
   destination: Point,
@@ -251,12 +251,12 @@ export function destinationPhase(state: GameState, ctx: DestinationPhaseContext)
 }
 
 export type FallPhaseContext = {
-  entity: EntityState,
+  entity: PhysicsEntityState,
   fall: boolean,
 };
 
 export type FallPhaseOutput = {
-  entity: EntityState,
+  entity: PhysicsEntityState,
 };
 
 /**

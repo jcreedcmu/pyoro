@@ -8,6 +8,7 @@ import { getVerticalImpetus } from '../src/player-accessors';
 import { LevelData, mkLevel } from '../src/level';
 import { allLevels } from '../src/level-data';
 
+// XXX(#43) use same function from test-motion.ts
 function testState(levelName: string): GameState {
   return {
     levels: {
@@ -17,6 +18,7 @@ function testState(levelName: string): GameState {
     inventory: { teal_fruit: undefined, },
     lastSave: { x: 0, y: 0 },
     player: init_player,
+    entities: [],
     time: 0,
   };
 }

@@ -14,6 +14,7 @@ export const initMainState: MainState = {
   effects: [],
   game: {
     player: init_player,
+    entities: [],
     levels: mapValues(allLevels, mkLevel),
     currentLevel: 'start',
     inventory: {},

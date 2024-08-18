@@ -1,6 +1,7 @@
 import { Animator } from './animation';
 import { FULL_IMPETUS } from './constants';
 import { Effect } from './effect';
+import { EntityState } from './entity';
 import { DynamicLayer } from './layer';
 import { LevelData } from './level';
 import { Point } from './point';
@@ -56,6 +57,7 @@ export type Level = {
 
 // XXX may want to move other stuff into level state
 export type GameState = {
+  entities: EntityState[],
   player: Player,
   levels: Record<string, Level>,
   currentLevel: string,

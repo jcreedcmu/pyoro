@@ -32,6 +32,7 @@ export function testInitialGameState(levelName: string): GameState {
     inventory: { teal_fruit: undefined, },
     lastSave: { x: 0, y: 0 },
     player: init_player,
+    entities: [],
     time: 0,
   };
 }
