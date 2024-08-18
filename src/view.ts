@@ -1,6 +1,6 @@
 import { produce } from 'immer';
-import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { getBoundRect, getCurrentLevelData, getViewport, isToolbarActive } from './game-state-access';
+import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools, viewRectInView } from './constants';
+import { getBoundRect, getCurrentLevelData, getViewport, getWorldFromView, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { int, Point, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './lib/point';
 import { DEBUG } from './logger';
@@ -10,6 +10,7 @@ import { getTestState } from './test-state';
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
+import { apply_to_rect } from './lib/se2-extra';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
@@ -184,6 +185,8 @@ function drawField(fv: FView, state: MainState): void {
   const player = state.game.player;
   const { d } = fv;
   const vp = getViewport(state);
+  const world_from_view = getWorldFromView(state.iface);
+
 
   const brect = getBoundRect(state.game);
 
@@ -195,6 +198,10 @@ function drawField(fv: FView, state: MainState): void {
   // statefully update in the actual overlay layer.
   const emptyTileOverride: PointMap<boolean> = { tiles: {} };
   putItem(emptyTileOverride, state.game.lastSave, true);
+
+  const viewRect_in_world = apply_to_rect(world_from_view, viewRectInView);
+
+  // YYY use viewRect_in_world to determine these loop bounds
 
   // draw the background
   for (let y = 0; y < NUM_TILES.y + 1; y++) {

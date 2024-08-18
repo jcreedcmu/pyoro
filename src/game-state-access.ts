@@ -2,10 +2,12 @@ import { produce } from 'immer';
 import { initMainState } from './init-state';
 import { DynamicLayer } from './layer';
 import { emptyLevel, LevelData } from './level';
-import { Point } from './lib/point';
+import { Point, vdiag } from './lib/point';
 import { Brect } from "./lib/types";
 import { GameState, IfaceState, Level, MainState } from './state';
 import { boundBrect, pointInBrect } from './util';
+import { mkSE2, SE2 } from './lib/se2';
+import { TILE_SIZE } from './constants';
 
 export function getCurrentLevel(state: GameState): Level {
   return state.levels[state.currentLevel];
@@ -86,14 +88,17 @@ export function resetRoom(state: GameState): GameState {
   });
 }
 
+// XXX Deprecated
 export function getViewport(state: MainState): Point {
   return getViewportIface(state.iface);
 }
 
+// XXX Deprecated
 export function getViewportIface(state: IfaceState): Point {
   return state._viewPort;
 }
 
+// XXX Deprecated
 export function setViewport(state: MainState, viewPort: Point): MainState {
   const newIface = setViewportIface(state.iface, viewPort);
   return produce(state, s => {
@@ -101,8 +106,13 @@ export function setViewport(state: MainState, viewPort: Point): MainState {
   });
 }
 
+// XXX Deprecated
 export function setViewportIface(state: IfaceState, viewPort: Point): IfaceState {
   return produce(state, s => {
     state._viewPort = viewPort;
   });
+}
+
+export function getWorldFromView(state: IfaceState): SE2 {
+  return mkSE2(vdiag(1 / TILE_SIZE), state._viewPort);
 }

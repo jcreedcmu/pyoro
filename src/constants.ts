@@ -1,4 +1,5 @@
 import { boxTile } from './layer';
+import { Rect } from './lib/types';
 import { Direction, Tile, Tool, Bus } from './types';
 import { mod } from './util';
 
@@ -7,6 +8,8 @@ export const COMBO_THRESHOLD = 3;
 export const NUM_TILES = { x: 24, y: 18 };
 export const TILE_SIZE = 16;
 export const SCALE = 2;
+
+export const viewRectInView: Rect = { p: { x: 0, y: 0 }, sz: { x: NUM_TILES.x * TILE_SIZE, y: NUM_TILES.y * TILE_SIZE } };
 
 export const FRAME_DURATION_MS = 30;
 

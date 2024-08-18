@@ -58,3 +58,7 @@ export function lerp(a: number, b: number, l: number): number {
 export function vmul(a: Point, b: Point): Point {
   return { x: a.x * b.x, y: a.y * b.y };
 }
+
+export function vdiag(x: number): Point {
+  return { x: x, y: x };
+}
