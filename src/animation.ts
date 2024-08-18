@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { NUM_TILES } from './constants';
-import { getCurrentLevel, getOverlay, resetRoom, setCurrentLevel, setOverlay } from './game-state-access';
+import { getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setOverlay } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { computeCombo, tileOfGameState } from './model';
 import { int, lerp, Point, vm2, vplus, vscale, vsub } from './point';
@@ -195,7 +195,10 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     case 'ChangeLevelAnimation':
       if (fr < CHANGE_ROOM_FADE_OUT)
         return state;
-      return produce(setCurrentLevel(state, a.newLevel), s => {
+      let newLevelState = setCurrentLevel(state, a.newLevel);
+      const newBusState = getCurrentLevelData(newLevelState).busState;
+      return produce(newLevelState, s => {
+        getCurrentLevel(s).busState = newBusState;
         s.player.pos = a.newPosition;
         s.lastSave = a.newPosition;
         s.player.combo = undefined;
