@@ -188,13 +188,18 @@ function cell_rect_in_world(p_in_world: Point): Rect {
   return { p: p_in_world, sz: { x: 1, y: 1 } };
 }
 
+function cell_rect_in_canvas(fv: FView, iface: IfaceState, p_in_world: Point): Rect {
+  const world_from_view = getWorldFromView(iface);
+  const canvas_from_view = mkSE2(vdiag(SCALE), fv.vd.origin);
+  const canvas_from_world = compose(canvas_from_view, inverse(world_from_view));
+  return apply_to_rect(canvas_from_world, cell_rect_in_world(p_in_world));
+}
+
 function drawField(fv: FView, state: MainState): void {
   const player = state.game.player;
   const { d } = fv;
   const vp = getViewport(state);
   const world_from_view = getWorldFromView(state.iface);
-  const canvas_from_view = mkSE2(vdiag(SCALE), fv.vd.origin);
-  const canvas_from_world = compose(canvas_from_view, inverse(world_from_view));
 
   const levelBounds = getBoundRect(state.game);
 
@@ -225,7 +230,7 @@ function drawField(fv: FView, state: MainState): void {
         tile = emptyTile();
 
 
-      const rect_in_canvas: Rect = apply_to_rect(canvas_from_world, cell_rect_in_world({ x: bx, y: by }));
+      const rect_in_canvas: Rect = cell_rect_in_canvas(fv, state.iface, { x: bx, y: by });
 
       draw_sprite(fv, spriteLocOfTile(tile), rect_in_canvas);
 
@@ -242,7 +247,7 @@ function drawField(fv: FView, state: MainState): void {
 
   const effectivePos = player.posOffset == undefined ? player.pos : vplus(player.pos, player.posOffset);
   draw_sprite(fv, spriteLocOfPlayer(playerSprite),
-    apply_to_rect(canvas_from_world, cell_rect_in_world(effectivePos)),
+    cell_rect_in_canvas(fv, state.iface, effectivePos),
     player.flipState == 'left');
 }
 
@@ -275,7 +280,7 @@ function drawEditorStuff(fv: FView, state: MainState): void {
   // toolbar
   tools.forEach((t, ix) => {
     raw_draw_sprite(fv, spriteLocOfTool(t == state.iface.toolState.t ? `${t}_active` : `${t}_inactive`),
-      { x: ix * TILE_SIZE * SCALE, y: TILE_SIZE * SCALE });
+      { p: { x: ix * TILE_SIZE * SCALE, y: TILE_SIZE * SCALE }, sz: vdiag(TILE_SIZE * SCALE) });
   });
 
   // background of tile list
@@ -291,7 +296,7 @@ function drawEditorStuff(fv: FView, state: MainState): void {
       const bus = tile.bus;
       tile = produce(tile, tl => { tl.on = levelInitBusState[bus] });
     }
-    raw_draw_sprite(fv, spriteLocOfTile(tile), { x: ix * TILE_SIZE * SCALE, y: 0 });
+    raw_draw_sprite(fv, spriteLocOfTile(tile), { p: { x: ix * TILE_SIZE * SCALE, y: 0 }, sz: vdiag(TILE_SIZE * SCALE) });
   });
 
   // selected tile & selected tool
@@ -311,7 +316,7 @@ function drawInventory(fv: FView, state: MainState): void {
 
   function drawInventoryItem(item: Item, count: number, p: Point) {
     const ipos = vplus(start, vscale(p, TILE_SIZE * SCALE));
-    raw_draw_sprite(fv, spriteLocOfTile({ t: 'item', item }), ipos);
+    raw_draw_sprite(fv, spriteLocOfTile({ t: 'item', item }), { p: ipos, sz: vdiag(SCALE * TILE_SIZE) });
 
     // XXX temporary debugging count display, should do nice pixel font or something.
     if (count > 1) {
@@ -333,30 +338,9 @@ function drawInventory(fv: FView, state: MainState): void {
       drawInventoryItem(item, count, { x: ix, y: 0 });
     }
   });
-
 }
 
-// spos: position in window, in pixels. (0,0) is top left of window
-// sprite_loc: position in sprite sheet, in tiles.
-// XXX: Deprecated
-function raw_draw_sprite(fv: FView, sprite_loc: Point, spos: Point, flip?: boolean): void {
-  const d = fv.d;
-  d.save();
-  d.translate(spos.x, spos.y);
-  if (flip) {
-    d.translate(TILE_SIZE * SCALE, 0);
-    d.scale(-1, 1);
-  }
-  d.imageSmoothingEnabled = false;
-  d.drawImage(fv.spriteImg,
-    sprite_loc.x * TILE_SIZE, sprite_loc.y * TILE_SIZE,
-    TILE_SIZE, TILE_SIZE,
-    0, 0,
-    TILE_SIZE * SCALE, TILE_SIZE * SCALE);
-  d.restore();
-}
-
-function raw_draw_sprite_rect(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: boolean): void {
+function raw_draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: boolean): void {
   const d = fv.d;
   d.save();
 
@@ -378,12 +362,15 @@ function raw_draw_sprite_rect(fv: FView, sprite_loc: Point, rect_in_canvas: Rect
   d.restore();
 }
 
+function draw_sprite_in_world(fv: FView, iface: IfaceState, sprite_loc: Point, p_in_world: Point): void {
+  raw_draw_sprite(fv, sprite_loc, cell_rect_in_canvas(fv, iface, p_in_world));
+}
 
 // sprite_loc: position in sprite sheet, in tiles.
 function draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: boolean): void {
   const { vd: { origin } } = fv;
   // XXX check if totally out of bounds?
-  raw_draw_sprite_rect(fv, sprite_loc, rect_in_canvas, flip);
+  raw_draw_sprite(fv, sprite_loc, rect_in_canvas, flip);
 }
 
 
