@@ -102,7 +102,7 @@ export function getViewportIface(state: IfaceState): Point {
 export function setViewport(state: MainState, viewPort: Point): MainState {
   const newIface = setViewportIface(state.iface, viewPort);
   return produce(state, s => {
-    state.iface = newIface;
+    s.iface = newIface;
   });
 }
 
