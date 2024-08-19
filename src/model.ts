@@ -11,6 +11,8 @@ import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, Tool
 import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
 import { mapValues, max } from './util';
 import { WidgetPoint } from './view';
+import { getWorldFromView, getWorldFromViewTiles } from './transforms';
+import { apply, inverse } from './lib/se2';
 
 function layerStackOfState(s: GameState): LayerStack {
   return {
@@ -255,16 +257,16 @@ export function animateMove(state: GameState, move: Move): Animation[] {
 }
 
 export function animateViewPort(s: MainState, move: Move, nextPos: Point | undefined): Animation[] {
-  const vp = getViewport(s);
   const anims: Animation[] = [];
   if (nextPos !== undefined) {
-    if (nextPos.x - vp.x >= NUM_TILES.x - 1)
+    const p_in_viewTiles = apply(inverse(getWorldFromViewTiles(s.iface)), nextPos);
+    if (p_in_viewTiles.x >= NUM_TILES.x - 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
-    if (nextPos.x - vp.x < 1)
+    if (p_in_viewTiles.x < 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: -1, y: 0 } });
-    if (nextPos.y - vp.y >= NUM_TILES.y - 1)
+    if (p_in_viewTiles.y >= NUM_TILES.y - 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: 1 } });
-    if (nextPos.y - vp.y < 1)
+    if (p_in_viewTiles.y < 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: -1 } });
   }
   return anims;
