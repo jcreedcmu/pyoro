@@ -2,7 +2,11 @@ import { produce } from 'immer';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools, viewRectInView } from './constants';
 import { getBoundRect, getCurrentLevelData, getViewport, getWorldFromView, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
-import { int, Point, vadd, vdiag, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './lib/point';
+import { fillRect, pathRect } from './lib/dutil';
+import { int, Point, vdiag, vint, vm, vm2, vmn, vplus, vscale } from './lib/point';
+import { compose, inverse, mkSE2 } from './lib/se2';
+import { apply_to_rect } from './lib/se2-extra';
+import { Rect } from './lib/types';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { Combo, IfaceState, MainState } from './state';
@@ -10,10 +14,6 @@ import { getTestState } from './test-state';
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
-import { apply_to_rect } from './lib/se2-extra';
-import { Rect } from './lib/types';
-import { apply, compose, inverse, mkSE2 } from './lib/se2';
-import { fillRect, pathRect } from './lib/dutil';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
@@ -198,9 +198,8 @@ function cell_rect_in_canvas(fv: FView, iface: IfaceState, p_in_world: Point): R
 function drawField(fv: FView, state: MainState): void {
   const player = state.game.player;
   const { d } = fv;
-  const vp = getViewport(state);
-  const world_from_view = getWorldFromView(state.iface);
 
+  const world_from_view = getWorldFromView(state.iface);
   const levelBounds = getBoundRect(state.game);
 
   // emptyTileOverride "temporarily" displays things as empty, for
@@ -217,25 +216,21 @@ function drawField(fv: FView, state: MainState): void {
   const fmax = vint(viewBrect_in_world.max);
 
   // draw the background
-  for (let by = fmin.y; by <= fmax.y; by++) {
-    for (let bx = fmin.x; bx <= fmax.x; bx++) {
-      const x = bx - Math.floor(viewBrect_in_world.min.x);
-      const y = by - Math.floor(viewBrect_in_world.min.y);
-      const p = { x, y };
-      const cell_in_world = { x: bx, y: by };
+  for (let y = fmin.y; y <= fmax.y; y++) {
+    for (let x = fmin.x; x <= fmax.x; x++) {
+      const cell_in_world = { x, y };
       const viewIntent = state.iface.toolState.t != 'play_tool';
       let tile = tileOfState(state, cell_in_world, viewIntent);
       // For now, only do empty-tile overriding if the erstwhile tile is a save_point.
       if (getItem(emptyTileOverride, cell_in_world) && show_empty_tile_override(state) && tile.t == 'save_point')
         tile = emptyTile();
 
+      const rect_in_canvas: Rect = cell_rect_in_canvas(fv, state.iface, cell_in_world);
 
-      const rect_in_canvas: Rect = cell_rect_in_canvas(fv, state.iface, { x: bx, y: by });
-
-      draw_sprite(fv, spriteLocOfTile(tile), rect_in_canvas);
-
-      if (!u.pointInBrect(cell_in_world, levelBounds)) {
-
+      if (u.pointInBrect(cell_in_world, levelBounds)) {
+        draw_sprite(fv, spriteLocOfTile(tile), rect_in_canvas);
+      }
+      else {
         fillRect(d, rect_in_canvas, '#666');
       }
     }
