@@ -1,4 +1,4 @@
-import { Point, vsub } from './lib/point';
+import { Point, vadd, vsub } from './lib/point';
 import { Color, Rect, Dict, Brect } from "./lib/types";
 
 export function int(x: number): number {
@@ -79,4 +79,8 @@ export function pointInBrect(p: Point, r: Brect): boolean {
     p.x <= r.max.x &&
     p.y <= r.max.y
   );
+}
+
+export function brectOfRect(r: Rect): Brect {
+  return { min: r.p, max: vadd(r.p, r.sz) };
 }

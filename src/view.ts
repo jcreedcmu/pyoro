@@ -2,7 +2,7 @@ import { produce } from 'immer';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools, viewRectInView } from './constants';
 import { getBoundRect, getCurrentLevelData, getViewport, getWorldFromView, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
-import { int, Point, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './lib/point';
+import { int, Point, vdiag, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './lib/point';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { Combo, MainState } from './state';
@@ -11,6 +11,9 @@ import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
 import { apply_to_rect } from './lib/se2-extra';
+import { Rect } from './lib/types';
+import { apply, compose, inverse, mkSE2 } from './lib/se2';
+import { fillRect } from './lib/dutil';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
@@ -186,9 +189,10 @@ function drawField(fv: FView, state: MainState): void {
   const { d } = fv;
   const vp = getViewport(state);
   const world_from_view = getWorldFromView(state.iface);
+  const canvas_from_view = mkSE2(vdiag(SCALE), fv.vd.origin);
+  const canvas_from_world = compose(canvas_from_view, inverse(world_from_view));
 
-
-  const brect = getBoundRect(state.game);
+  const levelBounds = getBoundRect(state.game);
 
   // emptyTileOverride "temporarily" displays things as empty, for
   // which we want to retain some kind of convenient way of reinstating
@@ -199,23 +203,30 @@ function drawField(fv: FView, state: MainState): void {
   const emptyTileOverride: PointMap<boolean> = { tiles: {} };
   putItem(emptyTileOverride, state.game.lastSave, true);
 
-  const viewRect_in_world = apply_to_rect(world_from_view, viewRectInView);
+  const viewBrect_in_world = u.brectOfRect(apply_to_rect(world_from_view, viewRectInView));
 
-  // YYY use viewRect_in_world to determine these loop bounds
 
   // draw the background
-  for (let y = 0; y < NUM_TILES.y + 1; y++) {
-    for (let x = 0; x < NUM_TILES.x + 1; x++) {
+  for (let by = Math.floor(viewBrect_in_world.min.y); by <= Math.floor(viewBrect_in_world.max.y); by++) {
+    for (let bx = Math.floor(viewBrect_in_world.min.x); bx <= Math.floor(viewBrect_in_world.max.x); bx++) {
+      const x = bx - Math.floor(viewBrect_in_world.min.x);
+      const y = by - Math.floor(viewBrect_in_world.min.y);
       const p = { x, y };
-      const realp = vplus(p, vint(vp));
+      const cell_in_world = { x: bx, y: by };
       const viewIntent = state.iface.toolState.t != 'play_tool';
-      let tile = tileOfState(state, realp, viewIntent);
+      let tile = tileOfState(state, cell_in_world, viewIntent);
       // For now, only do empty-tile overriding if the erstwhile tile is a save_point.
-      if (getItem(emptyTileOverride, realp) && show_empty_tile_override(state) && tile.t == 'save_point')
+      if (getItem(emptyTileOverride, cell_in_world) && show_empty_tile_override(state) && tile.t == 'save_point')
         tile = emptyTile();
       draw_sprite(fv, spriteLocOfTile(tile), vminus(p, vfpart(vp)));
 
-      if (!u.pointInBrect(realp, brect)) {
+      if (cell_in_world.x == 1 && cell_in_world.y == 1) {
+        const rect_in_world: Rect = { p: { x: 1, y: 1 }, sz: { x: 1, y: 1 } };
+        const rect_in_view: Rect = apply_to_rect(canvas_from_world, rect_in_world);
+        fillRect(d, rect_in_view, 'white');
+      }
+
+      if (!u.pointInBrect(cell_in_world, levelBounds)) {
         d.fillStyle = '#666';
         d.beginPath();
         draw_rect(fv, vminus(p, vfpart(vp)));
