@@ -75,10 +75,10 @@ export function reduceCommand(s: MainState, cmd: Command): MainState {
       if (vd == null || mc == undefined)
         return s;
       const wpoint = wpoint_of_vd(vd, mc, s);
-      if (wpoint.t == 'Toolbar') {
+      if (wpoint.t == 'Toolbar' || wpoint.t == 'None') {
         return s;
       }
-      const tile = tileOfGameState(s.game, wpoint.p, true);
+      const tile = tileOfGameState(s.game, wpoint.p_in_world, true);
       const tileIx = editTiles.findIndex(t => weakTileEq(tile, t));
       if (tileIx == -1)
         return s;
@@ -163,7 +163,7 @@ export function reduceMain(s: MainState, a: Action): MainState {
       const wpoint = wpoint_of_vd(vd, a.point, s);
       logger('mouse', 'mouseDown wpoint=', wpoint);
       switch (wpoint.t) {
-        case 'World': return handle_world_mousedown(s, a.point, wpoint.p);
+        case 'World': return handle_world_mousedown(s, a.point, wpoint.p_in_world);
         case 'Toolbar': return handle_toolbar_mousedown(s, wpoint.tilePoint, a.buttons);
       }
     }

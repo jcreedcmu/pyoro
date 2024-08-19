@@ -396,7 +396,7 @@ export function handle_world_drag(s: MainState, rawPoint: Point, widgetPoint: Wi
   switch (mouse.t) {
     case 'tileDrag':
       if (widgetPoint.t == 'World') {
-        return _putTileInInitOverlay(s, widgetPoint.p, mouse.tile);
+        return _putTileInInitOverlay(s, widgetPoint.p_in_world, mouse.tile);
       }
       else {
         return s;

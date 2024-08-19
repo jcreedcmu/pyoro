@@ -113,7 +113,3 @@ export function setViewportIface(state: IfaceState, viewPort: Point): IfaceState
     s.world_from_view = worldFromView;
   });
 }
-
-export function getWorldFromView(state: IfaceState): SE2 {
-  return state.world_from_view;
-}

@@ -1,10 +1,10 @@
 import { produce } from 'immer';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools, viewRectInView } from './constants';
-import { getBoundRect, getCurrentLevelData, getViewport, getWorldFromView, isToolbarActive } from './game-state-access';
+import { getBoundRect, getCurrentLevelData, getViewport, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { fillRect, pathRect } from './lib/dutil';
 import { int, Point, vdiag, vint, vm, vm2, vmn, vplus, vscale } from './lib/point';
-import { compose, inverse, mkSE2 } from './lib/se2';
+import { apply, compose, inverse, mkSE2 } from './lib/se2';
 import { apply_to_rect } from './lib/se2-extra';
 import { Rect } from './lib/types';
 import { DEBUG } from './logger';
@@ -14,11 +14,12 @@ import { getTestState } from './test-state';
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
+import { getCanvasFromView, getCanvasFromWorld, getWorldFromCanvas, getWorldFromView } from './transforms';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
-  | { t: 'World', p: Point }
-  | { t: 'None', p: Point }
+  | { t: 'World', p_in_world: Point }
+  | { t: 'None', p_in_canvas: Point }
   ;
 
 // Functional View Data
@@ -189,10 +190,7 @@ function cell_rect_in_world(p_in_world: Point): Rect {
 }
 
 function cell_rect_in_canvas(fv: FView, iface: IfaceState, p_in_world: Point): Rect {
-  const world_from_view = getWorldFromView(iface);
-  const canvas_from_view = mkSE2(vdiag(SCALE), fv.vd.origin);
-  const canvas_from_world = compose(canvas_from_view, inverse(world_from_view));
-  return apply_to_rect(canvas_from_world, cell_rect_in_world(p_in_world));
+  return apply_to_rect(getCanvasFromWorld(fv, iface), cell_rect_in_world(p_in_world));
 }
 
 function drawField(fv: FView, state: MainState): void {
@@ -427,26 +425,26 @@ export function resizeView(c: HTMLCanvasElement): ViewData {
   return { origin, wsize };
 }
 
-export function wpoint_of_vd(vd: ViewData, p: Point, s: MainState): WidgetPoint {
+export function wpoint_of_vd(vd: ViewData, p_in_canvas: Point, s: MainState): WidgetPoint {
   const { origin } = vd;
 
   const world_size = vm(NUM_TILES, NT => TILE_SIZE * SCALE * NT);
-  if (u.inrect(p, { p: origin, sz: world_size }))
+  if (u.inrect(p_in_canvas, { p: origin, sz: world_size }))
     return {
       t: 'World',
-      p: vmn([getViewport(s), origin, p], ([vp, o, p]) => int(vp + (p - o) / (TILE_SIZE * SCALE)))
+      p_in_world: vint(apply(getWorldFromCanvas(vd, s.iface), p_in_canvas)),
     };
   else if (isToolbarActive(s)) {
     const rv: WidgetPoint = {
       t: 'Toolbar',
-      tilePoint: vm(p, p => int(p / (SCALE * TILE_SIZE))),
+      tilePoint: vm(p_in_canvas, p => int(p / (SCALE * TILE_SIZE))),
     }
     return rv;
   }
   else {
     return {
       t: 'None',
-      p,
+      p_in_canvas,
     }
   }
 }
