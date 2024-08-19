@@ -8,19 +8,14 @@ export function getWorldFromView(state: IfaceState): SE2 {
   return state.world_from_view;
 }
 
-export function getCanvasFromView(fv: FView): SE2 {
-  return mkSE2(vdiag(SCALE), fv.vd.origin);
-}
-
-export function getCanvasFromView_data(vd: ViewData): SE2 {
+export function getCanvasFromView(vd: ViewData): SE2 {
   return mkSE2(vdiag(SCALE), vd.origin);
 }
 
-// XXX Deprecate
-export function getCanvasFromWorld(fv: FView, iface: IfaceState): SE2 {
-  return compose(getCanvasFromView(fv), inverse(getWorldFromView(iface)));
+export function getCanvasFromWorld(vd: ViewData, iface: IfaceState): SE2 {
+  return compose(getCanvasFromView(vd), inverse(getWorldFromView(iface)));
 }
 
 export function getWorldFromCanvas(vd: ViewData, iface: IfaceState): SE2 {
-  return compose(getWorldFromView(iface), inverse(getCanvasFromView_data(vd)));
+  return compose(getWorldFromView(iface), inverse(getCanvasFromView(vd)));
 }

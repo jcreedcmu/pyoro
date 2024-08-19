@@ -189,8 +189,8 @@ function cell_rect_in_world(p_in_world: Point): Rect {
   return { p: p_in_world, sz: { x: 1, y: 1 } };
 }
 
-function cell_rect_in_canvas(fv: FView, iface: IfaceState, p_in_world: Point): Rect {
-  return apply_to_rect(getCanvasFromWorld(fv, iface), cell_rect_in_world(p_in_world));
+function cell_rect_in_canvas(vd: ViewData, iface: IfaceState, p_in_world: Point): Rect {
+  return apply_to_rect(getCanvasFromWorld(vd, iface), cell_rect_in_world(p_in_world));
 }
 
 function drawField(fv: FView, state: MainState): void {
@@ -223,7 +223,7 @@ function drawField(fv: FView, state: MainState): void {
       if (getItem(emptyTileOverride, cell_in_world) && show_empty_tile_override(state) && tile.t == 'save_point')
         tile = emptyTile();
 
-      const rect_in_canvas: Rect = cell_rect_in_canvas(fv, state.iface, cell_in_world);
+      const rect_in_canvas: Rect = cell_rect_in_canvas(fv.vd, state.iface, cell_in_world);
 
       if (u.pointInBrect(cell_in_world, levelBounds)) {
         draw_sprite(fv, spriteLocOfTile(tile), rect_in_canvas);
@@ -240,7 +240,7 @@ function drawField(fv: FView, state: MainState): void {
 
   const effectivePos = player.posOffset == undefined ? player.pos : vplus(player.pos, player.posOffset);
   draw_sprite(fv, spriteLocOfPlayer(playerSprite),
-    cell_rect_in_canvas(fv, state.iface, effectivePos),
+    cell_rect_in_canvas(fv.vd, state.iface, effectivePos),
     player.flipState == 'left');
 }
 
@@ -356,7 +356,7 @@ function raw_draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, fli
 }
 
 function draw_sprite_in_world(fv: FView, iface: IfaceState, sprite_loc: Point, p_in_world: Point): void {
-  raw_draw_sprite(fv, sprite_loc, cell_rect_in_canvas(fv, iface, p_in_world));
+  raw_draw_sprite(fv, sprite_loc, cell_rect_in_canvas(fv.vd, iface, p_in_world));
 }
 
 // sprite_loc: position in sprite sheet, in tiles.
