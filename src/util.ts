@@ -1,4 +1,4 @@
-import { Point, vadd, vsub } from './lib/point';
+import { Point, vadd, vdiag, vsub } from './lib/point';
 import { Color, Rect, Dict, Brect } from "./lib/types";
 
 export function int(x: number): number {
@@ -83,4 +83,11 @@ export function pointInBrect(p: Point, r: Brect): boolean {
 
 export function brectOfRect(r: Rect): Brect {
   return { min: r.p, max: vadd(r.p, r.sz) };
+}
+
+export function insetRect(r: Rect, amount: number): Rect {
+  return {
+    p: vadd(r.p, vdiag(amount)),
+    sz: vsub(r.sz, vdiag(2 * amount)),
+  };
 }

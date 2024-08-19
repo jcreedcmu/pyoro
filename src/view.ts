@@ -5,7 +5,7 @@ import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { int, Point, vadd, vdiag, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './lib/point';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
-import { Combo, MainState } from './state';
+import { Combo, IfaceState, MainState } from './state';
 import { getTestState } from './test-state';
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
@@ -13,7 +13,7 @@ import { rgba } from './util';
 import { apply_to_rect } from './lib/se2-extra';
 import { Rect } from './lib/types';
 import { apply, compose, inverse, mkSE2 } from './lib/se2';
-import { fillRect } from './lib/dutil';
+import { fillRect, pathRect } from './lib/dutil';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
@@ -61,7 +61,7 @@ function drawScaled(fv: FView, state: MainState): void {
 
   const ts = state.iface.toolState;
   if (ts.t == 'modify_tool' && ts.modifyCell !== null) {
-    drawWorldTileSelection(fv, vsub(ts.modifyCell, getViewport(state)));
+    drawWorldTileSelection(fv, state.iface, ts.modifyCell);
   }
   d.restore();
 
@@ -184,6 +184,10 @@ function spriteLocOfTool(s: ToolTile): Point {
   }
 }
 
+function cell_rect_in_world(p_in_world: Point): Rect {
+  return { p: p_in_world, sz: { x: 1, y: 1 } };
+}
+
 function drawField(fv: FView, state: MainState): void {
   const player = state.game.player;
   const { d } = fv;
@@ -206,10 +210,6 @@ function drawField(fv: FView, state: MainState): void {
   const viewBrect_in_world = u.brectOfRect(apply_to_rect(world_from_view, viewRectInView));
   const fmin = vint(viewBrect_in_world.min);
   const fmax = vint(viewBrect_in_world.max);
-
-  function cell_rect_in_world(p_in_world: Point): Rect {
-    return { p: p_in_world, sz: { x: 1, y: 1 } };
-  }
 
   // draw the background
   for (let by = fmin.y; by <= fmax.y; by++) {
@@ -254,13 +254,18 @@ function drawInventorySelection(d: CanvasRenderingContext2D, p: Point): void {
   d.fill('evenodd');
 }
 
-function drawWorldTileSelection(fv: FView, p: Point): void {
+function drawWorldTileSelection(fv: FView, iface: IfaceState, p_in_world: Point): void {
   const { d } = fv;
   d.fillStyle = rgba(0, 192, 192, 0.7);
-  const sp = worldTilePosition(fv, p);
+
+  const world_from_view = getWorldFromView(iface);
+  const canvas_from_view = mkSE2(vdiag(SCALE), fv.vd.origin);
+  const canvas_from_world = compose(canvas_from_view, inverse(world_from_view));
+
   d.beginPath();
-  d.rect(sp.x, sp.y, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
-  d.rect(sp.x + SCALE, sp.y + SCALE, (TILE_SIZE - 2) * SCALE, (TILE_SIZE - 2) * SCALE);
+  const rect_in_canvas = apply_to_rect(canvas_from_world, cell_rect_in_world(p_in_world));
+  pathRect(d, rect_in_canvas);
+  pathRect(d, u.insetRect(rect_in_canvas, SCALE));
   d.fill('evenodd');
 }
 
@@ -373,10 +378,6 @@ function raw_draw_sprite_rect(fv: FView, sprite_loc: Point, rect_in_canvas: Rect
   d.restore();
 }
 
-// XXX: DEPRECATED
-function worldTilePosition(fv: FView, wpos: Point): Point {
-  return vm2(fv.vd.origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE);
-}
 
 // sprite_loc: position in sprite sheet, in tiles.
 function draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: boolean): void {
