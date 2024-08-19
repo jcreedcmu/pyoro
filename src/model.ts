@@ -1,18 +1,18 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { COMBO_THRESHOLD, editTiles, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay, getViewport, setViewport } from './game-state-access';
+import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay, getViewport, setViewport, setWorldFromView } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
-import { Point, vequal, vmn, vplus } from './lib/point';
+import { Point, vequal, vmn, vplus, vscale, vsub } from './lib/point';
 import { Board, ForcedBlock, getItem, isDeadly, isOpen } from './model-utils';
 import { entityTick } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
 import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
 import { mapValues, max } from './util';
-import { WidgetPoint } from './view';
-import { getWorldFromView, getWorldFromViewTiles } from './transforms';
-import { apply, inverse } from './lib/se2';
+import { ViewData, WidgetPoint } from './view';
+import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
+import { apply, compose, composen, inverse, translate } from './lib/se2';
 
 function layerStackOfState(s: GameState): LayerStack {
   return {
@@ -385,7 +385,7 @@ export function handle_world_mousedown(s: MainState, rawPoint: Point, worldPoint
       const tileToPut = determineTileToPut(s, worldPoint);
       return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
     case 'hand_tool':
-      return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint, initViewPort: getViewport(s) } });
+      return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint, initWorldFromView: getWorldFromView(s.iface) } });
     case 'modify_tool':
       return produce(s, s => {
         s.iface.toolState = { t: 'modify_tool', modifyCell: worldPoint, panelState: modifyPanelStateForTile(s, worldPoint) };
@@ -397,7 +397,7 @@ export function handle_world_mousedown(s: MainState, rawPoint: Point, worldPoint
   }
 }
 
-export function handle_world_drag(s: MainState, rawPoint: Point, widgetPoint: WidgetPoint): MainState {
+export function handle_world_drag(s: MainState, vd: ViewData, p_in_canvas: Point, widgetPoint: WidgetPoint): MainState {
   const mouse = s.iface.mouse;
   switch (mouse.t) {
     case 'tileDrag':
@@ -408,9 +408,18 @@ export function handle_world_drag(s: MainState, rawPoint: Point, widgetPoint: Wi
         return s;
       }
     case 'panDrag':
-      return setViewport(s, vmn(
-        [mouse.init, mouse.initViewPort, rawPoint],
-        ([i, ivp, rp]) => ivp + Math.round((i - rp) / (TILE_SIZE * SCALE))));
+      const canvas_from_view = getCanvasFromView(vd);
+      const view_from_canvas = inverse(canvas_from_view);
+      const canvas_from_new_canvas = translate(vsub(mouse.init, p_in_canvas));
+      const newIface = setWorldFromView(s.iface, composen(
+        mouse.initWorldFromView,
+        view_from_canvas,
+        canvas_from_new_canvas,
+        canvas_from_view,
+      ));
+      return produce(s, s => {
+        s.iface = newIface;
+      });
     default:
       console.error(`inconsistent mouse state: ` +
         `processing drag event but mouse stat isn't "drag". ` +

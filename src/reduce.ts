@@ -178,7 +178,7 @@ export function reduceMain(s: MainState, a: Action): MainState {
       if (vd == null)
         return s;
       const wpoint = wpoint_of_vd(vd, a.point, s);
-      return handle_world_drag(s, a.point, wpoint);
+      return handle_world_drag(s, vd, a.point, wpoint);
     }
     case 'setCurrentToolState':
       return produce(s, s => {
