@@ -220,17 +220,10 @@ function drawField(fv: FView, state: MainState): void {
         tile = emptyTile();
       draw_sprite(fv, spriteLocOfTile(tile), vminus(p, vfpart(vp)));
 
-      if (cell_in_world.x == 1 && cell_in_world.y == 1) {
-        const rect_in_world: Rect = { p: { x: 1, y: 1 }, sz: { x: 1, y: 1 } };
-        const rect_in_view: Rect = apply_to_rect(canvas_from_world, rect_in_world);
-        fillRect(d, rect_in_view, 'white');
-      }
-
       if (!u.pointInBrect(cell_in_world, levelBounds)) {
-        d.fillStyle = '#666';
-        d.beginPath();
-        draw_rect(fv, vminus(p, vfpart(vp)));
-        d.fill();
+        const rect_in_world: Rect = { p: { x: bx, y: by }, sz: { x: 1, y: 1 } };
+        const rect_in_view: Rect = apply_to_rect(canvas_from_world, rect_in_world);
+        fillRect(d, rect_in_view, '#666');
       }
     }
   }
@@ -349,6 +342,7 @@ function raw_draw_sprite(fv: FView, sprite_loc: Point, spos: Point, flip?: boole
   d.restore();
 }
 
+// XXX: DEPRECATED
 function worldTilePosition(fv: FView, wpos: Point): Point {
   return vm2(fv.vd.origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE);
 }
@@ -362,15 +356,6 @@ function draw_sprite(fv: FView, sprite_loc: Point, wpos: Point, flip?: boolean):
   raw_draw_sprite(fv, sprite_loc, worldTilePosition(fv, wpos), flip);
 }
 
-// wpos: position in window, in tiles. (0,0) is top left of viewport
-function draw_rect(fv: FView, wpos: Point): void {
-  const { vd: { origin } } = fv;
-  if (wpos.x < - 1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
-    return;
-  const d = fv.d;
-  const spos = worldTilePosition(fv, wpos);
-  d.rect(spos.x, spos.y, TILE_SIZE * SCALE, TILE_SIZE * SCALE);
-}
 
 export function drawView(fv: FView, state: MainState): void {
   const { d } = fv;
