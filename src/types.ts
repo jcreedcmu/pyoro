@@ -149,10 +149,3 @@ export type ToolTile =
   | `${Tool}_inactive`
   | `${Tool}_active`
   ;
-
-/** Any entity that maps onto a particular place in the sprite sheet. */
-/* XXX deprecated? */
-export type Sprite =
-  | PlayerSprite
-  | ToolTile
-  ;

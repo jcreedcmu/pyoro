@@ -4,11 +4,11 @@ import { COMBO_THRESHOLD, editTiles, NUM_TILES, rotateTile, SCALE, TILE_SIZE, to
 import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay, getViewport, setViewport } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
+import { Point, vequal, vmn, vplus } from './lib/point';
 import { Board, ForcedBlock, getItem, isDeadly, isOpen } from './model-utils';
 import { entityTick } from './physics';
-import { Point, vequal, vmn, vplus } from './lib/point';
-import { Combo, GameState, IfaceState, ModifyPanelState, Player, MainState, ToolState } from "./state";
-import { DynamicTile, Facing, MotiveMove, Move, Sprite, Tile, Tool } from './types';
+import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
+import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
 import { mapValues, max } from './util';
 import { WidgetPoint } from './view';
 
@@ -231,7 +231,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   const supportedAfter = !isOpen(suppTileAfter);
   const dead = isDeadly(tileAfter) || tickOutput.posture == 'dead';
 
-  let animState: Sprite = 'player';
+  let animState: PlayerSprite = 'player';
   if (tickOutput.posture == 'attachWall') {
     animState = 'player_wall';
   }
