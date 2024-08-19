@@ -1,18 +1,18 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
-import { COMBO_THRESHOLD, editTiles, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
-import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay, getViewport, setViewport, setWorldFromView } from './game-state-access';
+import { COMBO_THRESHOLD, editTiles, NUM_TILES, rotateTile, tools } from './constants';
+import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay, setWorldFromView } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
-import { Point, vequal, vmn, vplus, vscale, vsub } from './lib/point';
+import { Point, vequal, vplus, vsub } from './lib/point';
+import { apply, composen, inverse, translate } from './lib/se2';
 import { Board, ForcedBlock, getItem, isDeadly, isOpen } from './model-utils';
 import { entityTick } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
+import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
 import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
 import { mapValues, max } from './util';
 import { ViewData, WidgetPoint } from './view';
-import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
-import { apply, compose, composen, inverse, translate } from './lib/se2';
 
 function layerStackOfState(s: GameState): LayerStack {
   return {

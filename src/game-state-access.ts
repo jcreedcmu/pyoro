@@ -89,11 +89,6 @@ export function resetRoom(state: GameState): GameState {
 }
 
 // XXX Deprecated
-export function getViewport(state: MainState): Point {
-  return getViewportIface(state.iface);
-}
-
-// XXX Deprecated
 export function getViewportIface(state: IfaceState): Point {
   return state.world_from_view.translate;
 }
