@@ -256,10 +256,14 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   return anims;
 }
 
-export function animateViewPort(s: MainState, move: Move, nextPos: Point | undefined): Animation[] {
+/**
+ * Suppose the player is moving to `p_in_world`. Return some appropriate animations
+ * for sufficiently recentering the player in the viewport.
+ */
+export function animateViewPort(s: MainState, move: Move, p_in_world: Point | undefined): Animation[] {
   const anims: Animation[] = [];
-  if (nextPos !== undefined) {
-    const p_in_viewTiles = apply(inverse(getWorldFromViewTiles(s.iface)), nextPos);
+  if (p_in_world !== undefined) {
+    const p_in_viewTiles = apply(inverse(getWorldFromViewTiles(s.iface)), p_in_world);
     if (p_in_viewTiles.x >= NUM_TILES.x - 1)
       anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
     if (p_in_viewTiles.x < 1)
