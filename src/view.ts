@@ -2,7 +2,7 @@ import { produce } from 'immer';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools, viewRectInView } from './constants';
 import { getBoundRect, getCurrentLevelData, getViewport, getWorldFromView, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
-import { int, Point, vdiag, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './lib/point';
+import { int, Point, vadd, vdiag, vfpart, vint, vm, vm2, vminus, vmn, vplus, vscale, vsub } from './lib/point';
 import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { Combo, MainState } from './state';
@@ -204,11 +204,16 @@ function drawField(fv: FView, state: MainState): void {
   putItem(emptyTileOverride, state.game.lastSave, true);
 
   const viewBrect_in_world = u.brectOfRect(apply_to_rect(world_from_view, viewRectInView));
+  const fmin = vint(viewBrect_in_world.min);
+  const fmax = vint(viewBrect_in_world.max);
 
+  function cell_rect_in_world(p_in_world: Point): Rect {
+    return { p: p_in_world, sz: { x: 1, y: 1 } };
+  }
 
   // draw the background
-  for (let by = Math.floor(viewBrect_in_world.min.y); by <= Math.floor(viewBrect_in_world.max.y); by++) {
-    for (let bx = Math.floor(viewBrect_in_world.min.x); bx <= Math.floor(viewBrect_in_world.max.x); bx++) {
+  for (let by = fmin.y; by <= fmax.y; by++) {
+    for (let bx = fmin.x; bx <= fmax.x; bx++) {
       const x = bx - Math.floor(viewBrect_in_world.min.x);
       const y = by - Math.floor(viewBrect_in_world.min.y);
       const p = { x, y };
@@ -218,12 +223,15 @@ function drawField(fv: FView, state: MainState): void {
       // For now, only do empty-tile overriding if the erstwhile tile is a save_point.
       if (getItem(emptyTileOverride, cell_in_world) && show_empty_tile_override(state) && tile.t == 'save_point')
         tile = emptyTile();
-      draw_sprite(fv, spriteLocOfTile(tile), vminus(p, vfpart(vp)));
+
+
+      const rect_in_canvas: Rect = apply_to_rect(canvas_from_world, cell_rect_in_world({ x: bx, y: by }));
+
+      draw_sprite(fv, spriteLocOfTile(tile), rect_in_canvas);
 
       if (!u.pointInBrect(cell_in_world, levelBounds)) {
-        const rect_in_world: Rect = { p: { x: bx, y: by }, sz: { x: 1, y: 1 } };
-        const rect_in_view: Rect = apply_to_rect(canvas_from_world, rect_in_world);
-        fillRect(d, rect_in_view, '#666');
+
+        fillRect(d, rect_in_canvas, '#666');
       }
     }
   }
@@ -234,7 +242,7 @@ function drawField(fv: FView, state: MainState): void {
 
   const effectivePos = player.posOffset == undefined ? player.pos : vplus(player.pos, player.posOffset);
   draw_sprite(fv, spriteLocOfPlayer(playerSprite),
-    vminus(effectivePos, vp),
+    apply_to_rect(canvas_from_world, cell_rect_in_world(effectivePos)),
     player.flipState == 'left');
 }
 
@@ -325,6 +333,7 @@ function drawInventory(fv: FView, state: MainState): void {
 
 // spos: position in window, in pixels. (0,0) is top left of window
 // sprite_loc: position in sprite sheet, in tiles.
+// XXX: Deprecated
 function raw_draw_sprite(fv: FView, sprite_loc: Point, spos: Point, flip?: boolean): void {
   const d = fv.d;
   d.save();
@@ -342,18 +351,38 @@ function raw_draw_sprite(fv: FView, sprite_loc: Point, spos: Point, flip?: boole
   d.restore();
 }
 
+function raw_draw_sprite_rect(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: boolean): void {
+  const d = fv.d;
+  d.save();
+
+  if (flip) {
+    d.translate(rect_in_canvas.p.x + rect_in_canvas.sz.x / 2, 0);
+    d.scale(-1, 1);
+    d.translate(-rect_in_canvas.p.x - rect_in_canvas.sz.x / 2, 0);
+    rect_in_canvas = {
+      p: { x: rect_in_canvas.p.x, y: rect_in_canvas.p.y },
+      sz: { x: rect_in_canvas.sz.x, y: rect_in_canvas.sz.y },
+    };
+  }
+  d.imageSmoothingEnabled = false;
+  d.drawImage(fv.spriteImg,
+    sprite_loc.x * TILE_SIZE, sprite_loc.y * TILE_SIZE,
+    TILE_SIZE, TILE_SIZE,
+    rect_in_canvas.p.x, rect_in_canvas.p.y,
+    rect_in_canvas.sz.x, rect_in_canvas.sz.y);
+  d.restore();
+}
+
 // XXX: DEPRECATED
 function worldTilePosition(fv: FView, wpos: Point): Point {
   return vm2(fv.vd.origin, wpos, (o, wpos) => o + wpos * TILE_SIZE * SCALE);
 }
 
-// wpos: position in window, in tiles. (0,0) is top left of viewport
 // sprite_loc: position in sprite sheet, in tiles.
-function draw_sprite(fv: FView, sprite_loc: Point, wpos: Point, flip?: boolean): void {
+function draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: boolean): void {
   const { vd: { origin } } = fv;
-  if (wpos.x < - 1 || wpos.y < -1 || wpos.x >= NUM_TILES.x + 1 || wpos.y >= NUM_TILES.y + 1)
-    return;
-  raw_draw_sprite(fv, sprite_loc, worldTilePosition(fv, wpos), flip);
+  // XXX check if totally out of bounds?
+  raw_draw_sprite_rect(fv, sprite_loc, rect_in_canvas, flip);
 }
 
 
