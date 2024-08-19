@@ -1,9 +1,9 @@
 import { produce } from 'immer';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools, viewRectInView } from './constants';
-import { getBoundRect, getCurrentLevelData, getViewport, isToolbarActive } from './game-state-access';
+import { getBoundRect, getCurrentLevelData, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { fillRect, pathRect } from './lib/dutil';
-import { int, Point, vdiag, vint, vm, vm2, vmn, vplus, vscale } from './lib/point';
+import { int, Point, vdiag, vint, vm, vm2, vplus, vscale } from './lib/point';
 import { apply, compose, inverse, mkSE2 } from './lib/se2';
 import { apply_to_rect } from './lib/se2-extra';
 import { Rect } from './lib/types';
@@ -11,10 +11,10 @@ import { DEBUG } from './logger';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { Combo, IfaceState, MainState } from './state';
 import { getTestState } from './test-state';
+import { getCanvasFromWorld, getWorldFromCanvas, getWorldFromView } from './transforms';
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
-import { getCanvasFromView, getCanvasFromWorld, getWorldFromCanvas, getWorldFromView } from './transforms';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
