@@ -1,5 +1,8 @@
+import { TILE_SIZE } from "./constants";
 import { mkLevel } from "./level";
 import { allLevels } from "./level-data";
+import { vdiag } from "./lib/point";
+import { mkSE2 } from "./lib/se2";
 import { MainState, State, init_player } from "./state";
 import { mapValues } from "./util";
 
@@ -23,7 +26,7 @@ export const initMainState: MainState = {
   },
   iface: {
     keysDown: {},
-    _viewPort: { x: -13, y: -9 },
+    world_from_view: mkSE2(vdiag(1 / TILE_SIZE), { x: -13, y: -9 }),
     blackout: 0,
     editTileIx: 0,
     toolState: { t: 'play_tool' },

@@ -95,7 +95,7 @@ export function getViewport(state: MainState): Point {
 
 // XXX Deprecated
 export function getViewportIface(state: IfaceState): Point {
-  return state._viewPort;
+  return state.world_from_view.translate;
 }
 
 // XXX Deprecated
@@ -108,11 +108,12 @@ export function setViewport(state: MainState, viewPort: Point): MainState {
 
 // XXX Deprecated
 export function setViewportIface(state: IfaceState, viewPort: Point): IfaceState {
+  const worldFromView = mkSE2(vdiag(1 / TILE_SIZE), viewPort);
   return produce(state, s => {
-    state._viewPort = viewPort;
+    s.world_from_view = worldFromView;
   });
 }
 
 export function getWorldFromView(state: IfaceState): SE2 {
-  return mkSE2(vdiag(1 / TILE_SIZE), state._viewPort);
+  return state.world_from_view;
 }

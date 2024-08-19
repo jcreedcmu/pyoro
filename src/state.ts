@@ -4,6 +4,7 @@ import { EntityState } from './entity';
 import { DynamicLayer } from './layer';
 import { LevelData } from './level';
 import { Point } from './lib/point';
+import { SE2 } from './lib/se2';
 import { Bus, DynamicTile, Facing, Item, PlayerSprite } from './types';
 import { ViewData } from './view';
 
@@ -41,7 +42,7 @@ export type IfaceState = {
    * transform, this would be the translation component of
    * world_from_view_tile.
    */
-  _viewPort: Point,
+  world_from_view: SE2,
 
   blackout: number,
   mouse: MouseState,
