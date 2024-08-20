@@ -85,6 +85,22 @@ export function brectOfRect(r: Rect): Brect {
   return { min: r.p, max: vadd(r.p, r.sz) };
 }
 
+/**
+ * Given a Brect, return a Rect under the convention that a Brect that
+ * has the same max and min counts as size 1.
+ */
+export function thickRectOfBrect(r: Brect): Rect {
+  return { p: r.min, sz: vadd(vdiag(1), vsub(r.max, r.min)) };
+}
+
+/**
+ * Given a Brect, return a Rect under the convention that a Brect that
+ * has the same max and min counts as size 0.
+ */
+export function rectOfBrect(r: Brect): Rect {
+  return { p: r.min, sz: vsub(r.max, r.min) };
+}
+
 export function insetRect(r: Rect, amount: number): Rect {
   return {
     p: vadd(r.p, vdiag(amount)),

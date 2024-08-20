@@ -1,7 +1,11 @@
-import { DynamicLayer } from "./layer";
+import { produce } from "immer";
+import { entityOfDynamicTile, EntityType } from "./entity";
+import { DynamicLayer, emptyTile, getItem, putItem } from "./layer";
+import { Point } from "./lib/point";
+import { Brect } from "./lib/types";
 import { getEmptyOverlay, Level } from "./state";
 import { Bus } from "./types";
-import { Brect } from "./lib/types";
+import { thickRectOfBrect } from "./util";
 
 /**
  * The type of level data "at rest", as returned by {@link getAllLevels}.
@@ -28,9 +32,26 @@ export function emptyLevel(): Level {
  * level state during play.
  */
 export function mkLevel(ld: LevelData): Level {
-  return {
+  const level: Level = {
     overlay: getEmptyOverlay(),
     busState: ld.busState,
     levelData: ld,
+  };
+
+  const entityReplacements: { ent: EntityType, p: Point }[] = [];
+  const rect = thickRectOfBrect(ld.boundRect);
+  for (let y = ld.boundRect.min.y; y < ld.boundRect.max.y; y++) {
+    for (let x = ld.boundRect.min.x; x < ld.boundRect.max.x; x++) {
+      const tile = getItem(ld.initOverlay, { x, y })
+      if (tile == undefined) continue;
+      const ent = entityOfDynamicTile(tile);
+      if (ent == undefined) continue;
+      entityReplacements.push({ p: { x, y }, ent });
+    }
   }
+  return produce(level, l => {
+    entityReplacements.forEach(({ p, ent }) => {
+      putItem(l.overlay, p, { t: 'static', tile: emptyTile() });
+    });
+  });
 }
