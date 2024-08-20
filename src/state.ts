@@ -57,6 +57,7 @@ export type Inventory = Partial<Record<Item, number>>;
 export type Level = {
   overlay: DynamicLayer,
   busState: Record<Bus, boolean>,
+  // XXX I think this might be deprecated?
   levelData: LevelData,
 }
 
@@ -64,7 +65,8 @@ export type Level = {
 export type GameState = {
   entities: EntityState[],
   player: Player,
-  levels: Record<string, Level>,
+  currentLevelState: Level,
+  levels: Record<string, LevelData>,
   currentLevel: string,
   inventory: Inventory,
   lastSave: Point,

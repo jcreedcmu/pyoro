@@ -12,6 +12,7 @@ import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields } from '
 import * as testTools from './test-tools';
 import { DynamicTile, Move } from './types';
 import { wpoint_of_vd } from './view';
+import { mkLevel } from './level';
 
 export type Command =
   | 'prevEditTile'

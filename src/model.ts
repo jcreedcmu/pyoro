@@ -121,7 +121,7 @@ function getDoorPassAnim(s: GameState, move: Move): Animation[] | undefined {
   if (move == 'down' && tileAt.t == 'door') {
     const newLevel = tileAt.destinationLevel;
     const oldLevel = s.currentLevel;
-    const destTiles = pointMapEntries(s.levels[newLevel].levelData.initOverlay);
+    const destTiles = pointMapEntries(s.levels[newLevel].initOverlay);
     const reciprocalDoor = destTiles.find(({ loc, value }) => value.t == 'door' && value.destinationLevel == oldLevel);
     let newPosition;
     if (reciprocalDoor == undefined) {
@@ -475,8 +475,7 @@ export function show_empty_tile_override(s: MainState): boolean {
 }
 
 export function getAllLevels(s: GameState): Record<string, LevelData> {
-  return mapValues(s.levels, level => {
-    const ld = level.levelData;
+  return mapValues(s.levels, ld => {
     const layer: DynamicLayer = { tiles: {} };
     for (const [k, v] of Object.entries(ld.initOverlay.tiles)) {
       if (!isEmptyTile(v))

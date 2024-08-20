@@ -20,11 +20,18 @@ export type LevelData = {
  * @returns An empty level.
  */
 export function emptyLevel(): Level {
-  return mkLevel({
+  return mkLevel(emptyLevelData());
+}
+
+/**
+ * @returns An empty level data.
+ */
+export function emptyLevelData(): LevelData {
+  return {
     initOverlay: getEmptyOverlay(),
     boundRect: { min: { x: 0, y: 0 }, max: { x: 0, y: 0 } },
     busState: { red: false, green: false, blue: false },
-  });
+  };
 }
 
 /**

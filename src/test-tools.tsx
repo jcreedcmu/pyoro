@@ -3,6 +3,7 @@ import { Level, MainState, TestToolState } from './state';
 import { MotionTest, MotionTestAssertion, motionTestResult, MotionTestStep, motionTestSuite } from './test-motion';
 import { produce } from 'immer';
 import { mod } from './util';
+import { LevelData } from './level';
 
 export type Action =
   | { t: 'prevTest' }
@@ -11,7 +12,7 @@ export type Action =
   | { t: 'nextStep' }
   ;
 
-function getCurrentTestLevel(state: MainState, tts: TestToolState): Level {
+function getCurrentTestLevel(state: MainState, tts: TestToolState): LevelData {
   return state.game.levels[motionTestSuite[tts.testIx].levelName];
 }
 

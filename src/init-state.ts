@@ -18,7 +18,8 @@ export const initMainState: MainState = {
   game: {
     player: init_player,
     entities: [],
-    levels: mapValues(allLevels, mkLevel),
+    currentLevelState: mkLevel(allLevels.start),
+    levels: allLevels,
     currentLevel: 'start',
     inventory: {},
     lastSave: { x: 0, y: 0 },

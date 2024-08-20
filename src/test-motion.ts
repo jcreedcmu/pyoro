@@ -25,8 +25,9 @@ export type MotionTest = {
 
 export function testInitialGameState(levelName: string): GameState {
   return {
+    currentLevelState: mkLevel(allLevels[levelName]),
     levels: {
-      start: mkLevel(allLevels[levelName]),
+      start: allLevels[levelName],
     },
     currentLevel: 'start',
     inventory: { teal_fruit: undefined, },

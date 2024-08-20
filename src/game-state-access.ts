@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { initMainState } from './init-state';
 import { DynamicLayer } from './layer';
-import { emptyLevel, LevelData } from './level';
+import { emptyLevel, emptyLevelData, LevelData, mkLevel } from './level';
 import { Point, vdiag } from './lib/point';
 import { Brect } from "./lib/types";
 import { GameState, IfaceState, Level, MainState } from './state';
@@ -10,7 +10,7 @@ import { mkSE2, SE2 } from './lib/se2';
 import { TILE_SIZE } from './constants';
 
 export function getCurrentLevel(state: GameState): Level {
-  return state.levels[state.currentLevel];
+  return state.currentLevelState;
 }
 
 export function getCurrentLevelData(state: GameState): LevelData {
@@ -30,15 +30,20 @@ export function getOverlay(state: GameState): DynamicLayer {
 }
 
 export function setOverlay(state: GameState, overlay: DynamicLayer): GameState {
-  return produce(state, s => { s.levels[state.currentLevel].overlay = overlay; });
+  return produce(state, s => { s.currentLevelState.overlay = overlay; });
 }
 
 export function setCurrentLevel(state: GameState, levelName: string): GameState {
+  if (state.levels[levelName] == undefined) {
+    state = produce(state, s => {
+      s.levels[levelName] = emptyLevelData();
+    });
+  }
+
+  const newLevel = mkLevel(state.levels[levelName]);
   return produce(state, s => {
-    if (state.levels[levelName] == undefined) {
-      s.levels[levelName] = emptyLevel();
-    }
     s.currentLevel = levelName;
+    s.currentLevelState = newLevel;
   });
 }
 
@@ -49,7 +54,7 @@ export function setCurrentLevel(state: GameState, levelName: string): GameState 
 export function expandBoundRect(state: GameState, p: Point): void {
   const brect = getBoundRect(state);
   if (!pointInBrect(p, brect)) {
-    state.levels[state.currentLevel].levelData.boundRect = boundBrect([brect.min, brect.max, p]);
+    state.levels[state.currentLevel].boundRect = boundBrect([brect.min, brect.max, p]);
   }
 }
 
