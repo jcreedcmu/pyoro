@@ -1,11 +1,13 @@
 import { produce } from 'immer';
-import { NUM_TILES } from './constants';
-import { getCurrentLevel, getCurrentLevelData, getOverlay, getViewportIface, resetRoom, setCurrentLevel, setViewport, setViewportIface } from './game-state-access';
+import { NUM_TILES, SCALE, TILE_SIZE } from './constants';
+import { getCurrentLevel, getCurrentLevelData, getOverlay, getViewportIface, resetRoom, setCurrentLevel, setViewport, setViewportIface, setWorldFromView } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { int, lerp, Point, vm2, vplus, vscale, vsub } from './lib/point';
 import { computeCombo, tileOfGameState } from './model';
 import { GameState, IfaceState, MainState } from './state';
 import { Bus, Facing, Item, PlayerSprite } from './types';
+import { getWorldFromView } from './transforms';
+import { compose, translate } from './lib/se2';
 
 /**
  * An `Animation` is the type of all changes to the game state that
@@ -21,7 +23,7 @@ export type Animation =
     flipState: Facing,
     dead: boolean
   }
-  | { t: 'ViewPortAnimation', dpos: Point }
+  | { t: 'ViewPortAnimation', dpos_in_world: Point }
   | { t: 'MeltAnimation', pos: Point }
   | { t: 'SavePointChangeAnimation', pos: Point }
   | { t: 'ItemGetAnimation', pos: Point, item: Item }
@@ -78,8 +80,10 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
 
   switch (a.t) {
     case 'PlayerAnimation': return iface;
-    case 'ViewPortAnimation':
-      return setViewportIface(iface, vplus(getViewportIface(iface), vscale(a.dpos, t)));
+    case 'ViewPortAnimation': {
+      const world_from_view = getWorldFromView(iface);
+      return setWorldFromView(iface, compose(translate(vscale(a.dpos_in_world, t)), world_from_view));
+    }
     case 'MeltAnimation': return iface;
     case 'ResetAnimation': {
       let blackout = produce(iface, s => {

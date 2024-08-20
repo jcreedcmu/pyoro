@@ -265,13 +265,13 @@ export function animateViewPort(s: MainState, move: Move, p_in_world: Point | un
   if (p_in_world !== undefined) {
     const p_in_viewTiles = apply(inverse(getWorldFromViewTiles(s.iface)), p_in_world);
     if (p_in_viewTiles.x >= NUM_TILES.x - 1)
-      anims.push({ t: 'ViewPortAnimation', dpos: { x: 1, y: 0 } });
+      anims.push({ t: 'ViewPortAnimation', dpos_in_world: { x: 1, y: 0 } });
     if (p_in_viewTiles.x < 1)
-      anims.push({ t: 'ViewPortAnimation', dpos: { x: -1, y: 0 } });
+      anims.push({ t: 'ViewPortAnimation', dpos_in_world: { x: -1, y: 0 } });
     if (p_in_viewTiles.y >= NUM_TILES.y - 1)
-      anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: 1 } });
+      anims.push({ t: 'ViewPortAnimation', dpos_in_world: { x: 0, y: 1 } });
     if (p_in_viewTiles.y < 1)
-      anims.push({ t: 'ViewPortAnimation', dpos: { x: 0, y: -1 } });
+      anims.push({ t: 'ViewPortAnimation', dpos_in_world: { x: 0, y: -1 } });
   }
   return anims;
 }
