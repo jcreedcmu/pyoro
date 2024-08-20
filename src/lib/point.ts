@@ -55,6 +55,10 @@ export function lerp(a: number, b: number, l: number): number {
   return a * (1 - l) + b * l;
 }
 
+export function vlerp(a: Point, b: Point, t: number): Point {
+  return vm2(a, b, (a, b) => a * (1 - t) + b * t);
+}
+
 export function vmul(a: Point, b: Point): Point {
   return { x: a.x * b.x, y: a.y * b.y };
 }

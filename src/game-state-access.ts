@@ -88,27 +88,6 @@ export function resetRoom(state: GameState): GameState {
   });
 }
 
-// XXX Deprecated
-export function getViewportIface(state: IfaceState): Point {
-  return state.world_from_view.translate;
-}
-
-// XXX Deprecated
-export function setViewport(state: MainState, viewPort: Point): MainState {
-  const newIface = setViewportIface(state.iface, viewPort);
-  return produce(state, s => {
-    s.iface = newIface;
-  });
-}
-
-// XXX Deprecated
-export function setViewportIface(state: IfaceState, viewPort: Point): IfaceState {
-  const worldFromView = mkSE2(vdiag(1 / TILE_SIZE), viewPort);
-  return produce(state, s => {
-    s.world_from_view = worldFromView;
-  });
-}
-
 export function setWorldFromView(state: IfaceState, world_from_view: SE2): IfaceState {
   return produce(state, s => {
     s.world_from_view = world_from_view;

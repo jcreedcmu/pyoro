@@ -1,13 +1,13 @@
 import { produce } from 'immer';
-import { NUM_TILES, SCALE, TILE_SIZE } from './constants';
-import { getCurrentLevel, getCurrentLevelData, getOverlay, getViewportIface, resetRoom, setCurrentLevel, setViewport, setViewportIface, setWorldFromView } from './game-state-access';
+import { NUM_TILES, TILE_SIZE } from './constants';
+import { getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setWorldFromView } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
-import { int, lerp, Point, vm2, vplus, vscale, vsub } from './lib/point';
+import { int, Point, vdiag, vm2, vplus, vscale, vsub } from './lib/point';
+import { compose, mkSE2, SE2, translate } from './lib/se2';
 import { computeCombo, tileOfGameState } from './model';
 import { GameState, IfaceState, MainState } from './state';
+import { getWorldFromView, lerpTranslates } from './transforms';
 import { Bus, Facing, Item, PlayerSprite } from './types';
-import { getWorldFromView } from './transforms';
-import { compose, translate } from './lib/se2';
 
 /**
  * An `Animation` is the type of all changes to the game state that
@@ -35,7 +35,6 @@ export type Animation =
   | { t: 'ChangeLevelAnimation', oldLevel: string, newLevel: string, newPosition: Point }
   ;
 
-
 /**
  * An `Animator` is a list of animations (which are meant to run concurrently)
  * together with the duration that the whole group takes.
@@ -56,8 +55,11 @@ export type Time = {
   fr: number,
 };
 
-export function centeredViewPort(pos: Point): Point {
-  return vm2(pos, NUM_TILES, (p, NT) => int(p - NT / 2));
+/**
+ * Returns a world_from_view transform that puts p_in_world in the center of the view.
+ */
+export function centeredWorldFromView(p_in_world: Point): SE2 {
+  return mkSE2(vdiag(1 / TILE_SIZE), vm2(p_in_world, NUM_TILES, (p, NT) => int(p - NT / 2)));
 }
 
 const DEATH_FADE_OUT = 2;
@@ -98,14 +100,14 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
         }
       });
       if (fr >= DEATH_FADE_OUT) {
-        blackout = setViewportIface(blackout, centeredViewPort(game.lastSave));
+        blackout = setWorldFromView(blackout, centeredWorldFromView(game.lastSave));
       }
       return blackout;
     }
     case 'SavePointChangeAnimation': return iface;
     case 'RecenterAnimation': {
-      const target = centeredViewPort(game.player.pos);
-      return setViewportIface(iface, vm2(target, getViewportIface(iface), (tgt, vp) => lerp(vp, tgt, t)));
+      const target = centeredWorldFromView(game.player.pos);
+      return setWorldFromView(iface, lerpTranslates(getWorldFromView(iface), target, t));
     }
     case 'ItemGetAnimation': return iface;
     case 'SpendCoinAnimation': return iface;
@@ -124,7 +126,7 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
         }
       });
       if (fr >= CHANGE_ROOM_FADE_OUT)
-        blackout = setViewportIface(blackout, centeredViewPort(a.newPosition));
+        blackout = setWorldFromView(blackout, centeredWorldFromView(a.newPosition));
       return blackout;
     }
   }
