@@ -187,7 +187,7 @@ export const allLevels: Record<string, LevelData> = {
         "17,2": {
           "t": "static",
           "tile": {
-            "t": "box3"
+            "t": "up_box"
           }
         },
         "-7,3": {
@@ -1472,16 +1472,124 @@ export const allLevels: Record<string, LevelData> = {
           "t": "door",
           "destinationLevel": "button-hack"
         },
-        "1,-6": {
+        "0,-6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-1,-6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-2,-6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,-7": {
           "t": "static",
           "tile": {
             "t": "movable"
           }
         },
-        "0,-5": {
+        "-3,-6": {
           "t": "static",
           "tile": {
-            "t": "movable"
+            "t": "box"
+          }
+        },
+        "-4,-6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-5,-6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-6,-6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-7,-6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-8,-6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "10,-7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "9,-7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "8,-7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "7,-7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "6,-7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "5,-7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "4,-7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "3,-7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "16,-2": {
+          "t": "static",
+          "tile": {
+            "t": "up_box"
+          }
+        },
+        "13,-5": {
+          "t": "static",
+          "tile": {
+            "t": "up_box"
           }
         }
       }
