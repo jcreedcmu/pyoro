@@ -14,7 +14,7 @@ export function getCurrentLevel(state: GameState): Level {
 }
 
 export function getCurrentLevelData(state: GameState): LevelData {
-  return getCurrentLevel(state).levelData;
+  return state.levels[state.currentLevel];
 }
 
 export function getBoundRect(state: GameState): Brect {

@@ -42,7 +42,6 @@ export function mkLevel(ld: LevelData): Level {
   const level: Level = {
     overlay: getEmptyOverlay(),
     busState: ld.busState,
-    levelData: ld,
   };
 
   const entityReplacements: { ent: EntityType, p: Point }[] = [];
