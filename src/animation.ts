@@ -138,7 +138,6 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
       return blackout;
     }
     case 'EntityAnimation': {
-      // YYY
       return iface;
     }
   }
