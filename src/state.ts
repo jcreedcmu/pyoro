@@ -57,11 +57,11 @@ export type Inventory = Partial<Record<Item, number>>;
 export type Level = {
   overlay: DynamicLayer,
   busState: Record<Bus, boolean>,
+  entities: EntityState[],
 }
 
 // XXX may want to move other stuff into level state
 export type GameState = {
-  entities: EntityState[],
   player: Player,
   currentLevelState: Level,
   levels: Record<string, LevelData>,

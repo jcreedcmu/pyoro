@@ -17,7 +17,6 @@ export const initMainState: MainState = {
   effects: [],
   game: {
     player: init_player,
-    entities: [],
     currentLevelState: mkLevel(allLevels.start),
     levels: allLevels,
     currentLevel: 'start',
