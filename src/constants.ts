@@ -51,6 +51,7 @@ export const editTiles: Tile[] =
     { t: 'motion_block', direction: 'right', on: true },
     { t: 'side_breakable' },
     { t: 'movable' },
+    { t: 'ladder' },
   ];
 
 function numberOfDirection(direction: Direction): number {
