@@ -184,6 +184,8 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   if (doorPassAnim != undefined)
     return doorPassAnim;
 
+  // XXX should compute "isOpen" in a way that takes into account entities
+
   /* The position below our feet before movement */
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
   /* The tile in the position below our feet before movement */
@@ -201,12 +203,20 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   }
 
   const motive = motiveOfMove(move);
-  const tickOutput = entityTick(state, {
+  const playerTickOutput = entityTick(state, {
     entity: { impetus: player.impetus, pos: player.pos },
     motive,
     support: getSupport()
   });
 
+  getCurrentLevel(state).entities.forEach((entity, ix) => {
+    const tout = entityTick(state, {
+      entity,
+      motive: { x: 0, y: 0 },
+      support: isOpen(tileOfGameState(state, vplus(entity.pos, { x: 0, y: 1 }))) ? undefined : { x: 0, y: 1 },
+    });
+    anims.push({ t: 'EntityAnimation', index: ix, oldEntity: entity, newEntity: tout.entity });
+  });
 
   function flipStateOfMotive(motive: Point): Facing | null {
     if (motive.x < 0) return 'left';
@@ -216,13 +226,15 @@ export function animateMove(state: GameState, move: Move): Animation[] {
 
   const flipState = flipStateOfMotive(motive) || player.flipState;
 
-  tickOutput.forced.forEach(fb => {
+  // XXX should entities force blocks?
+
+  playerTickOutput.forced.forEach(fb => {
     const pos = vplus(player.pos, fb.pos);
     if (isBlockForceSuccess(player, fb.pos, tileOfGameState(state, pos)))
       anims.push(...forceBlock(state, pos, tileOfGameState(state, pos)));
   });
 
-  const nextPos = tickOutput.entity.pos;
+  const nextPos = playerTickOutput.entity.pos;
 
   // I'm not sure how generally this will work, but it works for
   // predicting the next state of time-oscillating blocks.
@@ -231,20 +243,20 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   const tileAfter = tileOfGameState(state, nextPos);
   const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
   const supportedAfter = !isOpen(suppTileAfter);
-  const dead = isDeadly(tileAfter) || tickOutput.posture == 'dead';
+  const dead = isDeadly(tileAfter) || playerTickOutput.posture == 'dead';
 
   let animState: PlayerSprite = 'player';
-  if (tickOutput.posture == 'attachWall') {
+  if (playerTickOutput.posture == 'attachWall') {
     animState = 'player_wall';
   }
-  else if (tickOutput.posture == 'crouch') {
+  else if (playerTickOutput.posture == 'crouch') {
     animState = 'player_crouch';
   }
   else {
-    animState = supportedAfter ? 'player' : tickOutput.entity.impetus.y < 0 ? 'player_rise' : 'player_fall';
+    animState = supportedAfter ? 'player' : playerTickOutput.entity.impetus.y < 0 ? 'player_rise' : 'player_fall';
   }
 
-  anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus: tickOutput.entity.impetus, flipState, dead });
+  anims.push({ t: 'PlayerAnimation', pos: nextPos, animState, impetus: playerTickOutput.entity.impetus, flipState, dead });
 
   if (tileEq(tileAfter, { t: 'save_point' }))
     anims.push({ t: 'SavePointChangeAnimation', pos: nextPos });

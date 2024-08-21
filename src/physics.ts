@@ -16,7 +16,7 @@ export type TickOutput = {
   posture: Posture,
 };
 
-type PhysicsEntityState = {
+export type PhysicsEntityState = {
   pos: Point,
   impetus: Point,
 };

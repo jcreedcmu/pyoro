@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools, viewRectInView } from './constants';
-import { getBoundRect, getCurrentLevelData, isToolbarActive } from './game-state-access';
+import { getBoundRect, getCurrentLevel, getCurrentLevelData, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { fillRect, pathRect } from './lib/dutil';
 import { int, Point, vdiag, vint, vm, vm2, vplus, vscale } from './lib/point';
@@ -15,6 +15,7 @@ import { getCanvasFromWorld, getWorldFromCanvas, getWorldFromView } from './tran
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
+import { EntityType } from './entity';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
@@ -58,7 +59,9 @@ function drawScaled(fv: FView, state: MainState): void {
   d.rect(origin.x, origin.y,
     NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
   d.clip();
+
   drawField(fv, state);
+  drawEntities(fv, state);
 
   const ts = state.iface.toolState;
   if (ts.t == 'modify_tool' && ts.modifyCell !== null) {
@@ -107,6 +110,12 @@ function drawScaled(fv: FView, state: MainState): void {
       d.textBaseline = 'top';
       d.fillText(line, fv.vd.origin.x + 3, fv.vd.origin.y - (i + 1) * 15);
     });
+  }
+}
+
+function spriteLocOfEntity(entity: EntityType): Point {
+  switch (entity.t) {
+    case 'movable': return { x: 7, y: 7 };
   }
 }
 
@@ -191,6 +200,14 @@ function cell_rect_in_world(p_in_world: Point): Rect {
 
 function cell_rect_in_canvas(vd: ViewData, iface: IfaceState, p_in_world: Point): Rect {
   return apply_to_rect(getCanvasFromWorld(vd, iface), cell_rect_in_world(p_in_world));
+}
+
+function drawEntities(fv: FView, state: MainState): void {
+  const level = getCurrentLevel(state.game);
+  level.entities.forEach(ent => {
+    const rect_in_canvas = cell_rect_in_canvas(fv.vd, state.iface, ent.pos);
+    draw_sprite(fv, spriteLocOfEntity(ent.etp), rect_in_canvas);
+  });
 }
 
 function drawField(fv: FView, state: MainState): void {

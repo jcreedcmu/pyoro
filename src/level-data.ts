@@ -1471,6 +1471,18 @@ export const allLevels: Record<string, LevelData> = {
         "-16,9": {
           "t": "door",
           "destinationLevel": "button-hack"
+        },
+        "1,-6": {
+          "t": "static",
+          "tile": {
+            "t": "movable"
+          }
+        },
+        "0,-5": {
+          "t": "static",
+          "tile": {
+            "t": "movable"
+          }
         }
       }
     },

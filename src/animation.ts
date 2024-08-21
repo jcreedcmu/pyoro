@@ -2,12 +2,14 @@ import { produce } from 'immer';
 import { NUM_TILES, TILE_SIZE } from './constants';
 import { getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setWorldFromView } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
-import { int, Point, vdiag, vm2, vplus, vscale, vsub } from './lib/point';
+import { int, Point, vdiag, vlerp, vm2, vplus, vscale, vsub } from './lib/point';
 import { compose, mkSE2, SE2, translate } from './lib/se2';
 import { computeCombo, tileOfGameState } from './model';
 import { GameState, IfaceState, MainState } from './state';
 import { getWorldFromView, lerpTranslates } from './transforms';
 import { Bus, Facing, Item, PlayerSprite } from './types';
+import { EntityState } from './entity';
+import { PhysicsEntityState } from './physics';
 
 /**
  * An `Animation` is the type of all changes to the game state that
@@ -33,6 +35,12 @@ export type Animation =
   | { t: 'ButtonToggleAnimation', pos: Point }
   | { t: 'BusButtonToggleAnimation', bus: Bus }
   | { t: 'ChangeLevelAnimation', oldLevel: string, newLevel: string, newPosition: Point }
+  | {
+    t: 'EntityAnimation',
+    index: number, // XXX should be an id
+    oldEntity: EntityState,
+    newEntity: PhysicsEntityState,
+  }
   ;
 
 /**
@@ -129,6 +137,10 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
         blackout = setWorldFromView(blackout, centeredWorldFromView(a.newPosition));
       return blackout;
     }
+    case 'EntityAnimation': {
+      // YYY
+      return iface;
+    }
   }
 }
 
@@ -209,6 +221,15 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         s.lastSave = a.newPosition;
         s.player.combo = undefined;
       });
+    case 'EntityAnimation': {
+      const { index, newEntity, oldEntity } = a;
+      const pos = vlerp(oldEntity.pos, newEntity.pos, t);
+      return produce(state, s => {
+        getCurrentLevel(s).entities[index].pos = pos;
+        if (t >= 0.75)
+          getCurrentLevel(s).entities[index].impetus = newEntity.impetus;
+      });
+    }
   }
 }
 
@@ -227,5 +248,6 @@ export function duration(a: Animation): number {
     case 'ButtonToggleAnimation': return 1;
     case 'BusButtonToggleAnimation': return 1;
     case 'ChangeLevelAnimation': return CHANGE_ROOM_FRAMES;
+    case 'EntityAnimation': return 4;
   }
 }
