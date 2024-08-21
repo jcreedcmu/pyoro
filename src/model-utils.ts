@@ -28,9 +28,21 @@ function isDoor(x: Tile): boolean {
   return x.t == 'door';
 }
 
+function isLadder(x: Tile): boolean {
+  return x.t == 'ladder';
+}
+
+export function isClimb(x: Tile): boolean {
+  return isLadder(x);
+}
+
+export function isSupporting(x: Tile): boolean {
+  return !isOpen(x) || isClimb(x);
+}
+
 export function isOpen(x: Tile): boolean {
   return tileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x)
-    || isOpenBusBlock(x) || isOpenMotionBlock(x) || isDoor(x);
+    || isOpenBusBlock(x) || isOpenMotionBlock(x) || isDoor(x) || isLadder(x);
 }
 
 export function isGrabbable(x: Tile): boolean {

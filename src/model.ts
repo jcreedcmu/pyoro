@@ -6,7 +6,7 @@ import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile
 import { LevelData } from './level';
 import { Point, vequal, vplus, vsub } from './lib/point';
 import { apply, composen, inverse, translate } from './lib/se2';
-import { Board, ForcedBlock, getItem, isDeadly, isOpen } from './model-utils';
+import { Board, ForcedBlock, getItem, isClimb, isDeadly, isOpen, isSupporting } from './model-utils';
 import { entityTick } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
 import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
@@ -191,7 +191,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   /* The tile in the position below our feet before movement */
   const tileBefore = tileOfGameState(state, belowBefore);
   /* Whether we were supported during the previous step */
-  const supportedBefore = !isOpen(tileBefore);
+  const supportedBefore = isSupporting(tileBefore) || isClimb(tileOfGameState(state, player.pos));
   if (supportedBefore) forcedBlocks.push({ pos: { x: 0, y: 1 }, force: { x: 0, y: 1 }, tile: tileBefore });
   /* Whether we were in a "stable" state during the previous step */
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
@@ -242,7 +242,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
 
   const tileAfter = tileOfGameState(state, nextPos);
   const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
-  const supportedAfter = !isOpen(suppTileAfter);
+  const supportedAfter = isSupporting(suppTileAfter) || isClimb(tileOfGameState(nextTimeS, nextPos));
   const dead = isDeadly(tileAfter) || playerTickOutput.posture == 'dead';
 
   let animState: PlayerSprite = 'player';

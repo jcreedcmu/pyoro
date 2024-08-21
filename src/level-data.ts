@@ -1475,19 +1475,19 @@ export const allLevels: Record<string, LevelData> = {
         "0,-6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "-1,-6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "-2,-6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "0,-7": {
@@ -1499,37 +1499,37 @@ export const allLevels: Record<string, LevelData> = {
         "-3,-6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "ladder"
           }
         },
         "-4,-6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "-5,-6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "-6,-6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "-7,-6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "-8,-6": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "box3"
           }
         },
         "10,-7": {
@@ -1590,6 +1590,60 @@ export const allLevels: Record<string, LevelData> = {
           "t": "static",
           "tile": {
             "t": "up_box"
+          }
+        },
+        "0,0": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "0,-1": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "0,-2": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "0,-3": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "0,-4": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "-1,-4": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-2,-4": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-3,-4": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-3,-5": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
           }
         }
       }
