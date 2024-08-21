@@ -1,7 +1,7 @@
 import { produce } from "immer";
-import { entityOfDynamicTile, EntityType } from "./entity";
+import { entityOfDynamicTile, EntityState, EntityType } from "./entity";
 import { DynamicLayer, emptyTile, getItem, putItem } from "./layer";
-import { Point } from "./lib/point";
+import { Point, vdiag } from "./lib/point";
 import { Brect } from "./lib/types";
 import { getEmptyOverlay, Level } from "./state";
 import { Bus } from "./types";
@@ -45,19 +45,20 @@ export function mkLevel(ld: LevelData): Level {
     entities: [],
   };
 
-  const entityReplacements: { ent: EntityType, p: Point }[] = [];
+  const entityReplacements: { ent: EntityState, p: Point }[] = [];
   const rect = thickRectOfBrect(ld.boundRect);
   for (let y = ld.boundRect.min.y; y < ld.boundRect.max.y; y++) {
     for (let x = ld.boundRect.min.x; x < ld.boundRect.max.x; x++) {
       const tile = getItem(ld.initOverlay, { x, y })
       if (tile == undefined) continue;
-      const ent = entityOfDynamicTile(tile);
-      if (ent == undefined) continue;
-      entityReplacements.push({ p: { x, y }, ent });
+      const etp = entityOfDynamicTile(tile);
+      if (etp == undefined) continue;
+      entityReplacements.push({ p: { x, y }, ent: { etp, impetus: vdiag(0), pos: { x, y } } });
     }
   }
   return produce(level, l => {
     entityReplacements.forEach(({ p, ent }) => {
+      l.entities.push(ent);
       putItem(l.overlay, p, { t: 'static', tile: emptyTile() });
     });
   });
