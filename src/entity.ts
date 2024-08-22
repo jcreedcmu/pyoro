@@ -1,6 +1,12 @@
 import { Point } from './lib/point';
 import { DynamicTile, Tile } from './types';
 
+// XXX this should be more like a guid
+export type EntityId =
+  | { t: 'player' }
+  | { t: 'mobile', ix: number }
+  ;
+
 export type EntityType =
   | { t: 'movable' }
   ;

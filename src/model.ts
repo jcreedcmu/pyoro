@@ -6,7 +6,7 @@ import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile
 import { LevelData } from './level';
 import { Point, vequal, vplus, vsub } from './lib/point';
 import { apply, composen, inverse, translate } from './lib/se2';
-import { Board, ForcedBlock, getItem, isClimb, isDeadly, isSupportedInState } from './model-utils';
+import { Board, ForcedBlock, getItem, isClimb, isDeadly, isSupportedInState, isSupportedInStateExcluding } from './model-utils';
 import { entityTick } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
 import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
@@ -190,7 +190,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   /* The tile in the position below our feet before movement */
   const tileBefore = tileOfGameState(state, belowBefore);
   /* Whether we were supported during the previous step */
-  const supportedBefore = isSupportedInState(state, player.pos);
+  const supportedBefore = isSupportedInStateExcluding(state, player.pos, { t: 'player' });
 
   /* XXX Not totally convinced this is the right forced block logic. What if
   we're supported by ladder or water? */
@@ -209,14 +209,14 @@ export function animateMove(state: GameState, move: Move): Animation[] {
     entity: { impetus: player.impetus, pos: player.pos },
     motive,
     support: getSupport()
-  });
+  }, { t: 'player' });
 
   getCurrentLevel(state).entities.forEach((entity, ix) => {
     const tout = entityTick(state, {
       entity,
       motive: { x: 0, y: 0 },
-      support: isSupportedInState(state, entity.pos) ? { x: 0, y: 1 } : undefined,
-    });
+      support: isSupportedInStateExcluding(state, entity.pos, { t: 'mobile', ix }) ? { x: 0, y: 1 } : undefined,
+    }, { t: 'mobile', ix });
     anims.push({ t: 'EntityAnimation', index: ix, oldEntity: entity, newEntity: tout.entity });
   });
 
@@ -243,7 +243,8 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   const nextTimeS = produce(state, s => { s.time++ });
 
   const tileAfter = tileOfGameState(nextTimeS, nextPos);
-  const supportedAfter = isSupportedInState(nextTimeS, nextPos);
+  const supportedAfter = isSupportedInStateExcluding(nextTimeS, nextPos, { t: 'player' });
+
   const dead = isDeadly(tileAfter) || playerTickOutput.posture == 'dead';
 
   let animState: PlayerSprite = 'player';

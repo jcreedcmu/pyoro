@@ -1,5 +1,5 @@
 import { FULL_IMPETUS } from "./constants";
-import { EntityState, EntityType } from "./entity";
+import { EntityId, EntityState, EntityType } from "./entity";
 import { emptyTile, tileEq, TileResolutionContext } from "./layer";
 import { Point, vadd, vequal } from "./lib/point";
 import { tileOfGameState } from "./model";
@@ -118,6 +118,26 @@ export function isSupportedInState(state: GameState, p_in_world: Point): boolean
   return false;
 }
 
+export function isSupportedInStateExcluding(state: GameState, p_in_world: Point, entityId: EntityId): boolean {
+  const below = vadd(p_in_world, { x: 0, y: 1 });
+  if (state.currentLevelState.entities.some((ent, ix) =>
+    vequal(ent.pos, below) && canEntitySupport(ent.etp) && !(entityId.t == 'mobile' && entityId.ix == ix)
+  )) {
+    return true;
+  }
+
+  if (entityId.t != 'player' && vequal(state.player.pos, below))
+    return true;
+
+  if (isClimb(tileOfGameState(state, p_in_world)))
+    return true;
+
+  if (!isOpen(tileOfGameState(state, below)))
+    return true;
+
+  return false;
+}
+
 
 /**
  * Returns true iff the cell `p_in_world` can be entered in state `state`.
@@ -132,6 +152,24 @@ export function isOpenInState(state: GameState, p_in_world: Point): boolean {
     return false;
 
   if (vequal(state.player.pos, p_in_world))
+    return false;
+
+  return isOpen(tileOfGameState(state, p_in_world));
+}
+
+/**
+ * Returns true iff the cell `p_in_world` can be entered in state `state`.
+ * This is true if (all of the below)
+ * - no entity exists in that cell
+ * - the underlying tile is open
+ */
+export function isOpenInStateExcluding(state: GameState, p_in_world: Point, entityId: EntityId): boolean {
+  if (state.currentLevelState.entities.some((ent, ix) =>
+    vequal(ent.pos, p_in_world) && !(entityId.t == 'mobile' && entityId.ix == ix)
+  ))
+    return false;
+
+  if (entityId.t != 'player' && vequal(state.player.pos, p_in_world))
     return false;
 
   return isOpen(tileOfGameState(state, p_in_world));

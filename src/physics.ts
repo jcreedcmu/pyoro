@@ -1,8 +1,9 @@
 import { tileOfGameState } from "./model";
-import { ForcedBlock, genImpetus, isGrabbable, isOpenInState, Posture } from './model-utils';
+import { ForcedBlock, genImpetus, isGrabbable, isOpenInState, isOpenInStateExcluding, Posture } from './model-utils';
 import { Point, vadd, vplus, vsub } from './lib/point';
 import { GameState } from "./state";
 import { Tile } from "./types";
+import { EntityId } from "./entity";
 
 export type TickContext = {
   entity: PhysicsEntityState,
@@ -106,7 +107,11 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
   }
 }
 
-export type BouncePhaseContext = { entity: PhysicsEntityState, motive: Point };
+export type BouncePhaseContext = {
+  entity: PhysicsEntityState,
+  motive: Point,
+  entityId: EntityId,
+};
 
 export type BouncePhaseOutput = {
   bounce: Point,
@@ -127,7 +132,7 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
   }
 
   function isRpOpen(relPt: Point): boolean {
-    return isOpenInState(state, vadd(pos, relPt));
+    return isOpenInStateExcluding(state, vadd(pos, relPt), ctx.entityId);
   }
 
   function isRpGrabbable(relPt: Point): boolean {
@@ -162,7 +167,7 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
   return { bounce: { x: 0, y: 0 }, forced: [fblock(vertProj)], posture: 'stand' };
 }
 
-export type DestinationPhaseContext = { entity: PhysicsEntityState, target: Point };
+export type DestinationPhaseContext = { entity: PhysicsEntityState, entityId: EntityId, target: Point };
 
 export type DestinationPhaseOutput = {
   destination: Point,
@@ -215,7 +220,7 @@ export function destinationPhase(state: GameState, ctx: DestinationPhaseContext)
   }
 
   function isRpOpen(relPt: Point): boolean {
-    return isOpenInState(state, vadd(pos, relPt));
+    return isOpenInStateExcluding(state, vadd(pos, relPt), ctx.entityId);
   }
 
   function isRpGrabbable(relPt: Point): boolean {
@@ -252,6 +257,7 @@ export function destinationPhase(state: GameState, ctx: DestinationPhaseContext)
 
 export type FallPhaseContext = {
   entity: PhysicsEntityState,
+  entityId: EntityId,
   fall: boolean,
 };
 
@@ -280,11 +286,11 @@ function lethalForcedBlock(collideBlock: ForcedBlock): boolean {
 }
 
 function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPhaseOutput {
-  const { entity, fall } = fallPhaseContext;
+  const { entity, fall, entityId } = fallPhaseContext;
   if (!fall)
     return { entity };
 
-  if (!isOpenInState(state, vadd(entity.pos, { x: 0, y: 1 }))) {
+  if (!isOpenInStateExcluding(state, vadd(entity.pos, { x: 0, y: 1 }), entityId)) {
     return { entity };
   }
 
@@ -292,11 +298,10 @@ function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPh
   return { entity: { pos: entity.pos, impetus: vadd(entity.impetus, { x: 0, y: 1 }) } };
 }
 
-export function entityTick(state: GameState, tickContext: TickContext): TickOutput {
+export function entityTick(state: GameState, tickContext: TickContext, entityId: EntityId): TickOutput {
   const entity = tickContext.entity;
   // Bounce Phase
-  const { bounce, posture: posture, forced: forced0 } = bouncePhase(state, { entity, motive: tickContext.motive });
-
+  const { bounce, posture: posture, forced: forced0 } = bouncePhase(state, { entity, motive: tickContext.motive, entityId });
   if (posture == 'attachWall') {
     return {
       entity: { pos: entity.pos, impetus: { x: 0, y: 0 } },
@@ -310,7 +315,7 @@ export function entityTick(state: GameState, tickContext: TickContext): TickOutp
   // XXX we're throwing away posture here. Is that ok?
 
   // Destination Phase
-  const { destination, forced: forced2, posture: undefined } = destinationPhase(state, { entity, target });
+  const { destination, forced: forced2, posture: undefined } = destinationPhase(state, { entity, entityId, target });
   const destEntity = {
     pos: vadd(entity.pos, destination),
     impetus: newImpetus,
@@ -321,7 +326,7 @@ export function entityTick(state: GameState, tickContext: TickContext): TickOutp
     return { entity: entity, forced: [], posture: 'dead' };
   }
 
-  const { entity: finalEntity } = fallPhase(state, { entity: destEntity, fall });
+  const { entity: finalEntity } = fallPhase(state, { entity: destEntity, entityId, fall });
   return {
     entity: finalEntity,
     forced,
