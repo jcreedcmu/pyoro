@@ -1,5 +1,5 @@
 import { tileOfGameState } from "./model";
-import { ForcedBlock, genImpetus, isGrabbable, isOpen, Posture } from './model-utils';
+import { ForcedBlock, genImpetus, isGrabbable, isOpenInState, Posture } from './model-utils';
 import { Point, vadd, vplus, vsub } from './lib/point';
 import { GameState } from "./state";
 import { Tile } from "./types";
@@ -127,7 +127,7 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
   }
 
   function isRpOpen(relPt: Point): boolean {
-    return isOpen(tileOfGameState(state, vadd(pos, relPt)));
+    return isOpenInState(state, vadd(pos, relPt));
   }
 
   function isRpGrabbable(relPt: Point): boolean {
@@ -215,7 +215,7 @@ export function destinationPhase(state: GameState, ctx: DestinationPhaseContext)
   }
 
   function isRpOpen(relPt: Point): boolean {
-    return isOpen(tileOfGameState(state, vadd(pos, relPt)));
+    return isOpenInState(state, vadd(pos, relPt));
   }
 
   function isRpGrabbable(relPt: Point): boolean {
@@ -281,11 +281,10 @@ function lethalForcedBlock(collideBlock: ForcedBlock): boolean {
 
 function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPhaseOutput {
   const { entity, fall } = fallPhaseContext;
-
   if (!fall)
     return { entity };
 
-  if (!isOpen(tileOfGameState(state, vadd(entity.pos, { x: 0, y: 1 })))) {
+  if (!isOpenInState(state, vadd(entity.pos, { x: 0, y: 1 }))) {
     return { entity };
   }
 

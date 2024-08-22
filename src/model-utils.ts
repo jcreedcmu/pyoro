@@ -1,7 +1,9 @@
 import { FULL_IMPETUS } from "./constants";
+import { EntityState, EntityType } from "./entity";
 import { emptyTile, tileEq, TileResolutionContext } from "./layer";
-import { Point } from "./lib/point";
-import { Player } from "./state";
+import { Point, vadd, vequal } from "./lib/point";
+import { tileOfGameState } from "./model";
+import { GameState, Player } from "./state";
 import { Item, Tile } from "./types";
 
 export function getItem(x: Tile): Item | undefined {
@@ -36,11 +38,7 @@ export function isClimb(x: Tile): boolean {
   return isLadder(x);
 }
 
-export function isSupporting(x: Tile): boolean {
-  return !isOpen(x) || isClimb(x);
-}
-
-export function isOpen(x: Tile): boolean {
+function isOpen(x: Tile): boolean {
   return tileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x)
     || isOpenBusBlock(x) || isOpenMotionBlock(x) || isDoor(x) || isLadder(x);
 }
@@ -87,5 +85,56 @@ export type ForcedBlock = {
   force: Point,
   tile: Tile,
 };
+
+function canEntitySupport(ent: EntityType): boolean {
+  return true;
+}
+
+/**
+ * Returns true iff the cell `p_in_world` "has support" in state `state`.
+ * This can happen if (one of the below)
+ * - an entity exists below that cell which can support
+ * - a tile exists below that cell that can support
+ * - a tile exists *at* that cell that supports entities in that cell
+ */
+export function isSupportedInState(state: GameState, p_in_world: Point): boolean {
+  const below = vadd(p_in_world, { x: 0, y: 1 });
+  if (state.currentLevelState.entities.some(ent =>
+    vequal(ent.pos, below) && canEntitySupport(ent.etp)
+  )) {
+    return true;
+  }
+
+  if (vequal(state.player.pos, below))
+    return true;
+
+  if (isClimb(tileOfGameState(state, p_in_world)))
+    return true;
+
+  if (!isOpen(tileOfGameState(state, below)))
+    return true;
+
+  return false;
+}
+
+
+/**
+ * Returns true iff the cell `p_in_world` can be entered in state `state`.
+ * This is true if (all of the below)
+ * - no entity exists in that cell
+ * - the underlying tile is open
+ */
+export function isOpenInState(state: GameState, p_in_world: Point): boolean {
+  if (state.currentLevelState.entities.some(ent =>
+    vequal(ent.pos, p_in_world)
+  ))
+    return false;
+
+  if (vequal(state.player.pos, p_in_world))
+    return false;
+
+  return isOpen(tileOfGameState(state, p_in_world));
+}
+
 
 export type Posture = 'stand' | 'attachWall' | 'crouch' | 'dead';

@@ -6,7 +6,7 @@ import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile
 import { LevelData } from './level';
 import { Point, vequal, vplus, vsub } from './lib/point';
 import { apply, composen, inverse, translate } from './lib/se2';
-import { Board, ForcedBlock, getItem, isClimb, isDeadly, isOpen, isSupporting } from './model-utils';
+import { Board, ForcedBlock, getItem, isClimb, isDeadly, isSupportedInState } from './model-utils';
 import { entityTick } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
 import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
@@ -70,6 +70,7 @@ export function dynamicTileOfState(s: MainState, p: Point): DynamicTile {
   return dynamicTileOfGameState(s.game, p);
 }
 
+// XXX move to model-utils to reduce circularity?
 export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): Tile {
   const { player, trc } = boardOfState(s);
   return tileOfStack(trc.layerStack, p, trc, viewIntent);
@@ -184,14 +185,15 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   if (doorPassAnim != undefined)
     return doorPassAnim;
 
-  // XXX should compute "isOpen" in a way that takes into account entities
-
   /* The position below our feet before movement */
   const belowBefore = vplus(player.pos, { x: 0, y: 1 });
   /* The tile in the position below our feet before movement */
   const tileBefore = tileOfGameState(state, belowBefore);
   /* Whether we were supported during the previous step */
-  const supportedBefore = isSupporting(tileBefore) || isClimb(tileOfGameState(state, player.pos));
+  const supportedBefore = isSupportedInState(state, player.pos);
+
+  /* XXX Not totally convinced this is the right forced block logic. What if
+  we're supported by ladder or water? */
   if (supportedBefore) forcedBlocks.push({ pos: { x: 0, y: 1 }, force: { x: 0, y: 1 }, tile: tileBefore });
   /* Whether we were in a "stable" state during the previous step */
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
@@ -213,7 +215,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
     const tout = entityTick(state, {
       entity,
       motive: { x: 0, y: 0 },
-      support: isOpen(tileOfGameState(state, vplus(entity.pos, { x: 0, y: 1 }))) ? undefined : { x: 0, y: 1 },
+      support: isSupportedInState(state, entity.pos) ? { x: 0, y: 1 } : undefined,
     });
     anims.push({ t: 'EntityAnimation', index: ix, oldEntity: entity, newEntity: tout.entity });
   });
@@ -240,9 +242,8 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   // predicting the next state of time-oscillating blocks.
   const nextTimeS = produce(state, s => { s.time++ });
 
-  const tileAfter = tileOfGameState(state, nextPos);
-  const suppTileAfter = tileOfGameState(nextTimeS, vplus(nextPos, { x: 0, y: 1 }));
-  const supportedAfter = isSupporting(suppTileAfter) || isClimb(tileOfGameState(nextTimeS, nextPos));
+  const tileAfter = tileOfGameState(nextTimeS, nextPos);
+  const supportedAfter = isSupportedInState(nextTimeS, nextPos);
   const dead = isDeadly(tileAfter) || playerTickOutput.posture == 'dead';
 
   let animState: PlayerSprite = 'player';
