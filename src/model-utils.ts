@@ -35,12 +35,13 @@ function isLadder(x: Tile): boolean {
 }
 
 export function isClimb(x: Tile): boolean {
-  return isLadder(x);
+  return x.t == 'ladder' || x.t == 'water';
 }
 
 function isOpen(x: Tile): boolean {
   return tileEq(x, emptyTile()) || x.t == 'save_point' || isItem(x) || isSpike(x)
-    || isOpenBusBlock(x) || isOpenMotionBlock(x) || isDoor(x) || isLadder(x);
+    || isOpenBusBlock(x) || isOpenMotionBlock(x) || isDoor(x) || isLadder(x)
+    || x.t == 'water';
 }
 
 export function isGrabbable(x: Tile): boolean {

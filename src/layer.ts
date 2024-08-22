@@ -109,6 +109,7 @@ export function tileEq(t1: Tile, t2: Tile): boolean {
     case 'side_breakable': return t2.t == 'side_breakable';
     case 'movable': return t2.t == 'movable';
     case 'ladder': return t2.t == 'ladder';
+    case 'water': return t2.t == 'water';
   }
 }
 

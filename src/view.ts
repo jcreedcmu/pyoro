@@ -165,6 +165,7 @@ function spriteLocOfTile(tile: Tile): Point {
     case 'side_breakable': return { x: 7, y: 6 };
     case 'movable': return { x: 7, y: 7 };
     case 'ladder': return { x: 6, y: 7 };
+    case 'water': return { x: 5, y: 7 };
   }
 }
 

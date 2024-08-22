@@ -248,7 +248,7 @@ export const allLevels: Record<string, LevelData> = {
         "-16,10": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "up_box"
           }
         },
         "-17,9": {
@@ -1441,13 +1441,13 @@ export const allLevels: Record<string, LevelData> = {
         "-11,8": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "water"
           }
         },
         "-12,9": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "water"
           }
         },
         "-13,10": {
@@ -1644,6 +1644,114 @@ export const allLevels: Record<string, LevelData> = {
           "t": "static",
           "tile": {
             "t": "ladder"
+          }
+        },
+        "-11,7": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-12,7": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-12,8": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-15,9": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-15,8": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-15,7": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-13,7": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-14,7": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-14,8": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-13,8": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-13,9": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-14,9": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-11,9": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-10,8": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-10,9": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-10,10": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-11,10": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-12,10": {
+          "t": "static",
+          "tile": {
+            "t": "box"
           }
         }
       }

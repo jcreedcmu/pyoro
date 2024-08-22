@@ -52,6 +52,7 @@ export const editTiles: Tile[] =
     { t: 'side_breakable' },
     { t: 'movable' },
     { t: 'ladder' },
+    { t: 'water' },
   ];
 
 function numberOfDirection(direction: Direction): number {
