@@ -82,6 +82,10 @@ increases down, in the direction of gravity.
 - Physics should be invariant to left-right flipping, but is very much not
   required to be invariant to up-down flipping, because of gravity.
 
+- ("Determinism") Physics should be deterministic. Given same state, same motion,
+  yield same output. No random boss moves like in Isles of Sea and
+  Sky.
+
 - ("Unimodality") Unsupported vertical motion should be "unimodal".
   Any sequence of unsupported moves should have at most one
   "ascending" subsequence followed by at most one "descending"
