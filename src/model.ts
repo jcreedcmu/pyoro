@@ -205,7 +205,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   /* XXX Not totally convinced this is the right forced block logic. What if
   we're supported by ladder or water? */
   if (supportedBefore) forcedBlocks.push(
-    fblock(state, { pos: player.pos, impetus: { x: 0, y: 1 } }, { x: 0, y: 1 })
+    fblock(state, { pos: player.pos, impetus: { x: 0, y: 1 } }, { x: 0, y: 1 }, { x: 0, y: 0 })
   );
 
   /* Whether we were in a "stable" state during the previous step */
@@ -224,15 +224,6 @@ export function animateMove(state: GameState, move: Move): Animation[] {
     support: getSupport()
   }, { t: 'player' });
 
-  getCurrentLevel(state).entities.forEach((entity, ix) => {
-    const tout = entityTick(state, {
-      entity,
-      motive: { x: 0, y: 0 },
-      support: isSupportedInStateExcluding(state, entity.pos, { t: 'mobile', ix }) ? { x: 0, y: 1 } : undefined,
-    }, { t: 'mobile', ix });
-    anims.push({ t: 'EntityAnimation', index: ix, oldEntity: entity, newEntity: tout.entity });
-  });
-
   function flipStateOfMotive(motive: Point): Facing | null {
     if (motive.x < 0) return 'left';
     if (motive.x > 0) return 'right';
@@ -241,8 +232,9 @@ export function animateMove(state: GameState, move: Move): Animation[] {
 
   const flipState = flipStateOfMotive(motive) || player.flipState;
 
-  // XXX should entity motion cause forced blocks?
+  const nextPos = playerTickOutput.entity.pos;
 
+  const entityNudges: { ix: number, impetus: Point }[] = []; // XXX should be id
   playerTickOutput.forced.forEach(fb => {
     const pos = vplus(player.pos, fb.pos);
     switch (fb.forceType.t) {
@@ -252,11 +244,29 @@ export function animateMove(state: GameState, move: Move): Animation[] {
         break;
       case 'entity':
         console.log(`entity forced at ${pos.x},${pos.y}`);
+        entityNudges.push({ ix: fb.forceType.ix, impetus: fb.force });
         break;
     }
   });
 
-  const nextPos = playerTickOutput.entity.pos;
+  getCurrentLevel(state).entities.forEach((entity, ix) => {
+    let motive = { x: 0, y: 0 };
+    const nudge = entityNudges.find(({ ix: ixl }) => ix == ixl);
+    if (nudge != undefined) {
+      motive = nudge.impetus;
+    }
+    const tout = entityTick(state, {
+      entity,
+      motive,
+      support: isSupportedInStateExcluding(state, entity.pos, { t: 'mobile', ix }) ? { x: 0, y: 1 } : undefined,
+    }, { t: 'mobile', ix });
+    anims.push({ t: 'EntityAnimation', index: ix, oldEntity: entity, newEntity: tout.entity });
+  });
+
+  // XXX should entity motion cause forced blocks? This seems a little
+  // problematic as it would seem to cause convergence problems if
+  // entities could force other entities in an uncontrolled way, but
+  // maybe I'd like to let them force tiles.
 
   // I'm not sure how generally this will work, but it works for
   // predicting the next state of time-oscillating blocks.

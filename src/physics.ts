@@ -1,6 +1,6 @@
 import { entityIxAtPoint, tileOfGameState } from "./model";
 import { ForcedBlock, ForceType, genImpetus, isGrabbable, isOpenInState, isOpenInStateExcluding, Posture } from './model-utils';
-import { Point, vadd, vplus, vsub } from './lib/point';
+import { Point, vadd, vm, vplus, vsub } from './lib/point';
 import { GameState } from "./state";
 import { Tile } from "./types";
 import { EntityId } from "./entity";
@@ -74,7 +74,19 @@ function genImpetusForMotive(supportTile: Tile, motive: Point, extraImpetus: num
     return { x: 0, y: 0 };
 }
 
-export function fblock(state: GameState, entity: PhysicsEntityState, rpos: Point): ForcedBlock {
+/**
+ * Restrict all coordinates to +/-1
+ */
+function clamp(p: Point): Point {
+  function clamp1(x: number): number {
+    if (x > 1) return 1;
+    if (x < -1) return -1;
+    return x;
+  }
+  return vm(p, clamp1);
+}
+
+export function fblock(state: GameState, entity: PhysicsEntityState, rpos: Point, motive: Point): ForcedBlock {
   const cPos = vadd(entity.pos, rpos);
   const ix = entityIxAtPoint(state, cPos);
   const forceType: ForceType = ix != undefined
@@ -82,7 +94,7 @@ export function fblock(state: GameState, entity: PhysicsEntityState, rpos: Point
     : { t: 'tile', tile: tileOfGameState(state, cPos) };
   return restrictForcedBlock({
     pos: rpos,
-    force: entity.impetus,
+    force: clamp(vadd(entity.impetus, motive)),
     forceType,
   });
 }
@@ -92,7 +104,7 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
   const { impetus, pos } = entity;
 
   function _fblock(rpos: Point): ForcedBlock {
-    return fblock(state, entity, rpos);
+    return fblock(state, entity, rpos, motive);
   }
 
   if (support != undefined) {
@@ -133,7 +145,7 @@ export function bouncePhase(state: GameState, ctx: BouncePhaseContext): BouncePh
   const { pos, impetus } = entity;
 
   function _fblock(rpos: Point): ForcedBlock {
-    return fblock(state, entity, rpos);
+    return fblock(state, entity, rpos, motive);
   }
 
   function isRpOpen(relPt: Point): boolean {
@@ -220,7 +232,7 @@ export function destinationPhase(state: GameState, ctx: DestinationPhaseContext)
   const { pos, impetus } = entity;
 
   function _fblock(rpos: Point): ForcedBlock {
-    return fblock(state, entity, rpos);
+    return fblock(state, entity, rpos, { x: 0, y: 0 });
   }
 
   function isRpOpen(relPt: Point): boolean {
