@@ -7,12 +7,13 @@ import { LevelData } from './level';
 import { Point, vequal, vplus, vsub } from './lib/point';
 import { apply, composen, inverse, translate } from './lib/se2';
 import { Board, ForcedBlock, getItem, isClimb, isDeadly, isSupportedInState, isSupportedInStateExcluding } from './model-utils';
-import { entityTick } from './physics';
+import { entityTick, fblock } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
 import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
 import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
 import { mapValues, max } from './util';
 import { ViewData, WidgetPoint } from './view';
+import { EntityState } from './entity';
 
 function layerStackOfState(s: GameState): LayerStack {
   return {
@@ -74,6 +75,15 @@ export function dynamicTileOfState(s: MainState, p: Point): DynamicTile {
 export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): Tile {
   const { player, trc } = boardOfState(s);
   return tileOfStack(trc.layerStack, p, trc, viewIntent);
+}
+
+// XXX move to model-utils to reduce circularity?
+export function entityIxAtPoint(s: GameState, p: Point): number | undefined {
+  const ix = s.currentLevelState.entities.findIndex(ent => vequal(ent.pos, p));
+  if (ix == -1)
+    return undefined;
+  else
+    return ix;
 }
 
 export function dynamicTileOfGameState(s: GameState, p: Point): DynamicTile {
@@ -194,7 +204,10 @@ export function animateMove(state: GameState, move: Move): Animation[] {
 
   /* XXX Not totally convinced this is the right forced block logic. What if
   we're supported by ladder or water? */
-  if (supportedBefore) forcedBlocks.push({ pos: { x: 0, y: 1 }, force: { x: 0, y: 1 }, tile: tileBefore });
+  if (supportedBefore) forcedBlocks.push(
+    fblock(state, { pos: player.pos, impetus: { x: 0, y: 1 } }, { x: 0, y: 1 })
+  );
+
   /* Whether we were in a "stable" state during the previous step */
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
@@ -228,12 +241,19 @@ export function animateMove(state: GameState, move: Move): Animation[] {
 
   const flipState = flipStateOfMotive(motive) || player.flipState;
 
-  // XXX should entities force blocks?
+  // XXX should entity motion cause forced blocks?
 
   playerTickOutput.forced.forEach(fb => {
     const pos = vplus(player.pos, fb.pos);
-    if (isBlockForceSuccess(player, fb.pos, tileOfGameState(state, pos)))
-      anims.push(...forceBlock(state, pos, tileOfGameState(state, pos)));
+    switch (fb.forceType.t) {
+      case 'tile':
+        if (isBlockForceSuccess(player, fb.pos, tileOfGameState(state, pos)))
+          anims.push(...forceBlock(state, pos, tileOfGameState(state, pos)));
+        break;
+      case 'entity':
+        console.log(`entity forced at ${pos.x},${pos.y}`);
+        break;
+    }
   });
 
   const nextPos = playerTickOutput.entity.pos;

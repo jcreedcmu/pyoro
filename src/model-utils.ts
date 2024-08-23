@@ -82,10 +82,15 @@ export type Board = {
  * field is relative to the entity.
  */
 export type ForcedBlock = {
-  pos: Point,
+  forceType: ForceType,
   force: Point,
-  tile: Tile,
+  pos: Point, // relative
 };
+
+export type ForceType =
+  | { t: 'tile', tile: Tile }
+  | { t: 'entity', ix: number } // XXX should be id
+  ;
 
 function canEntitySupport(ent: EntityType): boolean {
   return true;
