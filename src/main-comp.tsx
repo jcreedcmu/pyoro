@@ -16,7 +16,7 @@ type CanvasProps = {
 };
 
 function passthrough(k: string): boolean {
-  return k == 'C-r';
+  return k == 'C-r' || k == 'C-S-i';
 }
 
 function cursorOfToolState(toolState: ToolState): CSS.Property.Cursor {
