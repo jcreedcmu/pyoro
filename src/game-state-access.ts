@@ -78,16 +78,16 @@ export function setMouseCache(state: MainState, p: Point | undefined): void {
  * Sea and Sky. This is discussed a little in DESIGN.md.
  */
 export function resetRoom(state: GameState): GameState {
+  const newLevelState = mkLevel(state.levels[state.currentLevel])
   state = setOverlay(state, { tiles: {} });
 
   const last_save = state.lastSave;
-  const initBusState = getCurrentLevelData(state).busState;
   const newPlayer = produce(initMainState.game.player, p => {
     p.pos = last_save;
   });
   return produce(state, s => {
     s.inventory = {};
-    getCurrentLevel(s).busState = initBusState;
+    s.currentLevelState = newLevelState;
     s.player = newPlayer;
     s.time = 0;
   });
