@@ -170,4 +170,18 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'animState', sprite: 'player' } },
     ],
   },
+  {
+    description: 'die from high fall',
+    levelName: '_test10', steps: [
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'assertion', assn: { t: 'animState', sprite: 'player_dead' } },
+    ],
+  },
 ]
