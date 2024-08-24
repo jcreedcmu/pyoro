@@ -11,7 +11,7 @@ import { entityTick, fblock } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
 import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
 import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
-import { mapValues, max } from './util';
+import { clamp, mapValues, max } from './util';
 import { ViewData, WidgetPoint } from './view';
 import { EntityState } from './entity';
 
@@ -204,9 +204,11 @@ export function animateMove(state: GameState, move: Move): Animation[] {
 
   /* XXX Not totally convinced this is the right forced block logic. What if
   we're supported by ladder or water? */
-  if (supportedBefore) forcedBlocks.push(
-    fblock(state, { pos: player.pos, impetus: { x: 0, y: 1 } }, { x: 0, y: 1 }, { x: 0, y: 0 })
-  );
+  if (supportedBefore) {
+    forcedBlocks.push(
+      fblock(state, { pos: player.pos, impetus: { x: 0, y: 1 } }, { x: 0, y: 1 }, { x: 0, y: 0 })
+    );
+  }
 
   /* Whether we were in a "stable" state during the previous step */
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
@@ -244,7 +246,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
         break;
       case 'entity':
         console.log(`entity forced at ${pos.x},${pos.y}`);
-        entityNudges.push({ ix: fb.forceType.ix, impetus: fb.force });
+        entityNudges.push({ ix: fb.forceType.ix, impetus: clamp(fb.force) });
         break;
     }
   });

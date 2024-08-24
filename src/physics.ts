@@ -74,18 +74,6 @@ function genImpetusForMotive(supportTile: Tile, motive: Point, extraImpetus: num
     return { x: 0, y: 0 };
 }
 
-/**
- * Restrict all coordinates to +/-1
- */
-function clamp(p: Point): Point {
-  function clamp1(x: number): number {
-    if (x > 1) return 1;
-    if (x < -1) return -1;
-    return x;
-  }
-  return vm(p, clamp1);
-}
-
 export function fblock(state: GameState, entity: PhysicsEntityState, rpos: Point, motive: Point): ForcedBlock {
   const cPos = vadd(entity.pos, rpos);
   const ix = entityIxAtPoint(state, cPos);
@@ -94,7 +82,7 @@ export function fblock(state: GameState, entity: PhysicsEntityState, rpos: Point
     : { t: 'tile', tile: tileOfGameState(state, cPos) };
   return restrictForcedBlock({
     pos: rpos,
-    force: clamp(vadd(entity.impetus, motive)),
+    force: vadd(entity.impetus, motive),
     forceType,
   });
 }

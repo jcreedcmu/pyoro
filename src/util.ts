@@ -1,4 +1,4 @@
-import { Point, vadd, vdiag, vsub } from './lib/point';
+import { Point, vadd, vdiag, vm, vsub } from './lib/point';
 import { Color, Rect, Dict, Brect } from "./lib/types";
 
 export function int(x: number): number {
@@ -106,4 +106,16 @@ export function insetRect(r: Rect, amount: number): Rect {
     p: vadd(r.p, vdiag(amount)),
     sz: vsub(r.sz, vdiag(2 * amount)),
   };
+}
+
+/**
+ * Restrict all coordinates to +/-1
+ */
+export function clamp(p: Point): Point {
+  function clamp1(x: number): number {
+    if (x > 1) return 1;
+    if (x < -1) return -1;
+    return x;
+  }
+  return vm(p, clamp1);
 }

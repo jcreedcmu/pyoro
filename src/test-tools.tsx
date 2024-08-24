@@ -51,6 +51,7 @@ export function renderAssertion(assn: MotionTestAssertion): JSX.Element | string
     case 'flipState': return `Flip State: ${assn.facing}`;
     case 'animState': return `Anim State: ${assn.sprite}`;
     case 'impetus': return `Impetus: ${assn.impetus}`;
+    case 'dead': return `Is Dead: ${assn.isDead}`;
   }
 }
 

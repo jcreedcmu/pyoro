@@ -7,6 +7,7 @@ import { mkLevel } from './level';
 import { allLevels } from './level-data';
 
 export type MotionTestAssertion =
+  | { t: 'dead', isDead: boolean }
   | { t: 'position', pos: Point }
   | { t: 'flipState', facing: Facing }
   | { t: 'animState', sprite: PlayerSprite }
@@ -52,6 +53,7 @@ function motionTestAssertion(state: GameState, assertion: MotionTestAssertion): 
     case 'flipState': return player.flipState == assertion.facing;
     case 'animState': return player.animState == assertion.sprite;
     case 'impetus': return getVerticalImpetus(player) == assertion.impetus;
+    case 'dead': return player.dead == assertion.isDead;
   }
 }
 
@@ -181,7 +183,7 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'move', move: 'down' },
       { t: 'move', move: 'down' },
       { t: 'move', move: 'down' },
-      { t: 'assertion', assn: { t: 'animState', sprite: 'player_dead' } },
+      { t: 'assertion', assn: { t: 'dead', isDead: true } },
     ],
   },
 ]
