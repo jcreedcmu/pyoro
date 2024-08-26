@@ -251,16 +251,22 @@ export function animateMove(state: GameState, move: Move): Animation[] {
     }
   });
 
+  // XXX is there a more principled way of doing this?
+  let stateForEntities = produce(state, s => {
+    s.player.pos = playerTickOutput.entity.pos;
+    s.player.impetus = playerTickOutput.entity.impetus;
+  });
+
   getCurrentLevel(state).entities.forEach((entity, ix) => {
     let motive = { x: 0, y: 0 };
     const nudge = entityNudges.find(({ ix: ixl }) => ix == ixl);
     if (nudge != undefined) {
       motive = nudge.impetus;
     }
-    const tout = entityTick(state, {
+    const tout = entityTick(stateForEntities, {
       entity,
       motive,
-      support: isSupportedInStateExcluding(state, entity.pos, { t: 'mobile', ix }) ? { x: 0, y: 1 } : undefined,
+      support: isSupportedInStateExcluding(stateForEntities, entity.pos, { t: 'mobile', ix }) ? { x: 0, y: 1 } : undefined,
     }, { t: 'mobile', ix });
     anims.push({ t: 'EntityAnimation', index: ix, oldEntity: entity, newEntity: tout.entity });
   });
