@@ -67,6 +67,7 @@ export function isDeadly(x: Tile): boolean {
  * positive y is here actually upward-directed.
  */
 export function genImpetus(tile: Tile): Point {
+  if (isLadder(tile)) return { x: 0, y: 1 };
   if (isOpen(tile)) return { x: 0, y: 0 };
   if (tileEq(tile, { t: 'up_box' })) return { x: 0, y: FULL_IMPETUS };
   return { x: 0, y: 1 };
