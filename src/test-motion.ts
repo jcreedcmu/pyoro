@@ -186,4 +186,19 @@ export const motionTestSuite: MotionTest[] = [
       { t: 'assertion', assn: { t: 'dead', isDead: true } },
     ],
   },
+  {
+    description: 'block pushable after high fall',
+    levelName: '_test12', steps: [
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'down' },
+      { t: 'move', move: 'right' },
+      { t: 'move', move: 'right' },
+      { t: 'assertion', assn: { t: 'position', pos: { x: 1, y: 0 } } },
+    ],
+  },
 ]
