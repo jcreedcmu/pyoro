@@ -310,6 +310,13 @@ function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPh
   return { entity: { pos: entity.pos, impetus: vadd(entity.impetus, { x: 0, y: 1 }) } };
 }
 
+export function isMortal(entityId: EntityId): boolean {
+  switch (entityId.t) {
+    case 'player': return true;
+    case 'mobile': return false;
+  }
+}
+
 export function entityTick(state: GameState, tickContext: TickContext, entityId: EntityId): TickOutput {
   const entity = tickContext.entity;
   // Bounce Phase
@@ -334,7 +341,7 @@ export function entityTick(state: GameState, tickContext: TickContext, entityId:
   };
 
   const forced = [...forced0, ...forced1, ...forced2];
-  if (forced.some(lethalForcedBlock)) {
+  if (forced.some(lethalForcedBlock) && isMortal(entityId)) {
     return { entity: entity, forced: [], posture: 'dead' };
   }
 
