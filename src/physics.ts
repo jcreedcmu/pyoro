@@ -322,6 +322,7 @@ export function entityTick(state: GameState, tickContext: TickContext, entityId:
     }
   }
 
+  console.log('targetIn', { entity, motive: bounce, support: tickContext.support });
   // Target Phase
   const { newImpetus, target, forced: forced1, fall } = targetPhase(state, { entity, motive: bounce, support: tickContext.support });
   // XXX we're throwing away posture here. Is that ok?

@@ -7,7 +7,7 @@ import { Tile, Move, DynamicTile } from '../src/types';
 import { getVerticalImpetus } from '../src/player-accessors';
 import { LevelData, mkLevel } from '../src/level';
 import { allLevels } from '../src/level-data';
-import { entityTick } from '../src/physics';
+import { entityTick, targetPhase, TargetPhaseContext } from '../src/physics';
 
 describe('Entity tick', () => {
   it('should be impetus-neutral while climbing ladder', () => {
@@ -23,5 +23,19 @@ describe('Entity tick', () => {
     }, { t: 'player' });
     expect(tickOutput.entity.impetus).toEqual({ x: 0, y: 0 });
   });
+});
 
+describe('Target phase', () => {
+  it('should be impetus-neutral while climbing ladder', () => {
+    let m = testInitialGameState('_test11');
+
+    const tpc: TargetPhaseContext = {
+      entity: { impetus: { x: 0, y: 0 }, pos: { x: 0, y: 0 } },
+      motive: { x: 0, y: -1 },
+      support: { x: 0, y: 1 },
+    };
+
+    const { newImpetus } = targetPhase(m, tpc);
+    expect(newImpetus).toEqual({ x: 0, y: 0 });
+  });
 });
