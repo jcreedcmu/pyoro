@@ -1,7 +1,7 @@
 import { Dispatch } from './action';
 import { FRAME_DURATION_MS } from './constants';
 import { LevelData } from './level';
-import { logger } from './logger';
+import { logger } from './debug';
 import { getAllLevels } from './model';
 import { getSoundService } from './sound';
 import { MainState, State } from './state';

@@ -5,7 +5,7 @@ import { bindings } from './bindings';
 import { editTiles } from './constants';
 import { getInitOverlay, getMouseCache, setCurrentLevel, setMouseCache } from './game-state-access';
 import { putDynamicTile, weakTileEq } from './layer';
-import { logger } from './logger';
+import { logger } from './debug';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, tileOfGameState } from './model';
 import { runSetter } from './optic';
 import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields } from './state';

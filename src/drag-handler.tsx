@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { logger } from './logger';
+import { logger } from './debug';
 import { Dispatch } from './action';
 
 export function DragHandler(props: { dispatch: Dispatch }): JSX.Element {

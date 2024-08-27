@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Dispatch } from './action';
 import { DragHandler } from './drag-handler';
 import { keyFromCode } from './key';
-import { logger } from './logger';
+import { logger } from './debug';
 import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields, ToolState } from './state';
 import { renderTestTools } from './test-tools';
 import { CanvasInfo, useCanvas } from './use-canvas';

@@ -2,12 +2,12 @@ import { produce } from 'immer';
 import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools, viewRectInView } from './constants';
 import { getBoundRect, getCurrentLevel, getCurrentLevelData, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
-import { fillRect, pathRect } from './lib/dutil';
+import { fillRect, fillText, pathRect, strokeRect } from './lib/dutil';
 import { int, Point, vdiag, vint, vm, vm2, vplus, vscale } from './lib/point';
 import { apply, compose, inverse, mkSE2 } from './lib/se2';
 import { apply_to_rect } from './lib/se2-extra';
 import { Rect } from './lib/types';
-import { DEBUG } from './logger';
+import { DEBUG } from './debug';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
 import { Combo, IfaceState, MainState } from './state';
 import { getTestState } from './test-state';
@@ -204,11 +204,48 @@ function cell_rect_in_canvas(vd: ViewData, iface: IfaceState, p_in_world: Point)
   return apply_to_rect(getCanvasFromWorld(vd, iface), cell_rect_in_world(p_in_world));
 }
 
+const metrics: (keyof TextMetrics)[] = [
+  'actualBoundingBoxAscent',
+  'actualBoundingBoxDescent',
+  'actualBoundingBoxLeft',
+  'actualBoundingBoxRight',
+  'alphabeticBaseline',
+  'emHeightAscent',
+  'emHeightDescent',
+  'fontBoundingBoxAscent',
+  'fontBoundingBoxDescent',
+  'hangingBaseline',
+  'ideographicBaseline',
+  'width',
+];
+
+
+
+function drawDebugText(fv: FView, text: string, p_in_canvas: Point): void {
+  const { d } = fv;
+  d.textAlign = 'center';
+  d.textBaseline = 'middle';
+  const font = '12px sans-serif';
+  d.font = font;
+  const measure = d.measureText(text);
+  const textRect = u.insetRect(u.rectOfBrect({
+    min: { x: p_in_canvas.x - measure.actualBoundingBoxLeft, y: p_in_canvas.y - measure.actualBoundingBoxAscent },
+    max: { x: p_in_canvas.x + measure.actualBoundingBoxRight, y: p_in_canvas.y + measure.actualBoundingBoxDescent }
+  }), -3);
+
+  fillRect(d, textRect, '#fff');
+  strokeRect(d, textRect, '#000', 1);
+  fillText(d, text, p_in_canvas, '#000', font);
+}
+
 function drawEntities(fv: FView, state: MainState): void {
   const level = getCurrentLevel(state.game);
   level.entities.forEach(ent => {
     const rect_in_canvas = cell_rect_in_canvas(fv.vd, state.iface, ent.pos);
     draw_sprite(fv, spriteLocOfEntity(ent.etp), rect_in_canvas);
+    if (DEBUG.entityImpetus) {
+      drawDebugText(fv, `${ent.impetus.x},${ent.impetus.y}`, u.rectMidpoint(rect_in_canvas));
+    }
   });
 }
 
