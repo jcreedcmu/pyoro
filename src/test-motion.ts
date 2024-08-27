@@ -42,7 +42,7 @@ export function motionTestLength(test: MotionTest): number {
   return test.steps.length;
 }
 
-function executeMove(s: GameState, move: Move): GameState {
+export function executeMove(s: GameState, move: Move): GameState {
   return renderGameAnims(animateMove(s, move), 'complete', s);
 }
 

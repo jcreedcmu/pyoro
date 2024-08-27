@@ -245,7 +245,6 @@ export function animateMove(state: GameState, move: Move): Animation[] {
           anims.push(...forceBlock(state, pos, tileOfGameState(state, pos)));
         break;
       case 'entity':
-        console.log(`entity forced at ${pos.x},${pos.y}`);
         entityNudges.push({ ix: fb.forceType.ix, impetus: clamp(fb.force) });
         break;
     }

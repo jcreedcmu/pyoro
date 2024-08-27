@@ -4031,5 +4031,44 @@ export const allLevels: Record<string, LevelData> = {
       "green": false,
       "blue": false
     }
+  },
+  "_test11": {
+    "initOverlay": {
+      "tiles": {
+        "0,1": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "0,0": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "0,-1": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        }
+      }
+    },
+    "boundRect": {
+      "min": {
+        "x": 0,
+        "y": -1
+      },
+      "max": {
+        "x": 0,
+        "y": 1
+      }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
+    }
   }
 };

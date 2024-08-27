@@ -339,11 +339,9 @@ export function entityTick(state: GameState, tickContext: TickContext, entityId:
   }
 
   const { entity: finalEntity } = fallPhase(state, { entity: destEntity, entityId, fall });
-  const finalRv: TickOutput = {
+  return {
     entity: finalEntity,
     forced,
     posture,
   };
-  console.log(finalRv);
-  return finalRv;
 }

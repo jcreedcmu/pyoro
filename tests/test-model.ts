@@ -1,17 +1,13 @@
 import { FULL_IMPETUS } from '../src/constants';
 import { boxTile, dynamicOfTile, emptyTile, mapPointMap, PointMap } from '../src/layer';
 import { _putTileInGameStateInitOverlay, animateMove, getAllLevels, renderGameAnims, tileOfGameState } from '../src/model';
-import { motionTestPasses, motionTestSuite, testInitialGameState } from '../src/test-motion';
+import { executeMove, motionTestPasses, motionTestSuite, testInitialGameState } from '../src/test-motion';
 import { GameState, init_player } from '../src/state';
 import { Tile, Move, DynamicTile } from '../src/types';
 import { getVerticalImpetus } from '../src/player-accessors';
 import { LevelData, mkLevel } from '../src/level';
 import { allLevels } from '../src/level-data';
 
-
-function executeMove(s: GameState, move: Move): GameState {
-  return renderGameAnims(animateMove(s, move), 'complete', s);
-}
 
 describe('Motion rules', () => {
   motionTestSuite.forEach(mtest => {
@@ -22,6 +18,13 @@ describe('Motion rules', () => {
 });
 
 describe('State', () => {
+  it('should be impetus-neutral while climbing ladder', () => {
+    let m = testInitialGameState('_test11');
+    m = executeMove(m, 'up');
+    const player = m.player;
+    expect(player.impetus).toEqual({ x: 0, y: 0 });
+  });
+
   it('should disallow narrow diagonal moves', () => {
     let m = testInitialGameState('_test4');
     m = executeMove(m, 'up');
