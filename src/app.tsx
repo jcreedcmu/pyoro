@@ -14,6 +14,9 @@ import { produce } from 'immer';
 function reduceWithEffects(state: State, action: Action): { state: State, effects: Effect[] | undefined } {
   switch (state.t) {
     case 'main': {
+      if (action.t == 'openSettings') {
+        return { state: { t: 'settings', prev: state.state, settingsState: state.state.settings }, effects: [] };
+      }
       const { state: mstate, effects } = extractEffects<Action, Effect, MainState>(reduceMain)(state.state, action);
       return { state: { t: 'main', state: mstate }, effects };
     }

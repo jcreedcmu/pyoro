@@ -251,5 +251,7 @@ export function reduceMain(s: MainState, a: Action): MainState {
     }
     case 'settingsAction':
       throw new Error(`action/state mismatch`);
+    case 'openSettings':
+      throw new Error(`action/state mismatch`);
   }
 }

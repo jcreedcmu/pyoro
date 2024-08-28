@@ -207,6 +207,14 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
 
   const canvasCursor = cursorOfToolState(state.iface.toolState);
 
+  const settingsButtonStyle: React.CSSProperties = {};
+  if (state.iface.toolState.t == 'pencil_tool') {
+    settingsButtonStyle.bottom = '3.5em';
+  }
+  else {
+    settingsButtonStyle.bottom = '0';
+  }
+
   return <div>
     <canvas style={{ cursor: canvasCursor }}
       tabIndex={0}
@@ -220,5 +228,6 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
     {renderLevelPicker(state, dispatch)}
     {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
     {state.iface.toolState.t == 'play_tool' ? repoLink() : undefined}
+    <div className="settings-button" style={settingsButtonStyle} onMouseDown={() => { dispatch({ t: 'openSettings' }); }}><img src="assets/gear.svg" width="48px" /></div>
   </div>;
 }

@@ -29,5 +29,6 @@ export type Action =
   | { t: 'setField', setter: Setter<MainState> }
   | { t: 'testToolsAction', action: testTools.Action }
   | { t: 'cacheMouse', p: Point }
+  | { t: 'openSettings' }
   | { t: 'settingsAction', action: SettingsAction }
   ;

@@ -39,3 +39,9 @@ body {
   padding: 1em;
   background-color: #777;
 }
+
+.settings-button {
+  position: absolute;
+  right: 0px;
+  cursor: pointer;
+}

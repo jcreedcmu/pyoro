@@ -34,5 +34,11 @@ export function reduceSettings(state: SettingsState, action: SettingsAction): Se
 }
 
 export function Settings(props: SettingsProps): JSX.Element {
-  return <>hello</>;
+  const { dispatch } = props;
+  return <>Settings<br />
+    Music Volume <input type="range" value={props.state.musicVolume * 100} min={0} max={100} /><br />
+    Sfx Volume <input type="range" value={props.state.sfxVolume * 100} min={0} max={100} /><br />
+    <button onMouseDown={() => { dispatch({ t: 'ok' }); }}>ok</button><br />
+    <button onMouseDown={() => { dispatch({ t: 'cancel' }); }}>cancel</button><br />
+  </>;
 }
