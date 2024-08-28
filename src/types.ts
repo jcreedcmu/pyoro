@@ -94,7 +94,7 @@ export type Tile =
   | { t: 'motion_block', direction: BlockMotion, on: boolean }
   | { t: 'door', destinationLevel: string }
   | { t: 'side_breakable' }
-  | { t: 'movable' }
+  | { t: 'wood_box' }
   | { t: 'ladder' }
   | { t: 'water' }
   ;

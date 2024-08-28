@@ -8,7 +8,7 @@ export type EntityId =
   ;
 
 export type EntityType =
-  | { t: 'movable' }
+  | { t: 'wood_box' }
   ;
 
 export type EntityState = {
@@ -19,7 +19,7 @@ export type EntityState = {
 
 export function entityOfTile(tile: Tile): EntityType | undefined {
   switch (tile.t) {
-    case 'movable': return { t: 'movable' };
+    case 'wood_box': return { t: 'wood_box' };
     default: return undefined;
   }
 }

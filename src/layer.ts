@@ -107,7 +107,7 @@ export function tileEq(t1: Tile, t2: Tile): boolean {
     case 'door': return t2.t == 'door';
     case 'motion_block': return t2.t == 'motion_block' && t1.direction == t2.direction && t1.on == t2.on;
     case 'side_breakable': return t2.t == 'side_breakable';
-    case 'movable': return t2.t == 'movable';
+    case 'wood_box': return t2.t == 'wood_box';
     case 'ladder': return t2.t == 'ladder';
     case 'water': return t2.t == 'water';
   }

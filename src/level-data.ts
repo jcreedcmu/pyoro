@@ -1493,7 +1493,7 @@ export const allLevels: Record<string, LevelData> = {
         "0,-7": {
           "t": "static",
           "tile": {
-            "t": "movable"
+            "t": "wood_box"
           }
         },
         "-3,-6": {
@@ -4095,7 +4095,7 @@ export const allLevels: Record<string, LevelData> = {
         "1,-7": {
           "t": "static",
           "tile": {
-            "t": "movable"
+            "t": "wood_box"
           }
         }
       }

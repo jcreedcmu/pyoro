@@ -115,7 +115,7 @@ function drawScaled(fv: FView, state: MainState): void {
 
 function spriteLocOfEntity(entity: EntityType): Point {
   switch (entity.t) {
-    case 'movable': return { x: 7, y: 7 };
+    case 'wood_box': return { x: 7, y: 7 };
   }
 }
 
@@ -163,7 +163,7 @@ function spriteLocOfTile(tile: Tile): Point {
     } break;
     case 'door': return { x: 8, y: 6 };
     case 'side_breakable': return { x: 7, y: 6 };
-    case 'movable': return { x: 7, y: 7 };
+    case 'wood_box': return { x: 7, y: 7 };
     case 'ladder': return { x: 6, y: 7 };
     case 'water': return { x: 5, y: 7 };
   }
