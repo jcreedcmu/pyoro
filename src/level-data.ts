@@ -232,12 +232,6 @@ export const allLevels: Record<string, LevelData> = {
             "t": "up_box"
           }
         },
-        "-9,11": {
-          "t": "static",
-          "tile": {
-            "t": "up_box"
-          }
-        },
         "-5,0": {
           "t": "static",
           "tile": {
@@ -428,10 +422,8 @@ export const allLevels: Record<string, LevelData> = {
           }
         },
         "-7,6": {
-          "t": "static",
-          "tile": {
-            "t": "box"
-          }
+          "t": "motion",
+          "direction": "right"
         },
         "-6,6": {
           "t": "static",
@@ -1752,6 +1744,97 @@ export const allLevels: Record<string, LevelData> = {
           "t": "static",
           "tile": {
             "t": "box"
+          }
+        },
+        "-7,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-6,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-5,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-4,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-3,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-2,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-1,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "0,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "1,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "2,10": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,9": {
+          "t": "static",
+          "tile": {
+            "t": "item",
+            "item": "teal_fruit"
+          }
+        },
+        "2,7": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "2,8": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "2,9": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-9,10": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
           }
         }
       }
