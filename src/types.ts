@@ -95,6 +95,7 @@ export type Tile =
   | { t: 'door', destinationLevel: string }
   | { t: 'side_breakable' }
   | { t: 'wood_box' }
+  | { t: 'metal_box' }
   | { t: 'ladder' }
   | { t: 'water' }
   ;

@@ -1,4 +1,4 @@
-import { FULL_IMPETUS } from "./constants";
+import { FULL_IMPETUS, MAX_CLIMB_WEIGHT } from "./constants";
 import { EntityId, EntityState, EntityType } from "./entity";
 import { emptyTile, tileEq, TileResolutionContext } from "./layer";
 import { Point, vadd, vequal } from "./lib/point";
@@ -124,7 +124,7 @@ export function isSupportedInState(state: GameState, p_in_world: Point): boolean
   return false;
 }
 
-export function isSupportedInStateExcluding(state: GameState, p_in_world: Point, entityId: EntityId): boolean {
+export function isSupportedInStateExcluding(state: GameState, p_in_world: Point, entityId: EntityId, entityWeight: number): boolean {
   const below = vadd(p_in_world, { x: 0, y: 1 });
   if (state.currentLevelState.entities.some((ent, ix) =>
     vequal(ent.pos, below) && canEntitySupport(ent.etp) && !(entityId.t == 'mobile' && entityId.ix == ix)
@@ -135,7 +135,7 @@ export function isSupportedInStateExcluding(state: GameState, p_in_world: Point,
   if (entityId.t != 'player' && vequal(state.player.pos, below))
     return true;
 
-  if (isClimb(tileOfGameState(state, p_in_world)))
+  if (isClimb(tileOfGameState(state, p_in_world)) && entityWeight <= MAX_CLIMB_WEIGHT)
     return true;
 
   if (!isOpen(tileOfGameState(state, below)))

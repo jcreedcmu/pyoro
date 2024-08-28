@@ -9,6 +9,7 @@ export type EntityId =
 
 export type EntityType =
   | { t: 'wood_box' }
+  | { t: 'metal_box' }
   ;
 
 export type EntityState = {
@@ -20,6 +21,7 @@ export type EntityState = {
 export function entityOfTile(tile: Tile): EntityType | undefined {
   switch (tile.t) {
     case 'wood_box': return { t: 'wood_box' };
+    case 'metal_box': return { t: 'metal_box' };
     default: return undefined;
   }
 }
@@ -28,5 +30,12 @@ export function entityOfDynamicTile(tile: DynamicTile): EntityType | undefined {
   switch (tile.t) {
     case 'static': return entityOfTile(tile.tile);
     default: return undefined;
+  }
+}
+
+export function entityWeight(etp: EntityType): number {
+  switch (etp.t) {
+    case 'wood_box': return 1;
+    case 'metal_box': return 2;
   }
 }

@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
-import { COMBO_THRESHOLD, editTiles, NUM_TILES, rotateTile, tools } from './constants';
+import { COMBO_THRESHOLD, editTiles, NUM_TILES, PLAYER_WEIGHT, rotateTile, tools } from './constants';
 import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay, setWorldFromView } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
@@ -13,7 +13,7 @@ import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './tr
 import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
 import { clamp, mapValues, max } from './util';
 import { ViewData, WidgetPoint } from './view';
-import { EntityState } from './entity';
+import { EntityState, entityWeight } from './entity';
 
 function layerStackOfState(s: GameState): LayerStack {
   return {
@@ -200,7 +200,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   /* The tile in the position below our feet before movement */
   const tileBefore = tileOfGameState(state, belowBefore);
   /* Whether we were supported during the previous step */
-  const supportedBefore = isSupportedInStateExcluding(state, player.pos, { t: 'player' });
+  const supportedBefore = isSupportedInStateExcluding(state, player.pos, { t: 'player' }, PLAYER_WEIGHT);
 
   /* XXX Not totally convinced this is the right forced block logic. What if
   we're supported by ladder or water? */
@@ -265,7 +265,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
     const tout = entityTick(stateForEntities, {
       entity,
       motive,
-      support: isSupportedInStateExcluding(stateForEntities, entity.pos, { t: 'mobile', ix }) ? { x: 0, y: 1 } : undefined,
+      support: isSupportedInStateExcluding(stateForEntities, entity.pos, { t: 'mobile', ix }, entityWeight(entity.etp)) ? { x: 0, y: 1 } : undefined,
     }, { t: 'mobile', ix });
     anims.push({ t: 'EntityAnimation', index: ix, oldEntity: entity, newEntity: tout.entity });
   });
@@ -280,7 +280,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   const nextTimeS = produce(state, s => { s.time++ });
 
   const tileAfter = tileOfGameState(nextTimeS, nextPos);
-  const supportedAfter = isSupportedInStateExcluding(nextTimeS, nextPos, { t: 'player' });
+  const supportedAfter = isSupportedInStateExcluding(nextTimeS, nextPos, { t: 'player' }, PLAYER_WEIGHT);
 
   const dead = isDeadly(tileAfter) || playerTickOutput.posture == 'dead';
 

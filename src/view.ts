@@ -114,9 +114,10 @@ function drawScaled(fv: FView, state: MainState): void {
 }
 
 function spriteLocOfEntity(entity: EntityType): Point {
-  switch (entity.t) {
-    case 'wood_box': return { x: 7, y: 7 };
-  }
+  // This might need to change if we every break the injection from
+  // entities into tiles, but this is good enough for now. The
+  // typechecker will probably catch it.
+  return spriteLocOfTile({ t: entity.t });
 }
 
 function spriteLocOfTile(tile: Tile): Point {
@@ -164,6 +165,7 @@ function spriteLocOfTile(tile: Tile): Point {
     case 'door': return { x: 8, y: 6 };
     case 'side_breakable': return { x: 7, y: 6 };
     case 'wood_box': return { x: 7, y: 7 };
+    case 'metal_box': return { x: 8, y: 7 };
     case 'ladder': return { x: 6, y: 7 };
     case 'water': return { x: 5, y: 7 };
   }

@@ -13,6 +13,9 @@ export const viewRectInView: Rect = { p: { x: 0, y: 0 }, sz: { x: NUM_TILES.x * 
 
 export const FRAME_DURATION_MS = 30;
 
+export const PLAYER_WEIGHT = 1;
+export const MAX_CLIMB_WEIGHT = 1;
+
 export const tools: Tool[] = [
   'play_tool',
   'pencil_tool',
@@ -51,6 +54,7 @@ export const editTiles: Tile[] =
     { t: 'motion_block', direction: 'right', on: true },
     { t: 'side_breakable' },
     { t: 'wood_box' },
+    { t: 'metal_box' },
     { t: 'ladder' },
     { t: 'water' },
   ];
