@@ -107,6 +107,7 @@ function reduceMove(s: MainState, move: Move): MainState {
 
 function resolveAllAnimations(s: MainState, anims: Animation[]): MainState {
   return {
+    settings: s.settings,
     nonVisibleState: s.nonVisibleState,
     iface: renderIfaceAnims(anims, 'complete', s),
     game: renderGameAnims(anims, 'complete', s.game),
@@ -248,5 +249,7 @@ export function reduceMain(s: MainState, a: Action): MainState {
         s.iface.toolState = { t: 'test_tool', testToolState: newState };
       });
     }
+    case 'settingsAction':
+      throw new Error(`action/state mismatch`);
   }
 }

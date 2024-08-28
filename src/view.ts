@@ -435,6 +435,7 @@ export function drawView(fv: FView, state: MainState): void {
   if (state.iface.toolState.t == 'test_tool') {
     const gameState = getTestState(state.iface.toolState.testToolState);
     effectiveState = {
+      settings: state.settings,
       nonVisibleState: state.nonVisibleState,
       anim: state.anim,
       effects: state.effects,
@@ -447,6 +448,7 @@ export function drawView(fv: FView, state: MainState): void {
     const ams = state.anim;
     if (ams !== null) {
       effectiveState = {
+        settings: state.settings,
         nonVisibleState: state.nonVisibleState,
         iface: renderIfaceAnims(ams.animator.anims, ams.frame, state),
         game: renderGameAnims(ams.animator.anims, ams.frame, state.game),

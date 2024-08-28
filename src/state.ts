@@ -82,6 +82,7 @@ export type NonVisibleState = {
  * All the state we need when we're in the middle of playing the game
  */
 export type MainState = {
+  settings: SettingsState,
   game: GameState,
   iface: IfaceState,
   anim: AnimState | null,
@@ -89,8 +90,14 @@ export type MainState = {
   nonVisibleState: NonVisibleState,
 };
 
+export type SettingsState = {
+  musicVolume: number,
+  sfxVolume: number,
+};
+
 export type State =
   | { t: 'main', state: MainState }
+  | { t: 'settings', prev: MainState, settingsState: SettingsState }
   | { t: 'title' }
   ;
 

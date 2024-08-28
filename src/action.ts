@@ -5,6 +5,7 @@ import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields, ToolSta
 import * as testTools from './test-tools';
 import { Move } from "./types";
 import { ViewData } from "./view";
+import { SettingsAction } from "./settings";
 
 export type Dispatch = (a: Action) => void;
 
@@ -28,4 +29,5 @@ export type Action =
   | { t: 'setField', setter: Setter<MainState> }
   | { t: 'testToolsAction', action: testTools.Action }
   | { t: 'cacheMouse', p: Point }
+  | { t: 'settingsAction', action: SettingsAction }
   ;
