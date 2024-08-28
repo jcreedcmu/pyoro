@@ -9,7 +9,7 @@ export class Sound {
     this.gainNode.gain.value = gain;
   }
 
-  constructor() {
+  constructor(public music: HTMLAudioElement) {
     const d = new AudioContext();
     this.audio_context = d;
     const gainNode = d.createGain();
@@ -84,7 +84,19 @@ export function getSoundService(): Sound {
     music.loop = true;
     music.volume = 0.25;
     music.play();
-    soundService = new Sound();
+    soundService = new Sound(music);
   }
   return soundService;
+}
+
+export function setMusicVolume(vol: number): void {
+  if (soundService != undefined) {
+    soundService.music.volume = vol * 0.25;
+  }
+}
+
+export function setSfxVolume(vol: number): void {
+  if (soundService != undefined) {
+    soundService.gainNode.gain.value = vol;
+  }
 }
