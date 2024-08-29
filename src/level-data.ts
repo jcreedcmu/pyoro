@@ -7,6 +7,157 @@ export const allLevels: Record<string, LevelData> = {
   "start": {
     "initOverlay": {
       "tiles": {
+        "-2,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-1,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "0,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "1,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "2,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "3,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-3,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "0,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-1,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-2,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-3,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-3,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-2,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-1,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "2,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "3,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "2,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "3,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "3,0": {
+          "t": "door",
+          "destinationLevel": "prev_start"
+        }
+      }
+    },
+    "boundRect": {
+      "max": {
+        "x": 3,
+        "y": 3
+      },
+      "min": {
+        "x": -3,
+        "y": -3
+      }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
+    }
+  },
+  "prev_start": {
+    "initOverlay": {
+      "tiles": {
         "0,1": {
           "t": "static",
           "tile": {
@@ -1860,6 +2011,10 @@ export const allLevels: Record<string, LevelData> = {
         "0,-9": {
           "t": "motion",
           "direction": "left"
+        },
+        "-8,-7": {
+          "t": "door",
+          "destinationLevel": "start"
         }
       }
     },
@@ -2285,7 +2440,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "-1,0": {
           "t": "door",
-          "destinationLevel": "start"
+          "destinationLevel": "prev_start"
         },
         "5,-1": {
           "t": "static",
@@ -2322,7 +2477,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "0,0": {
           "t": "door",
-          "destinationLevel": "start"
+          "destinationLevel": "prev_start"
         },
         "5,-3": {
           "t": "static",
@@ -3185,7 +3340,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "10,-5": {
           "t": "door",
-          "destinationLevel": "start"
+          "destinationLevel": "prev_start"
         },
         "10,-4": {
           "t": "static",
@@ -3709,7 +3864,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "0,0": {
           "t": "door",
-          "destinationLevel": "start"
+          "destinationLevel": "prev_start"
         },
         "3,-1": {
           "t": "static",
