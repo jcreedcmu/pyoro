@@ -277,9 +277,9 @@ export function animateMove(state: GameState, move: Move): Animation[] {
     const tout = entityTick(stateForEntities, {
       entity,
       motive,
-      support: isSupportedInStateExcluding(stateForEntities, entity.pos, { t: 'mobile', ix }, entityWeight(entity.etp)) ? getRelSupport({ x: 0, y: 1 }) : undefined,
-    }, { t: 'mobile', ix });
-    anims.push({ t: 'EntityAnimation', index: ix, oldEntity: entity, newEntity: tout.entity });
+      support: isSupportedInStateExcluding(stateForEntities, entity.pos, { t: 'mobileId', id: entity.id }, entityWeight(entity.etp)) ? getRelSupport({ x: 0, y: 1 }) : undefined,
+    }, { t: 'mobileId', id: entity.id });
+    anims.push({ t: 'EntityAnimation', id: entity.id, oldEntity: entity, newEntity: tout.entity });
   });
 
   // XXX should entity motion cause forced blocks? This seems a little

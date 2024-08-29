@@ -56,6 +56,7 @@ export type Inventory = Partial<Record<Item, number>>;
  */
 export type Level = {
   overlay: DynamicLayer,
+  entityCounter: number,
   busState: Record<Bus, boolean>,
   entities: EntityState[],
 }

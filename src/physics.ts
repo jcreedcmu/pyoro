@@ -322,7 +322,7 @@ function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPh
 export function isMortal(entityId: EntityId): boolean {
   switch (entityId.t) {
     case 'player': return true;
-    case 'mobile': return false;
+    case 'mobileId': return false;
   }
 }
 

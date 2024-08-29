@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { NUM_TILES, TILE_SIZE } from './constants';
-import { getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setWorldFromView } from './game-state-access';
+import { getCurrentLevel, getCurrentLevelData, getMobileById, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { int, Point, vdiag, vlerp, vm2, vplus, vscale, vsub } from './lib/point';
 import { compose, mkSE2, SE2, translate } from './lib/se2';
@@ -8,7 +8,7 @@ import { computeCombo, tileOfGameState } from './model';
 import { GameState, IfaceState, MainState } from './state';
 import { getWorldFromView, lerpTranslates } from './transforms';
 import { Bus, Facing, Item, PlayerSprite } from './types';
-import { EntityState } from './entity';
+import { EntityState, MobileId } from './entity';
 import { PhysicsEntityState } from './physics';
 
 /**
@@ -37,7 +37,7 @@ export type Animation =
   | { t: 'ChangeLevelAnimation', oldLevel: string, newLevel: string, newPosition: Point }
   | {
     t: 'EntityAnimation',
-    index: number, // XXX should be an id
+    id: MobileId,
     oldEntity: EntityState,
     newEntity: PhysicsEntityState,
   }
@@ -221,13 +221,14 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         s.player.combo = undefined;
       });
     case 'EntityAnimation': {
-      const { index, newEntity, oldEntity } = a;
+      const { id, newEntity, oldEntity } = a;
       const pos = vlerp(oldEntity.pos, newEntity.pos, t);
-      return produce(state, s => {
-        getCurrentLevel(s).entities[index].pos = pos;
+      const rvent = produce(oldEntity, e => {
+        e.pos = pos;
         if (t >= 0.75)
-          getCurrentLevel(s).entities[index].impetus = newEntity.impetus;
+          e.impetus = newEntity.impetus;
       });
+      return setMobileById(state, id, rvent);
     }
   }
 }

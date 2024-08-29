@@ -1,5 +1,5 @@
 import { produce } from "immer";
-import { entityOfDynamicTile, EntityState } from "./entity";
+import { entityOfDynamicTile, EntityState, getMobileId } from "./entity";
 import { DynamicLayer, emptyTile, getItem, putItem } from "./layer";
 import { Point, vdiag } from "./lib/point";
 import { Brect } from "./lib/types";
@@ -39,7 +39,8 @@ export function emptyLevelData(): LevelData {
  * level state during play.
  */
 export function mkLevel(ld: LevelData): Level {
-  const level: Level = {
+  let level: Level = {
+    entityCounter: 0,
     overlay: getEmptyOverlay(),
     busState: ld.busState,
     entities: [],
@@ -53,9 +54,20 @@ export function mkLevel(ld: LevelData): Level {
       if (tile == undefined) continue;
       const etp = entityOfDynamicTile(tile);
       if (etp == undefined) continue;
-      entityReplacements.push({ p: { x, y }, ent: { etp, impetus: vdiag(0), pos: { x, y } } });
+      let id;
+      [level, id] = getMobileId(level);
+      entityReplacements.push({
+        p: { x, y },
+        ent: {
+          id,
+          etp,
+          impetus: vdiag(0),
+          pos: { x, y },
+        }
+      });
     }
   }
+
   return produce(level, l => {
     entityReplacements.forEach(({ p, ent }) => {
       l.entities.push(ent);

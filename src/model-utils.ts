@@ -107,8 +107,8 @@ function canMobileSupport(ent: MobileType): boolean {
  */
 export function isSupportedInStateExcluding(state: GameState, p_in_world: Point, entityId: EntityId, entityWeight: number): boolean {
   const below = vadd(p_in_world, { x: 0, y: 1 });
-  if (state.currentLevelState.entities.some((ent, ix) =>
-    vequal(ent.pos, below) && canMobileSupport(ent.etp) && !(entityId.t == 'mobile' && entityId.ix == ix)
+  if (state.currentLevelState.entities.some((ent) =>
+    vequal(ent.pos, below) && canMobileSupport(ent.etp) && !(entityId.t == 'mobileId' && entityId.id == ent.id)
   )) {
     return true;
   }
@@ -151,8 +151,8 @@ export function isOpenInState(state: GameState, p_in_world: Point): boolean {
  * - the underlying tile is open
  */
 export function isOpenInStateExcluding(state: GameState, p_in_world: Point, entityId: EntityId): boolean {
-  if (state.currentLevelState.entities.some((ent, ix) =>
-    vequal(ent.pos, p_in_world) && !(entityId.t == 'mobile' && entityId.ix == ix)
+  if (state.currentLevelState.entities.some(ent =>
+    vequal(ent.pos, p_in_world) && !(entityId.t == 'mobileId' && entityId.id == ent.id)
   ))
     return false;
 

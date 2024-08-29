@@ -8,6 +8,7 @@ import { GameState, IfaceState, Level, MainState } from './state';
 import { boundBrect, pointInBrect } from './util';
 import { mkSE2, SE2 } from './lib/se2';
 import { TILE_SIZE } from './constants';
+import { EntityState, MobileId } from './entity';
 
 export function getCurrentLevel(state: GameState): Level {
   return state.currentLevelState;
@@ -96,5 +97,20 @@ export function resetRoom(state: GameState): GameState {
 export function setWorldFromView(state: IfaceState, world_from_view: SE2): IfaceState {
   return produce(state, s => {
     s.world_from_view = world_from_view;
+  });
+}
+
+export function getMobileById(state: GameState, id: MobileId): EntityState | undefined {
+  return state.currentLevelState.entities.find(x => x.id == id);
+}
+
+export function setMobileById(state: GameState, id: MobileId, es: EntityState): GameState {
+  const ix = state.currentLevelState.entities.findIndex(x => x.id == id);
+  if (ix == -1) {
+    console.error(`entity with id ${id} not found`);
+    return state;
+  }
+  return produce(state, s => {
+    s.currentLevelState.entities[ix] = es;
   });
 }
