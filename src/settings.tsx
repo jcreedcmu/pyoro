@@ -49,13 +49,24 @@ export function reduceSettings(state: SettingsState, action: SettingsAction): Se
 
 export function Settings(props: SettingsProps): JSX.Element {
   const { dispatch } = props;
-  return <>Settings<br />
-    Music Volume <input type="range" value={props.state.musicVolume * 100} min={0} max={100}
-      onChange={e => { dispatch({ t: 'setMusicVolume', val: parseInt(e.currentTarget.value) / 100 }) }} /><br />
-    Sfx Volume <input type="range" value={props.state.sfxVolume * 100} min={0} max={100}
-      onChange={e => { dispatch({ t: 'setSfxVolume', val: parseInt(e.currentTarget.value) / 100 }) }} /><br />
-    <button onMouseDown={() => { dispatch({ t: 'ok' }); }}>ok</button><br />
-  </>;
+  const containerStyle: React.CSSProperties = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#6a0d35',
+    flexDirection: 'column',
+  };
+  return <div style={{ ...containerStyle, width: '100%', height: '100%' }}>
+    <div style={{ ...containerStyle, backgroundColor: '#fff', padding: '2em' }}>
+      <h2>Settings</h2>
+      Music Volume <input type="range" value={props.state.musicVolume * 100} min={0} max={100}
+        onChange={e => { dispatch({ t: 'setMusicVolume', val: parseInt(e.currentTarget.value) / 100 }) }} />
+      Sfx Volume <input type="range" value={props.state.sfxVolume * 100} min={0} max={100}
+        onChange={e => { dispatch({ t: 'setSfxVolume', val: parseInt(e.currentTarget.value) / 100 }) }} />
+      <div style={{ height: '2em' }} />
+      <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'ok' }); }}>Ok</button>
+    </div>
+  </div>;
 
   //// Can't really have an effective cancel button when I'm statefully updating music volume!
   // <button onMouseDown={() => { dispatch({ t: 'cancel' }); }}>cancel</button><br />

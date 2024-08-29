@@ -15,7 +15,7 @@ describe('Entity tick', () => {
     const player = m.player;
     const tickOutput = entityTick(m, {
       motive: { x: 0, y: -1 },
-      support: { x: 0, y: 1 },
+      support: { rpos: { x: 0, y: 1 }, forceType: { t: 'tile', tile: { t: 'box' } } },
       entity: {
         impetus: player.impetus,
         pos: player.pos,
@@ -32,7 +32,7 @@ describe('Target phase', () => {
     const tpc: TargetPhaseContext = {
       entity: { impetus: { x: 0, y: 0 }, pos: { x: 0, y: 0 } },
       motive: { x: 0, y: -1 },
-      support: { x: 0, y: 1 },
+      support: { rpos: { x: 0, y: 1 }, forceType: { t: 'tile', tile: { t: 'box' } } },
     };
 
     const { newImpetus } = targetPhase(m, tpc);

@@ -5,10 +5,15 @@ import { GameState } from "./state";
 import { Tile } from "./types";
 import { EntityId } from "./entity";
 
+export type SupportData = {
+  rpos: Point,
+  forceType: ForceType,
+}
+
 export type TickContext = {
   entity: PhysicsEntityState,
   motive: Point,
-  support: Point | undefined,
+  support: SupportData | undefined,
 };
 
 export type TickOutput = {
@@ -67,11 +72,16 @@ export function targetPhaseUnsupportedY(state: GameState, ctx: TargetPhaseContex
   }
 }
 
-function genImpetusForMotive(supportTile: Tile, motive: Point, extraImpetus: number = 0): Point {
-  if (motive.y < 0)
-    return vsub({ x: 0, y: 1 - extraImpetus }, genImpetus(supportTile));
-  else
-    return { x: 0, y: 0 };
+function genImpetusForMotive(forceType: ForceType, motive: Point, extraImpetus: number = 0): Point {
+  switch (forceType.t) {
+    case 'tile':
+      if (motive.y < 0)
+        return vsub({ x: 0, y: 1 - extraImpetus }, genImpetus(forceType.tile));
+      else
+        return { x: 0, y: 0 };
+    case 'entity':
+      return { x: 0, y: -extraImpetus };
+  }
 }
 
 export function fblock(state: GameState, entity: PhysicsEntityState, rpos: Point, motive: Point): ForcedBlock {
@@ -91,15 +101,14 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
   const { entity, motive, support } = ctx;
   const { impetus, pos } = entity;
 
-  function _fblock(rpos: Point): ForcedBlock {
-    return fblock(state, entity, rpos, motive);
+  function _fblock(support: SupportData): ForcedBlock {
+    return fblock(state, entity, support.rpos, motive);
   }
 
   if (support != undefined) {
-    const supportTile = tileOfGameState(state, vadd(pos, support));
     return {
       target: motive,
-      newImpetus: genImpetusForMotive(supportTile, motive, state.inventory.teal_fruit),
+      newImpetus: genImpetusForMotive(support.forceType, motive, state.inventory.teal_fruit),
       forced: [_fblock(support)],
       fall: false, // fall is already "baked in" to newImpetus
     };

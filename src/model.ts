@@ -4,10 +4,10 @@ import { COMBO_THRESHOLD, editTiles, NUM_TILES, PLAYER_WEIGHT, rotateTile, tools
 import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay, setWorldFromView } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
-import { Point, vequal, vplus, vsub } from './lib/point';
+import { Point, vadd, vequal, vplus, vsub } from './lib/point';
 import { apply, composen, inverse, translate } from './lib/se2';
-import { Board, ForcedBlock, getItem, isClimb, isDeadly, isSupportedInState, isSupportedInStateExcluding } from './model-utils';
-import { entityTick, fblock } from './physics';
+import { Board, ForcedBlock, ForceType, getItem, isClimb, isDeadly, isSupportedInState, isSupportedInStateExcluding } from './model-utils';
+import { entityTick, fblock, SupportData } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
 import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
 import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
@@ -160,6 +160,14 @@ function isBlockForceSuccess(player: Player, forceLocation: Point, forceTile: Ti
   return true;
 }
 
+function getForceType(state: GameState, pos: Point): ForceType {
+  const ix = entityIxAtPoint(state, pos);
+  if (ix != undefined)
+    return { t: 'entity', ix }
+  return { t: 'tile', tile: tileOfGameState(state, pos) };
+}
+
+
 /**
  * This is the heart of computing what a move does.
  * @param state The state before the move
@@ -213,10 +221,14 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   /* Whether we were in a "stable" state during the previous step */
   const stableBefore = supportedBefore || player.animState == 'player_wall'; // XXX is depending on anim_state fragile?
 
-  function getSupport(): Point | undefined {
-    if (supportedBefore) return { x: 0, y: 1 };
+  function getRelSupport(rpos: Point): SupportData {
+    return { rpos, forceType: getForceType(state, vadd(player.pos, rpos)) };
+  }
+
+  function getSupport(): SupportData | undefined {
+    if (supportedBefore) return getRelSupport({ x: 0, y: 1 });
     if (player.animState == 'player_wall')
-      return player.flipState == 'left' ? { x: -1, y: 0 } : { x: 1, y: 0 };
+      return getRelSupport(player.flipState == 'left' ? { x: -1, y: 0 } : { x: 1, y: 0 });
   }
 
   const motive = motiveOfMove(move);
@@ -265,7 +277,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
     const tout = entityTick(stateForEntities, {
       entity,
       motive,
-      support: isSupportedInStateExcluding(stateForEntities, entity.pos, { t: 'mobile', ix }, entityWeight(entity.etp)) ? { x: 0, y: 1 } : undefined,
+      support: isSupportedInStateExcluding(stateForEntities, entity.pos, { t: 'mobile', ix }, entityWeight(entity.etp)) ? getRelSupport({ x: 0, y: 1 }) : undefined,
     }, { t: 'mobile', ix });
     anims.push({ t: 'EntityAnimation', index: ix, oldEntity: entity, newEntity: tout.entity });
   });
