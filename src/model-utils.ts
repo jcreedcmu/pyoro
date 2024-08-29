@@ -1,5 +1,5 @@
 import { FULL_IMPETUS, MAX_CLIMB_WEIGHT } from "./constants";
-import { EntityId, EntityState, EntityType } from "./entity";
+import { EntityId, EntityState, MobileType } from "./entity";
 import { emptyTile, tileEq, TileResolutionContext } from "./layer";
 import { Point, vadd, vequal } from "./lib/point";
 import { tileOfGameState } from "./model";
@@ -93,7 +93,7 @@ export type ForceType =
   | { t: 'entity', ix: number } // XXX should be id
   ;
 
-function canEntitySupport(ent: EntityType): boolean {
+function canMobileSupport(ent: MobileType): boolean {
   return true;
 }
 
@@ -103,31 +103,12 @@ function canEntitySupport(ent: EntityType): boolean {
  * - an entity exists below that cell which can support
  * - a tile exists below that cell that can support
  * - a tile exists *at* that cell that supports entities in that cell
+ * ...but excluding `entityId` from being eligible as a supporter.
  */
-export function isSupportedInState(state: GameState, p_in_world: Point): boolean {
-  const below = vadd(p_in_world, { x: 0, y: 1 });
-  if (state.currentLevelState.entities.some(ent =>
-    vequal(ent.pos, below) && canEntitySupport(ent.etp)
-  )) {
-    return true;
-  }
-
-  if (vequal(state.player.pos, below))
-    return true;
-
-  if (isClimb(tileOfGameState(state, p_in_world)))
-    return true;
-
-  if (!isOpen(tileOfGameState(state, below)))
-    return true;
-
-  return false;
-}
-
 export function isSupportedInStateExcluding(state: GameState, p_in_world: Point, entityId: EntityId, entityWeight: number): boolean {
   const below = vadd(p_in_world, { x: 0, y: 1 });
   if (state.currentLevelState.entities.some((ent, ix) =>
-    vequal(ent.pos, below) && canEntitySupport(ent.etp) && !(entityId.t == 'mobile' && entityId.ix == ix)
+    vequal(ent.pos, below) && canMobileSupport(ent.etp) && !(entityId.t == 'mobile' && entityId.ix == ix)
   )) {
     return true;
   }

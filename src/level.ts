@@ -1,5 +1,5 @@
 import { produce } from "immer";
-import { entityOfDynamicTile, EntityState, EntityType } from "./entity";
+import { entityOfDynamicTile, EntityState } from "./entity";
 import { DynamicLayer, emptyTile, getItem, putItem } from "./layer";
 import { Point, vdiag } from "./lib/point";
 import { Brect } from "./lib/types";

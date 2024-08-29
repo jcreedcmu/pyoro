@@ -6,7 +6,7 @@ import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile
 import { LevelData } from './level';
 import { Point, vadd, vequal, vplus, vsub } from './lib/point';
 import { apply, composen, inverse, translate } from './lib/se2';
-import { Board, ForcedBlock, ForceType, getItem, isClimb, isDeadly, isSupportedInState, isSupportedInStateExcluding } from './model-utils';
+import { Board, ForcedBlock, ForceType, getItem, isClimb, isDeadly, isSupportedInStateExcluding } from './model-utils';
 import { entityTick, fblock, SupportData } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
 import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';

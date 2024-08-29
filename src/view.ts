@@ -15,7 +15,7 @@ import { getCanvasFromWorld, getWorldFromCanvas, getWorldFromView } from './tran
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
 import * as u from './util';
 import { rgba } from './util';
-import { EntityType } from './entity';
+import { MobileType } from './entity';
 
 export type WidgetPoint =
   | { t: 'Toolbar', tilePoint: Point }
@@ -113,7 +113,7 @@ function drawScaled(fv: FView, state: MainState): void {
   }
 }
 
-function spriteLocOfEntity(entity: EntityType): Point {
+function spriteLocOfEntity(entity: MobileType): Point {
   // This might need to change if we every break the injection from
   // entities into tiles, but this is good enough for now. The
   // typechecker will probably catch it.
