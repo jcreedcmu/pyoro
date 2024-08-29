@@ -9,7 +9,7 @@ Mount Pyoro is a puzzle platformer with discrete time and space.
 MOSTLY means a prescription is not expected to be applicable without exception,
 but exceptions probably should be justified by some other consideration.
 
-The coordinate system is such that x increases to the right, and y
+The coordinate system is such that `x` increases to the right, and `y`
 increases down, in the direction of gravity.
 
 ## Influences
@@ -45,6 +45,8 @@ increases down, in the direction of gravity.
 - The game is won by gaining access to the final room. In general, the
   carrot that is offered to players is gaining access to places. It is desirable
   to tease the existence of places before they're accessible.
+
+- There should be some indication of when a room is "finished".
 
 ### General Physics
 
