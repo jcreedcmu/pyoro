@@ -3,7 +3,6 @@ import { Point } from './lib/point';
 import { Level } from './state';
 import { DynamicTile, Tile } from './types';
 
-// XXX this should be more like a guid
 export type EntityId =
   | { t: 'player' }
   | { t: 'mobileId', id: MobileId }
@@ -53,4 +52,11 @@ export function getMobileId(level: Level): [Level, MobileId] {
     }),
     `mobile${ec}`
   ];
+}
+
+export function eqEntityId(a: EntityId, b: EntityId): boolean {
+  switch (a.t) {
+    case 'player': return b.t == 'player';
+    case 'mobileId': return b.t == 'mobileId' && a.id == b.id;
+  }
 }

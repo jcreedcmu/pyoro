@@ -90,7 +90,7 @@ export type ForcedBlock = {
 
 export type ForceType =
   | { t: 'tile', tile: Tile }
-  | { t: 'entity', ix: number } // XXX should be id
+  | { t: 'entity', id: EntityId }
   ;
 
 function canMobileSupport(ent: MobileType): boolean {
@@ -162,5 +162,12 @@ export function isOpenInStateExcluding(state: GameState, p_in_world: Point, enti
   return isOpen(tileOfGameState(state, p_in_world));
 }
 
+export function entityAtPoint(s: GameState, p: Point): EntityState | undefined {
+  const ix = s.currentLevelState.entities.findIndex(ent => vequal(ent.pos, p));
+  if (ix == -1)
+    return undefined;
+  else
+    return s.currentLevelState.entities[ix];
+}
 
 export type Posture = 'stand' | 'attachWall' | 'crouch' | 'dead';

@@ -1,5 +1,5 @@
-import { entityIxAtPoint, tileOfGameState } from "./model";
-import { ForcedBlock, ForceType, genImpetus, isGrabbable, isOpenInState, isOpenInStateExcluding, Posture } from './model-utils';
+import { tileOfGameState } from "./model";
+import { entityAtPoint, ForcedBlock, ForceType, genImpetus, isGrabbable, isOpenInState, isOpenInStateExcluding, Posture } from './model-utils';
 import { Point, vadd, vm, vplus, vsub } from './lib/point';
 import { GameState } from "./state";
 import { Tile } from "./types";
@@ -86,9 +86,9 @@ function genImpetusForMotive(forceType: ForceType, motive: Point, extraImpetus: 
 
 export function fblock(state: GameState, entity: PhysicsEntityState, rpos: Point, motive: Point): ForcedBlock {
   const cPos = vadd(entity.pos, rpos);
-  const ix = entityIxAtPoint(state, cPos);
-  const forceType: ForceType = ix != undefined
-    ? { t: 'entity', ix }
+  const e = entityAtPoint(state, cPos);
+  const forceType: ForceType = e != undefined
+    ? { t: 'entity', id: { t: 'mobileId', id: e.id } }
     : { t: 'tile', tile: tileOfGameState(state, cPos) };
   return restrictForcedBlock({
     pos: rpos,

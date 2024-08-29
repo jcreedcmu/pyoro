@@ -1,19 +1,19 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { COMBO_THRESHOLD, editTiles, NUM_TILES, PLAYER_WEIGHT, rotateTile, tools } from './constants';
-import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getOverlay, setWorldFromView } from './game-state-access';
+import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getMobileById, getOverlay, setWorldFromView } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
 import { Point, vadd, vequal, vplus, vsub } from './lib/point';
 import { apply, composen, inverse, translate } from './lib/se2';
-import { Board, ForcedBlock, ForceType, getItem, isClimb, isDeadly, isSupportedInStateExcluding } from './model-utils';
+import { Board, entityAtPoint, ForcedBlock, ForceType, getItem, isClimb, isDeadly, isSupportedInStateExcluding } from './model-utils';
 import { entityTick, fblock, SupportData } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
 import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
 import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
 import { clamp, mapValues, max } from './util';
 import { ViewData, WidgetPoint } from './view';
-import { EntityState, entityWeight } from './entity';
+import { EntityId, EntityState, entityWeight, eqEntityId } from './entity';
 
 function layerStackOfState(s: GameState): LayerStack {
   return {
@@ -75,15 +75,6 @@ export function dynamicTileOfState(s: MainState, p: Point): DynamicTile {
 export function tileOfGameState(s: GameState, p: Point, viewIntent?: boolean): Tile {
   const { player, trc } = boardOfState(s);
   return tileOfStack(trc.layerStack, p, trc, viewIntent);
-}
-
-// XXX move to model-utils to reduce circularity?
-export function entityIxAtPoint(s: GameState, p: Point): number | undefined {
-  const ix = s.currentLevelState.entities.findIndex(ent => vequal(ent.pos, p));
-  if (ix == -1)
-    return undefined;
-  else
-    return ix;
 }
 
 export function dynamicTileOfGameState(s: GameState, p: Point): DynamicTile {
@@ -161,9 +152,9 @@ function isBlockForceSuccess(player: Player, forceLocation: Point, forceTile: Ti
 }
 
 function getForceType(state: GameState, pos: Point): ForceType {
-  const ix = entityIxAtPoint(state, pos);
-  if (ix != undefined)
-    return { t: 'entity', ix }
+  const e = entityAtPoint(state, pos);
+  if (e != undefined)
+    return { t: 'entity', id: { t: 'mobileId', id: e.id } };
   return { t: 'tile', tile: tileOfGameState(state, pos) };
 }
 
@@ -248,7 +239,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
 
   const nextPos = playerTickOutput.entity.pos;
 
-  const entityNudges: { ix: number, impetus: Point }[] = []; // XXX should be id
+  const entityNudges: { id: EntityId, impetus: Point }[] = [];
   playerTickOutput.forced.forEach(fb => {
     const pos = vplus(player.pos, fb.pos);
     switch (fb.forceType.t) {
@@ -257,7 +248,7 @@ export function animateMove(state: GameState, move: Move): Animation[] {
           anims.push(...forceBlock(state, pos, tileOfGameState(state, pos)));
         break;
       case 'entity':
-        entityNudges.push({ ix: fb.forceType.ix, impetus: clamp(fb.force) });
+        entityNudges.push({ id: fb.forceType.id, impetus: clamp(fb.force) });
         break;
     }
   });
@@ -268,9 +259,9 @@ export function animateMove(state: GameState, move: Move): Animation[] {
     s.player.impetus = playerTickOutput.entity.impetus;
   });
 
-  getCurrentLevel(state).entities.forEach((entity, ix) => {
+  getCurrentLevel(state).entities.forEach((entity) => {
     let motive = { x: 0, y: 0 };
-    const nudge = entityNudges.find(({ ix: ixl }) => ix == ixl);
+    const nudge = entityNudges.find(({ id: idl }) => eqEntityId({ t: 'mobileId', id: entity.id }, idl));
     if (nudge != undefined) {
       motive = nudge.impetus;
     }
