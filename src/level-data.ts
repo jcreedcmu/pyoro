@@ -1836,6 +1836,30 @@ export const allLevels: Record<string, LevelData> = {
           "tile": {
             "t": "box3"
           }
+        },
+        "5,-9": {
+          "t": "motion",
+          "direction": "left"
+        },
+        "4,-9": {
+          "t": "motion",
+          "direction": "left"
+        },
+        "3,-9": {
+          "t": "motion",
+          "direction": "left"
+        },
+        "2,-9": {
+          "t": "motion",
+          "direction": "left"
+        },
+        "1,-9": {
+          "t": "motion",
+          "direction": "left"
+        },
+        "0,-9": {
+          "t": "motion",
+          "direction": "left"
         }
       }
     },
