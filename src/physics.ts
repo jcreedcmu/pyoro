@@ -3,7 +3,7 @@ import { entityAtPoint, ForcedBlock, ForceType, genImpetus, isGrabbable, isOpenI
 import { Point, vadd, vm, vplus, vsub } from './lib/point';
 import { GameState } from "./state";
 import { Tile } from "./types";
-import { EntityId } from "./entity";
+import { EntityId, EntityInfo, getEntityInfo } from "./entity";
 
 export type SupportData = {
   rpos: Point,
@@ -319,10 +319,13 @@ function fallPhase(state: GameState, fallPhaseContext: FallPhaseContext): FallPh
   return { entity: { pos: entity.pos, impetus: vadd(entity.impetus, { x: 0, y: 1 }) } };
 }
 
-export function isMortal(entityId: EntityId): boolean {
-  switch (entityId.t) {
+export function isMortal(entityInfo: EntityInfo): boolean {
+  switch (entityInfo.t) {
     case 'player': return true;
-    case 'mobileId': return false;
+    case 'mobileId': switch (entityInfo.mtp.t) {
+      case 'wood_box': return true;
+      case 'metal_box': return false;
+    }
   }
 }
 
@@ -350,7 +353,7 @@ export function entityTick(state: GameState, tickContext: TickContext, entityId:
   };
 
   const forced = [...forced0, ...forced1, ...forced2];
-  if (forced.some(lethalForcedBlock) && isMortal(entityId)) {
+  if (forced.some(lethalForcedBlock) && isMortal(getEntityInfo(state, entityId))) {
     return { entity: entity, forced: [], posture: 'dead' };
   }
 

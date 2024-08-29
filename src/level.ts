@@ -59,6 +59,7 @@ export function mkLevel(ld: LevelData): Level {
       entityReplacements.push({
         p: { x, y },
         ent: {
+          dead: false,
           id,
           etp,
           impetus: vdiag(0),

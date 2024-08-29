@@ -114,3 +114,14 @@ export function setMobileById(state: GameState, id: MobileId, es: EntityState): 
     s.currentLevelState.entities[ix] = es;
   });
 }
+
+export function deleteMobile(state: GameState, id: MobileId): GameState {
+  const ix = state.currentLevelState.entities.findIndex(x => x.id == id);
+  if (ix == -1) {
+    console.error(`entity with id ${id} not found`);
+    return state;
+  }
+  return produce(state, s => {
+    s.currentLevelState.entities.splice(ix, 1);
+  });
+}

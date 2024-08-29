@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { NUM_TILES, TILE_SIZE } from './constants';
-import { getCurrentLevel, getCurrentLevelData, getMobileById, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView } from './game-state-access';
+import { deleteMobile, getCurrentLevel, getCurrentLevelData, getMobileById, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { int, Point, vdiag, vlerp, vm2, vplus, vscale, vsub } from './lib/point';
 import { compose, mkSE2, SE2, translate } from './lib/se2';
@@ -8,7 +8,7 @@ import { computeCombo, tileOfGameState } from './model';
 import { GameState, IfaceState, MainState } from './state';
 import { getWorldFromView, lerpTranslates } from './transforms';
 import { Bus, Facing, Item, PlayerSprite } from './types';
-import { EntityState, MobileId } from './entity';
+import { EntityState, MobileId, MobileType } from './entity';
 import { PhysicsEntityState } from './physics';
 
 /**
@@ -40,6 +40,11 @@ export type Animation =
     id: MobileId,
     oldEntity: EntityState,
     newEntity: PhysicsEntityState,
+  }
+  | {
+    t: 'EntityDeathAnimation',
+    id: MobileId,
+    oldEntity: EntityState,
   }
   ;
 
@@ -140,6 +145,9 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
     case 'EntityAnimation': {
       return iface;
     }
+    case 'EntityDeathAnimation': {
+      return iface;
+    }
   }
 }
 
@@ -230,6 +238,16 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       });
       return setMobileById(state, id, rvent);
     }
+    case 'EntityDeathAnimation': {
+      if (t >= 0.75) {
+        return deleteMobile(state, a.id);
+      }
+      else {
+        return setMobileById(state, a.id, produce(a.oldEntity, e => {
+          e.dead = true;
+        }));
+      }
+    }
   }
 }
 
@@ -249,5 +267,6 @@ export function duration(a: Animation): number {
     case 'BusButtonToggleAnimation': return 1;
     case 'ChangeLevelAnimation': return CHANGE_ROOM_FRAMES;
     case 'EntityAnimation': return 4;
+    case 'EntityDeathAnimation': return 4;
   }
 }

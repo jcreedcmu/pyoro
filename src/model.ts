@@ -271,6 +271,8 @@ export function animateMove(state: GameState, move: Move): Animation[] {
       support: isSupportedInStateExcluding(stateForEntities, entity.pos, { t: 'mobileId', id: entity.id }, entityWeight(entity.etp)) ? getRelSupport({ x: 0, y: 1 }) : undefined,
     }, { t: 'mobileId', id: entity.id });
     anims.push({ t: 'EntityAnimation', id: entity.id, oldEntity: entity, newEntity: tout.entity });
+    if (tout.posture == 'dead')
+      anims.push({ t: 'EntityDeathAnimation', id: entity.id, oldEntity: entity });
   });
 
   // XXX should entity motion cause forced blocks? This seems a little

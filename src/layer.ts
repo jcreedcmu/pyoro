@@ -111,6 +111,8 @@ export function tileEq(t1: Tile, t2: Tile): boolean {
     case 'metal_box': return t2.t == 'metal_box';
     case 'ladder': return t2.t == 'ladder';
     case 'water': return t2.t == 'water';
+    case 'wood_box_dead': return t2.t == 'wood_box_dead';
+    case 'metal_box_dead': return t2.t == 'metal_box_dead';
   }
 }
 

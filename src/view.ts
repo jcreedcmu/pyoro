@@ -113,11 +113,11 @@ function drawScaled(fv: FView, state: MainState): void {
   }
 }
 
-function spriteLocOfEntity(entity: MobileType): Point {
+function spriteLocOfEntity(entity: MobileType, dead: boolean): Point {
   // This might need to change if we every break the injection from
   // entities into tiles, but this is good enough for now. The
   // typechecker will probably catch it.
-  return spriteLocOfTile({ t: entity.t });
+  return spriteLocOfTile({ t: dead ? `${entity.t}_dead` : entity.t });
 }
 
 function spriteLocOfTile(tile: Tile): Point {
@@ -166,6 +166,8 @@ function spriteLocOfTile(tile: Tile): Point {
     case 'side_breakable': return { x: 7, y: 6 };
     case 'wood_box': return { x: 7, y: 7 };
     case 'metal_box': return { x: 8, y: 7 };
+    case 'wood_box_dead': return { x: 9, y: 7 };
+    case 'metal_box_dead': return { x: 8, y: 7 }; // XXX nothing can destroy metal boxes right now
     case 'ladder': return { x: 6, y: 7 };
     case 'water': return { x: 5, y: 7 };
   }
@@ -244,7 +246,7 @@ function drawEntities(fv: FView, state: MainState): void {
   const level = getCurrentLevel(state.game);
   level.entities.forEach(ent => {
     const rect_in_canvas = cell_rect_in_canvas(fv.vd, state.iface, ent.pos);
-    draw_sprite(fv, spriteLocOfEntity(ent.etp), rect_in_canvas);
+    draw_sprite(fv, spriteLocOfEntity(ent.etp, ent.dead), rect_in_canvas);
     if (DEBUG.entityImpetus) {
       drawDebugText(fv, `${ent.impetus.x},${ent.impetus.y}`, u.rectMidpoint(rect_in_canvas));
     }

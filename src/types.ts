@@ -96,6 +96,8 @@ export type Tile =
   | { t: 'side_breakable' }
   | { t: 'wood_box' }
   | { t: 'metal_box' }
+  | { t: 'wood_box_dead' }
+  | { t: 'metal_box_dead' }
   | { t: 'ladder' }
   | { t: 'water' }
   ;

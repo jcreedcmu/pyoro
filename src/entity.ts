@@ -1,11 +1,17 @@
 import { produce } from 'immer';
 import { Point } from './lib/point';
-import { Level } from './state';
+import { GameState, Level } from './state';
 import { DynamicTile, Tile } from './types';
+import { getMobileById } from './game-state-access';
 
 export type EntityId =
   | { t: 'player' }
   | { t: 'mobileId', id: MobileId }
+  ;
+
+export type EntityInfo =
+  | { t: 'player' }
+  | { t: 'mobileId', id: MobileId, mtp: MobileType }
   ;
 
 export type MobileId = string;
@@ -20,6 +26,7 @@ export type EntityState = {
   etp: MobileType,
   pos: Point,
   impetus: Point,
+  dead: boolean,
 };
 
 export function entityOfTile(tile: Tile): MobileType | undefined {
@@ -58,5 +65,16 @@ export function eqEntityId(a: EntityId, b: EntityId): boolean {
   switch (a.t) {
     case 'player': return b.t == 'player';
     case 'mobileId': return b.t == 'mobileId' && a.id == b.id;
+  }
+}
+
+export function getEntityInfo(state: GameState, entity: EntityId): EntityInfo {
+  switch (entity.t) {
+    case 'player': return { t: 'player' };
+    case 'mobileId': return {
+      t: 'mobileId',
+      id: entity.id,
+      mtp: getMobileById(state, entity.id)!.etp
+    };
   }
 }
