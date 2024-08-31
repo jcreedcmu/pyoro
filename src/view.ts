@@ -247,7 +247,7 @@ function drawEntities(fv: FView, state: MainState): void {
   level.entities.forEach(ent => {
     const rect_in_canvas = cell_rect_in_canvas(fv.vd, state.iface, ent.pos);
     draw_sprite(fv, spriteLocOfEntity(ent.etp, ent.dead), rect_in_canvas);
-    if (DEBUG.entityImpetus) {
+    if (state.settings.debugImpetus) {
       drawDebugText(fv, `${ent.impetus.x},${ent.impetus.y}`, u.rectMidpoint(rect_in_canvas));
     }
   });

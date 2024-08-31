@@ -94,6 +94,7 @@ export type MainState = {
 export type SettingsState = {
   musicVolume: number,
   sfxVolume: number,
+  debugImpetus: boolean,
 };
 
 export type State =
