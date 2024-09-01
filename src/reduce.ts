@@ -13,6 +13,7 @@ import * as testTools from './test-tools';
 import { DynamicTile, Move, Tile } from './types';
 import { wpoint_of_vd } from './view';
 import { mkLevel } from './level';
+import { mod } from './util';
 
 export type Command =
   | 'prevEditTile'
@@ -169,6 +170,15 @@ export function reduceMain(s: MainState, a: Action): MainState {
     case 'setState': return a.s;
     case 'resize':
       return produce(s, s => { s.iface.vd = a.vd; });
+    case 'mouseWheel': {
+      const newPage = mod(s.iface.editPageIx + Math.sign(a.delta), editTiles.length);
+      return produce(s, s => {
+        s.iface.editPageIx = newPage;
+        if (s.iface.editTileIx >= editTiles[newPage].length) {
+          s.iface.editTileIx = 0;
+        }
+      });
+    }
     case 'mouseDown': {
       const vd = s.iface.vd;
       if (vd == null)

@@ -156,6 +156,10 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
     dispatch({ t: 'mouseDown', point: { x: e.clientX, y: e.clientY }, buttons: e.buttons });
   }
 
+  function handleMouseWheel(e: WheelEvent) {
+    dispatch({ t: 'mouseWheel', delta: e.deltaY });
+  }
+
   function handleResize(e: UIEvent) {
     dispatch({ t: 'resize', vd: resizeView(mc.current!.c) });
   }
@@ -192,6 +196,7 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
   React.useEffect(() => {
     logger('chatty', 'installing global event handlers');
     document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('wheel', handleMouseWheel);
     document.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); });
     window.addEventListener('resize', handleResize);
     return () => {
