@@ -404,7 +404,7 @@ function defaultDynamicTileToPut(tile: Tile): DynamicTile {
 }
 
 function determineTileToPut(s: MainState, worldPoint: Point): DynamicTile {
-  const newTile = defaultDynamicTileToPut(rotateTile(editTiles[s.iface.editTileIx], s.iface.editTileRotation));
+  const newTile = defaultDynamicTileToPut(rotateTile(editTiles[s.iface.editPageIx][s.iface.editTileIx], s.iface.editTileRotation));
 
   return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? dynamicOfTile(emptyTile()) : newTile;
 }
@@ -495,9 +495,10 @@ function initialToolState(t: Tool): ToolState {
 }
 
 export function handle_toolbar_mousedown(s: MainState, p: Point, buttons: number): MainState {
+  const editPage = editTiles[s.iface.editPageIx];
   if (p.y == 0) {
     if (buttons == 2) { // right mouse button means toggle bus state
-      const tile = editTiles[p.x];
+      const tile = editPage[p.x];
       if (tile.t == 'bus_block' || tile.t == 'bus_button') {
         const bus = tile.bus;
         const oldBusState = getCurrentLevelData(s.game).busState[bus];
@@ -510,7 +511,7 @@ export function handle_toolbar_mousedown(s: MainState, p: Point, buttons: number
     }
     else {
       return produce(s, s => {
-        if (p.x < editTiles.length && p.x >= 0)
+        if (p.x < editPage.length && p.x >= 0)
           s.iface.editTileIx = p.x;
       });
     }

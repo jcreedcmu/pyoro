@@ -24,7 +24,7 @@ export const tools: Tool[] = [
   'test_tool',
 ]
 
-export const editTiles: Tile[] =
+export const editTiles: Tile[][] = [
   [
     boxTile(),
     { t: 'grip_wall' },
@@ -55,9 +55,12 @@ export const editTiles: Tile[] =
     { t: 'side_breakable' },
     { t: 'wood_box' },
     { t: 'metal_box' },
+  ],
+  [
     { t: 'ladder' },
     { t: 'water' },
-  ];
+  ],
+];
 
 function numberOfDirection(direction: Direction): number {
   switch (direction) {

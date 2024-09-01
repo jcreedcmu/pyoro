@@ -33,6 +33,7 @@ export type MouseState =
 
 export type IfaceState = {
   keysDown: Record<string, boolean>,
+  editPageIx: number,
   editTileIx: number,
   toolState: ToolState,
   editTileRotation: number,

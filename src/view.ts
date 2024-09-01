@@ -336,14 +336,16 @@ function drawEditorStuff(fv: FView, state: MainState): void {
       { p: { x: ix * TILE_SIZE * SCALE, y: TILE_SIZE * SCALE }, sz: vdiag(TILE_SIZE * SCALE) });
   });
 
+  const editPage = editTiles[state.iface.editPageIx];
+
   // background of tile list
   d.fillStyle = guiData.background_color;
-  d.fillRect(0, 0, editTiles.length * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
+  d.fillRect(0, 0, editPage.length * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
 
   const levelInitBusState = getCurrentLevelData(state.game).busState;
 
   // tiles for pencil tool
-  editTiles.forEach((et, ix) => {
+  editPage.forEach((et, ix) => {
     let tile = rotateTile(et, state.iface.editTileRotation);
     if (tile.t == 'bus_block' || tile.t == 'bus_button') {
       const bus = tile.bus;

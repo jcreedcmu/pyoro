@@ -15,7 +15,7 @@ export const initMainState: MainState = {
     mouseCache: undefined,
   },
   effects: [],
-  settings: { musicVolume: 1, sfxVolume: 1 },
+  settings: { musicVolume: 1, sfxVolume: 1, debugImpetus: false },
   game: {
     player: init_player,
     currentLevelState: mkLevel(allLevels.start),
@@ -29,6 +29,7 @@ export const initMainState: MainState = {
     keysDown: {},
     world_from_view: mkSE2(vdiag(1 / TILE_SIZE), { x: -13, y: -9 }),
     blackout: 0,
+    editPageIx: 0,
     editTileIx: 0,
     toolState: { t: 'play_tool' },
     editTileRotation: 0,

@@ -10,7 +10,7 @@ import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_
 import { runSetter } from './optic';
 import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields } from './state';
 import * as testTools from './test-tools';
-import { DynamicTile, Move } from './types';
+import { DynamicTile, Move, Tile } from './types';
 import { wpoint_of_vd } from './view';
 import { mkLevel } from './level';
 
@@ -80,11 +80,22 @@ export function reduceCommand(s: MainState, cmd: Command): MainState {
         return s;
       }
       const tile = tileOfGameState(s.game, wpoint.p_in_world, true);
-      const tileIx = editTiles.findIndex(t => weakTileEq(tile, t));
-      if (tileIx == -1)
+      function findEditTile(target: Tile): { editTileIx: number, editPageIx: number } | undefined {
+        for (let i = 0; i < editTiles.length; i++) {
+          for (let j = 0; j < editTiles[i].length; j++) {
+            if (weakTileEq(target, editTiles[i][j])) {
+              return { editPageIx: i, editTileIx: j };
+            }
+          }
+        }
+        return undefined;
+      }
+      const tileLocator = findEditTile(tile);
+      if (tileLocator == undefined)
         return s;
       return produce(s, s => {
-        s.iface.editTileIx = tileIx;
+        s.iface.editTileIx = tileLocator.editTileIx;
+        s.iface.editPageIx = tileLocator.editPageIx;
       });
   }
 }
