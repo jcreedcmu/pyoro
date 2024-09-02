@@ -108,7 +108,7 @@ export function targetPhase(state: GameState, ctx: TargetPhaseContext): TargetPh
   if (support != undefined) {
     return {
       target: motive,
-      newImpetus: genImpetusForMotive(support.forceType, motive, state.inventory.teal_fruit),
+      newImpetus: genImpetusForMotive(support.forceType, motive, (state.inventory.teal_fruit ?? 0) > 0 ? 1 : 0),
       forced: [_fblock(support)],
       fall: false, // fall is already "baked in" to newImpetus
     };

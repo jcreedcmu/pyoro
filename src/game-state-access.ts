@@ -9,6 +9,8 @@ import { boundBrect, pointInBrect } from './util';
 import { mkSE2, SE2 } from './lib/se2';
 import { TILE_SIZE } from './constants';
 import { EntityState, MobileId } from './entity';
+import { itemTimeLimit } from './model-utils';
+import { Item } from './types';
 
 export function getCurrentLevel(state: GameState): Level {
   return state.currentLevelState;
@@ -123,5 +125,15 @@ export function deleteMobile(state: GameState, id: MobileId): GameState {
   }
   return produce(state, s => {
     s.currentLevelState.entities.splice(ix, 1);
+  });
+}
+
+export function elapseTimeBasedItems(state: GameState): GameState {
+  const ks = Object.keys(state.inventory);
+  return produce(state, s => {
+    for (const k of ks as Item[]) {
+      if (itemTimeLimit(k) != undefined)
+        s.inventory[k] = Math.max(0, (state.inventory[k] ?? 0) - 1);
+    }
   });
 }

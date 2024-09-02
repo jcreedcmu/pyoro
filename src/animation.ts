@@ -1,15 +1,16 @@
 import { produce } from 'immer';
 import { NUM_TILES, TILE_SIZE } from './constants';
-import { deleteMobile, getCurrentLevel, getCurrentLevelData, getMobileById, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView } from './game-state-access';
+import { EntityState, MobileId } from './entity';
+import { deleteMobile, getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView, elapseTimeBasedItems } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { int, Point, vdiag, vlerp, vm2, vplus, vscale, vsub } from './lib/point';
 import { compose, mkSE2, SE2, translate } from './lib/se2';
 import { computeCombo, tileOfGameState } from './model';
+import { itemTimeLimit } from './model-utils';
+import { PhysicsEntityState } from './physics';
 import { GameState, IfaceState, MainState } from './state';
 import { getWorldFromView, lerpTranslates } from './transforms';
 import { Bus, Facing, Item, PlayerSprite } from './types';
-import { EntityState, MobileId, MobileType } from './entity';
-import { PhysicsEntityState } from './physics';
 
 /**
  * An `Animation` is the type of all changes to the game state that
@@ -46,6 +47,7 @@ export type Animation =
     id: MobileId,
     oldEntity: EntityState,
   }
+  | { t: 'GenericMoveAnimation' } // this runs on every move
   ;
 
 /**
@@ -148,6 +150,9 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
     case 'EntityDeathAnimation': {
       return iface;
     }
+    case 'GenericMoveAnimation': {
+      return iface;
+    }
   }
 }
 
@@ -196,10 +201,19 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       });
     case 'RecenterAnimation': return state;
     case 'ItemGetAnimation':
-      return produce(state, s => {
-        s.inventory[a.item] = (s.inventory[a.item] ?? 0) + 1;
-        putTileInDynamicLayer(getOverlay(s), a.pos, emptyTile());
-      });
+      const itl = itemTimeLimit(a.item);
+      if (itl != undefined) {
+        return produce(state, s => {
+          s.inventory[a.item] = Math.max(itl, s.inventory[a.item] ?? 0);
+          putTileInDynamicLayer(getOverlay(s), a.pos, emptyTile());
+        });
+      }
+      else {
+        return produce(state, s => {
+          s.inventory[a.item] = (s.inventory[a.item] ?? 0) + 1;
+          putTileInDynamicLayer(getOverlay(s), a.pos, emptyTile());
+        });
+      }
     case 'SpendCoinAnimation':
       return produce(state, s => {
         putTileInDynamicLayer(getOverlay(s), a.pos, emptyTile());
@@ -248,6 +262,14 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         }));
       }
     }
+    case 'GenericMoveAnimation': {
+      if (t >= 1) {
+        return elapseTimeBasedItems(state);
+      }
+      else {
+        return state;
+      }
+    }
   }
 }
 
@@ -268,5 +290,6 @@ export function duration(a: Animation): number {
     case 'ChangeLevelAnimation': return CHANGE_ROOM_FRAMES;
     case 'EntityAnimation': return 4;
     case 'EntityDeathAnimation': return 4;
+    case 'GenericMoveAnimation': return 1;
   }
 }

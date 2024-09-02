@@ -6,6 +6,8 @@ import { tileOfGameState } from "./model";
 import { GameState, Player } from "./state";
 import { Item, Tile } from "./types";
 
+export type Posture = 'stand' | 'attachWall' | 'crouch' | 'dead';
+
 export function getItem(x: Tile): Item | undefined {
   if (x.t == 'item')
     return x.item;
@@ -16,6 +18,13 @@ export function getItem(x: Tile): Item | undefined {
 
 function isItem(x: Tile): boolean {
   return getItem(x) !== undefined;
+}
+
+export function itemTimeLimit(x: Item): number | undefined {
+  switch (x) {
+    case 'teal_fruit': return 30;
+    case 'coin': return undefined;
+  }
 }
 
 function isOpenBusBlock(x: Tile): boolean {
@@ -169,5 +178,3 @@ export function entityAtPoint(s: GameState, p: Point): EntityState | undefined {
   else
     return s.currentLevelState.entities[ix];
 }
-
-export type Posture = 'stand' | 'attachWall' | 'crouch' | 'dead';
