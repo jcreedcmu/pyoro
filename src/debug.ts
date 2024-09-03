@@ -10,7 +10,6 @@ export const DEBUG = {
   gameTime: true,
   impetus: true,
   combo: true,
-
   debugSettings: true,
 };
 

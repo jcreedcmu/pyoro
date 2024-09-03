@@ -298,10 +298,17 @@ function drawField(fv: FView, state: MainState): void {
   const playerSprite: PlayerSprite = (basePlayerSprite == 'player' &&
     player.combo != undefined && player.combo.dir.x != 0 && player.combo.rep >= COMBO_THRESHOLD) ? 'player_run' : basePlayerSprite;
 
+  // draw player
   const effectivePos = player.posOffset == undefined ? player.pos : vplus(player.pos, player.posOffset);
+  const player_rect_in_canvas = cell_rect_in_canvas(fv.vd, state.iface, effectivePos);
   draw_sprite(fv, spriteLocOfPlayer(playerSprite),
-    cell_rect_in_canvas(fv.vd, state.iface, effectivePos),
+    player_rect_in_canvas,
     player.flipState == 'left');
+
+  if (state.settings.debugImpetus) {
+    drawDebugText(fv, `${player.impetus.x},${player.impetus.y}`, u.rectMidpoint(player_rect_in_canvas));
+  }
+
 }
 
 function drawInventorySelection(d: CanvasRenderingContext2D, p: Point): void {
