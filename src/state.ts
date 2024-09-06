@@ -12,6 +12,7 @@ export type Combo = undefined | { t: 'combo', dir: Point, rep: number };
 
 export type Player = {
   dead: boolean,
+  oxygen: number,
   animState: PlayerSprite,
   flipState: Facing,
   pos: Point,
@@ -105,6 +106,7 @@ export type State =
   ;
 
 export const init_player: Player = {
+  oxygen: 0,
   dead: false,
   pos: { x: 0, y: 0 },
   combo: undefined,
