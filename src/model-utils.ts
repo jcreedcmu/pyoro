@@ -39,6 +39,10 @@ function isDoor(x: Tile): boolean {
   return x.t == 'door';
 }
 
+export function isUnbreathable(x: Tile): boolean {
+  return x.t == 'water';
+}
+
 function isLadder(x: Tile): boolean {
   return x.t == 'ladder';
 }

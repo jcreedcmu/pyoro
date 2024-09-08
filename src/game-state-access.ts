@@ -1,16 +1,16 @@
 import { produce } from 'immer';
+import { EntityState, MobileId } from './entity';
 import { initMainState } from './init-state';
 import { DynamicLayer } from './layer';
-import { emptyLevel, emptyLevelData, LevelData, mkLevel } from './level';
-import { Point, vdiag } from './lib/point';
+import { emptyLevelData, LevelData, mkLevel } from './level';
+import { Point } from './lib/point';
+import { SE2 } from './lib/se2';
 import { Brect } from "./lib/types";
+import { isUnbreathable, itemTimeLimit } from './model-utils';
 import { GameState, IfaceState, Level, MainState } from './state';
-import { boundBrect, pointInBrect } from './util';
-import { mkSE2, SE2 } from './lib/se2';
-import { TILE_SIZE } from './constants';
-import { EntityState, MobileId } from './entity';
-import { itemTimeLimit } from './model-utils';
 import { Item } from './types';
+import { boundBrect, pointInBrect } from './util';
+import { tileOfGameState } from './model';
 
 export function getCurrentLevel(state: GameState): Level {
   return state.currentLevelState;
@@ -136,4 +136,19 @@ export function elapseTimeBasedItems(state: GameState): GameState {
         s.inventory[k] = Math.max(0, (state.inventory[k] ?? 0) - 1);
     }
   });
+}
+
+export function adjustOxygen(state: GameState): GameState {
+  const player = state.player;
+  const tile = tileOfGameState(state, player.pos);
+  if (isUnbreathable(tile)) {
+    state = produce(state, s => { s.player.oxygen--; });
+  }
+  else {
+    state = produce(state, s => { s.player.oxygen = 0; });
+  }
+  if (state.player.oxygen < -5) {
+    state = produce(state, s => { s.player.dead = true; });
+  }
+  return state;
 }

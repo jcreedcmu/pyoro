@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { NUM_TILES, TILE_SIZE } from './constants';
 import { EntityState, MobileId } from './entity';
-import { deleteMobile, getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView, elapseTimeBasedItems } from './game-state-access';
+import { deleteMobile, getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView, elapseTimeBasedItems, adjustOxygen } from './game-state-access';
 import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
 import { int, Point, vdiag, vlerp, vm2, vplus, vscale, vsub } from './lib/point';
 import { compose, mkSE2, SE2, translate } from './lib/se2';
@@ -167,7 +167,7 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       const { pos, animState, impetus, flipState, dead } = a;
       return produce(state, s => {
         s.player = {
-          dead: dead && t >= 0.75,
+          dead: state.player.dead || (dead && t >= 0.75),
           posOffset: vplus(vscale(s.player.pos, -t), vscale(pos, t)),
           pos: s.player.pos,
           prevPos: s.player.prevPos,
@@ -265,11 +265,10 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
     }
     case 'GenericMoveAnimation': {
       if (t >= 1) {
-        return elapseTimeBasedItems(state);
+        state = adjustOxygen(state);
+        state = elapseTimeBasedItems(state);
       }
-      else {
-        return state;
-      }
+      return state;
     }
   }
 }

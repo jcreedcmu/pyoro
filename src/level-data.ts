@@ -136,6 +136,10 @@ export const allLevels: Record<string, LevelData> = {
         "3,0": {
           "t": "door",
           "destinationLevel": "prev_start"
+        },
+        "-3,0": {
+          "t": "door",
+          "destinationLevel": "pool"
         }
       }
     },
@@ -4370,6 +4374,175 @@ export const allLevels: Record<string, LevelData> = {
       "max": {
         "x": 2,
         "y": 1
+      }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
+    }
+  },
+  "pool": {
+    "initOverlay": {
+      "tiles": {
+        "0,0": {
+          "t": "door",
+          "destinationLevel": "start"
+        },
+        "0,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-1,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-2,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-3,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-4,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-5,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-6,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-7,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-7,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-7,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-6,2": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-6,1": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-5,1": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-4,1": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-3,1": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-2,1": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-1,1": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-1,2": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-2,2": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-3,2": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-4,2": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-5,2": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        }
+      }
+    },
+    "boundRect": {
+      "min": {
+        "x": -7,
+        "y": 0
+      },
+      "max": {
+        "x": 0,
+        "y": 3
       }
     },
     "busState": {
