@@ -4434,7 +4434,7 @@ export const allLevels: Record<string, LevelData> = {
         "-5,3": {
           "t": "static",
           "tile": {
-            "t": "box"
+            "t": "water"
           }
         },
         "-6,3": {
@@ -4532,17 +4532,167 @@ export const allLevels: Record<string, LevelData> = {
           "tile": {
             "t": "water"
           }
+        },
+        "-5,4": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-5,5": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-5,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-7,6": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-6,6": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-4,6": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "-3,6": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-2,6": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-1,6": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "0,6": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-4,5": {
+          "t": "static",
+          "tile": {
+            "t": "water"
+          }
+        },
+        "0,5": {
+          "t": "static",
+          "tile": {
+            "t": "item",
+            "item": "coin"
+          }
+        },
+        "-7,0": {
+          "t": "static",
+          "tile": {
+            "t": "coin_wall"
+          }
+        },
+        "-8,1": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "-9,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "-9,0": {
+          "t": "door",
+          "destinationLevel": "pool2"
+        },
+        "-8,2": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "-8,3": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
         }
       }
     },
     "boundRect": {
       "min": {
-        "x": -7,
+        "x": -9,
         "y": 0
       },
       "max": {
         "x": 0,
-        "y": 3
+        "y": 6
+      }
+    },
+    "busState": {
+      "red": false,
+      "green": false,
+      "blue": false
+    }
+  },
+  "pool2": {
+    "initOverlay": {
+      "tiles": {
+        "0,0": {
+          "t": "door",
+          "destinationLevel": "pool"
+        },
+        "-1,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "0,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        },
+        "1,1": {
+          "t": "static",
+          "tile": {
+            "t": "box3"
+          }
+        }
+      }
+    },
+    "boundRect": {
+      "min": {
+        "x": -1,
+        "y": 0
+      },
+      "max": {
+        "x": 1,
+        "y": 1
       }
     },
     "busState": {
