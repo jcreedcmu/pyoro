@@ -1,16 +1,7 @@
-import * as React from 'react';
-import { Action, Dispatch } from './action';
-import { doEffect, Effect } from './effect';
-import { extractEffects } from './extract-effects';
-import { initMainState, initState } from './init-state';
-import { MainComp } from './main-comp';
-import { reduceMain } from './reduce';
-import { MainState, SettingsState, State } from './state';
-import { TitleCard } from './title';
-import { useEffectfulReducer } from './use-effectful-reducer';
 import { produce } from 'immer';
-import { setMusicVolume, setSfxVolume } from './sound';
+import * as React from 'react';
 import { DEBUG } from './debug';
+import { MainState, SettingsState } from './state';
 
 export type SettingsAction =
   | { t: 'cancel' }
@@ -37,17 +28,27 @@ export function reduceSettings(state: SettingsState, action: SettingsAction): Se
     case 'cancel': return { t: 'cancel' };
     case 'ok': return { t: 'ok', state };
     case 'setMusicVolume': {
-      // XXX side effect!
-      setMusicVolume(action.val);
-      return { t: 'settingsState', state: produce(state, s => { s.musicVolume = action.val }) };
+      return {
+        t: 'settingsState', state: produce(state, s => {
+          s.musicVolume = action.val;
+          s.effects.push({ t: 'realizeSoundSettings', musicVolume: action.val, sfxVolume: state.sfxVolume });
+        })
+      };
     }
     case 'setSfxVolume': {
-      // XXX side effect!
-      setSfxVolume(action.val);
-      return { t: 'settingsState', state: produce(state, s => { s.sfxVolume = action.val }) };
+      return {
+        t: 'settingsState', state: produce(state, s => {
+          s.sfxVolume = action.val;
+          s.effects.push({ t: 'realizeSoundSettings', musicVolume: state.musicVolume, sfxVolume: action.val });
+        })
+      };
     }
     case 'setDebugImpetus': {
-      return { t: 'settingsState', state: produce(state, s => { s.debugImpetus = action.val }) };
+      return {
+        t: 'settingsState', state: produce(state, s => {
+          s.debugImpetus = action.val;
+        })
+      };
     }
   }
 }
@@ -84,9 +85,7 @@ export function Settings(props: SettingsProps): JSX.Element {
       {debugSettings()}
       <div style={{ height: '2em' }} />
       <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'ok' }); }}>Ok</button>
+      <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'cancel' }); }}>Cancel</button>
     </div>
   </div>;
-
-  //// Can't really have an effective cancel button when I'm statefully updating music volume!
-  // <button onMouseDown={() => { dispatch({ t: 'cancel' }); }}>cancel</button><br />
 }

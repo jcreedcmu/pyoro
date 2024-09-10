@@ -97,6 +97,7 @@ export type SettingsState = {
   musicVolume: number,
   sfxVolume: number,
   debugImpetus: boolean,
+  effects: Effect[],
 };
 
 export type State =

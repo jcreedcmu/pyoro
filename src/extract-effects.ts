@@ -12,13 +12,20 @@ export function extractEffects<A, E, S extends { effects: E[] }>(
   reduce: (state: S, action: A) => S,
 ): ((state: S, action: A) => Result<S, E>) {
   return (state: S, action: A) => {
-    const newState = reduce(state, action);
-    const newStateNoEffects = produce(newState, s => {
-      s.effects = [];
-    });
-    return {
-      state: newStateNoEffects,
-      effects: newState.effects,
-    };
+    return postExtractEffects(reduce(state, action));
+  }
+}
+
+// If we just the state that arose from reducing, the state type S happens to have a field effects: E[],
+// then `postExtractEffects(reduce)` yields the Result with the effects peeled off.
+export function postExtractEffects<E, S extends { effects: E[] }>(
+  state: S
+): Result<S, E> {
+  const stateNoEffects = produce(state, s => {
+    s.effects = [];
+  });
+  return {
+    state: stateNoEffects,
+    effects: state.effects,
   }
 }

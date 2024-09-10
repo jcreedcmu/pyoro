@@ -3,13 +3,14 @@ import { FRAME_DURATION_MS } from './constants';
 import { LevelData } from './level';
 import { logger } from './debug';
 import { getAllLevels } from './model';
-import { getSoundService } from './sound';
+import { getSoundService, setMusicVolume, setSfxVolume } from './sound';
 import { MainState, State } from './state';
 
 export type Effect =
   | { t: 'scheduleFrame' }
   | { t: 'saveOverlay' }
   | { t: 'startSound' }
+  | { t: 'realizeSoundSettings', musicVolume: number, sfxVolume: number }
   | { t: 'soundEffect', sound: SoundEffect };
 ;
 
@@ -36,7 +37,19 @@ export function doEffect(state: State, dispatch: Dispatch, effect: Effect) {
           break;
         case 'soundEffect': doSoundEffect(effect.sound); return;
         case 'startSound': getSoundService(); return;
+        case 'realizeSoundSettings': {
+          setSfxVolume(effect.sfxVolume);
+          setMusicVolume(effect.musicVolume);
+        } return;
       }
+    case 'settings': {
+      switch (effect.t) {
+        case 'realizeSoundSettings': {
+          setSfxVolume(effect.sfxVolume);
+          setMusicVolume(effect.musicVolume);
+        } return;
+      }
+    }
   }
 }
 

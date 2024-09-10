@@ -15,7 +15,7 @@ export const initMainState: MainState = {
     mouseCache: undefined,
   },
   effects: [],
-  settings: { musicVolume: 1, sfxVolume: 1, debugImpetus: false },
+  settings: { musicVolume: 1, sfxVolume: 1, debugImpetus: false, effects: [] },
   game: {
     player: init_player,
     currentLevelState: mkLevel(allLevels.start),
