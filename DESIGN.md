@@ -109,6 +109,8 @@ increases down, in the direction of gravity.
 - All entities, player and otherwise, should MOSTLY have the same
   physics interactions with the rest of the world.
 
+- The physics of the world should MOSTLY strive to exclude situations where the player is at the same place as a filled block.
+
 ### Low-Level Physics
 
 - Each entity has in its state a **impetus**, an integer valued vector
