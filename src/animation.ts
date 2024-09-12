@@ -2,10 +2,10 @@ import { produce } from 'immer';
 import { NUM_TILES, TILE_SIZE } from './constants';
 import { EntityState, MobileId } from './entity';
 import { deleteMobile, getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView, elapseTimeBasedItems, adjustOxygen } from './game-state-access';
-import { emptyTile, putTileInDynamicLayer, tileEq } from './layer';
+import { emptyTile, putDynamicTile, putTileInDynamicLayer, tileEq } from './layer';
 import { int, Point, vdiag, vlerp, vm2, vplus, vscale, vsub } from './lib/point';
 import { compose, mkSE2, SE2, translate } from './lib/se2';
-import { computeCombo, tileOfGameState } from './model';
+import { computeCombo, dynamicTileOfGameState, tileOfGameState } from './model';
 import { itemTimeLimit } from './model-utils';
 import { PhysicsEntityState } from './physics';
 import { GameState, IfaceState, MainState } from './state';
@@ -161,6 +161,18 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
 }
 
 
+function removeObstructions(state: GameState): GameState {
+  const dyntile = dynamicTileOfGameState(state, state.player.pos);
+  const tile = tileOfGameState(state, state.player.pos);
+  if (dyntile.t == 'bus_block' && tile.t == 'bus_block' && tile.on == true) {
+    const newTile = produce(dyntile, t => { t.invert = !dyntile.invert; });
+    return produce(state, s => {
+      putDynamicTile(getOverlay(s), state.player.pos, newTile);
+    });
+  }
+  return state;
+}
+
 export function applyGameAnimation(a: Animation, state: GameState, frc: number | 'complete'): GameState {
   const dur = duration(a);
   const fr = frc == 'complete' ? dur : frc;
@@ -275,6 +287,9 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
       return state;
     }
     case 'LateGenericMoveAnimation': {
+      if (t >= 1) {
+        state = removeObstructions(state);
+      }
       return state;
     }
   }
