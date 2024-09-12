@@ -1112,6 +1112,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "-13,-3": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "-15,-5": {
@@ -1146,14 +1147,17 @@ export const allLevels: Record<string, LevelData> = {
         },
         "-10,-11": {
           "t": "bus_block",
+          "invert": false,
           "bus": "blue"
         },
         "-8,-11": {
           "t": "bus_block",
+          "invert": false,
           "bus": "blue"
         },
         "-6,-11": {
           "t": "bus_block",
+          "invert": false,
           "bus": "blue"
         },
         "-14,-11": {
@@ -1192,6 +1196,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "-16,-13": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "-15,-13": {
@@ -2914,14 +2919,17 @@ export const allLevels: Record<string, LevelData> = {
         },
         "13,-5": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "14,-5": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "15,-5": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "16,-5": {
@@ -3336,6 +3344,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "1,5": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "-5,3": {
@@ -3447,14 +3456,17 @@ export const allLevels: Record<string, LevelData> = {
       "tiles": {
         "1,1": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "0,1": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "-1,1": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "-2,1": {
@@ -3651,18 +3663,22 @@ export const allLevels: Record<string, LevelData> = {
         },
         "-6,1": {
           "t": "bus_block",
+          "invert": false,
           "bus": "green"
         },
         "-7,1": {
           "t": "bus_block",
+          "invert": false,
           "bus": "green"
         },
         "-8,1": {
           "t": "bus_block",
+          "invert": false,
           "bus": "green"
         },
         "1,-2": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         }
       }
@@ -3999,6 +4015,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "1,4": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         }
       }
@@ -4075,6 +4092,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "-3,1": {
           "t": "bus_block",
+          "invert": false,
           "bus": "red"
         },
         "7,3": {
@@ -4218,6 +4236,7 @@ export const allLevels: Record<string, LevelData> = {
         },
         "-6,1": {
           "t": "bus_block",
+          "invert": false,
           "bus": "green"
         },
         "-6,0": {

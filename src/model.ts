@@ -395,7 +395,7 @@ function defaultDynamicTileToPut(tile: Tile): DynamicTile {
   switch (tile.t) {
     case 'timed_wall': return { t: 'timed', phase: 0, on_for: 1, off_for: 1 };
     case 'buttoned_wall': return { t: 'buttoned', button_source: { x: -1, y: 0 } }; // FIXME, this is a default for testing before I can edit
-    case 'bus_block': return { t: 'bus_block', bus: tile.bus };
+    case 'bus_block': return { t: 'bus_block', bus: tile.bus, invert: false };
     case 'bus_button': return { t: 'bus_button', bus: tile.bus };
     case 'door': return { t: 'door', destinationLevel: tile.destinationLevel };
     case 'motion_block': return { t: 'motion', direction: tile.direction };

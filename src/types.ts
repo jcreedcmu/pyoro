@@ -24,7 +24,7 @@ export type Bus = 'red' | 'green' | 'blue';
  */
 export type BusControlledDynamicTile =
   | { t: 'bus_button', bus: Bus }
-  | { t: 'bus_block', bus: Bus }
+  | { t: 'bus_block', bus: Bus, invert: boolean }
   ;
 
 /**
