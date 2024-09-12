@@ -49,7 +49,7 @@ function resolveDynamicTile(
     case 'static':
       return tile.tile;
     case 'bus_block':
-      return { t: 'bus_block', bus: tile.bus, on: busActive(trc, tile.bus) };
+      return { t: 'bus_block', bus: tile.bus, on: busActive(trc, tile.bus) !== tile.invert };
     case 'bus_button':
       return { t: 'bus_button', bus: tile.bus, on: busActive(trc, tile.bus) };
     case 'timed': {
