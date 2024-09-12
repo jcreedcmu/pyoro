@@ -186,7 +186,7 @@ export function reduceMain(s: MainState, a: Action): MainState {
       const wpoint = wpoint_of_vd(vd, a.point, s);
       logger('mouse', 'mouseDown wpoint=', wpoint);
       switch (wpoint.t) {
-        case 'World': return handle_world_mousedown(s, a.point, wpoint.p_in_world);
+        case 'World': return handle_world_mousedown(s, a.point, wpoint.p_in_world, a.buttons);
         case 'Toolbar': return handle_toolbar_mousedown(s, wpoint.tilePoint, a.buttons);
       }
     }

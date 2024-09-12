@@ -409,6 +409,16 @@ function determineTileToPut(s: MainState, worldPoint: Point): DynamicTile {
   return similarTiles(dynamicTileOfState(s, worldPoint), newTile) ? dynamicOfTile(emptyTile()) : newTile;
 }
 
+function determineRightButtonTileToPut(s: MainState, worldPoint: Point): DynamicTile | undefined {
+  const oldTile = dynamicTileOfState(s, worldPoint);
+  if (oldTile.t == 'bus_block') {
+    return produce(oldTile, t => { t.invert = !oldTile.invert });
+  }
+  else {
+    return undefined;
+  }
+}
+
 export function modifyPanelStateForTile(s: MainState, worldPoint: Point): ModifyPanelState {
   const ct = dynamicTileOfState(s, worldPoint);
   switch (ct.t) {
@@ -434,12 +444,23 @@ export function modifyPanelStateForTile(s: MainState, worldPoint: Point): Modify
   }
 }
 
-export function handle_world_mousedown(s: MainState, rawPoint: Point, worldPoint: Point): MainState {
+export function handle_world_mousedown(s: MainState, rawPoint: Point, worldPoint: Point, buttons: number): MainState {
   const toolState = s.iface.toolState;
   switch (toolState.t) {
     case 'pencil_tool':
-      const tileToPut = determineTileToPut(s, worldPoint);
-      return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
+      if (buttons == 2) { // right mouse button means toggle bus state
+        const tileToPut = determineRightButtonTileToPut(s, worldPoint);
+        if (tileToPut != undefined) {
+          return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
+        }
+        else {
+          return s;
+        }
+      }
+      else {
+        const tileToPut = determineTileToPut(s, worldPoint);
+        return produce(_putTileInInitOverlay(s, worldPoint, tileToPut), s => { s.iface.mouse = { t: 'tileDrag', tile: tileToPut }; });
+      }
     case 'hand_tool':
       return produce(s, s => { s.iface.mouse = { t: 'panDrag', init: rawPoint, initWorldFromView: getWorldFromView(s.iface) } });
     case 'modify_tool':
