@@ -364,7 +364,11 @@ export function animator_for_move(s: MainState, move: Move): Animator {
 
   return {
     dur,
-    anims: [{ t: 'GenericMoveAnimation' }, ...animsGame, ...animsViewport],
+    anims: [
+      { t: 'EarlyGenericMoveAnimation' },
+      ...animsGame, ...animsViewport,
+      { t: 'LateGenericMoveAnimation' },
+    ],
   }
 }
 

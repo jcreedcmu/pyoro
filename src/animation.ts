@@ -47,7 +47,8 @@ export type Animation =
     id: MobileId,
     oldEntity: EntityState,
   }
-  | { t: 'GenericMoveAnimation' } // this runs on every move
+  | { t: 'EarlyGenericMoveAnimation' } // this runs on every move
+  | { t: 'LateGenericMoveAnimation' } // this runs on every move
   ;
 
 /**
@@ -150,7 +151,10 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
     case 'EntityDeathAnimation': {
       return iface;
     }
-    case 'GenericMoveAnimation': {
+    case 'EarlyGenericMoveAnimation': {
+      return iface;
+    }
+    case 'LateGenericMoveAnimation': {
       return iface;
     }
   }
@@ -263,11 +267,14 @@ export function applyGameAnimation(a: Animation, state: GameState, frc: number |
         }));
       }
     }
-    case 'GenericMoveAnimation': {
+    case 'EarlyGenericMoveAnimation': {
       if (t >= 1) {
         state = adjustOxygen(state);
         state = elapseTimeBasedItems(state);
       }
+      return state;
+    }
+    case 'LateGenericMoveAnimation': {
       return state;
     }
   }
@@ -290,6 +297,7 @@ export function duration(a: Animation): number {
     case 'ChangeLevelAnimation': return CHANGE_ROOM_FRAMES;
     case 'EntityAnimation': return 4;
     case 'EntityDeathAnimation': return 4;
-    case 'GenericMoveAnimation': return 1;
+    case 'EarlyGenericMoveAnimation': return 1;
+    case 'LateGenericMoveAnimation': return 1;
   }
 }
