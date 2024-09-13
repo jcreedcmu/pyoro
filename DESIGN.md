@@ -333,6 +333,7 @@ unlikely corners of state-space that might make for good puzzles.
 - I **don't** presently have a notion of down-diagonal moves, but if I
   did, maybe could exploit subtle differences between down-left and
   left, down-right and down, and wait and down.
+- Pushing a block off the edge of a floor, and using it for support.
 
 ### Legibility
 
@@ -390,6 +391,7 @@ unlikely corners of state-space that might make for good puzzles.
 
 - OPEN: Should single-move undo be supported?
     - Argument for supporting: most puzzle games do
+    - Argument for supporting: it would enable immunity mechanics.
     - Argument for not supporting: might enhance "drama" if mistakes are a little consequential.
 
 ### Tiles and Entities
@@ -420,7 +422,7 @@ locations.
   If this would occur, prefer deleting all such colocated entities and replacing
   them with some sort of generic "crash"/"collision"/"explosion" entity or tile.
 
-- For the most part, tiles should obey a principle of subconservation.
+- Tiles should MOSTLY obey a principle of subconservation.
   They may be moved or destroyed (i.e. replaced with empty) but not created.
 
 ### Intra-Room Geometry
@@ -473,6 +475,11 @@ locations.
 ### Development
 
 - Game levels/rooms should serve as integration tests.
+
+- Solutions to particular portions of puzzles should be stored and
+  checked. To the extent that the game is open-world, this will
+  require setting up some preconditions having to do with which
+  unlocks have been obtained.
 
 - There should be pretty well-covering unit tests for the game
   mechanics, at a finer resolution than that.

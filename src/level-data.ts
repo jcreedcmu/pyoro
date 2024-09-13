@@ -2024,6 +2024,10 @@ export const allLevels: Record<string, LevelData> = {
         "-8,-7": {
           "t": "door",
           "destinationLevel": "start"
+        },
+        "-5,-7": {
+          "t": "door",
+          "destinationLevel": "pile_of_boxes"
         }
       }
     },
@@ -4896,6 +4900,482 @@ export const allLevels: Record<string, LevelData> = {
     },
     "busState": {
       "red": false,
+      "green": false,
+      "blue": false
+    }
+  },
+  "pile_of_boxes": {
+    "initOverlay": {
+      "tiles": {
+        "-1,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "2,2": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "3,2": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "4,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "5,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "6,1": {
+          "t": "static",
+          "tile": {
+            "t": "fragile_box"
+          }
+        },
+        "7,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "7,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "8,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "9,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "9,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "9,0": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "7,0": {
+          "t": "static",
+          "tile": {
+            "t": "wood_box"
+          }
+        },
+        "5,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "4,4": {
+          "t": "motion",
+          "direction": "up"
+        },
+        "6,6": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "4,5": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "4,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "5,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "4,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "5,5": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "7,5": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "7,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "8,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "8,4": {
+          "t": "motion",
+          "direction": "up"
+        },
+        "9,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "8,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "8,5": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "10,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "11,1": {
+          "t": "motion",
+          "direction": "up"
+        },
+        "12,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "3,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "2,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-1,6": {
+          "t": "bus_button",
+          "bus": "red"
+        },
+        "-1,5": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-1,4": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-1,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-1,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,5": {
+          "t": "static",
+          "tile": {
+            "t": "item",
+            "item": "coin"
+          }
+        },
+        "10,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "11,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "12,6": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "12,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "12,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "12,4": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "12,5": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "11,5": {
+          "t": "static",
+          "tile": {
+            "t": "up_box"
+          }
+        },
+        "9,-1": {
+          "t": "static",
+          "tile": {
+            "t": "coin_wall"
+          }
+        },
+        "4,-1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-3,0": {
+          "t": "door",
+          "destinationLevel": "prev_start"
+        },
+        "-2,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-3,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,2": {
+          "t": "static",
+          "tile": {
+            "t": "spike",
+            "direction": "up"
+          }
+        },
+        "0,2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "0,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "1,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "2,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "3,3": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "9,-2": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-4,1": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "-5,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-6,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-6,0": {
+          "t": "static",
+          "tile": {
+            "t": "wood_box"
+          }
+        },
+        "-7,1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-7,0": {
+          "t": "bus_block",
+          "bus": "red",
+          "invert": false
+        },
+        "-4,2": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "-4,3": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "-4,4": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "-4,5": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "-2,6": {
+          "t": "bus_block",
+          "bus": "red",
+          "invert": false
+        },
+        "-7,6": {
+          "t": "bus_button",
+          "bus": "red"
+        },
+        "5,-2": {
+          "t": "static",
+          "tile": {
+            "t": "wood_box"
+          }
+        },
+        "5,-1": {
+          "t": "static",
+          "tile": {
+            "t": "box"
+          }
+        },
+        "6,0": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        },
+        "6,-1": {
+          "t": "static",
+          "tile": {
+            "t": "ladder"
+          }
+        }
+      }
+    },
+    "boundRect": {
+      "min": {
+        "x": -7,
+        "y": -3
+      },
+      "max": {
+        "x": 12,
+        "y": 6
+      }
+    },
+    "busState": {
+      "red": true,
       "green": false,
       "blue": false
     }
