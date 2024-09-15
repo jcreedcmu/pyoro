@@ -452,6 +452,7 @@ export function drawView(fv: FView, state: MainState): void {
       effects: state.effects,
       game: gameState,
       iface: state.iface,
+      modals: {},
     }
   }
   else {
@@ -465,6 +466,7 @@ export function drawView(fv: FView, state: MainState): void {
         game: renderGameAnims(ams.animator.anims, ams.frame, state.game),
         anim: state.anim, // Hmm, it's not 100% clear to me why I need this to be non-null
         effects: [],
+        modals: {},
       };
     }
   }

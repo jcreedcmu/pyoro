@@ -32,4 +32,5 @@ export type Action =
   | { t: 'cacheMouse', p: Point }
   | { t: 'openSettings' }
   | { t: 'settingsAction', action: SettingsAction }
+  | { t: 'cancelModals' }
   ;

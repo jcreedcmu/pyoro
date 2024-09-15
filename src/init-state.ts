@@ -11,6 +11,7 @@ export const initState: State = {
 };
 
 export const initMainState: MainState = {
+  modals: {},
   nonVisibleState: {
     mouseCache: undefined,
   },

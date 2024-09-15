@@ -1,4 +1,5 @@
 import { Animator } from './animation';
+import { RenameLevelData } from './core/rename-level';
 import { Effect } from './effect';
 import { EntityState } from './entity';
 import { DynamicLayer } from './layer';
@@ -81,6 +82,10 @@ export type NonVisibleState = {
   mouseCache: Point | undefined,
 };
 
+export type ModalDialogs = {
+  renameLevel?: RenameLevelData,
+}
+
 /**
  * All the state we need when we're in the middle of playing the game
  */
@@ -91,6 +96,7 @@ export type MainState = {
   anim: AnimState | null,
   effects: Effect[],
   nonVisibleState: NonVisibleState,
+  modals: ModalDialogs,
 };
 
 export type SettingsState = {

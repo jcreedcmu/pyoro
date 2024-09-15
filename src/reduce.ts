@@ -125,6 +125,7 @@ function resolveAllAnimations(s: MainState, anims: Animation[]): MainState {
     game: renderGameAnims(anims, 'complete', s.game),
     anim: null,
     effects: [],
+    modals: s.modals,
   };
 }
 
@@ -274,5 +275,9 @@ export function reduceMain(s: MainState, a: Action): MainState {
       throw new Error(`action/state mismatch`);
     case 'openSettings':
       throw new Error(`action/state mismatch`);
+    case 'cancelModals':
+      return produce(s, s => {
+        s.modals = {};
+      })
   }
 }
