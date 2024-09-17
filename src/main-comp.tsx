@@ -9,6 +9,7 @@ import { renderTestTools } from './test-tools';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { imgProm } from './util';
 import { drawView, resizeView } from './view';
+import { RenameLevel } from './components/rename-level';
 
 type CanvasProps = {
   main: MainState,
@@ -116,7 +117,7 @@ function renderLevelPicker(state: MainState, dispatch: Dispatch): JSX.Element | 
         dispatch({ t: 'setCurrentLevel', name: e.currentTarget.value });
       }
     }} ></input>
-
+    <button onMouseDown={e => dispatch({ t: 'openRenameLevel', src: state.game.currentLevel })}>Rename</button>
   </div>;
 }
 
@@ -227,6 +228,8 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
     settingsButtonStyle.bottom = '0';
   }
 
+  const renameLevelModal = state.modals.renameLevel ? <RenameLevel dispatch={dispatch} data={state.modals.renameLevel} /> : undefined;
+
   return <div>
     <canvas style={{ cursor: canvasCursor }}
       tabIndex={0}
@@ -238,6 +241,7 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
     {dragHandler}
     {renderModifyPanel(state, dispatch)}
     {renderLevelPicker(state, dispatch)}
+    {renameLevelModal}
     {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
     {state.iface.toolState.t == 'play_tool' ? repoLink() : undefined}
     <div className="settings-button" style={settingsButtonStyle} onMouseDown={() => { dispatch({ t: 'openSettings' }); }}><img src="assets/gear.svg" width="48px" /></div>

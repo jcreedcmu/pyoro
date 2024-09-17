@@ -279,5 +279,9 @@ export function reduceMain(s: MainState, a: Action): MainState {
       return produce(s, s => {
         s.modals = {};
       })
+    case 'openRenameLevel':
+      return produce(s, s => {
+        s.modals.renameLevel = { src: a.src };
+      });
   }
 }

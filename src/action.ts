@@ -33,4 +33,5 @@ export type Action =
   | { t: 'openSettings' }
   | { t: 'settingsAction', action: SettingsAction }
   | { t: 'cancelModals' }
+  | { t: 'openRenameLevel', src: string }
   ;

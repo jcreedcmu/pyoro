@@ -1,8 +1,10 @@
 import { Dispatch } from '../action';
 
 export type RenameLevelData = {
+  src: string,
 };
 
-export type RenameLevelProps = RenameLevelData & {
-  dispatch: Dispatch;
+export type RenameLevelProps = {
+  dispatch: Dispatch,
+  data: RenameLevelData,
 };
