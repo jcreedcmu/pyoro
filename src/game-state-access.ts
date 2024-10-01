@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { EntityState, MobileId } from './entity';
 import { initMainState } from './init-state';
-import { DynamicLayer } from './layer';
+import { DynamicLayer, pointMapEntries, putDynamicTile } from './layer';
 import { emptyLevelData, LevelData, mkLevel } from './level';
 import { Point } from './lib/point';
 import { SE2 } from './lib/se2';
@@ -150,5 +150,50 @@ export function adjustOxygen(state: GameState): GameState {
   if (state.player.oxygen < -5) {
     state = produce(state, s => { s.player.dead = true; });
   }
+  return state;
+}
+
+export function renameLevel(state: GameState, src: string, dst: string): GameState {
+  type Rewrite = { level: string, loc: Point };
+
+  // Handle trivial nonrenaming case
+  if (src == dst) return state;
+
+  // XXX validate that we're not clobbering an existing level!
+
+  // find doors to rewrite
+  const rewrites: Rewrite[] = [];
+  for (const [k, v] of Object.entries(state.levels)) {
+    for (const e of pointMapEntries(v.initOverlay)) {
+      if (e.value.t == 'door') {
+        if (e.value.destinationLevel == src) {
+          rewrites.push({ level: k, loc: e.loc });
+        }
+      }
+    }
+  }
+
+  // rewrite all doors
+  state = produce(state, s => {
+    for (const p of rewrites) {
+      putDynamicTile(s.levels[p.level].initOverlay, p.loc,
+        { t: 'door', destinationLevel: dst });
+    }
+  });
+
+  // swing entire level over to new name
+  state = produce(state, s => {
+    s.levels[dst] = state.levels[src];
+    delete s.levels[src];
+  });
+
+  // refresh current level if necessary
+  if (state.currentLevel == src) {
+    state = produce(state, s => {
+      s.currentLevel = dst;
+    });
+    state = setCurrentLevel(state, dst);
+  }
+
   return state;
 }
