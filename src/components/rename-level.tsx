@@ -27,15 +27,23 @@ export function RenameLevel(props: RenameLevelProps): JSX.Element {
     setSrc(e.currentTarget.value);
   };
 
+  const errorMsg = src != dst && props.levels.includes(dst) ? 'level already exists!' : undefined;
+  const inputFieldStyle: React.CSSProperties = errorMsg != undefined ? { color: 'red' } : {};
+  const errorStyle: React.CSSProperties = {
+    color: 'red',
+    paddingTop: 10,
+    visibility: errorMsg != undefined ? undefined : 'hidden',
+  };
   const sourceLevelSelect = <select value={src}
     onChange={onChange}
   >{options}</select>
   return <div className="rename-level-container" onMouseDown={dismiss}>
     <div className="rename-level-modal" onContextMenu={absorb} onMouseDown={absorb}>
       <center>
-        Rename {sourceLevelSelect} to <input value={dst} onChange={e => { setDst(e.currentTarget.value) }} /><br />
+        Rename {sourceLevelSelect} to <input style={inputFieldStyle} value={dst} onChange={e => { setDst(e.currentTarget.value) }} /><br />
+        <div style={errorStyle}>{errorMsg ?? '.'}</div>
         <button style={{ marginRight: '1em', marginTop: '2em' }} onClick={dismiss}>Cancel</button>
-        <button style={{ marginTop: '2em' }} onClick={accept}>Ok</button>
+        <button disabled={errorMsg != undefined} style={{ marginTop: '2em' }} onClick={accept}>Ok</button>
       </center>
     </div>
   </div>;

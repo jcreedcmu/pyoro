@@ -153,13 +153,13 @@ export function adjustOxygen(state: GameState): GameState {
   return state;
 }
 
+// Undefined behavior if dst is a level that already exists. The UI
+// should prevent that.
 export function renameLevel(state: GameState, src: string, dst: string): GameState {
   type Rewrite = { level: string, loc: Point };
 
   // Handle trivial nonrenaming case
   if (src == dst) return state;
-
-  // XXX validate that we're not clobbering an existing level!
 
   // find doors to rewrite
   const rewrites: Rewrite[] = [];
