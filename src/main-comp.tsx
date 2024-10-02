@@ -228,7 +228,7 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
     settingsButtonStyle.bottom = '0';
   }
 
-  const renameLevelModal = state.modals.renameLevel ? <RenameLevel dispatch={dispatch} data={state.modals.renameLevel} /> : undefined;
+  const renameLevelModal = state.modals.renameLevel ? <RenameLevel dispatch={dispatch} data={state.modals.renameLevel} levels={Object.keys(state.game.levels)} /> : undefined;
 
   return <div>
     <canvas style={{ cursor: canvasCursor }}

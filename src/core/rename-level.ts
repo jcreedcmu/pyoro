@@ -5,6 +5,7 @@ export type RenameLevelData = {
 };
 
 export type RenameLevelProps = {
+  levels: string[],
   dispatch: Dispatch,
   data: RenameLevelData,
 };
