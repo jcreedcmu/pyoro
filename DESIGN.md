@@ -334,6 +334,9 @@ unlikely corners of state-space that might make for good puzzles.
   did, maybe could exploit subtle differences between down-left and
   left, down-right and down, and wait and down.
 - Pushing a block off the edge of a floor, and using it for support.
+  (XXX I thought this did work, but maybe it doesn't?)
+- When pushing a button while ascending, player can choose whether to
+  keep ascending or not depending on their move.
 
 ### Legibility
 
