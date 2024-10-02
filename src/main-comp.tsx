@@ -105,13 +105,13 @@ function renderLevelPicker(state: MainState, dispatch: Dispatch): JSX.Element | 
   if (state.iface.toolState.t != 'pencil_tool')
     return undefined;
   const options = Object.keys(state.game.levels).sort().map(level => {
-    return <option value={level} selected={level == state.game.currentLevel}>{level}</option>;
+    return <option value={level}>{level}</option>;
   });
   const onChange: React.ChangeEventHandler<HTMLSelectElement> = e => {
     dispatch({ t: 'setCurrentLevel', name: e.currentTarget.value });
   };
   return <div className="level-picker">
-    <select onChange={onChange}>{options}</select>
+    <select onChange={onChange} value={state.game.currentLevel}>{options}</select>
     <input onKeyDown={(e) => {
       if (e.code == 'Enter') {
         dispatch({ t: 'setCurrentLevel', name: e.currentTarget.value });
