@@ -3,7 +3,7 @@ import { Action } from './action';
 import { Animation } from './animation';
 import { bindings } from './bindings';
 import { editTiles } from './constants';
-import { getInitOverlay, getMouseCache, renameLevel, setCurrentLevel, setMouseCache } from './game-state-access';
+import { cropLevel, getInitOverlay, getMouseCache, renameLevel, setCurrentLevel, setMouseCache } from './game-state-access';
 import { putDynamicTile, weakTileEq } from './layer';
 import { logger } from './debug';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, tileOfGameState } from './model';
@@ -283,11 +283,18 @@ export function reduceMain(s: MainState, a: Action): MainState {
       return produce(s, s => {
         s.modals.renameLevel = { src: a.src };
       });
-    case 'doRename':
+    case 'doRename': {
       const newGame = renameLevel(s.game, a.src, a.dst);
       return produce(s, s => {
         s.game = newGame;
         s.modals = {};
       });
+    }
+    case 'cropLevel': {
+      const newGame = cropLevel(s.game);
+      return produce(s, s => {
+        s.game = newGame;
+      });
+    }
   }
 }

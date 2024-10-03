@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { EntityState, MobileId } from './entity';
 import { initMainState } from './init-state';
-import { DynamicLayer, pointMapEntries, putDynamicTile } from './layer';
+import { DynamicLayer, isEmptyTile, pointMapEntries, putDynamicTile } from './layer';
 import { emptyLevelData, LevelData, mkLevel } from './level';
 import { Point } from './lib/point';
 import { SE2 } from './lib/se2';
@@ -196,4 +196,16 @@ export function renameLevel(state: GameState, src: string, dst: string): GameSta
   }
 
   return state;
+}
+
+// Change bounds of current level to be the tightest they can be to
+// contain all the tiles of the level.
+export function cropLevel(state: GameState): GameState {
+  const entries = pointMapEntries(getCurrentLevelData(state).initOverlay);
+  const newRect = boundBrect(entries.flatMap(({ loc, value }) =>
+    isEmptyTile(value) ? [] : [loc])
+  );
+  return produce(state, s => {
+    s.levels[state.currentLevel].boundRect = newRect;
+  });
 }

@@ -118,6 +118,7 @@ function renderLevelPicker(state: MainState, dispatch: Dispatch): JSX.Element | 
       }
     }} ></input>
     <button onMouseDown={e => dispatch({ t: 'openRenameLevel', src: state.game.currentLevel })}>Rename</button>
+    <button style={{ marginLeft: '1em' }} onMouseDown={e => dispatch({ t: 'cropLevel', src: state.game.currentLevel })}>Crop</button>
   </div>;
 }
 

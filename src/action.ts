@@ -35,4 +35,5 @@ export type Action =
   | { t: 'cancelModals' }
   | { t: 'openRenameLevel', src: string }
   | { t: 'doRename', src: string, dst: string }
+  | { t: 'cropLevel' }
   ;
