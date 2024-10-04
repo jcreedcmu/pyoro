@@ -8,7 +8,7 @@ import { SE2 } from './lib/se2';
 import { Brect } from "./lib/types";
 import { isUnbreathable, itemTimeLimit } from './model-utils';
 import { GameState, IfaceState, Level, MainState } from './state';
-import { Item } from './types';
+import { Item, Move } from './types';
 import { boundBrect, pointInBrect } from './util';
 import { tileOfGameState } from './model';
 
@@ -208,4 +208,17 @@ export function cropLevel(state: GameState): GameState {
   return produce(state, s => {
     s.levels[state.currentLevel].boundRect = newRect;
   });
+}
+
+export function isInterfaceOnlyMove(move: Move) {
+  switch (move) {
+    case 'reset': return true;
+    case 'recenter': return true;
+    case 'up': return false;
+    case 'down': return false;
+    case 'left': return false;
+    case 'right': return false;
+    case 'up-left': return false;
+    case 'up-right': return false;
+  }
 }

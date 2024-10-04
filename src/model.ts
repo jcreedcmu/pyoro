@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
 import { COMBO_THRESHOLD, editTiles, NUM_TILES, PLAYER_WEIGHT, rotateTile, tools } from './constants';
-import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getMobileById, getOverlay, setWorldFromView } from './game-state-access';
+import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getMobileById, getOverlay, isInterfaceOnlyMove, setWorldFromView } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
 import { Point, vadd, vequal, vplus, vsub } from './lib/point';
@@ -362,14 +362,17 @@ export function animator_for_move(s: MainState, move: Move): Animator {
   const animsViewport = animateViewPort(s, move, nextPos);
   const dur = max([...animsGame.map(a => duration(a)), ...animsViewport.map(a => duration(a))]);
 
-  return {
-    dur,
-    anims: [
+  let anims = [...animsGame, ...animsViewport];
+
+  if (!isInterfaceOnlyMove(move)) {
+    anims = [
       { t: 'EarlyGenericMoveAnimation' },
-      ...animsGame, ...animsViewport,
+      ...anims,
       { t: 'LateGenericMoveAnimation' },
-    ],
+    ];
   }
+
+  return { dur, anims };
 }
 
 // Just used for editing purposes, whether clicking on the "same" tile
