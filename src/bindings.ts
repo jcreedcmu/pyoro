@@ -41,7 +41,7 @@ export const miscBindings: Dict<Action> = {
   'n': { t: 'setCurrentToolState', toolState: { t: 'pencil_tool' } },
 }
 
-export const bindings: Dict<Action> = {
+export const initBindings: Dict<Action> = {
   ...miscBindings,
   ...mapValues(commandBindings, command => ({ t: 'doCommand', command })),
   ...mapValues(moveBindings, move => ({ t: 'doMove', move })),

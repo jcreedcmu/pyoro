@@ -1,7 +1,6 @@
 import { produce } from 'immer';
 import { Action } from './action';
 import { Animation } from './animation';
-import { bindings } from './bindings';
 import { editTiles } from './constants';
 import { cropLevel, getInitOverlay, getMouseCache, renameLevel, setCurrentLevel, setMouseCache } from './game-state-access';
 import { putDynamicTile, weakTileEq } from './layer';
@@ -134,7 +133,7 @@ export function reduceMain(s: MainState, a: Action): MainState {
   switch (a.t) {
     case 'keyDown': {
       const name = a.name;
-      const action = bindings[name];
+      const action = s.settings.bindings[name];
       const ss = produce(s, s => { s.iface.keysDown[a.code] = true; });
       if (action) {
         return reduceMain(ss, action);

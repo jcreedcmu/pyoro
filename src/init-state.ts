@@ -1,3 +1,4 @@
+import { initBindings } from "./bindings";
 import { TILE_SIZE } from "./constants";
 import { mkLevel } from "./level";
 import { allLevels } from "./level-data";
@@ -16,7 +17,13 @@ export const initMainState: MainState = {
     mouseCache: undefined,
   },
   effects: [],
-  settings: { musicVolume: 1, sfxVolume: 1, debugImpetus: false, effects: [] },
+  settings: {
+    musicVolume: 1,
+    sfxVolume: 1,
+    debugImpetus: false,
+    bindings: initBindings,
+    effects: []
+  },
   game: {
     player: init_player,
     currentLevelState: mkLevel(allLevels.start),

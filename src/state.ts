@@ -1,3 +1,4 @@
+import { Action } from './action';
 import { Animator } from './animation';
 import { RenameLevelData } from './core/rename-level';
 import { Effect } from './effect';
@@ -6,7 +7,8 @@ import { DynamicLayer } from './layer';
 import { LevelData } from './level';
 import { Point } from './lib/point';
 import { SE2 } from './lib/se2';
-import { Bus, DynamicTile, Facing, Item, PlayerSprite } from './types';
+import { Dict } from './lib/types';
+import { Bus, DynamicTile, Facing, Item, Move, PlayerSprite } from './types';
 import { ViewData } from './view';
 
 export type Combo = undefined | { t: 'combo', dir: Point, rep: number };
@@ -104,6 +106,7 @@ export type SettingsState = {
   sfxVolume: number,
   debugImpetus: boolean,
   effects: Effect[],
+  bindings: Dict<Action>,
 };
 
 export type State =
