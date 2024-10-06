@@ -1,4 +1,4 @@
-import { Action } from './action';
+import { Action, KeyBindableAction } from './action';
 import { Animator } from './animation';
 import { RenameLevelData } from './core/rename-level';
 import { Effect } from './effect';
@@ -106,7 +106,7 @@ export type SettingsState = {
   sfxVolume: number,
   debugImpetus: boolean,
   effects: Effect[],
-  bindings: Dict<Action>,
+  bindings: Dict<KeyBindableAction>,
 };
 
 export type State =
@@ -148,10 +148,15 @@ export type TestToolState = {
   testTime: number
 };
 
-export type ToolState =
+// These are amenable to keybindings because they have no arguments
+export type KeyBindableToolState =
   | { t: 'play_tool' }
   | { t: 'hand_tool' }
   | { t: 'pencil_tool' }
+  ;
+
+export type ToolState =
+  | KeyBindableToolState
   | { t: 'modify_tool', modifyCell: Point | null, panelState: ModifyPanelState }
   | { t: 'test_tool', testToolState: TestToolState }
   ;

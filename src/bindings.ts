@@ -1,7 +1,7 @@
-import { Command } from "./reduce";
-import { Action } from './action';
-import { Move } from "./types";
+import { KeyBindableAction } from './action';
 import { Dict } from "./lib/types";
+import { Command } from "./reduce";
+import { Move } from "./types";
 import { mapValues } from "./util";
 
 export const moveBindings: Dict<Move> = {
@@ -36,12 +36,12 @@ export const commandBindings: Dict<Command> = {
   '`': 'eyedropper',
 }
 
-export const miscBindings: Dict<Action> = {
+export const miscBindings: Dict<KeyBindableAction> = {
   'h': { t: 'setCurrentToolState', toolState: { t: 'hand_tool' } },
   'n': { t: 'setCurrentToolState', toolState: { t: 'pencil_tool' } },
 }
 
-export const initBindings: Dict<Action> = {
+export const initBindings: Dict<KeyBindableAction> = {
   ...miscBindings,
   ...mapValues(commandBindings, command => ({ t: 'doCommand', command })),
   ...mapValues(moveBindings, move => ({ t: 'doMove', move })),

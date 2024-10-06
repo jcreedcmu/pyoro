@@ -2,6 +2,7 @@ import { produce } from 'immer';
 import * as React from 'react';
 import { DEBUG } from './debug';
 import { MainState, SettingsState } from './state';
+import { KeyBindableAction } from './action';
 
 export type SettingsAction =
   | { t: 'cancel' }
@@ -53,6 +54,14 @@ export function reduceSettings(state: SettingsState, action: SettingsAction): Se
   }
 }
 
+function stringOfKeyBindableAction(action: KeyBindableAction): string {
+  switch (action.t) {
+    case 'doCommand': return action.command;
+    case 'doMove': return action.move;
+    case 'setCurrentToolState': return action.toolState.t;
+  }
+}
+
 export function Settings(props: SettingsProps): JSX.Element {
   const { dispatch } = props;
   const containerStyle: React.CSSProperties = {
@@ -75,6 +84,16 @@ export function Settings(props: SettingsProps): JSX.Element {
     </>;
   }
 
+  function keySettings(): JSX.Element | undefined {
+    const bindings = props.state.bindings;
+    const keyWidgets = Object.keys(bindings).map(x => <tr><td><span className="keycap">{x}</span></td><td> {stringOfKeyBindableAction(bindings[x])} </td></tr>);
+    return <>
+      <div style={{ height: '3em' }} />
+      <b>Key Bindings</b><br />
+      <table><tbody>{keyWidgets}</tbody></table>
+    </>;
+  }
+
   return <div style={{ ...containerStyle, width: '100%', height: '100%' }}>
     <div style={{ ...containerStyle, backgroundColor: '#fff', padding: '2em' }}>
       <h2>Settings</h2>
@@ -83,6 +102,7 @@ export function Settings(props: SettingsProps): JSX.Element {
       <b>Sfx Volume</b> <input type="range" value={props.state.sfxVolume * 100} min={0} max={100}
         onChange={e => { dispatch({ t: 'setSfxVolume', val: parseInt(e.currentTarget.value) / 100 }) }} />
       {debugSettings()}
+      {keySettings()}
       <div style={{ height: '2em' }} />
       <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'ok' }); }}>Ok</button>
       <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'cancel' }); }}>Cancel</button>

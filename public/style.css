@@ -68,3 +68,13 @@ body {
   border: 3px solid black;
   border-radius: 1em;
 }
+
+.keycap {
+  display: inline-block;
+  border: 1px solid #333;
+  border-radius: 5px;
+  padding: 0.25em 0.5em;
+  box-shadow: 1px 1px 2px #333;
+  font-family: monospace;
+  background-image: linear-gradient(white, #ddd);
+}

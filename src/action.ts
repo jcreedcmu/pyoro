@@ -1,13 +1,21 @@
 import { Setter } from "./optic";
 import { Point } from "./lib/point";
 import { Command, PanelStateFieldTypes } from "./reduce";
-import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields, ToolState } from "./state";
+import { ButtonedTileFields, DoorTileFields, KeyBindableToolState, MainState, TimedTileFields, ToolState } from "./state";
 import * as testTools from './test-tools';
 import { Move } from "./types";
 import { ViewData } from "./view";
 import { SettingsAction } from "./settings";
 
 export type Dispatch = (a: Action) => void;
+
+// These are amenable to keybindings because they have no arguments
+// (well, none beyond the one argument of the wrapper)
+export type KeyBindableAction =
+  | { t: 'doCommand', command: Command }
+  | { t: 'doMove', move: Move }
+  | { t: 'setCurrentToolState', toolState: KeyBindableToolState }
+  ;
 
 export type Action =
   | { t: 'keyUp', key: string, code: string, name: string }
@@ -19,9 +27,6 @@ export type Action =
   | { t: 'mouseMove', point: Point }
   | { t: 'resize', vd: ViewData }
   | { t: 'nextFrame' }
-  | { t: 'doCommand', command: Command }
-  | { t: 'doMove', move: Move }
-  | { t: 'setCurrentToolState', toolState: ToolState }
   | PanelStateFieldTypes[keyof TimedTileFields]
   | PanelStateFieldTypes[keyof ButtonedTileFields]
   | PanelStateFieldTypes[keyof DoorTileFields]
@@ -36,4 +41,5 @@ export type Action =
   | { t: 'openRenameLevel', src: string }
   | { t: 'doRename', src: string, dst: string }
   | { t: 'cropLevel' }
+  | KeyBindableAction
   ;
