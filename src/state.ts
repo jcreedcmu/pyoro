@@ -148,11 +148,15 @@ export type TestToolState = {
   testTime: number
 };
 
+export type KeyBindableTool =
+  | 'play_tool'
+  | 'hand_tool'
+  | 'pencil_tool'
+  ;
+
 // These are amenable to keybindings because they have no arguments
 export type KeyBindableToolState =
-  | { t: 'play_tool' }
-  | { t: 'hand_tool' }
-  | { t: 'pencil_tool' }
+  | { t: KeyBindableTool }
   ;
 
 export type ToolState =

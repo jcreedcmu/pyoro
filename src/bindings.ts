@@ -1,6 +1,7 @@
-import { KeyBindableAction } from './action';
+import { Action, KeyBindableAction } from './action';
 import { Dict } from "./lib/types";
 import { Command } from "./reduce";
+import { KeyBindableTool, KeyBindableToolState } from './state';
 import { Move } from "./types";
 import { mapValues } from "./util";
 
@@ -45,4 +46,39 @@ export const initBindings: Dict<KeyBindableAction> = {
   ...miscBindings,
   ...mapValues(commandBindings, command => ({ t: 'doCommand', command })),
   ...mapValues(moveBindings, move => ({ t: 'doMove', move })),
+}
+
+// This refines `string`.
+export type ExternalKeyBind =
+  | Command
+  | Move
+  | KeyBindableTool
+  ;
+
+export function actionOfExternalKeyBind(b: ExternalKeyBind): Action {
+  switch (b) {
+    case 'prevEditTile': // these fallthroughs are intentional
+    case 'nextEditTile':
+    case 'saveOverlay':
+    case 'rotateEditTile':
+    case 'debug':
+    case 'edit':
+    case 'eyedropper':
+      return { t: 'doCommand', command: b };
+    case 'up':
+    case 'down':
+    case 'left':
+    case 'right':
+    case 'up-left':
+    case 'up-right':
+    case 'reset':
+    case 'recenter':
+      return { t: 'doMove', move: b };
+    case 'play_tool':
+    case 'hand_tool':
+    case 'pencil_tool':
+      return {
+        t: 'setCurrentToolState', toolState: { t: b }
+      };
+  }
 }
