@@ -82,3 +82,16 @@ export function actionOfExternalKeyBind(b: ExternalKeyBind): Action {
       };
   }
 }
+
+
+export function externalKeyBindOfAction(a: Action): ExternalKeyBind {
+  switch (a.t) {
+    case 'doCommand': return a.command;
+    case 'doMove': return a.move;
+    case 'setCurrentToolState': {
+      return a.toolState.t;
+    }
+    default:
+      throw new Error(`non key bindable action: ${JSON.stringify(a)}`);
+  }
+}
