@@ -95,3 +95,24 @@ export function externalKeyBindOfAction(a: Action): ExternalKeyBind {
       throw new Error(`non key bindable action: ${JSON.stringify(a)}`);
   }
 }
+
+export const allKeyBinds: ExternalKeyBind[] = [
+  'prevEditTile',
+  'nextEditTile',
+  'saveOverlay',
+  'rotateEditTile',
+  'debug',
+  'edit',
+  'eyedropper',
+  'up',
+  'down',
+  'left',
+  'right',
+  'up-left',
+  'up-right',
+  'reset',
+  'recenter',
+  'play_tool',
+  'hand_tool',
+  'pencil_tool',
+];

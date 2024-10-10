@@ -3,6 +3,7 @@ import * as React from 'react';
 import { DEBUG } from './debug';
 import { MainState, SettingsState } from './state';
 import { KeyBindableAction } from './action';
+import { allKeyBinds, ExternalKeyBind } from './bindings';
 
 export type SettingsAction =
   | { t: 'cancel' }
@@ -54,7 +55,7 @@ export function reduceSettings(state: SettingsState, action: SettingsAction): Se
   }
 }
 
-function stringOfKeyBindableAction(action: KeyBindableAction): string {
+function stringOfKeyBindableAction(action: KeyBindableAction): ExternalKeyBind {
   switch (action.t) {
     case 'doCommand': return action.command;
     case 'doMove': return action.move;
@@ -86,7 +87,20 @@ export function Settings(props: SettingsProps): JSX.Element {
 
   function keySettings(): JSX.Element | undefined {
     const bindings = props.state.bindings;
-    const keyWidgets = Object.keys(bindings).map(x => <tr><td><span className="keycap">{x}</span></td><td> {stringOfKeyBindableAction(bindings[x])} </td></tr>);
+    const bindingsReverse: { [K in ExternalKeyBind]?: string[] } = {};
+    for (const k of Object.keys(bindings)) {
+      const bind = stringOfKeyBindableAction(bindings[k]);
+      if (bindingsReverse[bind] == undefined) {
+        bindingsReverse[bind] = [];
+      }
+      bindingsReverse[bind].push(k);
+    }
+    function bindingsFor(x: ExternalKeyBind): JSX.Element[] | undefined {
+      if (bindingsReverse[x] == undefined) return [<em>no binding</em>];
+      return bindingsReverse[x].map(y => <span className="keycap">{y}</span>);
+
+    }
+    const keyWidgets = allKeyBinds.map(x => <tr><td>{x}</td><td>{bindingsFor(x)} </td></tr>);
     return <>
       <div style={{ height: '3em' }} />
       <b>Key Bindings</b><br />
