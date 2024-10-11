@@ -2,7 +2,7 @@ import { produce } from 'immer';
 import * as React from 'react';
 import { DEBUG } from './debug';
 import { MainState, SettingsState } from './state';
-import { KeyBindableAction } from './action';
+import { Dispatch, KeyBindableAction } from './action';
 import { allKeyBinds, ExternalKeyBind } from './bindings';
 
 export type SettingsAction =
@@ -11,6 +11,7 @@ export type SettingsAction =
   | { t: 'setMusicVolume', val: number }
   | { t: 'setSfxVolume', val: number }
   | { t: 'setDebugImpetus', val: boolean }
+  | { t: 'removeKeyBind', keysym: string }
   ;
 
 export type SettingsProps = {
@@ -49,6 +50,13 @@ export function reduceSettings(state: SettingsState, action: SettingsAction): Se
       return {
         t: 'settingsState', state: produce(state, s => {
           s.debugImpetus = action.val;
+        })
+      };
+    }
+    case 'removeKeyBind': {
+      return {
+        t: 'settingsState', state: produce(state, s => {
+          delete s.bindings[action.keysym];
         })
       };
     }
@@ -97,7 +105,7 @@ export function Settings(props: SettingsProps): JSX.Element {
     }
     function bindingsFor(x: ExternalKeyBind): JSX.Element[] | undefined {
       if (bindingsReverse[x] == undefined) return [<em>no binding</em>];
-      return bindingsReverse[x].map(y => <span className="keycap">{y}</span>);
+      return bindingsReverse[x].map(keysym => <KeyCap key={keysym} keysym={keysym} deleteMe={() => { dispatch({ t: 'removeKeyBind', keysym }) }} />);
 
     }
     const keyWidgets = allKeyBinds.map(x => <tr><td>{x}</td><td>{bindingsFor(x)} </td></tr>);
@@ -122,4 +130,13 @@ export function Settings(props: SettingsProps): JSX.Element {
       <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'cancel' }); }}>Cancel</button>
     </div>
   </div>;
+}
+
+type KeyCapProps = {
+  deleteMe: () => void,
+  keysym: string,
+}
+
+function KeyCap(props: KeyCapProps): JSX.Element {
+  return <span onClick={() => (props.deleteMe)()} className="keycap">{props.keysym}</span>;
 }
