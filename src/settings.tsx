@@ -105,10 +105,13 @@ export function Settings(props: SettingsProps): JSX.Element {
     }
     function bindingsFor(x: ExternalKeyBind): JSX.Element[] | undefined {
       if (bindingsReverse[x] == undefined) return [<em>no binding</em>];
-      return bindingsReverse[x].map(keysym => <KeyCap key={keysym} keysym={keysym} deleteMe={() => { dispatch({ t: 'removeKeyBind', keysym }) }} />);
+      return bindingsReverse[x].map(keysym => <KeyCap extraClassName={'deleter'} key={keysym} keysym={keysym} onClick={() => { dispatch({ t: 'removeKeyBind', keysym }) }} />);
 
     }
-    const keyWidgets = allKeyBinds.map(x => <tr><td>{x}</td><td>{bindingsFor(x)} </td></tr>);
+    function addBinding(): JSX.Element {
+      return <KeyCap extraClassName={'adder'} keysym={'+'} onClick={() => { }} />;
+    }
+    const keyWidgets = allKeyBinds.map(x => <tr><td>{x}</td><td>{bindingsFor(x)}{addBinding()} </td></tr>);
     return <>
       <div style={{ height: '3em' }} />
       <b>Key Bindings</b><br />
@@ -133,10 +136,12 @@ export function Settings(props: SettingsProps): JSX.Element {
 }
 
 type KeyCapProps = {
-  deleteMe: () => void,
+  extraClassName?: string,
+  onClick: () => void,
   keysym: string,
 }
 
 function KeyCap(props: KeyCapProps): JSX.Element {
-  return <span onClick={() => (props.deleteMe)()} className="keycap">{props.keysym}</span>;
+  const className = props.extraClassName == undefined ? "keycap" : `keycap ${props.extraClassName}`;
+  return <span onClick={() => (props.onClick)()} className={className}>{props.keysym}</span>;
 }
