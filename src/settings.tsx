@@ -2,8 +2,11 @@ import { produce } from 'immer';
 import * as React from 'react';
 import { DEBUG } from './debug';
 import { MainState, SettingsState } from './state';
-import { Dispatch, KeyBindableAction } from './action';
+import { KeyBindableAction } from './action';
 import { allKeyBinds, ExternalKeyBind } from './bindings';
+import { key } from './key';
+
+type Dispatch = (action: SettingsAction) => void;
 
 export type SettingsAction =
   | { t: 'cancel' }
@@ -12,12 +15,14 @@ export type SettingsAction =
   | { t: 'setSfxVolume', val: number }
   | { t: 'setDebugImpetus', val: boolean }
   | { t: 'removeKeyBind', keysym: string }
+  | { t: 'openChooseKey' }
+  | { t: 'addKeyBind', keysym: string }
   ;
 
 export type SettingsProps = {
   prev: MainState,
   state: SettingsState,
-  dispatch: (action: SettingsAction) => void,
+  dispatch: Dispatch,
 };
 
 export type SettingsResult =
@@ -57,6 +62,21 @@ export function reduceSettings(state: SettingsState, action: SettingsAction): Se
       return {
         t: 'settingsState', state: produce(state, s => {
           delete s.bindings[action.keysym];
+        })
+      };
+    }
+    case 'openChooseKey': {
+      return {
+        t: 'settingsState', state: produce(state, s => {
+          s.keyModal = true;
+        })
+      };
+    }
+    case 'addKeyBind': {
+      console.log(action.keysym);
+      return {
+        t: 'settingsState', state: produce(state, s => {
+          s.keyModal = false;
         })
       };
     }
@@ -109,7 +129,7 @@ export function Settings(props: SettingsProps): JSX.Element {
 
     }
     function addBinding(): JSX.Element {
-      return <KeyCap extraClassName={'adder'} keysym={'+'} onClick={() => { }} />;
+      return <KeyCap extraClassName={'adder'} keysym={'+'} onClick={() => { dispatch({ t: 'openChooseKey' }) }} />;
     }
     const keyWidgets = allKeyBinds.map(x => <tr><td>{x}</td><td>{bindingsFor(x)}{addBinding()} </td></tr>);
     return <>
@@ -119,6 +139,32 @@ export function Settings(props: SettingsProps): JSX.Element {
     </>;
   }
 
+  function KeyModal(props: { dispatch: Dispatch }): JSX.Element {
+    React.useEffect(() => {
+      const keydown = (e: KeyboardEvent) => {
+        const keysym = key(e);
+        if (!keysym.match(/\[/)) {
+          // this is kind of hacky --- the intent is to not react to
+          // mere modifier keys, and I know my keysym generator adds
+          // add least a bracket for such events.
+          dispatch({ t: 'addKeyBind', keysym: key(e) })
+        }
+      };
+      document.addEventListener('keydown', keydown);
+      return () => {
+        document.removeEventListener('keydown', keydown);
+      }
+    });
+    return <div className="choose-key-container" >
+      <div className="choose-key-modal" >
+        <center>
+          Type a key to bind...
+        </center>
+      </div>
+    </div>;
+  }
+
+  const keyModal = props.state.keyModal ? <KeyModal dispatch={dispatch} /> : undefined;
   return <div style={{ ...containerStyle, width: '100%', height: '100%' }}>
     <div style={{ ...containerStyle, backgroundColor: '#fff', padding: '2em' }}>
       <h2>Settings</h2>
@@ -132,6 +178,7 @@ export function Settings(props: SettingsProps): JSX.Element {
       <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'ok' }); }}>Ok</button>
       <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'cancel' }); }}>Cancel</button>
     </div>
+    {keyModal}
   </div>;
 }
 

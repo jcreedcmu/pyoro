@@ -22,7 +22,8 @@ export const initMainState: MainState = {
     sfxVolume: 1,
     debugImpetus: false,
     bindings: initBindings,
-    effects: []
+    effects: [],
+    keyModal: false,
   },
   game: {
     player: init_player,

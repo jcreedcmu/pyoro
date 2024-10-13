@@ -107,6 +107,7 @@ export type SettingsState = {
   debugImpetus: boolean,
   effects: Effect[],
   bindings: Dict<KeyBindableAction>,
+  keyModal: boolean,
 };
 
 export type State =
