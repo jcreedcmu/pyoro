@@ -1,5 +1,6 @@
 import { Action, KeyBindableAction } from './action';
 import { Animator } from './animation';
+import { ExternalKeyBind } from './bindings';
 import { RenameLevelData } from './core/rename-level';
 import { Effect } from './effect';
 import { EntityState } from './entity';
@@ -107,7 +108,7 @@ export type SettingsState = {
   debugImpetus: boolean,
   effects: Effect[],
   bindings: Dict<KeyBindableAction>,
-  keyModal: boolean,
+  keyModal: ExternalKeyBind | undefined,
 };
 
 export type State =

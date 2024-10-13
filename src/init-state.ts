@@ -23,7 +23,7 @@ export const initMainState: MainState = {
     debugImpetus: false,
     bindings: initBindings,
     effects: [],
-    keyModal: false,
+    keyModal: undefined,
   },
   game: {
     player: init_player,

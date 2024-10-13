@@ -55,7 +55,7 @@ export type ExternalKeyBind =
   | KeyBindableTool
   ;
 
-export function actionOfExternalKeyBind(b: ExternalKeyBind): Action {
+export function actionOfExternalKeyBind(b: ExternalKeyBind): KeyBindableAction {
   switch (b) {
     case 'prevEditTile': // these fallthroughs are intentional
     case 'nextEditTile':
