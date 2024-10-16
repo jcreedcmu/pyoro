@@ -4,11 +4,20 @@ import { mkLevel } from "./level";
 import { allLevels } from "./level-data";
 import { vdiag } from "./lib/point";
 import { mkSE2 } from "./lib/se2";
-import { MainState, State, init_player } from "./state";
+import { MainState, SettingsState, State, init_player } from "./state";
 import { mapValues } from "./util";
 
 export const initState: State = {
   t: 'title'
+};
+
+export const initSettingsState: SettingsState = {
+  musicVolume: 1,
+  sfxVolume: 1,
+  debugImpetus: false,
+  bindings: initBindings,
+  effects: [],
+  keyModal: undefined,
 };
 
 export const initMainState: MainState = {
@@ -17,14 +26,7 @@ export const initMainState: MainState = {
     mouseCache: undefined,
   },
   effects: [],
-  settings: {
-    musicVolume: 1,
-    sfxVolume: 1,
-    debugImpetus: false,
-    bindings: initBindings,
-    effects: [],
-    keyModal: undefined,
-  },
+  settings: initSettingsState,
   game: {
     player: init_player,
     currentLevelState: mkLevel(allLevels.start),

@@ -5,12 +5,14 @@ import { MainState, SettingsState } from './state';
 import { KeyBindableAction } from './action';
 import { actionOfExternalKeyBind, allKeyBinds, ExternalKeyBind } from './bindings';
 import { key } from './key';
+import { initSettingsState } from './init-state';
 
 type Dispatch = (action: SettingsAction) => void;
 
 export type SettingsAction =
   | { t: 'cancel' }
   | { t: 'ok' }
+  | { t: 'reset' }
   | { t: 'setMusicVolume', val: number }
   | { t: 'setSfxVolume', val: number }
   | { t: 'setDebugImpetus', val: boolean }
@@ -73,13 +75,17 @@ export function reduceSettings(state: SettingsState, action: SettingsAction): Se
       };
     }
     case 'addKeyBind': {
-      console.log(action.ekb, action.keysym);
       const newAction = actionOfExternalKeyBind(action.ekb);
       return {
         t: 'settingsState', state: produce(state, s => {
           s.keyModal = undefined;
           s.bindings[action.keysym] = newAction;
         })
+      };
+    }
+    case 'reset': {
+      return {
+        t: 'settingsState', state: initSettingsState,
       };
     }
   }
@@ -178,6 +184,7 @@ export function Settings(props: SettingsProps): JSX.Element {
       {keySettings()}
       <div style={{ height: '2em' }} />
       <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'ok' }); }}>Ok</button>
+      <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'reset' }); }}>Reset to Defaults</button>
       <button style={{ fontSize: '1.2em' }} onClick={() => { dispatch({ t: 'cancel' }); }}>Cancel</button>
     </div>
     {keyModal}
