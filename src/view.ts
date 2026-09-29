@@ -30,9 +30,17 @@ export type FView = {
   spriteImg: HTMLImageElement;
 }
 
+/**
+ * Geometry of the drawing surface. The `wsize` and `origin` fields are
+ * measured in *canvas units*, which are css pixels divided by `zoom`.
+ * All drawing happens in canvas units, so that the play field is always
+ * `NUM_TILES * TILE_SIZE * SCALE` units across no matter how large it
+ * appears on screen.
+ */
 export type ViewData = {
-  wsize: Point, // this is the overall window size
-  origin: Point, // this is the origin of the play area in pixels, as an offset from the browser window
+  wsize: Point, // the overall window size
+  origin: Point, // the origin of the play area, as an offset from the browser window
+  zoom: number, // css pixels per canvas unit
 };
 
 /**
@@ -437,9 +445,10 @@ function draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: 
 
 
 export function drawView(fv: FView, state: MainState): void {
-  const { d } = fv;
+  const { d, vd } = fv;
+  const pixelsPerUnit = devicePixelRatio * vd.zoom;
   d.save();
-  d.scale(devicePixelRatio, devicePixelRatio);
+  d.scale(pixelsPerUnit, pixelsPerUnit);
 
   let effectiveState = state;
 
@@ -475,11 +484,29 @@ export function drawView(fv: FView, state: MainState): void {
   d.restore();
 }
 
-export function resizeView(c: HTMLCanvasElement): ViewData {
-  const ratio = devicePixelRatio;
+/**
+ * Number of css pixels per canvas unit, chosen so that the play field
+ * fits within `availSize` css pixels and so that one game pixel covers
+ * a whole number of device pixels. Capped at 1 so that screens with
+ * room to spare draw the field at exactly `SCALE`.
+ */
+function zoomOfAvailSize(availSize: Point, ratio: number): number {
+  const gameSize = vm(NUM_TILES, NT => NT * TILE_SIZE);
+  const fit = Math.min(
+    availSize.x * ratio / gameSize.x,
+    availSize.y * ratio / gameSize.y,
+  );
+  const devicePixelsPerGamePixel = Math.max(1, Math.min(int(fit), SCALE * ratio));
+  return devicePixelsPerGamePixel / (SCALE * ratio);
+}
 
-  c.width = innerWidth;
-  c.height = innerHeight;
+/**
+ * Sizes the canvas to fill the window, and computes view data with the
+ * play field centered in `avail`, a rect in css pixels relative to the
+ * window. `avail` defaults to the whole window.
+ */
+export function resizeView(c: HTMLCanvasElement, avail?: Rect): ViewData {
+  const ratio = devicePixelRatio;
 
   const ow = innerWidth;
   const oh = innerHeight;
@@ -490,12 +517,20 @@ export function resizeView(c: HTMLCanvasElement): ViewData {
   c.style.width = ow + 'px';
   c.style.height = oh + 'px';
 
-  const wsize = vm({ x: c.width / ratio, y: c.height / ratio }, w => int(w));
+  const availRect = avail ?? { p: { x: 0, y: 0 }, sz: { x: ow, y: oh } };
+  const zoom = zoomOfAvailSize(availRect.sz, ratio);
 
-  const center = vm(wsize, wsize => int(wsize / 2));
-  const origin = vm2(center, NUM_TILES, (c, NT) => c - int(NT * TILE_SIZE * SCALE / 2));
+  const wsize = vm({ x: ow / zoom, y: oh / zoom }, w => int(w));
 
-  return { origin, wsize };
+  const center = vm2(availRect.p, availRect.sz, (p, sz) => (p + sz / 2) / zoom);
+  const origin = vm2(center, NUM_TILES, (c, NT) => int(c - NT * TILE_SIZE * SCALE / 2));
+
+  return { origin, wsize, zoom };
+}
+
+/** Converts a point in browser client coordinates to canvas units. */
+export function canvasPointOfClientPoint(vd: ViewData, p: Point): Point {
+  return vscale(p, 1 / vd.zoom);
 }
 
 export function wpoint_of_vd(vd: ViewData, p_in_canvas: Point, s: MainState): WidgetPoint {

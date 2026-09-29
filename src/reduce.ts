@@ -10,7 +10,7 @@ import { runSetter } from './optic';
 import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields } from './state';
 import * as testTools from './test-tools';
 import { DynamicTile, Move, Tile } from './types';
-import { wpoint_of_vd } from './view';
+import { canvasPointOfClientPoint, wpoint_of_vd } from './view';
 import { mkLevel } from './level';
 import { mod } from './util';
 
@@ -75,7 +75,7 @@ export function reduceCommand(s: MainState, cmd: Command): MainState {
       const mc = getMouseCache(s);
       if (vd == null || mc == undefined)
         return s;
-      const wpoint = wpoint_of_vd(vd, mc, s);
+      const wpoint = wpoint_of_vd(vd, canvasPointOfClientPoint(vd, mc), s);
       if (wpoint.t == 'Toolbar' || wpoint.t == 'None') {
         return s;
       }
@@ -183,10 +183,11 @@ export function reduceMain(s: MainState, a: Action): MainState {
       const vd = s.iface.vd;
       if (vd == null)
         return s;
-      const wpoint = wpoint_of_vd(vd, a.point, s);
+      const p_in_canvas = canvasPointOfClientPoint(vd, a.point);
+      const wpoint = wpoint_of_vd(vd, p_in_canvas, s);
       logger('mouse', 'mouseDown wpoint=', wpoint);
       switch (wpoint.t) {
-        case 'World': return handle_world_mousedown(s, a.point, wpoint.p_in_world, a.buttons);
+        case 'World': return handle_world_mousedown(s, p_in_canvas, wpoint.p_in_world, a.buttons);
         case 'Toolbar': return handle_toolbar_mousedown(s, wpoint.tilePoint, a.buttons);
       }
     }
@@ -200,8 +201,9 @@ export function reduceMain(s: MainState, a: Action): MainState {
       const vd = s.iface.vd;
       if (vd == null)
         return s;
-      const wpoint = wpoint_of_vd(vd, a.point, s);
-      return handle_world_drag(s, vd, a.point, wpoint);
+      const p_in_canvas = canvasPointOfClientPoint(vd, a.point);
+      const wpoint = wpoint_of_vd(vd, p_in_canvas, s);
+      return handle_world_drag(s, vd, p_in_canvas, wpoint);
     }
     case 'setCurrentToolState':
       return produce(s, s => {
