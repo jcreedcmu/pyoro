@@ -1,6 +1,10 @@
 serve:
 	node server.js
 
+# serve on all interfaces, so a phone on the same network can reach it
+serve-lan:
+	HOST=0.0.0.0 node server.js
+
 check:
 	npx tsc --watch
 

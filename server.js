@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -25,6 +26,21 @@ export const allLevels: Record<string, LevelData> = ${json};
 });
 
 const PORT = 8000;
-server.listen(PORT, 'localhost', () => {
-  console.log(`listening on port ${PORT}...`);
+const HOST = process.env.HOST || 'localhost';
+
+/** IPv4 addresses this machine can be reached at from the network. */
+function lanAddresses() {
+  return Object.values(os.networkInterfaces())
+    .flat()
+    .filter(iface => iface && iface.family === 'IPv4' && !iface.internal)
+    .map(iface => iface.address);
+}
+
+server.listen(PORT, HOST, () => {
+  console.log(`listening on http://${HOST}:${PORT}...`);
+  if (HOST === '0.0.0.0') {
+    for (const address of lanAddresses()) {
+      console.log(`  reachable at http://${address}:${PORT}`);
+    }
+  }
 });
