@@ -77,10 +77,15 @@ export class Sound {
 }
 
 let soundService: Sound | undefined = undefined;
+let preloadedMusic: HTMLAudioElement | undefined = undefined;
+
+export function provideMusic(music: HTMLAudioElement): void {
+  preloadedMusic = music;
+}
 
 export function getSoundService(): Sound {
   if (soundService == undefined) {
-    const music = new Audio('assets/theme-from-time-badger.mp3');
+    const music = preloadedMusic ?? new Audio('assets/theme-from-time-badger.mp3');
     music.loop = true;
     music.volume = 0.25;
     music.play();

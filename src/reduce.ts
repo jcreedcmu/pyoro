@@ -272,6 +272,8 @@ export function reduceMain(s: MainState, a: Action): MainState {
         s.iface.toolState = { t: 'test_tool', testToolState: newState };
       });
     }
+    case 'startGame':
+      throw new Error(`action/state mismatch`);
     case 'settingsAction':
       throw new Error(`action/state mismatch`);
     case 'openSettings':

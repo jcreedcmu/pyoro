@@ -2,6 +2,7 @@ import * as dat from 'dat.gui';
 import { guiData } from './constants';
 import { DEBUG } from './debug';
 import { initView } from './init-view';
+import { loadAssets } from './assets';
 
 window.addEventListener('load', onload);
 
@@ -9,6 +10,7 @@ window.addEventListener('load', onload);
  * Main initialization function
  */
 export async function onload() {
+  loadAssets();
   await run();
 
   if (DEBUG.datgui) {

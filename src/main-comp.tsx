@@ -7,13 +7,13 @@ import { logger } from './debug';
 import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields, ToolState } from './state';
 import { renderTestTools } from './test-tools';
 import { CanvasInfo, useCanvas } from './use-canvas';
-import { imgProm } from './util';
+import { Assets } from './assets';
 import { drawView, resizeView } from './view';
 import { RenameLevel } from './components/rename-level';
 
 type CanvasProps = {
   main: MainState,
-  spriteImg: HTMLImageElement | null
+  assets: Assets,
 };
 
 function passthrough(k: string): boolean {
@@ -132,16 +132,16 @@ export function repoLink(): JSX.Element {
   return <div dangerouslySetInnerHTML={{ __html: linkSvg }}></div>;
 }
 
-export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.Element {
-  const { state, dispatch } = props;
+export function MainComp(props: { state: MainState, assets: Assets, dispatch: Dispatch }): JSX.Element {
+  const { state, assets, dispatch } = props;
 
   function render(ci: CanvasInfo, props: CanvasProps) {
     const { d, size: { x, y } } = ci;
-    if (props.spriteImg !== null && props.main.iface.vd !== null) {
-      drawView({ d, spriteImg: props.spriteImg, vd: props.main.iface.vd }, props.main);
+    if (props.main.iface.vd !== null) {
+      drawView({ d, spriteImg: props.assets.spriteImg, vd: props.main.iface.vd }, props.main);
     }
     else {
-      logger('chatty', 'not fully loaded yet:', props.spriteImg, props.main.iface.vd);
+      logger('chatty', 'no view data yet');
     }
   }
 
@@ -174,9 +174,8 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
   }
 
   // State
-  const [spriteImg, setSpriteImg] = React.useState(null as (null | HTMLImageElement));
   const [cref, mc] = useCanvas(
-    { main: state, spriteImg: spriteImg }, render,
+    { main: state, assets }, render,
     [
       state.game,
       state.iface,
@@ -184,7 +183,6 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
       // XXX state.effects used to be here. I think it was safe to remove?
       // It updates every time we reduce, now, which is too often for
       // mouse position caching.
-      spriteImg,
       state.iface.vd
     ],
     ci => {
@@ -194,12 +192,6 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
       dispatch({ t: 'resize', vd: resizeView(ci.c) });
     }
   );
-
-  React.useEffect(() => {
-    (async () => {
-      setSpriteImg(await imgProm('assets/sprite.png'));
-    })().catch(console.error);
-  }, []);
 
   // Event handlers
   React.useEffect(() => {
@@ -245,6 +237,6 @@ export function MainComp(props: { state: MainState, dispatch: Dispatch }): JSX.E
     {renameLevelModal}
     {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
     {state.iface.toolState.t == 'play_tool' ? repoLink() : undefined}
-    <div className="settings-button" style={settingsButtonStyle} onMouseDown={() => { dispatch({ t: 'openSettings' }); }}><img src="assets/gear.svg" width="48px" /></div>
+    <div className="settings-button" style={settingsButtonStyle} onMouseDown={() => { dispatch({ t: 'openSettings' }); }}><img src={assets.gearUrl} width="48px" /></div>
   </div>;
 }

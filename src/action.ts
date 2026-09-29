@@ -41,5 +41,6 @@ export type Action =
   | { t: 'openRenameLevel', src: string }
   | { t: 'doRename', src: string, dst: string }
   | { t: 'cropLevel' }
+  | { t: 'startGame' }
   | KeyBindableAction
   ;

@@ -10,6 +10,8 @@ import { TitleCard } from './title';
 import { useEffectfulReducer } from './use-effectful-reducer';
 import { reduceSettings, Settings } from './settings';
 import { produce } from 'immer';
+import { useLoadState } from './assets';
+import { provideMusic } from './sound';
 
 function reduceWithEffects(state: State, action: Action): { state: State, effects: Effect[] | undefined } {
   switch (state.t) {
@@ -22,8 +24,10 @@ function reduceWithEffects(state: State, action: Action): { state: State, effect
     }
     case 'title': {
       switch (action.t) {
-        default:
+        case 'startGame':
           return { state: { t: 'main', state: initMainState }, effects: [{ t: 'startSound' }] };
+        default:
+          return { state, effects: [] };
       }
     }
     case 'settings': {
@@ -53,9 +57,22 @@ function reduceWithEffects(state: State, action: Action): { state: State, effect
 
 export function App(props: {}): JSX.Element {
   const [state, dispatch] = useEffectfulReducer(initState, reduceWithEffects, doEffect);
+  const loadState = useLoadState();
+
+  React.useEffect(() => {
+    if (loadState.t == 'done') {
+      provideMusic(loadState.assets.music);
+    }
+  }, [loadState.t]);
+
   switch (state.t) {
-    case 'main': return <MainComp state={state.state} dispatch={dispatch} />;
-    case 'title': return <TitleCard dispatch={dispatch} />;
+    case 'main':
+      // The play button that leaves the title card only exists once
+      // the assets are in hand, so this fallback shouldn't come up.
+      if (loadState.t != 'done')
+        return <TitleCard loadState={loadState} dispatch={dispatch} />;
+      return <MainComp state={state.state} assets={loadState.assets} dispatch={dispatch} />;
+    case 'title': return <TitleCard loadState={loadState} dispatch={dispatch} />;
     case 'settings': return <Settings state={state.settingsState} prev={state.prev} dispatch={action => dispatch({ t: 'settingsAction', action })} />;
   }
 }

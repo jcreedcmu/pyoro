@@ -15,14 +15,6 @@ export function div(x: number, y: number): number {
   return int(x / y);
 }
 
-export function imgProm(src: string): Promise<HTMLImageElement> {
-  return new Promise((res, rej) => {
-    const sprite = new Image();
-    sprite.src = src;
-    sprite.onload = function() { res(sprite); }
-  });
-}
-
 export function max(x: number[]): number {
   return Math.max.apply(Math, x);
 }
