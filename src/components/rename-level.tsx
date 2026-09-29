@@ -37,8 +37,8 @@ export function RenameLevel(props: RenameLevelProps): JSX.Element {
   const sourceLevelSelect = <select value={src}
     onChange={onChange}
   >{options}</select>
-  return <div className="rename-level-container" onMouseDown={dismiss}>
-    <div className="rename-level-modal" onContextMenu={absorb} onMouseDown={absorb}>
+  return <div className="overlay-container rename-level-container" onMouseDown={dismiss}>
+    <div className="overlay-panel rename-level-modal" onContextMenu={absorb} onMouseDown={absorb}>
       <center>
         Rename {sourceLevelSelect} to <input style={inputFieldStyle} value={dst} onChange={e => { setDst(e.currentTarget.value) }} /><br />
         <div style={errorStyle}>{errorMsg ?? '.'}</div>

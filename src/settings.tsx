@@ -101,13 +101,6 @@ function stringOfKeyBindableAction(action: KeyBindableAction): ExternalKeyBind {
 
 export function Settings(props: SettingsProps): JSX.Element {
   const { dispatch } = props;
-  const containerStyle: React.CSSProperties = {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#6a0d35',
-    flexDirection: 'column',
-  };
 
   function debugSettings(): JSX.Element | undefined {
     if (!DEBUG.debugSettings)
@@ -163,8 +156,8 @@ export function Settings(props: SettingsProps): JSX.Element {
         document.removeEventListener('keydown', keydown);
       }
     });
-    return <div className="choose-key-container" >
-      <div className="choose-key-modal" >
+    return <div className="overlay-container choose-key-container" >
+      <div className="overlay-panel choose-key-modal" >
         <center>
           Type a key to bind...
         </center>
@@ -173,8 +166,8 @@ export function Settings(props: SettingsProps): JSX.Element {
   }
 
   const keyModal = props.state.keyModal != undefined ? <KeyModal dispatch={dispatch} ekb={props.state.keyModal} /> : undefined;
-  return <div style={{ ...containerStyle, width: '100%', height: '100%' }}>
-    <div style={{ ...containerStyle, backgroundColor: '#fff', padding: '2em' }}>
+  return <div className="overlay-container settings-container">
+    <div className="overlay-panel settings-panel">
       <h2>Settings</h2>
       <b>Music Volume</b> <input type="range" value={props.state.musicVolume * 100} min={0} max={100}
         onChange={e => { dispatch({ t: 'setMusicVolume', val: parseInt(e.currentTarget.value) / 100 }) }} />
