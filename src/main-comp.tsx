@@ -161,7 +161,11 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     dispatch({ t: 'keyUp', key: e.key, code: e.code, name: k });
   }
 
-  function handleMouseDown(e: MouseEvent) {
+  // Secondary pointers are ignored throughout, so that a second finger
+  // landing during a drag doesn't start a competing one.
+  function handlePointerDown(e: PointerEvent) {
+    if (!e.isPrimary)
+      return;
     dispatch({ t: 'mouseDown', point: { x: e.clientX, y: e.clientY }, buttons: e.buttons });
   }
 
@@ -171,6 +175,11 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
 
   function handleResize(e: UIEvent) {
     dispatch({ t: 'resize', vd: resizeView(mc.current!.c) });
+  }
+
+  function handleContextMenu(e: Event) {
+    e.preventDefault();
+    e.stopPropagation();
   }
 
   // State
@@ -196,13 +205,15 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
   // Event handlers
   React.useEffect(() => {
     logger('chatty', 'installing global event handlers');
-    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('pointerdown', handlePointerDown);
     document.addEventListener('wheel', handleMouseWheel);
-    document.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); });
+    document.addEventListener('contextmenu', handleContextMenu);
     window.addEventListener('resize', handleResize);
     return () => {
       logger('chatty', 'uninstalling global event handlers');
-      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('wheel', handleMouseWheel);
+      document.removeEventListener('contextmenu', handleContextMenu);
       window.removeEventListener('resize', handleResize);
     }
   }, []);
@@ -229,7 +240,7 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
       ref={cref}
-      onMouseMove={e => dispatch({ t: 'cacheMouse', p: { x: e.clientX, y: e.clientY } })}
+      onPointerMove={e => dispatch({ t: 'cacheMouse', p: { x: e.clientX, y: e.clientY } })}
     />
     {dragHandler}
     {renderModifyPanel(state, dispatch)}
@@ -237,6 +248,6 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     {renameLevelModal}
     {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
     {state.iface.toolState.t == 'play_tool' ? repoLink() : undefined}
-    <div className="settings-button" style={settingsButtonStyle} onMouseDown={() => { dispatch({ t: 'openSettings' }); }}><img src={assets.gearUrl} width="48px" /></div>
+    <div className="settings-button" style={settingsButtonStyle} onPointerDown={() => { dispatch({ t: 'openSettings' }); }}><img src={assets.gearUrl} width="48px" /></div>
   </div>;
 }
