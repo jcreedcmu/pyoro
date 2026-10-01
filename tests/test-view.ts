@@ -78,6 +78,17 @@ describe('resizeView', () => {
     expect(field.p.y).toBeCloseTo((320 - 288) / 2);
   });
 
+  it('leaves the field clear of a control pad at the bottom', () => {
+    const PAD = 210; // two rows of buttons plus padding and safe area
+    const avail: Rect = { p: { x: 0, y: 0 }, sz: { x: 390, y: 844 - PAD } };
+    const { vd } = resizeIn({ x: 390, y: 844 }, 3, avail);
+    const field = fieldRectInCss(vd);
+    expect(field.sz).toEqual({ x: 384, y: 288 });
+    expect(field.p.y).toBeGreaterThanOrEqual(0);
+    // The whole field sits above where the pad starts.
+    expect(field.p.y + field.sz.y).toBeLessThanOrEqual(844 - PAD);
+  });
+
   it('bottoms out at one device pixel per game pixel', () => {
     const { vd } = resizeIn({ x: 100, y: 100 }, 1);
     expect(vd.zoom * SCALE * 1).toBe(1);

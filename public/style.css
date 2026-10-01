@@ -172,6 +172,64 @@ html, body {
   background-color: #777;
 }
 
+.control-pad {
+  --pad-button: min(72px, 20vw);
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5em;
+  box-sizing: border-box;
+  padding: 0.75em 0.75em calc(0.75em + env(safe-area-inset-bottom));
+  background-color: #222;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.control-pad-dirs {
+  display: grid;
+  grid-template-columns: repeat(3, var(--pad-button));
+  grid-auto-rows: var(--pad-button);
+  gap: 8px;
+}
+
+.control-pad-utils {
+  display: grid;
+  grid-template-columns: calc(var(--pad-button) * 0.7);
+  grid-auto-rows: calc(var(--pad-button) * 0.7);
+  gap: 8px;
+}
+
+.pad-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background-color: #4a4a4a;
+  color: #eee;
+  font-size: calc(var(--pad-button) * 0.45);
+  line-height: 1;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pad-button.pad-util {
+  font-size: calc(var(--pad-button) * 0.32);
+  border-radius: 50%;
+}
+
+.pad-button.pressed {
+  background-color: #8a8a8a;
+}
+
 .settings-button {
   position: absolute;
   right: 0px;

@@ -102,10 +102,19 @@ export type MainState = {
   modals: ModalDialogs,
 };
 
+/** Whether to show the on-screen control pad. 'auto' means to show it
+ * when the browser reports a coarse primary pointer. */
+export type ControlPadSetting =
+  | 'auto'
+  | 'on'
+  | 'off'
+  ;
+
 export type SettingsState = {
   musicVolume: number,
   sfxVolume: number,
   debugImpetus: boolean,
+  controlPad: ControlPadSetting,
   effects: Effect[],
   bindings: Dict<KeyBindableAction>,
   keyModal: ExternalKeyBind | undefined,

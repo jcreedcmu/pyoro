@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import * as React from 'react';
 import { DEBUG } from './debug';
-import { MainState, SettingsState } from './state';
+import { ControlPadSetting, MainState, SettingsState } from './state';
 import { KeyBindableAction } from './action';
 import { actionOfExternalKeyBind, allKeyBinds, ExternalKeyBind } from './bindings';
 import { key } from './key';
@@ -16,6 +16,7 @@ export type SettingsAction =
   | { t: 'setMusicVolume', val: number }
   | { t: 'setSfxVolume', val: number }
   | { t: 'setDebugImpetus', val: boolean }
+  | { t: 'setControlPad', val: ControlPadSetting }
   | { t: 'removeKeyBind', keysym: string }
   | { t: 'openChooseKey', ekb: ExternalKeyBind }
   | { t: 'addKeyBind', keysym: string, ekb: ExternalKeyBind }
@@ -57,6 +58,13 @@ export function reduceSettings(state: SettingsState, action: SettingsAction): Se
       return {
         t: 'settingsState', state: produce(state, s => {
           s.debugImpetus = action.val;
+        })
+      };
+    }
+    case 'setControlPad': {
+      return {
+        t: 'settingsState', state: produce(state, s => {
+          s.controlPad = action.val;
         })
       };
     }
@@ -173,6 +181,13 @@ export function Settings(props: SettingsProps): JSX.Element {
         onChange={e => { dispatch({ t: 'setMusicVolume', val: parseInt(e.currentTarget.value) / 100 }) }} />
       <b>Sfx Volume</b> <input type="range" value={props.state.sfxVolume * 100} min={0} max={100}
         onChange={e => { dispatch({ t: 'setSfxVolume', val: parseInt(e.currentTarget.value) / 100 }) }} />
+      <b>On-screen Controls</b>
+      <select value={props.state.controlPad}
+        onChange={e => { dispatch({ t: 'setControlPad', val: e.currentTarget.value as ControlPadSetting }) }}>
+        <option value="auto">Automatic</option>
+        <option value="on">Always</option>
+        <option value="off">Never</option>
+      </select>
       {debugSettings()}
       {keySettings()}
       <div style={{ height: '2em' }} />

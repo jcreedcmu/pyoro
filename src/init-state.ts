@@ -15,6 +15,7 @@ export const initSettingsState: SettingsState = {
   musicVolume: 1,
   sfxVolume: 1,
   debugImpetus: false,
+  controlPad: 'auto',
   bindings: initBindings,
   effects: [],
   keyModal: undefined,

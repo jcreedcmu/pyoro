@@ -8,6 +8,8 @@ import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields, ToolSta
 import { renderTestTools } from './test-tools';
 import { CanvasInfo, useCanvas } from './use-canvas';
 import { Assets } from './assets';
+import { ControlPad, useShowControlPad } from './control-pad';
+import { Rect } from './lib/types';
 import { drawView, resizeView } from './view';
 import { RenameLevel } from './components/rename-level';
 
@@ -173,8 +175,28 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     dispatch({ t: 'mouseWheel', delta: e.deltaY });
   }
 
+  // The pad's measured height, kept in a ref as well as in state so
+  // that the resize listener, installed once, sees the current value.
+  const padHeightRef = React.useRef(0);
+  const [padHeight, setPadHeight] = React.useState(0);
+  const padRef = React.useRef<HTMLDivElement | null>(null);
+
+  /** The part of the window the play field gets, in css pixels. */
+  function availRect(): Rect {
+    return {
+      p: { x: 0, y: 0 },
+      sz: { x: innerWidth, y: Math.max(0, innerHeight - padHeightRef.current) },
+    };
+  }
+
+  function doResize() {
+    if (mc.current != null) {
+      dispatch({ t: 'resize', vd: resizeView(mc.current.c, availRect()) });
+    }
+  }
+
   function handleResize(e: UIEvent) {
-    dispatch({ t: 'resize', vd: resizeView(mc.current!.c) });
+    doResize();
   }
 
   function handleContextMenu(e: Event) {
@@ -198,7 +220,7 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
       // Not sure why I need to delay this. But if I don't,
       // clicking on the title card doesn't keep focus on the canvas.
       setTimeout(() => { ci.c.focus(); }, 0);
-      dispatch({ t: 'resize', vd: resizeView(ci.c) });
+      dispatch({ t: 'resize', vd: resizeView(ci.c, availRect()) });
     }
   );
 
@@ -218,6 +240,28 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     }
   }, []);
 
+  // The pad is for playing, so it stays out of the way of the editor
+  // even on a device that would otherwise get one.
+  const showControlPad = useShowControlPad(state.settings.controlPad)
+    && state.iface.toolState.t == 'play_tool';
+
+  React.useEffect(() => {
+    const el = padRef.current;
+    if (el == null) {
+      padHeightRef.current = 0;
+      setPadHeight(0);
+      return;
+    }
+    const ro = new ResizeObserver(() => {
+      padHeightRef.current = el.offsetHeight;
+      setPadHeight(el.offsetHeight);
+    });
+    ro.observe(el);
+    return () => { ro.disconnect(); };
+  }, [showControlPad]);
+
+  React.useEffect(() => { doResize(); }, [padHeight]);
+
   const dragHandler = (state.iface.mouse.t == 'tileDrag' || state.iface.mouse.t == 'panDrag')
     ? <DragHandler dispatch={dispatch} />
     : undefined;
@@ -225,7 +269,10 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
   const canvasCursor = cursorOfToolState(state.iface.toolState);
 
   const settingsButtonStyle: React.CSSProperties = {};
-  if (state.iface.toolState.t == 'pencil_tool') {
+  if (showControlPad) {
+    settingsButtonStyle.bottom = `${padHeight}px`;
+  }
+  else if (state.iface.toolState.t == 'pencil_tool') {
     settingsButtonStyle.bottom = '3.5em';
   }
   else {
@@ -248,6 +295,7 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     {renameLevelModal}
     {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
     {state.iface.toolState.t == 'play_tool' ? repoLink() : undefined}
+    {showControlPad ? <ControlPad dispatch={dispatch} padRef={padRef} /> : undefined}
     <div className="settings-button" style={settingsButtonStyle} onPointerDown={() => { dispatch({ t: 'openSettings' }); }}><img src={assets.gearUrl} width="48px" /></div>
   </div>;
 }
