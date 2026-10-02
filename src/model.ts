@@ -1,10 +1,11 @@
 import { produce } from 'immer';
 import { Animation, Animator, applyGameAnimation, applyIfaceAnimation, duration } from './animation';
+import { cameraZoomOfWorldFromView } from './camera';
 import { COMBO_THRESHOLD, editTiles, NUM_TILES, PLAYER_WEIGHT, rotateTile, tools } from './constants';
 import { expandBoundRect, getBoundRect, getCurrentLevel, getCurrentLevelData, getInitOverlay, getMobileById, getOverlay, isInterfaceOnlyMove, setWorldFromView } from './game-state-access';
 import { DynamicLayer, dynamicOfTile, dynamicTileOfStack, emptyTile, isEmptyTile, LayerStack, pointMapEntries, putDynamicTile, removeDynamicTile, tileEq, tileOfStack } from './layer';
 import { LevelData } from './level';
-import { Point, vadd, vequal, vplus, vsub } from './lib/point';
+import { Point, vadd, vequal, vm2, vplus, vsub } from './lib/point';
 import { apply, composen, inverse, translate } from './lib/se2';
 import { Board, entityAtPoint, ForcedBlock, ForceType, getItem, isClimb, isDeadly, isSupportedInStateExcluding } from './model-utils';
 import { entityTick, fblock, SupportData } from './physics';
@@ -312,24 +313,45 @@ export function animateMove(state: GameState, move: Move): Animation[] {
   return anims;
 }
 
+/** How close to the edge of the field the player may get, in view tiles. */
+const VIEWPORT_MARGIN = 1;
+
+/** The smallest camera correction worth animating, in world tiles. */
+const MIN_VIEWPORT_SCROLL = 1;
+
+/**
+ * How far the camera must move along one axis to bring `x`, the
+ * player's position in view tiles, back within `VIEWPORT_MARGIN` of the
+ * edge of the field. Zero when the player is already clear of it.
+ *
+ * Any correction at all moves a whole world tile, so that walking into
+ * the edge of the field scrolls by a tile the way it always has, rather
+ * than by the sliver that would strictly suffice. Larger corrections
+ * are reported in full, which is what brings the player back after the
+ * view has been panned away by a gesture.
+ */
+function viewPortCorrection(x: number, numTiles: number, zoom: number): number {
+  if (x >= numTiles - VIEWPORT_MARGIN)
+    return Math.max((x - (numTiles - VIEWPORT_MARGIN)) / zoom, MIN_VIEWPORT_SCROLL);
+  if (x < VIEWPORT_MARGIN)
+    return Math.min((x - VIEWPORT_MARGIN) / zoom, -MIN_VIEWPORT_SCROLL);
+  return 0;
+}
+
 /**
  * Suppose the player is moving to `p_in_world`. Return some appropriate animations
  * for sufficiently recentering the player in the viewport.
  */
 export function animateViewPort(s: MainState, move: Move, p_in_world: Point | undefined): Animation[] {
-  const anims: Animation[] = [];
-  if (p_in_world !== undefined) {
-    const p_in_viewTiles = apply(inverse(getWorldFromViewTiles(s.iface)), p_in_world);
-    if (p_in_viewTiles.x >= NUM_TILES.x - 1)
-      anims.push({ t: 'ViewPortAnimation', dpos_in_world: { x: 1, y: 0 } });
-    if (p_in_viewTiles.x < 1)
-      anims.push({ t: 'ViewPortAnimation', dpos_in_world: { x: -1, y: 0 } });
-    if (p_in_viewTiles.y >= NUM_TILES.y - 1)
-      anims.push({ t: 'ViewPortAnimation', dpos_in_world: { x: 0, y: 1 } });
-    if (p_in_viewTiles.y < 1)
-      anims.push({ t: 'ViewPortAnimation', dpos_in_world: { x: 0, y: -1 } });
-  }
-  return anims;
+  if (p_in_world === undefined)
+    return [];
+  const p_in_viewTiles = apply(inverse(getWorldFromViewTiles(s.iface)), p_in_world);
+  const zoom = cameraZoomOfWorldFromView(getWorldFromView(s.iface));
+  const dpos_in_world = vm2(p_in_viewTiles, NUM_TILES,
+    (x, NT) => viewPortCorrection(x, NT, zoom));
+  if (dpos_in_world.x == 0 && dpos_in_world.y == 0)
+    return [];
+  return [{ t: 'ViewPortAnimation', dpos_in_world }];
 }
 
 function hasNextPos(anim: Animation): Point | undefined {

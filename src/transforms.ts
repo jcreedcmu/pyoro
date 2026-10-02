@@ -26,9 +26,9 @@ export function getWorldFromCanvas(vd: ViewData, iface: IfaceState): SE2 {
 }
 
 /**
- * Assuming a and b have the same scale, linearly interpolates
- * between their translations for a time parameter t in [0,1].
+ * Linearly interpolates between two transforms, scale as well as
+ * translation, for a time parameter t in [0,1].
  */
-export function lerpTranslates(a: SE2, b: SE2, t: number): SE2 {
-  return mkSE2(a.scale, vlerp(a.translate, b.translate, t));
+export function lerpSE2(a: SE2, b: SE2, t: number): SE2 {
+  return mkSE2(vlerp(a.scale, b.scale, t), vlerp(a.translate, b.translate, t));
 }

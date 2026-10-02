@@ -3,14 +3,14 @@ import { NUM_TILES, TILE_SIZE } from './constants';
 import { EntityState, MobileId } from './entity';
 import { deleteMobile, getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView, elapseTimeBasedItems, adjustOxygen } from './game-state-access';
 import { emptyTile, putDynamicTile, putTileInDynamicLayer, tileEq } from './layer';
-import { cameraZoomOfWorldFromView, centeredWorldFromView } from './camera';
+import { cameraZoomOfWorldFromView, centeredWorldFromView, defaultCameraZoom } from './camera';
 import { Point, vlerp, vplus, vscale, vsub } from './lib/point';
 import { compose, translate } from './lib/se2';
 import { computeCombo, dynamicTileOfGameState, tileOfGameState } from './model';
 import { itemTimeLimit } from './model-utils';
 import { PhysicsEntityState } from './physics';
 import { GameState, IfaceState, MainState } from './state';
-import { getWorldFromView, lerpTranslates } from './transforms';
+import { getWorldFromView, lerpSE2 } from './transforms';
 import { Bus, Facing, Item, PlayerSprite } from './types';
 
 /**
@@ -118,8 +118,10 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
     }
     case 'SavePointChangeAnimation': return iface;
     case 'RecenterAnimation': {
-      const target = centeredWorldFromView(game.player.pos, zoom);
-      return setWorldFromView(iface, lerpTranslates(getWorldFromView(iface), target, t));
+      // Recentering is also the way back out of a zoom the player
+      // pinched to, so it restores the default rather than keeping it.
+      const target = centeredWorldFromView(game.player.pos, defaultCameraZoom());
+      return setWorldFromView(iface, lerpSE2(getWorldFromView(iface), target, t));
     }
     case 'ItemGetAnimation': return iface;
     case 'SpendCoinAnimation': return iface;
