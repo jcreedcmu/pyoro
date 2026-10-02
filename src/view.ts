@@ -3,7 +3,7 @@ import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, ro
 import { getBoundRect, getCurrentLevel, getCurrentLevelData, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { fillRect, fillText, pathRect, strokeRect } from './lib/dutil';
-import { int, Point, vdiag, vint, vm, vm2, vplus, vscale } from './lib/point';
+import { int, Point, vdiag, vint, vm, vm2, vplus, vscale, vsub } from './lib/point';
 import { apply, compose, inverse, mkSE2 } from './lib/se2';
 import { apply_to_rect } from './lib/se2-extra';
 import { Rect } from './lib/types';
@@ -212,8 +212,32 @@ function cell_rect_in_world(p_in_world: Point): Rect {
   return { p: p_in_world, sz: { x: 1, y: 1 } };
 }
 
+/** Device pixels per canvas unit. */
+function pixelsPerUnit(vd: ViewData): number {
+  return devicePixelRatio * vd.zoom;
+}
+
+/**
+ * Rounds a canvas-unit coordinate to the nearest device pixel
+ * boundary. Cell rects are snapped edge by edge so that a cell's far
+ * edge and its neighbor's near edge come out of the same expression
+ * and meet exactly. Without this, a camera at fractional zoom rounds
+ * adjacent cells apart and leaves hairline gaps between tiles.
+ */
+function snapToDevicePixel(vd: ViewData, v: number): number {
+  const ppu = pixelsPerUnit(vd);
+  return Math.round(v * ppu) / ppu;
+}
+
+function snapRectToDevicePixels(vd: ViewData, rect: Rect): Rect {
+  const min = vm(rect.p, v => snapToDevicePixel(vd, v));
+  const max = vm2(rect.p, rect.sz, (p, sz) => snapToDevicePixel(vd, p + sz));
+  return { p: min, sz: vsub(max, min) };
+}
+
 function cell_rect_in_canvas(vd: ViewData, iface: IfaceState, p_in_world: Point): Rect {
-  return apply_to_rect(getCanvasFromWorld(vd, iface), cell_rect_in_world(p_in_world));
+  return snapRectToDevicePixels(vd,
+    apply_to_rect(getCanvasFromWorld(vd, iface), cell_rect_in_world(p_in_world)));
 }
 
 const metrics: (keyof TextMetrics)[] = [
@@ -446,9 +470,9 @@ function draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: 
 
 export function drawView(fv: FView, state: MainState): void {
   const { d, vd } = fv;
-  const pixelsPerUnit = devicePixelRatio * vd.zoom;
+  const ppu = pixelsPerUnit(vd);
   d.save();
-  d.scale(pixelsPerUnit, pixelsPerUnit);
+  d.scale(ppu, ppu);
 
   let effectiveState = state;
 
@@ -486,9 +510,10 @@ export function drawView(fv: FView, state: MainState): void {
 
 /**
  * Number of css pixels per canvas unit, chosen so that the play field
- * fits within `availSize` css pixels and so that one game pixel covers
- * a whole number of device pixels. Capped at 1 so that screens with
- * room to spare draw the field at exactly `SCALE`.
+ * exactly fits within `availSize` css pixels. Capped at 1 so that
+ * screens with room to spare draw the field at exactly `SCALE`, and
+ * floored at one device pixel per game pixel so that a window narrower
+ * than the field overflows it rather than shrinking it away.
  */
 function zoomOfAvailSize(availSize: Point, ratio: number): number {
   const gameSize = vm(NUM_TILES, NT => NT * TILE_SIZE);
@@ -496,7 +521,7 @@ function zoomOfAvailSize(availSize: Point, ratio: number): number {
     availSize.x * ratio / gameSize.x,
     availSize.y * ratio / gameSize.y,
   );
-  const devicePixelsPerGamePixel = Math.max(1, Math.min(int(fit), SCALE * ratio));
+  const devicePixelsPerGamePixel = Math.max(1, Math.min(fit, SCALE * ratio));
   return devicePixelsPerGamePixel / (SCALE * ratio);
 }
 

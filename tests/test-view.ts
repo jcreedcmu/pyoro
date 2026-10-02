@@ -46,26 +46,33 @@ describe('resizeView', () => {
 
   it('shrinks the field to fit a phone in portrait', () => {
     const { vd, c } = resizeIn({ x: 390, y: 844 }, 3);
-    expect(vd.zoom).toBe(0.5);
     // Backing store covers the whole window at full device resolution.
     expect(c.width).toBe(390 * 3);
     expect(c.height).toBe(844 * 3);
-    // Field fits within the window, horizontally centered.
+    // Width binds in portrait, so the field spans it exactly.
     const field = fieldRectInCss(vd);
-    expect(field.sz).toEqual({ x: 384, y: 288 });
-    expect(field.p.x).toBeCloseTo((390 - 384) / 2);
-    expect(field.p.x + field.sz.x).toBeLessThanOrEqual(390);
+    expect(field.sz.x).toBeCloseTo(390);
+    expect(field.p.x).toBeCloseTo(0);
   });
 
-  it('uses a whole number of device pixels per game pixel', () => {
+  it('fills the binding axis of the available rect exactly', () => {
     for (const ratio of [1, 2, 3]) {
-      for (const width of [320, 390, 430, 700, 1024]) {
+      for (const width of [320, 375, 390, 430, 700]) {
         const { vd } = resizeIn({ x: width, y: 844 }, ratio);
-        const devicePixelsPerGamePixel = vd.zoom * SCALE * ratio;
-        expect(devicePixelsPerGamePixel).toBe(Math.round(devicePixelsPerGamePixel));
-        expect(devicePixelsPerGamePixel).toBeGreaterThanOrEqual(1);
+        const field = fieldRectInCss(vd);
+        // Width binds at every one of these sizes, except where it is
+        // narrower than one device pixel per game pixel allows.
+        const floorWidth = FIELD_UNITS.x / (SCALE * ratio);
+        expect(field.sz.x).toBeCloseTo(Math.max(width, floorWidth));
       }
     }
+  });
+
+  it('fills the width on a dpr 2 phone as well as a dpr 3 one', () => {
+    // A whole number of device pixels per game pixel used to floor 1.95
+    // to 1 here, drawing the field at half the width of the screen.
+    const { vd } = resizeIn({ x: 375, y: 667 }, 2);
+    expect(fieldRectInCss(vd).sz.x).toBeCloseTo(375);
   });
 
   it('centers the field in the available rect', () => {
@@ -73,9 +80,11 @@ describe('resizeView', () => {
     const { vd } = resizeIn({ x: 390, y: 844 }, 3, avail);
     const field = fieldRectInCss(vd);
     // Still fills the window, but the field lives in the top 320px.
-    expect(vd.wsize).toEqual({ x: 780, y: 1688 });
+    expect(vd.wsize.x * vd.zoom).toBeCloseTo(390, 0);
+    expect(vd.wsize.y * vd.zoom).toBeCloseTo(844, 0);
     expect(field.sz.y).toBeLessThanOrEqual(avail.sz.y);
-    expect(field.p.y).toBeCloseTo((320 - 288) / 2);
+    // Within a pixel: `origin` is truncated to whole canvas units.
+    expect(field.p.y).toBeCloseTo((avail.sz.y - field.sz.y) / 2, 0);
   });
 
   it('leaves the field clear of a control pad at the bottom', () => {
@@ -83,7 +92,7 @@ describe('resizeView', () => {
     const avail: Rect = { p: { x: 0, y: 0 }, sz: { x: 390, y: 844 - PAD } };
     const { vd } = resizeIn({ x: 390, y: 844 }, 3, avail);
     const field = fieldRectInCss(vd);
-    expect(field.sz).toEqual({ x: 384, y: 288 });
+    expect(field.sz.x).toBeCloseTo(390);
     expect(field.p.y).toBeGreaterThanOrEqual(0);
     // The whole field sits above where the pad starts.
     expect(field.p.y + field.sz.y).toBeLessThanOrEqual(844 - PAD);

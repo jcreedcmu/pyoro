@@ -1,15 +1,16 @@
 import { initBindings } from "./bindings";
-import { TILE_SIZE } from "./constants";
+import { centeredWorldFromView, defaultCameraZoom } from "./camera";
 import { mkLevel } from "./level";
 import { allLevels } from "./level-data";
-import { vdiag } from "./lib/point";
-import { mkSE2 } from "./lib/se2";
 import { MainState, SettingsState, State, init_player } from "./state";
 import { mapValues } from "./util";
 
 export const initState: State = {
   t: 'title'
 };
+
+/** The world point the view is centered on when the game starts. */
+const INITIAL_VIEW_CENTER = { x: -1, y: 0 };
 
 export const initSettingsState: SettingsState = {
   musicVolume: 1,
@@ -39,7 +40,7 @@ export const initMainState: MainState = {
   },
   iface: {
     keysDown: {},
-    world_from_view: mkSE2(vdiag(1 / TILE_SIZE), { x: -13, y: -9 }),
+    world_from_view: centeredWorldFromView(INITIAL_VIEW_CENTER, defaultCameraZoom()),
     blackout: 0,
     editPageIx: 0,
     editTileIx: 0,

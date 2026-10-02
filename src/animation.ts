@@ -3,8 +3,9 @@ import { NUM_TILES, TILE_SIZE } from './constants';
 import { EntityState, MobileId } from './entity';
 import { deleteMobile, getCurrentLevel, getCurrentLevelData, getOverlay, resetRoom, setCurrentLevel, setMobileById, setWorldFromView, elapseTimeBasedItems, adjustOxygen } from './game-state-access';
 import { emptyTile, putDynamicTile, putTileInDynamicLayer, tileEq } from './layer';
-import { int, Point, vdiag, vlerp, vm2, vplus, vscale, vsub } from './lib/point';
-import { compose, mkSE2, SE2, translate } from './lib/se2';
+import { cameraZoomOfWorldFromView, centeredWorldFromView } from './camera';
+import { Point, vlerp, vplus, vscale, vsub } from './lib/point';
+import { compose, translate } from './lib/se2';
 import { computeCombo, dynamicTileOfGameState, tileOfGameState } from './model';
 import { itemTimeLimit } from './model-utils';
 import { PhysicsEntityState } from './physics';
@@ -71,13 +72,6 @@ export type Time = {
   fr: number,
 };
 
-/**
- * Returns a world_from_view transform that puts p_in_world in the center of the view.
- */
-export function centeredWorldFromView(p_in_world: Point): SE2 {
-  return mkSE2(vdiag(1 / TILE_SIZE), vm2(p_in_world, NUM_TILES, (p, NT) => int(p - NT / 2)));
-}
-
 const DEATH_FADE_OUT = 2;
 const DEATH_HOLD = 0;
 const DEATH_FADE_IN = 2;
@@ -95,6 +89,8 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
   const t = fr / dur;
 
   const { game, iface } = state;
+  // Animations that reframe the view keep whatever zoom the player is at.
+  const zoom = cameraZoomOfWorldFromView(getWorldFromView(iface));
 
   switch (a.t) {
     case 'PlayerAnimation': return iface;
@@ -116,13 +112,13 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
         }
       });
       if (fr >= DEATH_FADE_OUT) {
-        blackout = setWorldFromView(blackout, centeredWorldFromView(game.lastSave));
+        blackout = setWorldFromView(blackout, centeredWorldFromView(game.lastSave, zoom));
       }
       return blackout;
     }
     case 'SavePointChangeAnimation': return iface;
     case 'RecenterAnimation': {
-      const target = centeredWorldFromView(game.player.pos);
+      const target = centeredWorldFromView(game.player.pos, zoom);
       return setWorldFromView(iface, lerpTranslates(getWorldFromView(iface), target, t));
     }
     case 'ItemGetAnimation': return iface;
@@ -142,7 +138,7 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
         }
       });
       if (fr >= CHANGE_ROOM_FADE_OUT)
-        blackout = setWorldFromView(blackout, centeredWorldFromView(a.newPosition));
+        blackout = setWorldFromView(blackout, centeredWorldFromView(a.newPosition, zoom));
       return blackout;
     }
     case 'EntityAnimation': {
