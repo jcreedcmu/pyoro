@@ -10,7 +10,9 @@ import { CanvasInfo, useCanvas } from './use-canvas';
 import { Assets } from './assets';
 import { ControlPad, useShowControlPad } from './control-pad';
 import { Rect } from './lib/types';
-import { drawView, resizeView } from './view';
+import { Point } from './lib/point';
+import { cameraOfGesture, GestureAnchor } from './camera-gesture';
+import { canvasPointOfClientPoint, drawView, resizeView } from './view';
 import { RenameLevel } from './components/rename-level';
 
 type CanvasProps = {
@@ -163,8 +165,10 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     dispatch({ t: 'keyUp', key: e.key, code: e.code, name: k });
   }
 
-  // Secondary pointers are ignored throughout, so that a second finger
-  // landing during a drag doesn't start a competing one.
+  // The tools take only the primary pointer, so that a second finger
+  // landing during a drag doesn't start a competing one. The camera
+  // gesture handlers below are the exception, since a pinch is two
+  // fingers by definition.
   function handlePointerDown(e: PointerEvent) {
     if (!e.isPrimary)
       return;
@@ -173,6 +177,66 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
 
   function handleMouseWheel(e: WheelEvent) {
     dispatch({ t: 'mouseWheel', delta: e.deltaY });
+  }
+
+  // Touch on the play field moves the camera: one pointer pans, two
+  // also pinch to zoom. Gameplay input all arrives through the control
+  // pad, so there is nothing here to disambiguate against. Mouse
+  // pointers are left out, which keeps the desktop field inert as it
+  // has always been.
+  const gesture = React.useRef<{ points: Map<number, Point>, anchor: GestureAnchor | null }>(
+    { points: new Map(), anchor: null });
+
+  function gestureApplies(e: React.PointerEvent<HTMLCanvasElement>): boolean {
+    return state.iface.toolState.t == 'play_tool' && e.pointerType != 'mouse';
+  }
+
+  function gesturePoint(e: React.PointerEvent<HTMLCanvasElement>): Point | undefined {
+    const vd = state.iface.vd;
+    if (vd == null)
+      return undefined;
+    return canvasPointOfClientPoint(vd, { x: e.clientX, y: e.clientY });
+  }
+
+  /** Restarts the gesture from the pointers that are down right now. */
+  function reanchorGesture() {
+    const g = gesture.current;
+    g.anchor = g.points.size == 0 ? null : {
+      points: [...g.points.values()],
+      world_from_view: state.iface.world_from_view,
+    };
+  }
+
+  function handleCanvasPointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (!gestureApplies(e))
+      return;
+    const p = gesturePoint(e);
+    if (p == undefined)
+      return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    gesture.current.points.set(e.pointerId, p);
+    reanchorGesture();
+  }
+
+  function handleCanvasPointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
+    dispatch({ t: 'cacheMouse', p: { x: e.clientX, y: e.clientY } });
+    const g = gesture.current;
+    const vd = state.iface.vd;
+    const p = gesturePoint(e);
+    if (g.anchor == null || vd == null || p == undefined || !g.points.has(e.pointerId))
+      return;
+    g.points.set(e.pointerId, p);
+    dispatch({
+      t: 'setCamera',
+      world_from_view: cameraOfGesture(g.anchor, [...g.points.values()], vd),
+    });
+  }
+
+  // A pointer can also be taken away by the browser or the system,
+  // which arrives as a cancel or a lost capture rather than an up.
+  function handleCanvasPointerUp(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (gesture.current.points.delete(e.pointerId))
+      reanchorGesture();
   }
 
   // The pad's measured height, kept in a ref as well as in state so
@@ -287,7 +351,11 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
       ref={cref}
-      onPointerMove={e => dispatch({ t: 'cacheMouse', p: { x: e.clientX, y: e.clientY } })}
+      onPointerDown={handleCanvasPointerDown}
+      onPointerMove={handleCanvasPointerMove}
+      onPointerUp={handleCanvasPointerUp}
+      onPointerCancel={handleCanvasPointerUp}
+      onLostPointerCapture={handleCanvasPointerUp}
     />
     {dragHandler}
     {renderModifyPanel(state, dispatch)}

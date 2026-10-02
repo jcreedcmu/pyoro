@@ -1,5 +1,6 @@
 import { Setter } from "./optic";
 import { Point } from "./lib/point";
+import { SE2 } from "./lib/se2";
 import { Command, PanelStateFieldTypes } from "./reduce";
 import { ButtonedTileFields, DoorTileFields, KeyBindableToolState, MainState, TimedTileFields, ToolState } from "./state";
 import * as testTools from './test-tools';
@@ -26,6 +27,7 @@ export type Action =
   | { t: 'mouseUp' }
   | { t: 'mouseMove', point: Point }
   | { t: 'resize', vd: ViewData }
+  | { t: 'setCamera', world_from_view: SE2 }
   | { t: 'nextFrame' }
   | PanelStateFieldTypes[keyof TimedTileFields]
   | PanelStateFieldTypes[keyof ButtonedTileFields]

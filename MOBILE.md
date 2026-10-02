@@ -206,10 +206,10 @@ Step 5: platform details
 Order of work
 -------------
 
-Screen zoom, pointer events, the control pad, and step 1 are in place.
+Screen zoom, pointer events, the control pad, and steps 1 and 2 are in
+place.
 
-Step 2 has something to move around now that the camera carries a zoom,
-and step 3 is only needed once step 2 can strand the player off screen.
+Step 3 is next, now that a gesture can strand the player off screen.
 Steps 4 and 5 are independent of the camera work and of each other.
 
 Testing
