@@ -3,7 +3,7 @@ import { FRAME_DURATION_MS } from './constants';
 import { LevelData } from './level';
 import { logger } from './debug';
 import { getAllLevels } from './model';
-import { getSoundService, setMusicVolume, setSfxVolume } from './sound';
+import { getSoundService, setMusicVolume, setSfxVolume, startAudio } from './sound';
 import { MainState, State } from './state';
 
 export type Effect =
@@ -36,7 +36,7 @@ export function doEffect(state: State, dispatch: Dispatch, effect: Effect) {
             .catch(console.error);
           break;
         case 'soundEffect': doSoundEffect(effect.sound); return;
-        case 'startSound': getSoundService(); return;
+        case 'startSound': startAudio(); return;
         case 'realizeSoundSettings': {
           setSfxVolume(effect.sfxVolume);
           setMusicVolume(effect.musicVolume);

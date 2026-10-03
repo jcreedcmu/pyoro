@@ -88,10 +88,25 @@ export function getSoundService(): Sound {
     const music = preloadedMusic ?? new Audio('assets/theme-from-time-badger.mp3');
     music.loop = true;
     music.volume = 0.25;
-    music.play();
     soundService = new Sound(music);
   }
   return soundService;
+}
+
+/**
+ * Brings up the audio context and starts the music. iOS permits either
+ * only from inside a user gesture handler, and effects run in a
+ * microtask after the handler has returned, so the title card calls
+ * this directly from its click rather than waiting for the effect.
+ * Calling it more than once does nothing further.
+ */
+export function startAudio(): void {
+  const sound = getSoundService();
+  // A context constructed outside a gesture comes up suspended.
+  if (sound.audio_context.state == 'suspended') {
+    sound.audio_context.resume().catch(e => { console.warn('audio did not resume', e); });
+  }
+  sound.music.play().catch(e => { console.warn('music did not start', e); });
 }
 
 export function setMusicVolume(vol: number): void {

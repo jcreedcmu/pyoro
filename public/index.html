@@ -3,11 +3,20 @@
   <head>
     <title>Mount Pyoro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- Added to the home screen, the game runs without browser chrome.
+         `black-translucent` lets it draw under the status bar, which the
+         play field's safe-area offset accounts for. -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pyoro">
+    <meta name="theme-color" content="#6a0d35">
     <script src="js/bundle.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
     <link rel="icon"
           type="image/png"
           href="assets/icon.png">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
   </head>
   <body>
     <canvas id="c"></canvas>

@@ -185,29 +185,31 @@ content to show there. The pad is the right use of it.
 Step 5: platform details
 ------------------------
 
-- Audio. `getSoundService` constructs the `AudioContext` and calls
-  `music.play()` on music the title screen has already downloaded. iOS
-  only permits this inside a user gesture handler. The title card click
-  supplies the gesture, but the call happens in the effect handler that
-  runs after the reducer. If audio does not start on iOS, call
-  `audio_context.resume()` directly in the click handler.
-- Viewport height. iOS Safari changes `innerHeight` as the URL bar
-  shows and hides. The existing `window.resize` handler covers most of
-  it; add a `visualViewport` resize listener as well.
-- PWA manifest. A small `manifest.json` pointing at the existing
-  `public/assets/icon.png`, with `display: standalone`, allows adding
-  the game to the home screen and running without browser chrome, which
-  is worth real vertical space on a phone.
+- Audio. iOS only permits an `AudioContext` to start inside a user
+  gesture handler, and `useEffectfulReducer` runs effects in a microtask
+  after the handler has returned. So `startAudio` in `src/sound.ts`
+  resumes the context and starts the music, and the title card calls it
+  straight from its click, before dispatching. The `startSound` effect
+  calls the same function, which does nothing the second time.
+- Viewport height. iOS Safari changes `innerHeight` as the url bar
+  shows and hides, so `visualViewport` gets a resize listener alongside
+  the one on `window`.
+- Home screen. `public/manifest.json` declares `display: standalone` and
+  portrait orientation, with the apple-specific meta tags for the same,
+  and `black-translucent` so the game draws under the status bar. The
+  icons are nearest-neighbor upscales of `assets/icon.png`, which is
+  16x16, at 12x and 32x; replace them with real artwork if the pixel
+  look is not wanted at that size.
 - Device testing. `make serve-lan` binds the dev server to all
   interfaces and prints the address to browse to from a phone on the
   same network. Note that this exposes the `/save` endpoint, which
   rewrites `src/level-data.ts`, to everything on that network.
 
-Order of work
--------------
+Status
+------
 
-Screen zoom, pointer events, the control pad, and steps 1 through 4 are
-in place. Step 5 remains.
+All of the above is implemented. What is left is verifying it on real
+hardware, which is the part nothing here can settle.
 
 Testing
 -------
@@ -218,5 +220,11 @@ opposite sides of the zoom cliff. Look for seams between tiles while
 pinching slowly, which is the failure mode the lattice rounding in step
 1 prevents.
 
-Touch behavior, audio autoplay policy, and URL bar resizing need a real
-device, reached over the local network.
+On a real device, over the local network:
+
+- Music starts on the title card tap, and sound effects play.
+- One finger pans the field, two pinch it, and a pad press brings the
+  player back into view.
+- The field and pad keep their split as the url bar shows and hides.
+- Added to the home screen, the game opens without browser chrome and
+  the top of the field clears the notch.

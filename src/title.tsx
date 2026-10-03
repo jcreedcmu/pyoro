@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Dispatch } from './action';
 import { LoadState, loadAssets } from './assets';
+import { startAudio } from './sound';
 
 // We start on *click* rather than "hit any key to continue" because
 // firefox doesn't recognize all keydown events as user intent to create
@@ -41,7 +42,14 @@ export function TitleCard(props: { loadState: LoadState, dispatch: Dispatch }): 
     tabIndex={-1}
     ref={e => { if (e != null) { e.focus() } }}
     className={ready ? 'title-card ready' : 'title-card'}
-    onClick={() => { if (ready) dispatch({ t: 'startGame' }); }}>
+    onClick={() => {
+      if (!ready)
+        return;
+      // Before dispatching, so that this still counts as happening
+      // inside the gesture handler.
+      startAudio();
+      dispatch({ t: 'startGame' });
+    }}>
     <img className="title-image" src="assets/title.png" />
     {status(loadState)}
   </div>

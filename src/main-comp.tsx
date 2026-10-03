@@ -281,7 +281,7 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     }
   }
 
-  function handleResize(e: UIEvent) {
+  function handleResize() {
     doResize();
   }
 
@@ -317,12 +317,17 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     document.addEventListener('wheel', handleMouseWheel);
     document.addEventListener('contextmenu', handleContextMenu);
     window.addEventListener('resize', handleResize);
+    // iOS Safari changes `innerHeight` as the url bar shows and hides,
+    // which the visual viewport reports and `window` does not always.
+    const vv = window.visualViewport;
+    vv?.addEventListener('resize', handleResize);
     return () => {
       logger('chatty', 'uninstalling global event handlers');
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('wheel', handleMouseWheel);
       document.removeEventListener('contextmenu', handleContextMenu);
       window.removeEventListener('resize', handleResize);
+      vv?.removeEventListener('resize', handleResize);
     }
   }, []);
 
