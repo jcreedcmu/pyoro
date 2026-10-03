@@ -1,3 +1,9 @@
+/* Read back in js, to place the play field clear of the notch that
+   `viewport-fit=cover` lets us draw underneath. */
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+}
+
 html, body {
   margin: 0;
   overflow: hidden;
@@ -172,17 +178,19 @@ html, body {
   background-color: #777;
 }
 
+/* The pad fills the window below the play field. `top` and
+   `--pad-height` are set from the field's size, so the buttons can grow
+   into whatever room is left without anything measuring the pad back. */
 .control-pad {
-  --pad-button: min(72px, 20vw);
+  --pad-button: min(96px, 26vw, calc((var(--pad-height, 200px) - 3.5em) / 2));
   position: absolute;
   left: 0px;
   right: 0px;
   bottom: 0px;
   z-index: 100;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  gap: 1.5em;
   box-sizing: border-box;
   padding: 0.75em 0.75em calc(0.75em + env(safe-area-inset-bottom));
   background-color: #222;
@@ -190,6 +198,15 @@ html, body {
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
+}
+
+/* Buttons sit at the bottom of the pad, within reach of a thumb, but
+   keep their own arrangement rather than bottom-aligning against
+   each other. */
+.control-pad-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5em;
 }
 
 .control-pad-dirs {

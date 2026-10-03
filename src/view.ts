@@ -525,6 +525,20 @@ function zoomOfAvailSize(availSize: Point, ratio: number): number {
   return devicePixelsPerGamePixel / (SCALE * ratio);
 }
 
+/** The play field's size in css pixels, when fitted into `availSize`. */
+export function fieldSizeInCss(availSize: Point): Point {
+  const zoom = zoomOfAvailSize(availSize, devicePixelRatio);
+  return vm(NUM_TILES, NT => NT * TILE_SIZE * SCALE * zoom);
+}
+
+/** The play field's rect in css pixels, as the browser lays it out. */
+export function fieldRectInCss(vd: ViewData): Rect {
+  return {
+    p: vscale(vd.origin, vd.zoom),
+    sz: vm(NUM_TILES, NT => NT * TILE_SIZE * SCALE * vd.zoom),
+  };
+}
+
 /**
  * Sizes the canvas to fill the window, and computes view data with the
  * play field centered in `avail`, a rect in css pixels relative to the

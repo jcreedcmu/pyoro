@@ -1,6 +1,6 @@
 import { NUM_TILES, SCALE, TILE_SIZE } from '../src/constants';
 import { Rect } from '../src/lib/types';
-import { canvasPointOfClientPoint, resizeView, ViewData } from '../src/view';
+import { canvasPointOfClientPoint, fieldRectInCss, fieldSizeInCss, resizeView, ViewData } from '../src/view';
 
 const FIELD_UNITS = {
   x: NUM_TILES.x * TILE_SIZE * SCALE,
@@ -19,14 +19,6 @@ function resizeIn(window: { x: number, y: number }, ratio: number, avail?: Rect)
   (globalThis as any).devicePixelRatio = ratio;
   const c = fakeCanvas();
   return { vd: resizeView(c, avail), c };
-}
-
-/** The play field's rect in css pixels, as the browser sees it. */
-function fieldRectInCss(vd: ViewData): Rect {
-  return {
-    p: { x: vd.origin.x * vd.zoom, y: vd.origin.y * vd.zoom },
-    sz: { x: FIELD_UNITS.x * vd.zoom, y: FIELD_UNITS.y * vd.zoom },
-  };
 }
 
 describe('resizeView', () => {
@@ -101,6 +93,32 @@ describe('resizeView', () => {
   it('bottoms out at one device pixel per game pixel', () => {
     const { vd } = resizeIn({ x: 100, y: 100 }, 1);
     expect(vd.zoom * SCALE * 1).toBe(1);
+  });
+});
+
+describe('fieldSizeInCss', () => {
+  it('agrees with where resizeView puts the field', () => {
+    for (const ratio of [1, 2, 3]) {
+      for (const size of [{ x: 390, y: 844 }, { x: 844, y: 390 }, { x: 1920, y: 1080 }]) {
+        const { vd } = resizeIn(size, ratio);
+        expect(fieldSizeInCss(size)).toEqual(fieldRectInCss(vd).sz);
+      }
+    }
+  });
+
+  it('puts the field at the top of a rect that exactly fits it', () => {
+    // This is what lets the pad claim everything under the field
+    // without anything having to measure the pad.
+    const window = { x: 390, y: 844 };
+    const forField = { x: window.x, y: window.y - 260 };
+    resizeIn(window, 3);
+    const avail: Rect = {
+      p: { x: 0, y: 0 },
+      sz: { x: forField.x, y: fieldSizeInCss(forField).y },
+    };
+    const field = fieldRectInCss(resizeIn(window, 3, avail).vd);
+    expect(field.p.y).toBeCloseTo(0);
+    expect(field.sz.y).toBeCloseTo(avail.sz.y);
   });
 });
 

@@ -87,8 +87,13 @@ function PadButton(props: PadButtonProps): JSX.Element {
   >{label}</button>;
 }
 
-export function ControlPad(props: { dispatch: Dispatch, padRef: React.Ref<HTMLDivElement> }): JSX.Element {
-  const { dispatch, padRef } = props;
+/**
+ * The pad fills the window below the play field. `top` is the field's
+ * bottom edge, and `height` is what is left under it, which is what
+ * the button size is derived from in css.
+ */
+export function ControlPad(props: { dispatch: Dispatch, top: number, height: number }): JSX.Element {
+  const { dispatch, top, height } = props;
 
   function dir(move: Move, label: string): JSX.Element {
     return <PadButton move={move} label={label} className="pad-button"
@@ -100,18 +105,22 @@ export function ControlPad(props: { dispatch: Dispatch, padRef: React.Ref<HTMLDi
       repeat={false} dispatch={dispatch} />;
   }
 
-  return <div className="control-pad" ref={padRef}>
-    <div className="control-pad-dirs">
-      {dir('up-left', '↖')}
-      {dir('up', '↑')}
-      {dir('up-right', '↗')}
-      {dir('left', '←')}
-      {dir('down', '↓')}
-      {dir('right', '→')}
-    </div>
-    <div className="control-pad-utils">
-      {util('reset', '⟳', 'restart level')}
-      {util('recenter', '⊙', 'recenter view')}
+  const style = { top: `${top}px`, '--pad-height': `${height}px` } as React.CSSProperties;
+
+  return <div className="control-pad" style={style}>
+    <div className="control-pad-row">
+      <div className="control-pad-dirs">
+        {dir('up-left', '↖')}
+        {dir('up', '↑')}
+        {dir('up-right', '↗')}
+        {dir('left', '←')}
+        {dir('down', '↓')}
+        {dir('right', '→')}
+      </div>
+      <div className="control-pad-utils">
+        {util('reset', '⟳', 'restart level')}
+        {util('recenter', '⊙', 'recenter view')}
+      </div>
     </div>
   </div>;
 }

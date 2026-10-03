@@ -12,7 +12,7 @@ import { ControlPad, useShowControlPad } from './control-pad';
 import { Rect } from './lib/types';
 import { Point } from './lib/point';
 import { cameraOfGesture, GestureAnchor } from './camera-gesture';
-import { canvasPointOfClientPoint, drawView, resizeView } from './view';
+import { canvasPointOfClientPoint, drawView, fieldRectInCss, fieldSizeInCss, resizeView } from './view';
 import { RenameLevel } from './components/rename-level';
 
 type CanvasProps = {
@@ -22,6 +22,20 @@ type CanvasProps = {
 
 function passthrough(k: string): boolean {
   return k == 'C-r' || k == 'C-S-i';
+}
+
+/** The least room the control pad is comfortable in, in css pixels. */
+const MIN_PAD_HEIGHT = 260;
+
+/**
+ * The height of whatever the system keeps to itself at the top of the
+ * window, which `viewport-fit=cover` puts us underneath. Zero in a
+ * browser tab, the notch in a standalone web app.
+ */
+function safeAreaTop(): number {
+  const declared = getComputedStyle(document.documentElement)
+    .getPropertyValue('--safe-area-top');
+  return parseFloat(declared) || 0;
 }
 
 function cursorOfToolState(toolState: ToolState): CSS.Property.Cursor {
@@ -179,6 +193,11 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     dispatch({ t: 'mouseWheel', delta: e.deltaY });
   }
 
+  // The pad is for playing, so it stays out of the way of the editor
+  // even on a device that would otherwise get one.
+  const showControlPad = useShowControlPad(state.settings.controlPad)
+    && state.iface.toolState.t == 'play_tool';
+
   // Touch on the play field moves the camera: one pointer pans, two
   // also pinch to zoom. Gameplay input all arrives through the control
   // pad, so there is nothing here to disambiguate against. Mouse
@@ -239,18 +258,21 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
       reanchorGesture();
   }
 
-  // The pad's measured height, kept in a ref as well as in state so
-  // that the resize listener, installed once, sees the current value.
-  const padHeightRef = React.useRef(0);
-  const [padHeight, setPadHeight] = React.useState(0);
-  const padRef = React.useRef<HTMLDivElement | null>(null);
-
-  /** The part of the window the play field gets, in css pixels. */
+  /**
+   * The part of the window the play field gets, in css pixels. With a
+   * control pad, the field takes the top of the window and the pad
+   * takes everything under it, so the field's own height is what
+   * decides where the pad begins.
+   */
   function availRect(): Rect {
-    return {
-      p: { x: 0, y: 0 },
-      sz: { x: innerWidth, y: Math.max(0, innerHeight - padHeightRef.current) },
-    };
+    if (!showControlPad)
+      return { p: { x: 0, y: 0 }, sz: { x: innerWidth, y: innerHeight } };
+    const top = safeAreaTop();
+    // The reserve only binds on a window too short to give the field
+    // its whole height, which in portrait it never is.
+    const reserve = Math.min(MIN_PAD_HEIGHT, innerHeight * 0.4);
+    const forField = { x: innerWidth, y: Math.max(0, innerHeight - top - reserve) };
+    return { p: { x: 0, y: top }, sz: { x: forField.x, y: fieldSizeInCss(forField).y } };
   }
 
   function doResize() {
@@ -304,27 +326,7 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     }
   }, []);
 
-  // The pad is for playing, so it stays out of the way of the editor
-  // even on a device that would otherwise get one.
-  const showControlPad = useShowControlPad(state.settings.controlPad)
-    && state.iface.toolState.t == 'play_tool';
-
-  React.useEffect(() => {
-    const el = padRef.current;
-    if (el == null) {
-      padHeightRef.current = 0;
-      setPadHeight(0);
-      return;
-    }
-    const ro = new ResizeObserver(() => {
-      padHeightRef.current = el.offsetHeight;
-      setPadHeight(el.offsetHeight);
-    });
-    ro.observe(el);
-    return () => { ro.disconnect(); };
-  }, [showControlPad]);
-
-  React.useEffect(() => { doResize(); }, [padHeight]);
+  React.useEffect(() => { doResize(); }, [showControlPad]);
 
   const dragHandler = (state.iface.mouse.t == 'tileDrag' || state.iface.mouse.t == 'panDrag')
     ? <DragHandler dispatch={dispatch} />
@@ -332,9 +334,13 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
 
   const canvasCursor = cursorOfToolState(state.iface.toolState);
 
+  // Where the pad begins: the bottom edge of the field as drawn.
+  const field = state.iface.vd == null ? null : fieldRectInCss(state.iface.vd);
+  const padTop = field == null ? 0 : field.p.y + field.sz.y;
+
   const settingsButtonStyle: React.CSSProperties = {};
   if (showControlPad) {
-    settingsButtonStyle.bottom = `${padHeight}px`;
+    settingsButtonStyle.bottom = `calc(100% - ${padTop}px)`;
   }
   else if (state.iface.toolState.t == 'pencil_tool') {
     settingsButtonStyle.bottom = '3.5em';
@@ -363,7 +369,9 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     {renameLevelModal}
     {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
     {state.iface.toolState.t == 'play_tool' ? repoLink() : undefined}
-    {showControlPad ? <ControlPad dispatch={dispatch} padRef={padRef} /> : undefined}
+    {showControlPad
+      ? <ControlPad dispatch={dispatch} top={padTop} height={Math.max(0, innerHeight - padTop)} />
+      : undefined}
     <div className="settings-button" style={settingsButtonStyle} onPointerDown={() => { dispatch({ t: 'openSettings' }); }}><img src={assets.gearUrl} width="48px" /></div>
   </div>;
 }
