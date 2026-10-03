@@ -1,7 +1,10 @@
-/* Read back in js, to place the play field clear of the notch that
-   `viewport-fit=cover` lets us draw underneath. */
+/* The bands the window divides into. Retune the layout here. */
 :root {
   --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --topbar-height: 48px;
+  --status-height: 32px;
+  --pad-fraction: 20%;
 }
 
 html, body {
@@ -11,7 +14,53 @@ html, body {
   /* cursor: none;  */
 }
 
-#render-root canvas {
+/* `fixed` with all four sides pinned is the viewport itself, so there
+   is no choice of height unit to get wrong, and a flex column divides
+   it into bands that always add up to it. Only the play band stretches;
+   the rest take a fixed height or a fixed share. */
+.app-root {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  background-color: #333333;
+}
+
+.band {
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.band-topbar {
+  flex-basis: calc(var(--topbar-height) + var(--safe-area-top));
+}
+
+/* min-height lets it give way to the fixed bands rather than pushing
+   them off the screen. position makes it the frame the field's overlays
+   are placed against. */
+.band-play {
+  flex: 1 1 0;
+  min-height: 0;
+  position: relative;
+}
+
+.band-status {
+  flex-basis: var(--status-height);
+}
+
+.band-pad {
+  flex-basis: calc(var(--pad-fraction) + var(--safe-area-bottom));
+}
+
+/* Sized from js to the band it sits in. Absolute, so that it cannot
+   feed its own size back into the band's. */
+.play-canvas {
+  position: absolute;
+  top: 0px;
+  left: 0px;
   display: block;
   touch-action: none;
   user-select: none;
@@ -19,20 +68,18 @@ html, body {
   -webkit-touch-callout: none;
 }
 
-#render-root {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  height: 100%;
-  height: 100dvh;
+/* Stretched by css; only its backing store is set from js. */
+.status-canvas {
+  display: block;
   width: 100%;
+  height: 100%;
 }
 
 /* Full-screen overlays: settings, and the rename-level and choose-key
    modals. They scroll when their content is taller than the viewport,
    and keep clear of notches and home indicators. */
 .overlay-container {
-  position: absolute;
+  position: fixed;
   top: 0px;
   left: 0px;
   right: 0px;
@@ -59,7 +106,7 @@ html, body {
 }
 
 .title-card {
-  position: absolute;
+  position: fixed;
   top: 0px;
   left: 0px;
   right: 0px;
@@ -178,21 +225,12 @@ html, body {
   background-color: #777;
 }
 
-/* The pad fills the window below the play field. `top` and
-   `--pad-height` are set from the field's size, so the buttons can grow
-   into whatever room is left without anything measuring the pad back. */
+/* Fills its band, with the home indicator counted as extra height on
+   the band rather than taken out of the buttons' share. */
 .control-pad {
-  --pad-button: min(96px, 26vw, calc((var(--pad-height, 200px) - 3.5em) / 2));
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  z-index: 100;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  height: 100%;
   box-sizing: border-box;
-  padding: 0.75em 0.75em calc(0.75em + env(safe-area-inset-bottom));
+  padding: 6px 6px calc(6px + var(--safe-area-bottom));
   background-color: #222;
   touch-action: none;
   user-select: none;
@@ -200,27 +238,69 @@ html, body {
   -webkit-touch-callout: none;
 }
 
-/* Buttons sit at the bottom of the pad, within reach of a thumb, but
-   keep their own arrangement rather than bottom-aligning against
-   each other. */
-.control-pad-row {
-  display: flex;
-  align-items: center;
-  gap: 1.5em;
-}
-
+/* The six directions divide up the whole pad, three across and two
+   down, so the buttons are as big as the band allows rather than being
+   square and leaving the width over. */
 .control-pad-dirs {
   display: grid;
-  grid-template-columns: repeat(3, var(--pad-button));
-  grid-auto-rows: var(--pad-button);
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   gap: 8px;
+  width: 100%;
+  height: 100%;
 }
 
-.control-pad-utils {
-  display: grid;
-  grid-template-columns: calc(var(--pad-button) * 0.7);
-  grid-auto-rows: calc(var(--pad-button) * 0.7);
-  gap: 8px;
+/* Actions that are not motion, kept at the top of the screen so that a
+   thumb reaching for a direction can't land on them. Fills its band. */
+.menu-bar {
+  height: 100%;
+  box-sizing: border-box;
+  padding-top: var(--safe-area-top);
+  padding-left: calc(0.5em + env(safe-area-inset-left));
+  padding-right: calc(0.5em + env(safe-area-inset-right));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #222;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.menu-bar-group {
+  display: flex;
+  gap: 0.5em;
+}
+
+.menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background-color: #4a4a4a;
+  color: #eee;
+  font-size: 22px;
+  line-height: 1;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu-button.pressed {
+  background-color: #8a8a8a;
+}
+
+/* The gear art is a flat #777 shape. In the menu bar it should read as
+   one of the buttons, so it is flattened and lifted to the same
+   foreground as their glyphs. The desktop gear keeps its own color. */
+.menu-gear {
+  width: 26px;
+  height: 26px;
+  filter: brightness(0) invert(0.93);
 }
 
 .pad-button {
@@ -232,15 +312,11 @@ html, body {
   border-radius: 12px;
   background-color: #4a4a4a;
   color: #eee;
-  font-size: calc(var(--pad-button) * 0.45);
+  font-size: 3.5vh;
+  font-size: 3.5dvh;
   line-height: 1;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
-}
-
-.pad-button.pad-util {
-  font-size: calc(var(--pad-button) * 0.32);
-  border-radius: 50%;
 }
 
 .pad-button.pressed {

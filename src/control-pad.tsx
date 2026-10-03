@@ -1,12 +1,8 @@
 import * as React from 'react';
 import { Dispatch } from './action';
 import { ControlPadSetting } from './state';
+import { TouchButton } from './touch-button';
 import { Move } from './types';
-
-// A player move animation is 4 frames, so repeating a bit slower than
-// that gives each move time to land before the next one starts.
-const REPEAT_DELAY_MS = 350;
-const REPEAT_INTERVAL_MS = 150;
 
 /**
  * Whether to show the pad, given the player's preference. 'auto' asks
@@ -32,95 +28,27 @@ export function useShowControlPad(setting: ControlPadSetting): boolean {
   }
 }
 
-type PadButtonProps = {
-  move: Move,
-  label: string,
-  className: string,
-  repeat: boolean,
-  dispatch: Dispatch,
-};
-
-function PadButton(props: PadButtonProps): JSX.Element {
-  const { move, label, className, repeat, dispatch } = props;
-  const timers = React.useRef<{ delay?: number, repeat?: number }>({});
-  const [pressed, setPressed] = React.useState(false);
-
-  function release(e: React.PointerEvent) {
-    e.stopPropagation();
-    cancelTimers();
-    setPressed(false);
-  }
-
-  function cancelTimers() {
-    clearTimeout(timers.current.delay);
-    clearInterval(timers.current.repeat);
-    timers.current = {};
-  }
-
-  React.useEffect(() => cancelTimers, []);
-
-  function press(e: React.PointerEvent) {
-    // Suppressing the default keeps focus on the canvas, which is where
-    // keydowns have to arrive for the keyboard to keep working. Stopping
-    // propagation keeps the tap away from the game's own document-level
-    // pointerdown listener.
-    e.preventDefault();
-    e.stopPropagation();
-    e.currentTarget.setPointerCapture(e.pointerId);
-    setPressed(true);
-    dispatch({ t: 'doMove', move });
-    if (repeat) {
-      timers.current.delay = window.setTimeout(() => {
-        timers.current.repeat = window.setInterval(
-          () => { dispatch({ t: 'doMove', move }); }, REPEAT_INTERVAL_MS);
-      }, REPEAT_DELAY_MS);
-    }
-  }
-
-  return <button
-    className={pressed ? `${className} pressed` : className}
-    onPointerDown={press}
-    onPointerUp={release}
-    onPointerCancel={release}
-    onLostPointerCapture={release}
-    onContextMenu={e => { e.preventDefault(); }}
-  >{label}</button>;
-}
-
 /**
- * The pad fills the window below the play field. `top` is the field's
- * bottom edge, and `height` is what is left under it, which is what
- * the button size is derived from in css.
+ * The directional pad, at the bottom of the screen where a thumb
+ * reaches it. Nothing else lives here: actions a misplaced thumb
+ * shouldn't trigger are up in the menu bar instead.
  */
-export function ControlPad(props: { dispatch: Dispatch, top: number, height: number }): JSX.Element {
-  const { dispatch, top, height } = props;
+export function ControlPad(props: { dispatch: Dispatch }): JSX.Element {
+  const { dispatch } = props;
 
   function dir(move: Move, label: string): JSX.Element {
-    return <PadButton move={move} label={label} className="pad-button"
-      repeat={true} dispatch={dispatch} />;
+    return <TouchButton className="pad-button" repeat={true}
+      press={() => dispatch({ t: 'doMove', move })}>{label}</TouchButton>;
   }
 
-  function util(move: Move, label: string, title: string): JSX.Element {
-    return <PadButton move={move} label={label} className="pad-button pad-util"
-      repeat={false} dispatch={dispatch} />;
-  }
-
-  const style = { top: `${top}px`, '--pad-height': `${height}px` } as React.CSSProperties;
-
-  return <div className="control-pad" style={style}>
-    <div className="control-pad-row">
-      <div className="control-pad-dirs">
-        {dir('up-left', '↖')}
-        {dir('up', '↑')}
-        {dir('up-right', '↗')}
-        {dir('left', '←')}
-        {dir('down', '↓')}
-        {dir('right', '→')}
-      </div>
-      <div className="control-pad-utils">
-        {util('reset', '⟳', 'restart level')}
-        {util('recenter', '⊙', 'recenter view')}
-      </div>
+  return <div className="control-pad">
+    <div className="control-pad-dirs">
+      {dir('up-left', '↖')}
+      {dir('up', '↑')}
+      {dir('up-right', '↗')}
+      {dir('left', '←')}
+      {dir('down', '↓')}
+      {dir('right', '→')}
     </div>
   </div>;
 }

@@ -12,7 +12,8 @@ import { ControlPad, useShowControlPad } from './control-pad';
 import { Rect } from './lib/types';
 import { Point } from './lib/point';
 import { cameraOfGesture, GestureAnchor } from './camera-gesture';
-import { canvasPointOfClientPoint, drawView, fieldRectInCss, fieldSizeInCss, resizeView } from './view';
+import { MenuBar } from './menu-bar';
+import { canvasPointOfClientPoint, drawStatus, drawView, resizeView } from './view';
 import { RenameLevel } from './components/rename-level';
 
 type CanvasProps = {
@@ -22,20 +23,6 @@ type CanvasProps = {
 
 function passthrough(k: string): boolean {
   return k == 'C-r' || k == 'C-S-i';
-}
-
-/** The least room the control pad is comfortable in, in css pixels. */
-const MIN_PAD_HEIGHT = 260;
-
-/**
- * The height of whatever the system keeps to itself at the top of the
- * window, which `viewport-fit=cover` puts us underneath. Zero in a
- * browser tab, the notch in a standalone web app.
- */
-function safeAreaTop(): number {
-  const declared = getComputedStyle(document.documentElement)
-    .getPropertyValue('--safe-area-top');
-  return parseFloat(declared) || 0;
 }
 
 function cursorOfToolState(toolState: ToolState): CSS.Property.Cursor {
@@ -198,6 +185,11 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
   const showControlPad = useShowControlPad(state.settings.controlPad)
     && state.iface.toolState.t == 'play_tool';
 
+  const playRef = React.useRef<HTMLDivElement | null>(null);
+  const statusRef = React.useRef<HTMLDivElement | null>(null);
+  const statusCanvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const [statusSize, setStatusSize] = React.useState<Point>({ x: 0, y: 0 });
+
   // Touch on the play field moves the camera: one pointer pans, two
   // also pinch to zoom. Gameplay input all arrives through the control
   // pad, so there is nothing here to disambiguate against. Mouse
@@ -259,30 +251,27 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
   }
 
   /**
-   * The part of the window the play field gets, in css pixels. With a
-   * control pad, the field takes the top of the window and the pad
-   * takes everything under it, so the field's own height is what
-   * decides where the pad begins.
+   * The box the play band occupies, which is the canvas's box too. Read
+   * off the element rather than worked out from the window, so that the
+   * canvas and the bands around it cannot come to different
+   * conclusions about how tall the window is.
    */
-  function availRect(): Rect {
-    if (!showControlPad)
-      return { p: { x: 0, y: 0 }, sz: { x: innerWidth, y: innerHeight } };
-    const top = safeAreaTop();
-    // The reserve only binds on a window too short to give the field
-    // its whole height, which in portrait it never is.
-    const reserve = Math.min(MIN_PAD_HEIGHT, innerHeight * 0.4);
-    const forField = { x: innerWidth, y: Math.max(0, innerHeight - top - reserve) };
-    return { p: { x: 0, y: top }, sz: { x: forField.x, y: fieldSizeInCss(forField).y } };
+  function playRect(): Rect | undefined {
+    const host = playRef.current;
+    if (host == null)
+      return undefined;
+    const r = host.getBoundingClientRect();
+    return {
+      p: { x: r.left, y: r.top },
+      sz: { x: Math.floor(r.width), y: Math.floor(r.height) },
+    };
   }
 
   function doResize() {
-    if (mc.current != null) {
-      dispatch({ t: 'resize', vd: resizeView(mc.current.c, availRect()) });
+    const rect = playRect();
+    if (mc.current != null && rect !== undefined && rect.sz.x > 0 && rect.sz.y > 0) {
+      dispatch({ t: 'resize', vd: resizeView(mc.current.c, rect) });
     }
-  }
-
-  function handleResize() {
-    doResize();
   }
 
   function handleContextMenu(e: Event) {
@@ -306,7 +295,7 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
       // Not sure why I need to delay this. But if I don't,
       // clicking on the title card doesn't keep focus on the canvas.
       setTimeout(() => { ci.c.focus(); }, 0);
-      dispatch({ t: 'resize', vd: resizeView(ci.c, availRect()) });
+      doResize();
     }
   );
 
@@ -316,22 +305,52 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
     document.addEventListener('pointerdown', handlePointerDown);
     document.addEventListener('wheel', handleMouseWheel);
     document.addEventListener('contextmenu', handleContextMenu);
-    window.addEventListener('resize', handleResize);
-    // iOS Safari changes `innerHeight` as the url bar shows and hides,
-    // which the visual viewport reports and `window` does not always.
-    const vv = window.visualViewport;
-    vv?.addEventListener('resize', handleResize);
     return () => {
       logger('chatty', 'uninstalling global event handlers');
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('wheel', handleMouseWheel);
       document.removeEventListener('contextmenu', handleContextMenu);
-      window.removeEventListener('resize', handleResize);
-      vv?.removeEventListener('resize', handleResize);
     }
   }, []);
 
-  React.useEffect(() => { doResize(); }, [showControlPad]);
+  // Watching the band itself covers every reason its size can change:
+  // the window resizing, the url bar sliding, the orientation turning,
+  // a band appearing or disappearing. Nothing has to guess at a window
+  // height. The canvas is positioned absolutely inside the band, so it
+  // cannot feed its own size back and set the observer off again.
+  React.useEffect(() => {
+    const host = playRef.current;
+    if (host == null)
+      return;
+    const ro = new ResizeObserver(() => { doResize(); });
+    ro.observe(host);
+    return () => { ro.disconnect(); };
+  }, [showControlPad]);
+
+  React.useEffect(() => {
+    const host = statusRef.current;
+    if (host == null)
+      return;
+    const ro = new ResizeObserver(() => {
+      const r = host.getBoundingClientRect();
+      setStatusSize({ x: Math.floor(r.width), y: Math.floor(r.height) });
+    });
+    ro.observe(host);
+    return () => { ro.disconnect(); };
+  }, [showControlPad]);
+
+  // Redrawn when the inventory changes or the band is resized; setting
+  // the backing store size clears it, so both have to come through here.
+  React.useEffect(() => {
+    const c = statusCanvasRef.current;
+    if (c == null || statusSize.x == 0 || statusSize.y == 0)
+      return;
+    c.width = statusSize.x * devicePixelRatio;
+    c.height = statusSize.y * devicePixelRatio;
+    const d = c.getContext('2d');
+    if (d != null)
+      drawStatus(d, assets.spriteImg, statusSize, state.game);
+  }, [statusSize, state.game, assets]);
 
   const dragHandler = (state.iface.mouse.t == 'tileDrag' || state.iface.mouse.t == 'panDrag')
     ? <DragHandler dispatch={dispatch} />
@@ -339,44 +358,61 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
 
   const canvasCursor = cursorOfToolState(state.iface.toolState);
 
-  // Where the pad begins: the bottom edge of the field as drawn.
-  const field = state.iface.vd == null ? null : fieldRectInCss(state.iface.vd);
-  const padTop = field == null ? 0 : field.p.y + field.sz.y;
-
-  const settingsButtonStyle: React.CSSProperties = {};
-  if (showControlPad) {
-    settingsButtonStyle.bottom = `calc(100% - ${padTop}px)`;
-  }
-  else if (state.iface.toolState.t == 'pencil_tool') {
-    settingsButtonStyle.bottom = '3.5em';
-  }
-  else {
-    settingsButtonStyle.bottom = '0';
-  }
+  // On a touch device the gear lives in the menu bar instead, out of
+  // reach of a thumb working the pad.
+  const settingsButtonStyle: React.CSSProperties = {
+    bottom: state.iface.toolState.t == 'pencil_tool' ? '3.5em' : '0',
+  };
 
   const renameLevelModal = state.modals.renameLevel ? <RenameLevel dispatch={dispatch} data={state.modals.renameLevel} levels={Object.keys(state.game.levels)} /> : undefined;
 
-  return <div>
-    <canvas style={{ cursor: canvasCursor }}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      onKeyUp={handleKeyUp}
-      ref={cref}
-      onPointerDown={handleCanvasPointerDown}
-      onPointerMove={handleCanvasPointerMove}
-      onPointerUp={handleCanvasPointerUp}
-      onPointerCancel={handleCanvasPointerUp}
-      onLostPointerCapture={handleCanvasPointerUp}
-    />
+  // The window divides into bands, top to bottom, and the play band
+  // takes whatever the fixed ones leave. On a touch device that is all
+  // four; otherwise just the field and the status bar, which sits
+  // pinned along the bottom. Everything that overlays the field lives
+  // inside the play band, so that `top` and `bottom` mean the field's
+  // edges rather than the window's.
+  return <>
+    <div className="app-root">
+      {showControlPad
+        ? <div className="band band-topbar">
+          <MenuBar dispatch={dispatch} gearUrl={assets.gearUrl} />
+        </div>
+        : undefined}
+
+      <div className="band band-play" ref={playRef}>
+        <canvas className="play-canvas" style={{ cursor: canvasCursor }}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          onKeyUp={handleKeyUp}
+          ref={cref}
+          onPointerDown={handleCanvasPointerDown}
+          onPointerMove={handleCanvasPointerMove}
+          onPointerUp={handleCanvasPointerUp}
+          onPointerCancel={handleCanvasPointerUp}
+          onLostPointerCapture={handleCanvasPointerUp}
+        />
+        {renderModifyPanel(state, dispatch)}
+        {renderLevelPicker(state, dispatch)}
+        {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
+        {state.iface.toolState.t == 'play_tool' && !showControlPad ? repoLink() : undefined}
+        {showControlPad
+          ? undefined
+          : <div className="settings-button" style={settingsButtonStyle}
+            onPointerDown={() => { dispatch({ t: 'openSettings' }); }}>
+            <img src={assets.gearUrl} width="48px" />
+          </div>}
+      </div>
+
+      <div className="band band-status" ref={statusRef}>
+        <canvas className="status-canvas" ref={statusCanvasRef} />
+      </div>
+
+      {showControlPad
+        ? <div className="band band-pad"><ControlPad dispatch={dispatch} /></div>
+        : undefined}
+    </div>
     {dragHandler}
-    {renderModifyPanel(state, dispatch)}
-    {renderLevelPicker(state, dispatch)}
     {renameLevelModal}
-    {renderTestTools(state, action => dispatch({ t: 'testToolsAction', action }))}
-    {state.iface.toolState.t == 'play_tool' ? repoLink() : undefined}
-    {showControlPad
-      ? <ControlPad dispatch={dispatch} top={padTop} height={Math.max(0, innerHeight - padTop)} />
-      : undefined}
-    <div className="settings-button" style={settingsButtonStyle} onPointerDown={() => { dispatch({ t: 'openSettings' }); }}><img src={assets.gearUrl} width="48px" /></div>
-  </div>;
+  </>;
 }

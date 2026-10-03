@@ -3,7 +3,7 @@ import { Action } from './action';
 import { Animation } from './animation';
 import { editTiles } from './constants';
 import { clampCamera } from './camera';
-import { cropLevel, getBoundRect, getInitOverlay, getMouseCache, renameLevel, setCurrentLevel, setMouseCache } from './game-state-access';
+import { cropLevel, getInitOverlay, getMouseCache, renameLevel, setCurrentLevel, setMouseCache } from './game-state-access';
 import { putDynamicTile, weakTileEq } from './layer';
 import { logger } from './debug';
 import { animator_for_move, handle_toolbar_mousedown, handle_world_drag, handle_world_mousedown, renderGameAnims, renderIfaceAnims, tileOfGameState } from './model';
@@ -172,7 +172,7 @@ export function reduceMain(s: MainState, a: Action): MainState {
     case 'resize':
       return produce(s, s => { s.iface.vd = a.vd; });
     case 'setCamera': {
-      const world_from_view = clampCamera(a.world_from_view, getBoundRect(s.game));
+      const world_from_view = clampCamera(a.world_from_view, s.game.player.pos);
       return produce(s, s => { s.iface.world_from_view = world_from_view; });
     }
     case 'mouseWheel': {

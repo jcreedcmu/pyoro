@@ -1,7 +1,6 @@
 import { NUM_TILES, TILE_SIZE } from './constants';
-import { Point, vdiag, vm, vm2, vmn, vsub } from './lib/point';
+import { Point, vdiag, vm, vm2, vmn } from './lib/point';
 import { apply, mkSE2, SE2 } from './lib/se2';
-import { Brect } from './lib/types';
 
 /**
  * How many world tiles the play field shows horizontally on a touch
@@ -45,8 +44,12 @@ export function centeredWorldFromView(p_in_world: Point, z: number): SE2 {
 /** The most the camera will zoom in. */
 export const MAX_CAMERA_ZOOM = 4;
 
-/** How far past the level's bounds the view may be panned, in tiles. */
-const PAN_MARGIN_TILES = 2;
+/**
+ * The most the camera will zoom out. At a half, a world tile covers
+ * half a sprite's worth of pixels and the field shows 48x36 tiles,
+ * which is the whole of the largest level.
+ */
+export const MIN_CAMERA_ZOOM = 0.5;
 
 function clamp1(x: number, lo: number, hi: number): number {
   return Math.min(Math.max(x, lo), hi);
@@ -58,32 +61,21 @@ export function cameraCenter(world_from_view: SE2): Point {
 }
 
 /**
- * The least the camera will zoom out: far enough to see the whole play
- * field, or the whole level when the level is bigger than the field.
+ * Keeps a camera within the zoom range, and pointed somewhere that
+ * still shows the cell the player is standing in. Everything else is
+ * fair game: the view may sit well outside the level's bounds, which is
+ * what lets a player look around freely.
  */
-export function minCameraZoom(bounds: Brect): number {
-  const size = vsub(bounds.max, bounds.min);
-  return Math.min(1,
-    NUM_TILES.x / Math.max(1, size.x),
-    NUM_TILES.y / Math.max(1, size.y));
-}
-
-/**
- * Keeps a camera within the zoom range and pointed at the level. The
- * view stays inside the level's bounds, or contains them outright on an
- * axis where the level is smaller than what the view shows, so the
- * level can never be panned off screen either way.
- */
-export function clampCamera(world_from_view: SE2, bounds: Brect): SE2 {
+export function clampCamera(world_from_view: SE2, p_in_world: Point): SE2 {
   const z = clamp1(cameraZoomOfWorldFromView(world_from_view),
-    minCameraZoom(bounds), MAX_CAMERA_ZOOM);
+    MIN_CAMERA_ZOOM, MAX_CAMERA_ZOOM);
   // Rebuilding around the center means clamping the zoom does not also
   // slide the view sideways.
   const centered = centeredWorldFromView(cameraCenter(world_from_view), z);
   const visible = vm(NUM_TILES, NT => NT / z);
-  const lo = vm(bounds.min, v => v - PAN_MARGIN_TILES);
-  const hi = vm(bounds.max, v => v + PAN_MARGIN_TILES);
+  // The player's cell spans one tile, so the field's near edge must be
+  // at or before it and its far edge at or after it.
   return mkSE2(centered.scale,
-    vmn([centered.translate, lo, hi, visible], ([t, lo, hi, vis]) =>
-      clamp1(t, Math.min(lo, hi - vis), Math.max(lo, hi - vis))));
+    vmn([centered.translate, p_in_world, visible], ([t, p, vis]) =>
+      clamp1(t, Math.min(p + 1 - vis, p), Math.max(p + 1 - vis, p))));
 }

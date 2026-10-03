@@ -9,7 +9,7 @@ import { apply_to_rect } from './lib/se2-extra';
 import { Rect } from './lib/types';
 import { DEBUG } from './debug';
 import { renderGameAnims, renderIfaceAnims, show_empty_tile_override, tileOfState } from './model';
-import { Combo, IfaceState, MainState } from './state';
+import { Combo, GameState, IfaceState, MainState } from './state';
 import { getTestState } from './test-state';
 import { getCanvasFromWorld, getWorldFromCanvas, getWorldFromView } from './transforms';
 import { Item, PlayerSprite, Tile, ToolTile } from './types';
@@ -38,9 +38,10 @@ export type FView = {
  * appears on screen.
  */
 export type ViewData = {
-  wsize: Point, // the overall window size
-  origin: Point, // the origin of the play area, as an offset from the browser window
+  wsize: Point, // the canvas's size
+  origin: Point, // the origin of the play area, as an offset within the canvas
   zoom: number, // css pixels per canvas unit
+  clientOrigin: Point, // where the canvas sits in the window, in css pixels
 };
 
 /**
@@ -88,8 +89,6 @@ function drawScaled(fv: FView, state: MainState): void {
     d.fillRect(origin.x, origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
     return;
   }
-
-  drawInventory(fv, state);
 
   if (DEBUG.devicePixelRatio) {
     d.fillStyle = "black";
@@ -371,7 +370,8 @@ function drawEditorStuff(fv: FView, state: MainState): void {
 
   // toolbar
   tools.forEach((t, ix) => {
-    raw_draw_sprite(fv, spriteLocOfTool(t == state.iface.toolState.t ? `${t}_active` : `${t}_inactive`),
+    raw_draw_sprite(fv.d, fv.spriteImg,
+      spriteLocOfTool(t == state.iface.toolState.t ? `${t}_active` : `${t}_inactive`),
       { p: { x: ix * TILE_SIZE * SCALE, y: TILE_SIZE * SCALE }, sz: vdiag(TILE_SIZE * SCALE) });
   });
 
@@ -390,52 +390,64 @@ function drawEditorStuff(fv: FView, state: MainState): void {
       const bus = tile.bus;
       tile = produce(tile, tl => { tl.on = levelInitBusState[bus] });
     }
-    raw_draw_sprite(fv, spriteLocOfTile(tile), { p: { x: ix * TILE_SIZE * SCALE, y: 0 }, sz: vdiag(TILE_SIZE * SCALE) });
+    raw_draw_sprite(fv.d, fv.spriteImg, spriteLocOfTile(tile),
+      { p: { x: ix * TILE_SIZE * SCALE, y: 0 }, sz: vdiag(TILE_SIZE * SCALE) });
   });
 
   // selected tile & selected tool
   drawInventorySelection(d, { x: state.iface.editTileIx, y: 0 });
 }
 
-function drawInventory(fv: FView, state: MainState): void {
-  const { d, vd: { origin } } = fv;
-  const i = state.game.inventory;
-  d.fillStyle = guiData.background_color;
-  const start = {
-    x: origin.x,
-    y: origin.y + (1 + NUM_TILES.y * TILE_SIZE) * SCALE,
-  };
-  d.fillRect(start.x, start.y,
-    NUM_INVENTORY_ITEMS * TILE_SIZE * SCALE, 1 * TILE_SIZE * SCALE);
+/** The items the status bar has a slot for, in order. */
+const STATUS_ITEMS: Item[] = ['teal_fruit', 'coin'];
 
-  function drawInventoryItem(item: Item, count: number, p: Point) {
-    const ipos = vplus(start, vscale(p, TILE_SIZE * SCALE));
-    raw_draw_sprite(fv, spriteLocOfTile({ t: 'item', item }), { p: ipos, sz: vdiag(SCALE * TILE_SIZE) });
+/**
+ * Draws the player's status onto its own canvas, which is its own band
+ * of the window rather than a strip of the play field. `size` is that
+ * band in css pixels; the backing store is expected to be `size` times
+ * the device pixel ratio.
+ *
+ * Slots are as tall as the band, so the sprites are legible at whatever
+ * height the band is given, independent of how far the field is zoomed.
+ */
+export function drawStatus(d: CanvasRenderingContext2D, spriteImg: HTMLImageElement,
+  size: Point, game: GameState): void {
+  const ratio = devicePixelRatio;
+  d.save();
+  d.scale(ratio, ratio);
+
+  d.fillStyle = guiData.background_color;
+  d.fillRect(0, 0, size.x, size.y);
+
+  const slot = Math.min(size.y, size.x / NUM_INVENTORY_ITEMS);
+
+  STATUS_ITEMS.forEach((item, ix) => {
+    const count = game.inventory[item];
+    if (count == undefined || count <= 0)
+      return;
+    const p = { x: ix * slot, y: (size.y - slot) / 2 };
+    raw_draw_sprite(d, spriteImg, spriteLocOfTile({ t: 'item', item }),
+      { p, sz: vdiag(slot) });
 
     // XXX temporary debugging count display, should do nice pixel font or something.
     if (count > 1) {
+      const badge = slot * 7 / 16;
+      const offset = slot - badge;
       d.fillStyle = 'white';
-      const size = 7 * SCALE;
-      const offset = SCALE * TILE_SIZE - size;
-      d.fillRect(ipos.x + offset, ipos.y + offset, size, size);
+      d.fillRect(p.x + offset, p.y + offset, badge, badge);
       d.fillStyle = 'black';
+      d.font = `${Math.round(badge * 0.9)}px sans-serif`;
       d.textBaseline = 'middle';
       d.textAlign = 'center';
-      d.fillText(`${count}`, ipos.x + offset + size / 2, ipos.y + offset + size / 2);
-    }
-  }
-
-  const items: Item[] = ['teal_fruit', 'coin'];
-  items.forEach((item, ix) => {
-    const count = i[item];
-    if (count != undefined && count > 0) {
-      drawInventoryItem(item, count, { x: ix, y: 0 });
+      d.fillText(`${count}`, p.x + offset + badge / 2, p.y + offset + badge / 2);
     }
   });
+
+  d.restore();
 }
 
-function raw_draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: boolean): void {
-  const d = fv.d;
+function raw_draw_sprite(d: CanvasRenderingContext2D, spriteImg: HTMLImageElement,
+  sprite_loc: Point, rect_in_canvas: Rect, flip?: boolean): void {
   d.save();
 
   if (flip) {
@@ -448,7 +460,7 @@ function raw_draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, fli
     };
   }
   d.imageSmoothingEnabled = false;
-  d.drawImage(fv.spriteImg,
+  d.drawImage(spriteImg,
     sprite_loc.x * TILE_SIZE, sprite_loc.y * TILE_SIZE,
     TILE_SIZE, TILE_SIZE,
     rect_in_canvas.p.x, rect_in_canvas.p.y,
@@ -457,14 +469,13 @@ function raw_draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, fli
 }
 
 function draw_sprite_in_world(fv: FView, iface: IfaceState, sprite_loc: Point, p_in_world: Point): void {
-  raw_draw_sprite(fv, sprite_loc, cell_rect_in_canvas(fv.vd, iface, p_in_world));
+  raw_draw_sprite(fv.d, fv.spriteImg, sprite_loc, cell_rect_in_canvas(fv.vd, iface, p_in_world));
 }
 
 // sprite_loc: position in sprite sheet, in tiles.
 function draw_sprite(fv: FView, sprite_loc: Point, rect_in_canvas: Rect, flip?: boolean): void {
-  const { vd: { origin } } = fv;
   // XXX check if totally out of bounds?
-  raw_draw_sprite(fv, sprite_loc, rect_in_canvas, flip);
+  raw_draw_sprite(fv.d, fv.spriteImg, sprite_loc, rect_in_canvas, flip);
 }
 
 
@@ -525,13 +536,7 @@ function zoomOfAvailSize(availSize: Point, ratio: number): number {
   return devicePixelsPerGamePixel / (SCALE * ratio);
 }
 
-/** The play field's size in css pixels, when fitted into `availSize`. */
-export function fieldSizeInCss(availSize: Point): Point {
-  const zoom = zoomOfAvailSize(availSize, devicePixelRatio);
-  return vm(NUM_TILES, NT => NT * TILE_SIZE * SCALE * zoom);
-}
-
-/** The play field's rect in css pixels, as the browser lays it out. */
+/** The play field's rect in css pixels, relative to the canvas. */
 export function fieldRectInCss(vd: ViewData): Rect {
   return {
     p: vscale(vd.origin, vd.zoom),
@@ -540,36 +545,31 @@ export function fieldRectInCss(vd: ViewData): Rect {
 }
 
 /**
- * Sizes the canvas to fill the window, and computes view data with the
- * play field centered in `avail`, a rect in css pixels relative to the
- * window. `avail` defaults to the whole window.
+ * Sizes the canvas to `rect`, the box it occupies in the window, and
+ * computes view data with the play field centered in it. The canvas is
+ * the whole of the area the field has to work with, so there is no
+ * second rect to reconcile it against.
  */
-export function resizeView(c: HTMLCanvasElement, avail?: Rect): ViewData {
+export function resizeView(c: HTMLCanvasElement, rect: Rect): ViewData {
   const ratio = devicePixelRatio;
+  const { p: clientOrigin, sz } = rect;
 
-  const ow = innerWidth;
-  const oh = innerHeight;
+  c.width = sz.x * ratio;
+  c.height = sz.y * ratio;
 
-  c.width = ow * ratio;
-  c.height = oh * ratio;
+  c.style.width = sz.x + 'px';
+  c.style.height = sz.y + 'px';
 
-  c.style.width = ow + 'px';
-  c.style.height = oh + 'px';
+  const zoom = zoomOfAvailSize(sz, ratio);
+  const wsize = vm(sz, s => int(s / zoom));
+  const origin = vm2(wsize, NUM_TILES, (w, NT) => int((w - NT * TILE_SIZE * SCALE) / 2));
 
-  const availRect = avail ?? { p: { x: 0, y: 0 }, sz: { x: ow, y: oh } };
-  const zoom = zoomOfAvailSize(availRect.sz, ratio);
-
-  const wsize = vm({ x: ow / zoom, y: oh / zoom }, w => int(w));
-
-  const center = vm2(availRect.p, availRect.sz, (p, sz) => (p + sz / 2) / zoom);
-  const origin = vm2(center, NUM_TILES, (c, NT) => int(c - NT * TILE_SIZE * SCALE / 2));
-
-  return { origin, wsize, zoom };
+  return { origin, wsize, zoom, clientOrigin };
 }
 
 /** Converts a point in browser client coordinates to canvas units. */
 export function canvasPointOfClientPoint(vd: ViewData, p: Point): Point {
-  return vscale(p, 1 / vd.zoom);
+  return vscale(vsub(p, vd.clientOrigin), 1 / vd.zoom);
 }
 
 export function wpoint_of_vd(vd: ViewData, p_in_canvas: Point, s: MainState): WidgetPoint {
