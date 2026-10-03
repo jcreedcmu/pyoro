@@ -14,7 +14,7 @@ const EPSILON = 1e-9;
 /** A state whose view is centered on `center` at `zoom`. */
 function stateAt(center: Point, zoom: number): MainState {
   return produce(initMainState, s => {
-    s.iface.world_from_view = centeredWorldFromView(center, zoom);
+    s.iface.world_from_view = centeredWorldFromView(center, zoom, NUM_TILES);
   });
 }
 

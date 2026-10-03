@@ -17,10 +17,11 @@ function fakeCanvas(): HTMLCanvasElement {
  * canvas is the whole of what the play field has to work with, so this
  * is the only geometry it is given.
  */
-function resizeIn(box: Rect, ratio: number): { vd: ViewData, c: HTMLCanvasElement } {
+function resizeIn(box: Rect, ratio: number, fill = false):
+  { vd: ViewData, c: HTMLCanvasElement } {
   (globalThis as any).devicePixelRatio = ratio;
   const c = fakeCanvas();
-  return { vd: resizeView(c, box), c };
+  return { vd: resizeView(c, box, fill), c };
 }
 
 /** A canvas of the given size at the top left of the window. */
@@ -87,6 +88,40 @@ describe('resizeView', () => {
   it('bottoms out at one device pixel per game pixel', () => {
     const { vd } = resizeIn(at({ x: 100, y: 100 }), 1);
     expect(vd.zoom * SCALE * 1).toBe(1);
+  });
+});
+
+describe('resizeView filling the canvas', () => {
+  it('covers the canvas exactly, with no letterbox', () => {
+    for (const box of [{ x: 390, y: 560 }, { x: 375, y: 430 }, { x: 820, y: 900 }]) {
+      const { vd } = resizeIn(at(box), 3, true);
+      const field = fieldRectInCss(vd);
+      expect(vd.origin).toEqual({ x: 0, y: 0 });
+      expect(field.sz.x).toBeCloseTo(box.x);
+      expect(field.sz.y).toBeCloseTo(box.y);
+    }
+  });
+
+  it('keeps the field the nominal number of tiles wide', () => {
+    // So that the same amount of level is visible across, whatever the
+    // screen's width, and only the vertical extent follows the shape of
+    // the window.
+    for (const box of [{ x: 390, y: 560 }, { x: 375, y: 430 }, { x: 820, y: 900 }]) {
+      const { vd } = resizeIn(at(box), 3, true);
+      expect(vd.fsize.x / TILE_SIZE).toBeCloseTo(NUM_TILES.x, 0);
+    }
+  });
+
+  it('shows more tiles vertically than the nominal field does', () => {
+    // A 4:3 field in a portrait window would letterbox; filling it
+    // means the extra room goes to more rows of world.
+    const { vd } = resizeIn(at({ x: 390, y: 560 }), 3, true);
+    expect(vd.fsize.y / TILE_SIZE).toBeGreaterThan(NUM_TILES.y);
+  });
+
+  it('leaves the nominal field alone when not filling', () => {
+    const { vd } = resizeIn(at({ x: 390, y: 560 }), 3);
+    expect(vd.fsize).toEqual({ x: NUM_TILES.x * TILE_SIZE, y: NUM_TILES.y * TILE_SIZE });
   });
 });
 

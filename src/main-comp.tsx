@@ -270,7 +270,9 @@ export function MainComp(props: { state: MainState, assets: Assets, dispatch: Di
   function doResize() {
     const rect = playRect();
     if (mc.current != null && rect !== undefined && rect.sz.x > 0 && rect.sz.y > 0) {
-      dispatch({ t: 'resize', vd: resizeView(mc.current.c, rect) });
+      // On a touch device the field covers the whole play band; on a
+      // desktop it keeps its nominal size, centered.
+      dispatch({ t: 'resize', vd: resizeView(mc.current.c, rect, showControlPad) });
     }
   }
 

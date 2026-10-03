@@ -10,7 +10,7 @@ import { apply, composen, inverse, translate } from './lib/se2';
 import { Board, entityAtPoint, ForcedBlock, ForceType, getItem, isClimb, isDeadly, isSupportedInStateExcluding } from './model-utils';
 import { entityTick, fblock, SupportData } from './physics';
 import { Combo, GameState, IfaceState, MainState, ModifyPanelState, Player, ToolState } from "./state";
-import { getCanvasFromView, getWorldFromView, getWorldFromViewTiles } from './transforms';
+import { getCanvasFromView, getFieldTiles, getWorldFromView, getWorldFromViewTiles } from './transforms';
 import { DynamicTile, Facing, MotiveMove, Move, PlayerSprite, Tile, Tool } from './types';
 import { clamp, mapValues, max } from './util';
 import { ViewData, WidgetPoint } from './view';
@@ -347,8 +347,8 @@ export function animateViewPort(s: MainState, move: Move, p_in_world: Point | un
     return [];
   const p_in_viewTiles = apply(inverse(getWorldFromViewTiles(s.iface)), p_in_world);
   const zoom = cameraZoomOfWorldFromView(getWorldFromView(s.iface));
-  const dpos_in_world = vm2(p_in_viewTiles, NUM_TILES,
-    (x, NT) => viewPortCorrection(x, NT, zoom));
+  const dpos_in_world = vm2(p_in_viewTiles, getFieldTiles(s.iface.vd),
+    (x, ft) => viewPortCorrection(x, ft, zoom));
   if (dpos_in_world.x == 0 && dpos_in_world.y == 0)
     return [];
   return [{ t: 'ViewPortAnimation', dpos_in_world }];

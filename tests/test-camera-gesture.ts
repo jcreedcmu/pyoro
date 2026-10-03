@@ -11,9 +11,13 @@ import { getCanvasFromView } from '../src/transforms';
 import { ViewData } from '../src/view';
 
 const vd: ViewData = {
-  origin: { x: 100, y: 50 }, wsize: { x: 800, y: 600 }, zoom: 1,
+  origin: { x: 100, y: 50 }, wsize: { x: 800, y: 600 },
+  fsize: { x: NUM_TILES.x * 16, y: NUM_TILES.y * 16 }, zoom: 1,
   clientOrigin: { x: 0, y: 0 },
 };
+
+/** The nominal field, which is what these tests frame things against. */
+const FIELD = NUM_TILES;
 
 /** The world point under a canvas point, for a given camera. */
 function worldAt(world_from_view: SE2, p_in_canvas: Point): Point {
@@ -21,7 +25,7 @@ function worldAt(world_from_view: SE2, p_in_canvas: Point): Point {
 }
 
 function anchorAt(points: Point[], zoom = 1): GestureAnchor {
-  return { points, world_from_view: centeredWorldFromView({ x: 0, y: 0 }, zoom) };
+  return { points, world_from_view: centeredWorldFromView({ x: 0, y: 0 }, zoom, FIELD) };
 }
 
 describe('cameraOfGesture', () => {
@@ -101,23 +105,24 @@ describe('clampCamera', () => {
   const player = { x: 0, y: 0 };
 
   it('leaves a camera in range alone', () => {
-    const cam = centeredWorldFromView({ x: 0, y: 0 }, 2);
-    expect(clampCamera(cam, player)).toEqual(cam);
+    const cam = centeredWorldFromView({ x: 0, y: 0 }, 2, FIELD);
+    expect(clampCamera(cam, player, FIELD)).toEqual(cam);
   });
 
   it('refuses to zoom in past the maximum', () => {
-    const clamped = clampCamera(centeredWorldFromView(player, 50), player);
+    const clamped = clampCamera(centeredWorldFromView(player, 50, FIELD), player, FIELD);
     expect(cameraZoomOfWorldFromView(clamped)).toBeCloseTo(MAX_CAMERA_ZOOM);
   });
 
   it('refuses to zoom out past the minimum', () => {
-    const clamped = clampCamera(centeredWorldFromView(player, 0.01), player);
+    const clamped = clampCamera(centeredWorldFromView(player, 0.01, FIELD), player, FIELD);
     expect(cameraZoomOfWorldFromView(clamped)).toBeCloseTo(MIN_CAMERA_ZOOM);
   });
 
   it('keeps the zoom centered where it was when it clamps', () => {
     const center = { x: 7, y: -3 };
-    const clamped = clampCamera(centeredWorldFromView(center, 50), { x: 7, y: -3 });
+    const clamped = clampCamera(
+      centeredWorldFromView(center, 50, FIELD), { x: 7, y: -3 }, FIELD);
     // Zoom clamping must not slide the view, only scale it.
     const visible = NUM_TILES.x / MAX_CAMERA_ZOOM;
     expect(clamped.translate.x).toBeCloseTo(center.x - visible / 2);
@@ -126,9 +131,9 @@ describe('clampCamera', () => {
   it('does not care where the level is, only where the player is', () => {
     // The view sits ten tiles off from anything the start level
     // contains, which is allowed because the player is still shown.
-    const cam = centeredWorldFromView({ x: 10, y: 6 }, 1);
+    const cam = centeredWorldFromView({ x: 10, y: 6 }, 1, FIELD);
     expect(showsCell(cam, player)).toBe(true);
-    expect(clampCamera(cam, player)).toEqual(cam);
+    expect(clampCamera(cam, player, FIELD)).toEqual(cam);
   });
 
   it('keeps the player on screen however far the view is panned', () => {
@@ -137,7 +142,7 @@ describe('clampCamera', () => {
         { x: 900, y: 0 }, { x: -900, y: 0 }, { x: 0, y: 900 },
         { x: 0, y: -900 }, { x: 40, y: -40 },
       ]) {
-        const clamped = clampCamera(centeredWorldFromView(center, zoom), player);
+        const clamped = clampCamera(centeredWorldFromView(center, zoom, FIELD), player, FIELD);
         expect(showsCell(clamped, player)).toBe(true);
       }
     }
@@ -146,15 +151,15 @@ describe('clampCamera', () => {
   it('stops exactly at the edge, not a tile short of it', () => {
     // Panned hard to the right, the player's cell ends up flush against
     // the left edge of the field.
-    const clamped = clampCamera(centeredWorldFromView({ x: 900, y: 0 }, 1), player);
+    const clamped = clampCamera(centeredWorldFromView({ x: 900, y: 0 }, 1, FIELD), player, FIELD);
     expect(clamped.translate.x).toBeCloseTo(player.x);
   });
 
   it('follows the player rather than the level', () => {
-    const cam = centeredWorldFromView({ x: 0, y: 0 }, MAX_CAMERA_ZOOM);
+    const cam = centeredWorldFromView({ x: 0, y: 0 }, MAX_CAMERA_ZOOM, FIELD);
     // A player far outside the view drags it along to stay visible.
     const far = { x: 30, y: 20 };
-    expect(showsCell(clampCamera(cam, far), far)).toBe(true);
+    expect(showsCell(clampCamera(cam, far, FIELD), far)).toBe(true);
   });
 
   it('leaves the camera the game starts with alone', () => {
@@ -163,8 +168,8 @@ describe('clampCamera', () => {
     const pos = initMainState.game.player.pos;
     for (const zoom of [1, NUM_TILES.x / DEFAULT_TILES_VISIBLE_X]) {
       const cam = centeredWorldFromView(
-        cameraCenter(initMainState.iface.world_from_view), zoom);
-      expect(clampCamera(cam, pos)).toEqual(cam);
+        cameraCenter(initMainState.iface.world_from_view, FIELD), zoom, FIELD);
+      expect(clampCamera(cam, pos, FIELD)).toEqual(cam);
     }
   });
 });

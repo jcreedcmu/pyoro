@@ -33,12 +33,12 @@ export function defaultCameraZoom(): number {
 }
 
 /**
- * A camera at zoom `z` that puts `p_in_world` at the center of the
- * play field.
+ * A camera at zoom `z` that puts `p_in_world` at the center of a play
+ * field `fieldTiles` tiles across, as reported by `getFieldTiles`.
  */
-export function centeredWorldFromView(p_in_world: Point, z: number): SE2 {
+export function centeredWorldFromView(p_in_world: Point, z: number, fieldTiles: Point): SE2 {
   return mkSE2(cameraScaleOfZoom(z),
-    vm2(p_in_world, NUM_TILES, (p, NT) => p - NT / (2 * z)));
+    vm2(p_in_world, fieldTiles, (p, ft) => p - ft / (2 * z)));
 }
 
 /** The most the camera will zoom in. */
@@ -56,8 +56,8 @@ function clamp1(x: number, lo: number, hi: number): number {
 }
 
 /** The world point at the center of the play field. */
-export function cameraCenter(world_from_view: SE2): Point {
-  return apply(world_from_view, vm(NUM_TILES, NT => NT * TILE_SIZE / 2));
+export function cameraCenter(world_from_view: SE2, fieldTiles: Point): Point {
+  return apply(world_from_view, vm(fieldTiles, ft => ft * TILE_SIZE / 2));
 }
 
 /**
@@ -66,13 +66,14 @@ export function cameraCenter(world_from_view: SE2): Point {
  * fair game: the view may sit well outside the level's bounds, which is
  * what lets a player look around freely.
  */
-export function clampCamera(world_from_view: SE2, p_in_world: Point): SE2 {
+export function clampCamera(world_from_view: SE2, p_in_world: Point, fieldTiles: Point): SE2 {
   const z = clamp1(cameraZoomOfWorldFromView(world_from_view),
     MIN_CAMERA_ZOOM, MAX_CAMERA_ZOOM);
   // Rebuilding around the center means clamping the zoom does not also
   // slide the view sideways.
-  const centered = centeredWorldFromView(cameraCenter(world_from_view), z);
-  const visible = vm(NUM_TILES, NT => NT / z);
+  const centered = centeredWorldFromView(
+    cameraCenter(world_from_view, fieldTiles), z, fieldTiles);
+  const visible = vm(fieldTiles, ft => ft / z);
   // The player's cell spans one tile, so the field's near edge must be
   // at or before it and its far edge at or after it.
   return mkSE2(centered.scale,

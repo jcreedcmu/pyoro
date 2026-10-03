@@ -11,6 +11,7 @@ import { runSetter } from './optic';
 import { ButtonedTileFields, DoorTileFields, MainState, TimedTileFields } from './state';
 import * as testTools from './test-tools';
 import { DynamicTile, Move, Tile } from './types';
+import { getFieldTiles } from './transforms';
 import { canvasPointOfClientPoint, wpoint_of_vd } from './view';
 import { mkLevel } from './level';
 import { mod } from './util';
@@ -172,7 +173,8 @@ export function reduceMain(s: MainState, a: Action): MainState {
     case 'resize':
       return produce(s, s => { s.iface.vd = a.vd; });
     case 'setCamera': {
-      const world_from_view = clampCamera(a.world_from_view, s.game.player.pos);
+      const world_from_view = clampCamera(a.world_from_view, s.game.player.pos,
+        getFieldTiles(s.iface.vd));
       return produce(s, s => { s.iface.world_from_view = world_from_view; });
     }
     case 'mouseWheel': {

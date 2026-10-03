@@ -1,5 +1,6 @@
 import { initBindings } from "./bindings";
 import { centeredWorldFromView, defaultCameraZoom } from "./camera";
+import { NUM_TILES } from "./constants";
 import { mkLevel } from "./level";
 import { allLevels } from "./level-data";
 import { MainState, SettingsState, State, init_player } from "./state";
@@ -40,7 +41,10 @@ export const initMainState: MainState = {
   },
   iface: {
     keysDown: {},
-    world_from_view: centeredWorldFromView(INITIAL_VIEW_CENTER, defaultCameraZoom()),
+    // No canvas has been measured yet, so the field is taken to be its
+     // nominal size; the clamp sorts it out on the first resize.
+    world_from_view: centeredWorldFromView(
+      INITIAL_VIEW_CENTER, defaultCameraZoom(), NUM_TILES),
     blackout: 0,
     editPageIx: 0,
     editTileIx: 0,

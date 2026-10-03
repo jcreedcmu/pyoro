@@ -10,7 +10,7 @@ import { computeCombo, dynamicTileOfGameState, tileOfGameState } from './model';
 import { itemTimeLimit } from './model-utils';
 import { PhysicsEntityState } from './physics';
 import { GameState, IfaceState, MainState } from './state';
-import { getWorldFromView, lerpSE2 } from './transforms';
+import { getFieldTiles, getWorldFromView, lerpSE2 } from './transforms';
 import { Bus, Facing, Item, PlayerSprite } from './types';
 
 /**
@@ -91,6 +91,7 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
   const { game, iface } = state;
   // Animations that reframe the view keep whatever zoom the player is at.
   const zoom = cameraZoomOfWorldFromView(getWorldFromView(iface));
+  const fieldTiles = getFieldTiles(iface.vd);
 
   switch (a.t) {
     case 'PlayerAnimation': return iface;
@@ -112,7 +113,8 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
         }
       });
       if (fr >= DEATH_FADE_OUT) {
-        blackout = setWorldFromView(blackout, centeredWorldFromView(game.lastSave, zoom));
+        blackout = setWorldFromView(blackout,
+          centeredWorldFromView(game.lastSave, zoom, fieldTiles));
       }
       return blackout;
     }
@@ -120,7 +122,8 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
     case 'RecenterAnimation': {
       // Recentering is also the way back out of a zoom the player
       // pinched to, so it restores the default rather than keeping it.
-      const target = centeredWorldFromView(game.player.pos, defaultCameraZoom());
+      const target = centeredWorldFromView(
+        game.player.pos, defaultCameraZoom(), fieldTiles);
       return setWorldFromView(iface, lerpSE2(getWorldFromView(iface), target, t));
     }
     case 'ItemGetAnimation': return iface;
@@ -140,7 +143,8 @@ export function applyIfaceAnimation(a: Animation, state: MainState, frc: number 
         }
       });
       if (fr >= CHANGE_ROOM_FADE_OUT)
-        blackout = setWorldFromView(blackout, centeredWorldFromView(a.newPosition, zoom));
+        blackout = setWorldFromView(blackout,
+          centeredWorldFromView(a.newPosition, zoom, fieldTiles));
       return blackout;
     }
     case 'EntityAnimation': {

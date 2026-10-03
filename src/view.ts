@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools, viewRectInView } from './constants';
+import { COMBO_THRESHOLD, editTiles, guiData, NUM_INVENTORY_ITEMS, NUM_TILES, rotateTile, SCALE, TILE_SIZE, tools } from './constants';
 import { getBoundRect, getCurrentLevel, getCurrentLevelData, isToolbarActive } from './game-state-access';
 import { emptyTile, getItem, PointMap, putItem } from './layer';
 import { fillRect, fillText, pathRect, strokeRect } from './lib/dutil';
@@ -31,18 +31,23 @@ export type FView = {
 }
 
 /**
- * Geometry of the drawing surface. The `wsize` and `origin` fields are
- * measured in *canvas units*, which are css pixels divided by `zoom`.
- * All drawing happens in canvas units, so that the play field is always
- * `NUM_TILES * TILE_SIZE * SCALE` units across no matter how large it
- * appears on screen.
+ * Geometry of the drawing surface. `wsize` and `origin` are measured in
+ * *canvas units*, which are css pixels divided by `zoom`, and all
+ * drawing happens in canvas units. `fsize` is in view pixels, which are
+ * canvas units divided by `SCALE`.
  */
 export type ViewData = {
   wsize: Point, // the canvas's size
   origin: Point, // the origin of the play area, as an offset within the canvas
+  fsize: Point, // the play area's size, in view pixels
   zoom: number, // css pixels per canvas unit
   clientOrigin: Point, // where the canvas sits in the window, in css pixels
 };
+
+/** The play field's rect within the canvas, in canvas units. */
+export function fieldRectInCanvas(vd: ViewData): Rect {
+  return { p: vd.origin, sz: vm(vd.fsize, s => s * SCALE) };
+}
 
 /**
  * Returns combo data in human readable form
@@ -53,20 +58,20 @@ export function stringOfCombo(c: Combo): string {
 }
 
 function drawScaled(fv: FView, state: MainState): void {
-  const { d, vd: { origin, wsize } } = fv;
+  const { d, vd } = fv;
+  const { origin, wsize } = vd;
+  const field = fieldRectInCanvas(vd);
 
   // background
   d.fillStyle = guiData.stage_color;
   d.fillRect(0, 0, wsize.x, wsize.y);
   d.fillStyle = guiData.background_color;
-  d.fillRect(origin.x, origin.y,
-    NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
+  d.fillRect(field.p.x, field.p.y, field.sz.x, field.sz.y);
 
   // set up clip rect for main play field
   d.save();
   d.beginPath();
-  d.rect(origin.x, origin.y,
-    NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
+  d.rect(field.p.x, field.p.y, field.sz.x, field.sz.y);
   d.clip();
 
   drawField(fv, state);
@@ -86,7 +91,7 @@ function drawScaled(fv: FView, state: MainState): void {
   if (state.iface.blackout) {
     const c = u.rgbOfColor(guiData.stage_color);
     d.fillStyle = rgba(c.r, c.g, c.b, state.iface.blackout);
-    d.fillRect(origin.x, origin.y, NUM_TILES.x * TILE_SIZE * SCALE, NUM_TILES.y * TILE_SIZE * SCALE);
+    d.fillRect(field.p.x, field.p.y, field.sz.x, field.sz.y);
     return;
   }
 
@@ -300,7 +305,8 @@ function drawField(fv: FView, state: MainState): void {
   const emptyTileOverride: PointMap<boolean> = { tiles: {} };
   putItem(emptyTileOverride, state.game.lastSave, true);
 
-  const viewBrect_in_world = u.brectOfRect(apply_to_rect(world_from_view, viewRectInView));
+  const viewRect: Rect = { p: { x: 0, y: 0 }, sz: state.iface.vd?.fsize ?? fv.vd.fsize };
+  const viewBrect_in_world = u.brectOfRect(apply_to_rect(world_from_view, viewRect));
   const fmin = vint(viewBrect_in_world.min);
   const fmax = vint(viewBrect_in_world.max);
 
@@ -540,7 +546,7 @@ function zoomOfAvailSize(availSize: Point, ratio: number): number {
 export function fieldRectInCss(vd: ViewData): Rect {
   return {
     p: vscale(vd.origin, vd.zoom),
-    sz: vm(NUM_TILES, NT => NT * TILE_SIZE * SCALE * vd.zoom),
+    sz: vm(vd.fsize, s => s * SCALE * vd.zoom),
   };
 }
 
@@ -550,7 +556,7 @@ export function fieldRectInCss(vd: ViewData): Rect {
  * the whole of the area the field has to work with, so there is no
  * second rect to reconcile it against.
  */
-export function resizeView(c: HTMLCanvasElement, rect: Rect): ViewData {
+export function resizeView(c: HTMLCanvasElement, rect: Rect, fill: boolean): ViewData {
   const ratio = devicePixelRatio;
   const { p: clientOrigin, sz } = rect;
 
@@ -560,11 +566,31 @@ export function resizeView(c: HTMLCanvasElement, rect: Rect): ViewData {
   c.style.width = sz.x + 'px';
   c.style.height = sz.y + 'px';
 
+  if (fill) {
+    // The field covers the whole canvas. Its width stays `NUM_TILES.x`
+    // tiles across, so the same amount of level is visible whatever the
+    // screen's width, and its height is however many tiles the canvas
+    // has room for at that scale.
+    const zoom = sz.x / (NUM_TILES.x * TILE_SIZE * SCALE);
+    // Taken straight off the canvas rather than by way of a rounded
+    // `wsize`, so that the field covers it to the pixel and leaves no
+    // sliver of stage color along an edge.
+    const fsize = vm(sz, s => s / (SCALE * zoom));
+    return {
+      origin: { x: 0, y: 0 },
+      wsize: vm(fsize, f => f * SCALE),
+      fsize,
+      zoom,
+      clientOrigin,
+    };
+  }
+
   const zoom = zoomOfAvailSize(sz, ratio);
   const wsize = vm(sz, s => int(s / zoom));
-  const origin = vm2(wsize, NUM_TILES, (w, NT) => int((w - NT * TILE_SIZE * SCALE) / 2));
+  const fsize = vm(NUM_TILES, NT => NT * TILE_SIZE);
+  const origin = vm2(wsize, fsize, (w, f) => int((w - f * SCALE) / 2));
 
-  return { origin, wsize, zoom, clientOrigin };
+  return { origin, wsize, fsize, zoom, clientOrigin };
 }
 
 /** Converts a point in browser client coordinates to canvas units. */
@@ -575,7 +601,7 @@ export function canvasPointOfClientPoint(vd: ViewData, p: Point): Point {
 export function wpoint_of_vd(vd: ViewData, p_in_canvas: Point, s: MainState): WidgetPoint {
   const { origin } = vd;
 
-  const world_size = vm(NUM_TILES, NT => TILE_SIZE * SCALE * NT);
+  const world_size = vm(vd.fsize, s => s * SCALE);
   if (u.inrect(p_in_canvas, { p: origin, sz: world_size }))
     return {
       t: 'World',
